@@ -1,0 +1,41 @@
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
+
+    <persistence-unit name="defaultPersistenceUnit" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <non-jta-data-source>DefaultDS</non-jta-data-source>
+        <class>models.ChapterEntity</class>
+        <class>models.CourseEntity</class>
+        <class>models.LanguageLearnEntity</class>
+        <class>models.LanguageTeachEntity</class>
+        <class>models.LessonEntity</class>
+        <class>models.RatingCourseEntity</class>
+        <class>models.RatingTeacherEntity</class>
+        <class>models.RegisterCourseEntity</class>
+        <class>models.RolePermissionEntity</class>
+        <class>models.SessionEntity</class>
+        <class>models.TeacherEntity</class>
+        <class>models.TimeSlotEntity</class>
+        <class>models.UserEntity</class>
+        <class>models.UserRoleEntity</class>
+        <class>models.LanguageSpeakEntity</class>
+        <class>models.PaymentEntity</class>
+        <properties>
+
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+            <property name="hibernate.connection.url" value="jdbc:mysql://112.78.4.97:3306/mola"/>
+            <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.connection.CharSet" value="utf8"></property>
+            <property name="hibernate.connection.characterEncoding" value="utf8"/>
+            <property name="hibernate.connection.useUnicode" value="true"/>
+
+            <property name="hibernate.search.default.directory_provider" value="filesystem"/>
+            <property name="hibernate.search.default.indexBase" value="./lucene/indexes"/>
+        </properties>
+    </persistence-unit>
+
+</persistence>

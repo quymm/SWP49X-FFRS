@@ -1,0 +1,69 @@
+@(name: String, listTeacher: List[UserEntity])
+
+    @main("Teacher Management", name) {
+
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="panel">
+                        <header class="panel-heading">
+                            Request
+                        </header>
+                        <div class="panel-body table-responsive">
+                            <div class="box-tools m-b-15">
+
+                                <div class="input-group">
+
+                                    <input type="text" name="table_search" id="search-username" class="form-control input-sm pull-right" style="width: 200px;" placeholder="Search " />
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-sm btn-default" id="btn-search-username"><i class="fa fa-search"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <table id="tableRequest" class="table table-hover">
+                                <tr>
+                                    <th>Avatar</th>
+                                    <th>Username</th>
+                                    <th>Status</th>
+                                    <th>Request</th>
+
+                                </tr>
+                                @for(teacher <- listTeacher) {
+                                    <tr>
+
+                                        <td>
+                                            <a href="@routes.RequestController.getTeacher(teacher.getUsername)">
+                                                <div class="imgContainer">
+                                                    <img style=" border-radius: 100%;height: 50px; width:50px" src="@teacher.getAvatar">
+                                                </div>
+                                            </a>
+                                        </td>
+                                        <td class="username">
+                                    @teacher.getUsername
+                                        </td>
+                                        <td>
+                                            <div class="status">Pending</div>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-success">Accept</button>
+                                            <button class="btn btn-danger">Decline</button>
+                                        </td>
+
+                                    </tr>
+                                }
+
+
+                            </table>
+                        </div>
+                            <!-- /.box-body -->
+
+
+                    </div>
+
+
+                        <!-- /.box -->
+                </div>
+            </div>
+
+        </section>
+    }

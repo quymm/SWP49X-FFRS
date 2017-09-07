@@ -1,0 +1,104 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET           /                                           controllers.HomeController.index()
+
+# Map static resources from the /public folder to the /assets URL path
+GET           /assets/*file                               controllers.Assets.at(path="/public", file)
+
+GET           /javascriptRoutes                           controllers.HomeController.javascriptRoutes()
+
+POST          /login                                      controllers.StaffController.login()
+
+GET           /staff/request                              controllers.RequestController.index()
+GET           /staff/request/teacher/:username            controllers.RequestController.getTeacher(username: String)
+GET           /staff/user-management                      controllers.StaffController.staffManagement()
+GET           /staff/logout                               controllers.StaffController.logout()
+
+POST          /staff/add-staff                            controllers.StaffController.addStaff()
+POST          /staff/update                               controllers.StaffController.updateStaff()
+POST          /staff/dele-staff/:username                 controllers.StaffController.deleteStaff(username: String)
+
+POST          /staff/accept                               controllers.StaffController.acceptLanguageTeachRequest()
+
+POST          /api/relogin                                controllers.ApiController.reLogin()
+POST          /api/login                                  controllers.ApiController.userLogin()
+GET           /api/logout                                 controllers.ApiController.logout()
+POST          /api/login/fb                               controllers.ApiController.userLoginFacebook()
+
+
+POST          /api.v1/register                            controllers.ApiController.register()
+
+POST          /api/uploads                                controllers.FileUploadController.upload()
+POST          /api/teachers/signup                        controllers.TeacherSignUpController.signUp()
+POST          /api/teachers/timeslot                      controllers.TeacherScheduleController.setFreeTimeSlot()
+GET           /api/teachers/schedules                     controllers.TeacherScheduleController.getSessionToday()
+GET           /api/learner/schedules                      controllers.ApiController.getLearnerScheduleNotFinished()
+GET           /api.v1/profile/:username                   controllers.ApiController.getUserProfile(username: String)
+GET           /api/find-users                             controllers.ApiController.findUsers()
+GET           /api/teacher/course                         controllers.ApiController.getCourseByTeacher()
+GET           /api/teachers/:username                     controllers.ApiController.getTeacherInfo(username: String)
+
+GET           /api/teacher/course/:id                     controllers.ApiController.getChapterByCourse(id : Integer)
+GET           /api/teacher/extra/:id                      controllers.ApiController.getExtraTeacherInfo(id : Integer)
+POST          /api/course                                 controllers.ApiController.createCourse()
+POST          /api/course/edit                            controllers.ApiController.editCourse()
+DELETE        /api/course/:courseId                       controllers.ApiController.deleteCourse(courseId: Integer)
+POST          /api/lesson                                 controllers.ApiController.createLesson()
+POST          /api/chapter                                controllers.ApiController.addChapter()
+POST          /api/chapter/edit                           controllers.ApiController.editChapter()
+GET           /api/recommend                              controllers.ApiController.userBasedRecommendations()
+GET           /api/recommend/:courseId                    controllers.ApiController.itemBasedRecommendations(courseId: Integer)
+PUT           /api/lesson                                 controllers.ApiController.updateLesson()
+DELETE        /api/lesson/:id                             controllers.ApiController.deleteLesson(id: Integer)
+DELETE        /api/chapter/:id                            controllers.ApiController.deleteChapter(id: Integer)
+
+#lucene reindex
+GET           /api/settings/reindex                       controllers.ApiController.reIndexLucene()
+#search
+GET           /api/search                                 controllers.ApiController.search()
+POST          /api/user/password                          controllers.ApiController.updatePassword()
+
+#send request session
+POST          /api/session/validate                       controllers.ApiController.validateRequestSession()
+POST          /api/session                                controllers.ApiController.requestSession()
+GET           /api/session                                controllers.ApiController.getUpcomingSession()
+GET           /api/session/cancel/:sessionID              controllers.ApiController.cancelSessionRequest(sessionID:Integer)
+GET           /api/session/reject/:sessionID              controllers.ApiController.rejectSessionRequest(sessionID:Integer)
+GET           /api/session/accept/:sessionID              controllers.ApiController.acceptSessionRequest(sessionID:Integer)
+POST          /api/session/finished                       controllers.ApiController.finishedSession()
+GET           /api/timeslot/:teacherId                    controllers.ApiController.getFreeTimeSlotOfMonth(teacherId: Integer)
+GET           /api/course/registed                        controllers.ApiController.getCourseRegisted()
+
+#course info
+GET           /api/course/enroll                          controllers.ApiController.checkEnrollUserInCourse()
+POST          /api/course/enroll                          controllers.ApiController.enrollCourse()
+GET           /api/course/cancel/:registerCourseID        controllers.ApiController.cancelCourseRegisterRequest(registerCourseID:Integer)
+GET           /api/course/reject/:registerCourseID        controllers.ApiController.rejectCourseRegisterRequest(registerCourseID:Integer)
+GET           /api/course/accept/:registerCourseID        controllers.ApiController.acceptCourseRegisterRequest(registerCourseID:Integer)
+
+GET           /api/request/incoming                       controllers.ApiController.getListIncomingRequest()
+GET           /api/request/sending                        controllers.ApiController.getListSendingRequest()
+GET           /api/rating/teacher/:teacherId              controllers.ApiController.getListRatingTeacher(teacherId: Integer)
+POST          /api/rating/teacher                         controllers.ApiController.addTeacherRating()
+#language register
+POST          /api/register/language                      controllers.ApiController.setMultiLanguageSpeakLearn()
+
+POST          /api/avatar                                 controllers.ApiController.updateAvatar()
+
+POST          /api/user/edit                              controllers.ApiController.editUser()
+
+GET           /api/languages                              controllers.ApiController.getMultiLanguage()
+GET           /api/native-language                        controllers.ApiController.getSingleLanguageSpeak()
+
+#token firebase
+POST          /api/firebase/token                         controllers.ApiController.saveFirebaseToken()
+POST          /api/firebase/send-notify                   controllers.ApiController.sendNotify()
+
+GET           /api/clip/:teacherId                        controllers.ApiController.introClip(teacherId : Integer)
+GET           /test                                       controllers.ApiController.test()
+
+GET           /rec                                        controllers.ApiController.rec()
+GET           /api/revenue                                controllers.ApiController.getMonthlyRevenue()

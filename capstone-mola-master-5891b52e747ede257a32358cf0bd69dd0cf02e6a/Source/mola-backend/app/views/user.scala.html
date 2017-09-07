@@ -1,0 +1,192 @@
+@import models.front.BStaff
+@(staffs: List[UserEntity], name: String, form: Form[BStaff])
+
+@main("User Management", name) {
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel">
+                    <header class="panel-heading">
+                        User List
+                    </header>
+                    <div class="panel-body table-responsive">
+                        <div class="box-tools m-b-15">
+
+                            <div class="input-group">
+                                <span class="model_wrapper">
+                                    <button type="button" data-toggle="modal" data-target="#myModal" style="font-size: 1.25em" class="btn btn-info glyphicon glyphicon-plus">
+                                    </button>
+                                    <div class="modal fade" id="myModal" role="dialog">
+                                        <div class="modal-dialog">
+                                                <!-- Modal content-->
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Add user</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @helper.form(action = routes.StaffController.addStaff(), 'role -> "form", 'id -> "add-staf-form") {
+
+
+                                                        <div class="form-group">
+                                                            <label for="username">Username</label>
+                                                            <input type="text" name="username" class="form-control" id="exampleInputPassword1" placeholder="Username">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">Password</label>
+                                                            <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="exampleInputEmail1">Email address</label>
+                                                            <input type="text" name="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="exampleInputEmail1">First name</label>
+                                                            <input type="text" name="firstname" class="form-control" id="exampleInputEmail1" placeholder="Enter First Name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="exampleInputEmail1">Last name</label>
+                                                            <input type="text" name="lastname" class="form-control" id="exampleInputEmail1" placeholder="Enter Last Name">
+                                                        </div>
+
+                                                    }
+                                                    <p class="error" id="error-add-staff" style="color: #ff0504">
+
+                                                    </p>
+                                                    <button id="btnAdd" class="btn btn-info">Submit</button>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                        Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </span>
+                                <input type="text" name="table_search" id="search-username" class="form-control input-sm pull-right" style="width: 200px;" placeholder="Search " />
+                                <div class="input-group-btn">
+                                    <button class="btn btn-sm btn-default" id="btn-search-username"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <table id="tableUser" class="table table-hover">
+                            <tr>
+                                <th>Avatar</th>
+                                <th>Username</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Action</th>
+
+                            </tr>
+
+                            @for(staff <- staffs) {
+                                <tr>
+                                    <td>
+                                        <div class="imgContainer">
+                                    </div>
+                                    </td>
+                                    <td class="username">@staff.getUsername</td>
+                                    <td class="firstname">@staff.getFirstName</td>
+                                    <td class="lastname">@staff.getLastName</td>
+                                    <td class="email_user">@staff.getEmail</td>
+                                    <td>
+
+                                        <Button class="btn btn-info btnEdit" type="button" data-toggle="modal" data-target="#myEditModal">
+                                            <span class="glyphicon glyphicon-pencil"></span>
+                                        </Button>
+
+
+                                        <Button class="btn btn-info" type="button" data-toggle="modal" data-target="#myDeleteConfirm-@staff.getUsername">
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                        </Button>
+                                        <div class="modal fade" id="myDeleteConfirm-@staff.getUsername" role="dialog" style="left: 500px;
+                                            top: 200px">
+                                            <div class="modal-dialog">
+                                                    <!-- Modal content-->
+                                                <div class="modal-content" style="width: 300px">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                        <h4 class="modal-title">Delete</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form role="form" method="post" action="@routes.StaffController.deleteStaff(staff.getUsername)">
+
+                                                            <div class="form-group">
+                                                                <label for="exampleInputEmail1">Are you sure?</label>
+                                                            </div>
+                                                            <div style="text-align: right">
+                                                                <button  style="margin-right: 10px; width: 70px" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                                                                <button style="width: 70px;" type="submit" class="btn btn-danger">Sure</button>
+                                                            </div>
+
+                                                        </form>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            <div class="modal fade" id="myEditModal" role="dialog">
+                                <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Edit User</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form role="form" id="update-staff-form">
+                                                <input type="hidden" name="id" id="staffId">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Username</label>
+                                                    <input type="text" name="username" class="form-control" id="inputUsername" placeholder="Enter Username">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Email address</label>
+                                                    <input type="email" name="email" class="form-control" id="inputEmail" placeholder="Enter email">
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">First name</label>
+                                                    <input type="text" name="firstname" class="form-control" id="inputFirstName" placeholder="Enter First Name">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Last name</label>
+                                                    <input type="text" name="lastname" class="form-control" id="inputLastName" placeholder="Enter Last Name">
+                                                </div>
+
+
+                                            </form>
+
+                                            <p class="error" id="error-update-staff" style="color: #ff0504">
+
+                                            </p>
+                                            <button class="btn btn-info" id="btn-update">Submit</button>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </table>
+                    </div>
+                        <!-- /.box-body -->
+
+
+                </div>
+
+
+                    <!-- /.box -->
+            </div>
+        </div>
+
+    </section>
+
+}

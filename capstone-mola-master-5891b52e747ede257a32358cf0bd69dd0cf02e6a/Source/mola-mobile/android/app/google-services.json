@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "855905540437",
+    "firebase_url": "https://mola-services.firebaseio.com",
+    "project_id": "mola-services",
+    "storage_bucket": "mola-services.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:855905540437:android:d8abf2e57fb1d2cc",
+        "android_client_info": {
+          "package_name": "com.molaappdemo3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "855905540437-hj9u9mjd2lueinjijtafgrc8d82ud1o6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXZxt3_cYcmo7EZTEZ0tll5hwHC8irLUw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
