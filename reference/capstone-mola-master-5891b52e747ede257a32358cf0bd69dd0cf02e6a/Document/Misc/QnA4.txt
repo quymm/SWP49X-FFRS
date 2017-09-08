@@ -1,0 +1,1 @@
+Verify JWT, duoc username, co can xuogn DB check username ton tai, has role.

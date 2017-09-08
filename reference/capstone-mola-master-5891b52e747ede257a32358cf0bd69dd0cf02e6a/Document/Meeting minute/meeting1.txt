@@ -1,0 +1,24 @@
+-dang ki theo time slot
+teacher:
+cho biet 1 ngay nhung khoang thoi gian nao ranh, moi frame khoang 15p,30p
+cho user thay, tim frames
+ngon ngu se day
+
+Learner
+   xem thoi gian, book thoi gian de hoc
+
+Course:
+   un-structured: danh cho nhung nguoi not beginer
+     co the chi len book de noi chuyen, muc tieu chu yeu de giao tiep, de luyen tap
+   Structured: beginer
+      phan ra nhu khoa hoc thong thuong: chapter, lesson
+      cac tinh huong thuong gap trong cuoc song hang ngay
+
+muc tieu chinh la de thuc hanh speaking
+tao su connect giua nguoi muon hoc va nguoi muon day
+
+phan tich ERD, Usecase
+report 1
+use case overview
+ERD
+Mockup (teacher co the tho thanh learner)

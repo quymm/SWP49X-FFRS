@@ -1,0 +1,22 @@
+export default {
+  transparent: 'transparent',
+  blackColor: 'black',
+  whiteColor: 'white',
+  grayColor: '#98948F',
+  darkBlueColor: '#004c8c',
+  blueColor: '#0277bd',
+  blueTwitter: '#1DA1F2',
+  lightBlueColor: '#58a5f0',
+  redColor: '#c0392b',
+  lightYellow: '#F3CBA5',
+  darkGreen: '#00897b',
+  // darkGreen: '#ef5350',
+  lightGreen: '#80CBC4',
+  statusBar:'#00796b',
+  // statusBar:'#f44336',
+  orangeColor: '#d35400',
+  lightOrangeColor: '#e67e22',
+  lightCloudColor: '#ecf0f1',
+  starColor: '#f1c40f',
+  
+};
