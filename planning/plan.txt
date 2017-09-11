@@ -1,0 +1,27 @@
+7/9-14/9: Introduction, SPM plan
+15/9 - 26/9: SRS
+27/9 - 19/10: Coding core flow, design, demo (1st station)
+20/10 - 9/11: Coding, Design, Demo (2nd station)
+10/11 - 23/11 Coding, Design, Demo (Rehearsal)
+24/11 - 30/11: Coding, Design, Demo (Doc complete)
+30/11 - 8/12: Prepare for present
+
+meeting target: 
+- training git
+- discuss about method to reservation fields
+- device process for core task and work flow
+- report 1
+1. project information
+2. introduction
+3. current situation
+4. problem definition
+5. proposed solution
+6. functional requirements
+7. role and responsibility
+- report 2
+1. proble definition
+2. project organization
+3. project management plan
+4. coding convention
+
+deadline: 12h sunday!
