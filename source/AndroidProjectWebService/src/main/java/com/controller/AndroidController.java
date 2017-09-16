@@ -19,7 +19,10 @@ public class AndroidController {
     @RequestMapping(value = "/category", method = RequestMethod.GET)
     public Map<String, Object> getCategory() {
         Map<String, Object> map = new HashMap();
+<<<<<<< HEAD
 Map<String, Object> map2 = new HashMap();
+=======
+>>>>>>> master
         map.put("result", androidServices.getAllCategory());
         return map;
     }
