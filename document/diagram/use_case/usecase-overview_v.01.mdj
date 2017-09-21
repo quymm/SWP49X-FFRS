@@ -14900,7 +14900,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "Update timeline",
+											"text": "Reservate field",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -14968,7 +14968,7 @@
 									"containerExtending": false,
 									"left": 534.5,
 									"top": 20.5,
-									"width": 106.79541015625,
+									"width": 106,
 									"height": 25,
 									"autoResize": false,
 									"stereotypeLabel": {
@@ -31446,7 +31446,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "Update timeline",
+					"name": "Reservate field",
 					"ownedElements": [
 						{
 							"_type": "UMLGeneralization",
