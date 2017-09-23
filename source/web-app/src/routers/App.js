@@ -4,15 +4,15 @@ import {
   Route,
   Link
 } from 'react-router-dom'
-import Home from '../components/Home'
-import Navigation from '../components/Navigation';
-import Index from '../components/Index'
-import Header from '../components/Header'
+import Index from '../components/Index';
+import Login from '../components/Login'
+
 class App extends Component {
   render() {
     return (
       <Router>
       <div>
+        <Route path="/login" component={Login}></Route>
         <Route exact path="/" component={Index}> 
         
         </Route>
