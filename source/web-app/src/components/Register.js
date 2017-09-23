@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 class Register extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             username: '',
@@ -23,12 +23,12 @@ class Register extends Component {
                                 <form>
                                     <fieldset>
                                         <div className="form-group">
-                                            <input onChange={(text)=> this.setState({username: text})} className="form-control" placeholder="Username" name="email" type="text" autofocus />
+                                            <input onChange={(text) => this.setState({ username: text })} className="form-control" placeholder="Username" name="email" type="text" />
                                         </div>
                                         <div className="form-group">
-                                            <input onChange={(text)=> this.setState({password: text})} className="form-control" placeholder="Password" name="password" type="password" value="" />
+                                            <input onChange={(text) => this.setState({ password: text })} className="form-control" placeholder="Password" name="password" type="password" value="" />
                                         </div>
-                                        
+
                                         <a href="index.html" className="btn btn-lg btn-success btn-block">Login</a>
                                     </fieldset>
                                 </form>
@@ -36,7 +36,7 @@ class Register extends Component {
                         </div>
                     </div>
                 </div>
-        </div >
+            </div >
         );
     }
 }

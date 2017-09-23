@@ -1,4 +1,11 @@
-export const guestReducer = (state, action) => {
+const defaultState = {
+    username: '',
+    password: '',
+    isLoading: '',
+    error: ''
+}
+
+export const guestReducer = (state = defaultState, action) => {
     switch (action.type) {
         case 'LOGIN':
             return({});
