@@ -9,11 +9,5 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface FieldOwnerRepository extends JpaRepository<FieldOwnerEntity, Integer> {
 
-<<<<<<< HEAD
-    FieldOwnerEntity findByUsernameAndPassword(String username, String password);
-
-
-=======
     FieldOwnerEntity findById(int id);
->>>>>>> master
 }
