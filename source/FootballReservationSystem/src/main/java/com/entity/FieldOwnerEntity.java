@@ -44,10 +44,10 @@ public class FieldOwnerEntity implements Serializable {
     private String address;
     @Basic(optional = false)
     @Column(name = "longitude")
-    private float longitude;
+    private String longitude;
     @Basic(optional = false)
     @Column(name = "latitude")
-    private float latitude;
+    private String latitude;
     @Column(name = "avatarURL")
     private String avatarURL;
     @Basic(optional = false)
@@ -67,7 +67,7 @@ public class FieldOwnerEntity implements Serializable {
         this.id = id;
     }
 
-    public FieldOwnerEntity(Integer id, String username, String password, String address, float longitude, float latitude, String creditCard, float profitsCommission, boolean status) {
+    public FieldOwnerEntity(Integer id, String username, String password, String address, String longitude, String latitude, String creditCard, float profitsCommission, boolean status) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -111,19 +111,19 @@ public class FieldOwnerEntity implements Serializable {
         this.address = address;
     }
 
-    public float getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(float longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 
-    public float getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
