@@ -9,7 +9,7 @@ import FieldOwnerIndex from '../components/FieldOwnerIndex';
 import Login from '../components/Login'
 import Register from '../components/Register';
 import Field from '../components/Field';
-import Store from '../redux/store';
+//import Store from '../redux/store';
 // import { BASE_URL, LOGIN } from '../apis/base-URL'
 class App extends Component {
   render() {
