@@ -22,7 +22,13 @@ public class FieldOwnerController {
     @GetMapping(value = "/login")
     public ResponseEntity login (@RequestParam("username") String username, @RequestParam("password") String password){
         FieldOwnerEntity fieldOwnerEntity = fieldOwnerService.fieldOwnerLogin(username, password);
-        return new ResponseEntity(fieldOwnerEntity, HttpStatus.ACCEPTED);
+        return new ResponseEntity(fieldOwnerEntity, HttpStatus.OK);
     }
+
+
+//    public ResponseEntity register(){
+//
+//    }
+
 }
 

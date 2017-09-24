@@ -1,7 +1,7 @@
 const defaultState = {
     username: '',
     password: '',
-    isLoading: '',
+    isLoading: false,
     error: ''
 }
 
