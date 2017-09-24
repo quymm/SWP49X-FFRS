@@ -5,7 +5,6 @@ import { getAllField } from '../redux/field-owner/field-owner-action-creator'
 import Header from './Header';
 import Navigation from './Navigation';
 
-//@connect(mapStateToProps, null)
 class Field extends Component {
 
   componentDidMount() {
