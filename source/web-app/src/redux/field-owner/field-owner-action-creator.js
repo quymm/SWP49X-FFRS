@@ -11,3 +11,17 @@ export function getAllField(data){
         payloads: data
     }
 }
+export function deleteField(fieldId){
+    return {
+        type: 'DELETE_FIELD',
+        payloads: fieldId
+    }
+}
+
+export function createField(myFieldName, myFieldType){
+    const field = {fieldName: myFieldName, fieldType: myFieldType};
+    return {
+        type: 'CREATE_FIELD',
+        payloads: field
+    }
+}

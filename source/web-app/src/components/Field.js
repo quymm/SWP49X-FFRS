@@ -1,21 +1,36 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { fetchGetAllField } from '../apis/field-owner-apis';
+import { fetchGetAllField, fetchDeleteField } from '../apis/field-owner-apis';
 import { getAllField } from '../redux/field-owner/field-owner-action-creator'
 import Header from './Header';
 import Navigation from './Navigation';
+function mapStateToProps(state) {
+    console.log(state);
+    // debugger; chay thu xme
 
+    return {
+        listField: state.listField
+    };
+}
+
+//@connect(mapStateToProps, null)
 class Field extends Component {
 
     componentDidMount() {
         fetchGetAllField(1).then(data => this.props.getAllField(data));
+        
     }
 
     deleteField(fieldId) {
-
+        fetchDeleteField(fieldId)
+        .then(
+            fetchGetAllField()
+            .then(data => this.props.getAllField(data))
+        );
     }
 
     render() {
+        
         const { listField } = this.props;
         const renderField = listField.map(
             <tr>
@@ -95,10 +110,7 @@ class Field extends Component {
         );
     }
 }
-function mapStateToProps(state) {
-    return {
-        listField: state.listField
-    };
-}
+
 
 export default connect(mapStateToProps, { getAllField })(Field);
+//export default Field;
