@@ -4,14 +4,6 @@ import { fetchGetAllField, fetchDeleteField } from '../apis/field-owner-apis';
 import { getAllField } from '../redux/field-owner/field-owner-action-creator'
 import Header from './Header';
 import Navigation from './Navigation';
-function mapStateToProps(state) {
-    console.log(state);
-    // debugger; chay thu xme
-
-    return {
-        listField: state.listField
-    };
-}
 
 //@connect(mapStateToProps, null)
 class Field extends Component {
@@ -110,7 +102,13 @@ class Field extends Component {
         );
     }
 }
+function mapStateToProps(state) {
+    console.log(state);
+    // debugger; chay thu xme
 
+    return {
+        listField: state.listField
+    };
+}
 
 export default connect(mapStateToProps, { getAllField })(Field);
-//export default Field;

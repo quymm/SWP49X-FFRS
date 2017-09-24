@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   BrowserRouter as Router,
   Route, Switch
-} from 'react-router-dom'
+} from 'react-router-dom';
 import { Provider } from 'react-redux';
 import fieldOwnerStore from '../redux/field-owner/field-owner-store'
 import FieldOwnerIndex from '../components/FieldOwnerIndex';
