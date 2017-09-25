@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.capstone.ffrs.FieldSuggestActivity"
+    tools:showIn="@layout/app_bar_field_suggest">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1">
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/rounded_edit_text"
+            android:drawableLeft="@android:drawable/ic_menu_search"
+            android:ems="10"
+            android:inputType="text"
+            android:paddingLeft="20dp"
+            android:text="Search field name"
+            android:textColor="@android:color/darker_gray"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+
+            android:onClick="">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="fill_parent"
+                        android:layout_height="80dp"
+                        android:background="@android:color/holo_green_light"
+                        android:onClick="onClickShowTimeLine">
+
+                        <ImageView
+                            android:id="@+id/icon"
+                            android:layout_width="80dp"
+                            android:layout_height="fill_parent"
+                            android:layout_alignParentBottom="true"
+
+                            android:layout_alignParentTop="true"
+                            android:layout_marginRight="6dip"
+                            android:background="@android:color/holo_green_dark"
+
+                            android:src="@android:drawable/ic_menu_agenda" />
+
+                        <TextView
+                            android:id="@+id/secondLine"
+
+                            android:layout_width="fill_parent"
+                            android:layout_height="26dip"
+
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_toRightOf="@id/icon"
+
+                            android:ellipsize="marquee"
+                            android:maxLines="1"
+                            android:text="333 Phan Văn Trị - Tân Bình - HCM"
+                            android:textColor="@android:color/black" />
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+
+                            android:layout_above="@id/secondLine"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignWithParentIfMissing="true"
+                            android:layout_toRightOf="@id/icon"
+
+                            android:gravity="center_vertical"
+                            android:text="Sân Chảo Lửa"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="fill_parent"
+                        android:layout_height="80dp"
+
+                        android:background="@android:color/holo_green_light">
+
+                        <ImageView
+                            android:id="@+id/icon"
+                            android:layout_width="80dp"
+                            android:layout_height="fill_parent"
+                            android:layout_alignParentBottom="true"
+
+                            android:layout_alignParentTop="true"
+                            android:layout_marginRight="6dip"
+                            android:background="@android:color/holo_green_dark"
+
+                            android:src="@android:drawable/ic_menu_agenda" />
+
+                        <TextView
+                            android:id="@+id/secondLine"
+
+                            android:layout_width="fill_parent"
+                            android:layout_height="26dip"
+
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_toRightOf="@id/icon"
+
+                            android:ellipsize="marquee"
+                            android:maxLines="1"
+                            android:text="512 Trường Sơn - Bình Thạnh - HCM"
+                            android:textColor="@android:color/black" />
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+
+                            android:layout_above="@id/secondLine"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignWithParentIfMissing="true"
+                            android:layout_toRightOf="@id/icon"
+
+                            android:gravity="center_vertical"
+                            android:text="Sân Thăng Long"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="fill_parent"
+                        android:layout_height="80dp"
+
+                        android:background="@android:color/holo_green_light">
+
+                        <ImageView
+                            android:id="@+id/icon"
+                            android:layout_width="80dp"
+                            android:layout_height="fill_parent"
+                            android:layout_alignParentBottom="true"
+
+                            android:layout_alignParentTop="true"
+                            android:layout_marginRight="6dip"
+                            android:background="@android:color/holo_green_dark"
+
+                            android:src="@android:drawable/ic_menu_agenda" />
+
+                        <TextView
+                            android:id="@+id/secondLine"
+
+                            android:layout_width="fill_parent"
+                            android:layout_height="26dip"
+
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_toRightOf="@id/icon"
+
+                            android:ellipsize="marquee"
+                            android:maxLines="1"
+                            android:text="444 Tô Ký - Quận 12 - HCM"
+                            android:textColor="@android:color/black" />
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+
+                            android:layout_above="@id/secondLine"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignWithParentIfMissing="true"
+                            android:layout_toRightOf="@id/icon"
+
+                            android:gravity="center_vertical"
+                            android:text="Sân Đại Học FPT"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                    </RelativeLayout>
+                </LinearLayout>
+            </ScrollView>
+
+            <LinearLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <Button
+                    android:id="@+id/btGames"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    android:drawableTop="@drawable/ic_menu_camera"
+                    android:text="Trận đấu"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/btFields"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/holo_blue_dark"
+                    android:drawableTop="@drawable/ic_menu_send"
+                    android:text="Sân"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
