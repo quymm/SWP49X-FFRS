@@ -1,38 +1,36 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchGetAllField, fetchDeleteField } from '../apis/field-owner-apis';
-import { getAllField } from '../redux/field-owner/field-owner-action-creator'
+import { getAllField } from '../redux/field-owner/field-owner-action-creator';
 import Header from './Header';
 import Navigation from './Navigation';
-
+import FormCreateField from '../containts/Form-Create-Field';
 class Field extends Component {
-
   componentDidMount() {
-    // fetchGetAllField(1).then(data => this.props.getAllField(data));
-
+    fetchGetAllField(1).then(data => this.props.getAllField(data));
   }
 
   deleteField(fieldId) {
-    fetchDeleteField(fieldId)
-      .then(
-      fetchGetAllField()
-        .then(data => this.props.getAllField(data))
-      );
+    fetchDeleteField(fieldId).then(
+      fetchGetAllField().then(data => this.props.getAllField(data)),
+    );
   }
 
   render() {
-
     const { listField } = this.props;
     const renderField = listField.map(listField => {
-      <tr>
-        <td>{listField.fieldName}</td>
-        <td>{listField.fieldType}</td>
-        <td>
-          <button className="btn btn-info">Update</button>
-          <button className="btn btn-danger">Delete</button>
-        </td>
-      </tr>
+      return (
+        <tr key={listField.id}>
+          <td>{listField.name}</td>
+          <td>{listField.fieldTypeId.name}</td>
+          <td>
+            <button className="btn btn-info">Update</button>
+            <button className="btn btn-danger">Delete</button>
+          </td>
+        </tr>
+      );
     });
+
     return (
       <div>
         <Header />
@@ -44,7 +42,7 @@ class Field extends Component {
                 <h2 className="page-header">Field</h2>
               </div>
             </div>
-            //
+            <FormCreateField />
             <div className="col-lg-8 col-lg-offset-2">
               <div className="table-responsive">
                 <table className="table table-striped">
@@ -56,10 +54,7 @@ class Field extends Component {
                     </tr>
                   </thead>
                   <tbody>
-
-                    {listField ? renderField : "There is no field"}
-
-
+                    {listField == null ? 'There is no field' : renderField}
                   </tbody>
                 </table>
               </div>
@@ -72,7 +67,7 @@ class Field extends Component {
 }
 function mapStateToProps(state) {
   return {
-    listField: state.listField
+    listField: state.listField,
   };
 }
 

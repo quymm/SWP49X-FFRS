@@ -1,20 +1,48 @@
 import React, { Component } from 'react';
-import { createField } from '../redux/field-owner/field-owner-action-creator';
+import { connect } from 'react-redux';
+import {
+  createField,
+  getAllField,
+} from '../redux/field-owner/field-owner-action-creator';
+import { fetchAddField, fetchGetAllField } from '../apis/field-owner-apis';
+
 class FormCreateField extends Component {
   constructor(props) {
     super(props);
-    this.setState = {
-      filedName: '',
-      fileStyle: ''
+    this.state = {
+      fieldName: '',
+      fieldStyle: '1',
     };
+  }
+
+  handelInputChange(evt) {
+    this.setState({ fieldName: evt.target.value });
+    console.log(this.state.fieldName);
+  }
+
+  handleSelectChange(evt) {
+    this.setState({ fieldStyle: evt.target.value });
+    console.log(this.state.fieldStyle);
+  }
+
+  handleSubmit(evt) {
+    evt.preventDefault();
+    const { fieldName, fieldStyle } = this.state;
+    // const { fieldOwnerId } = this.props;
+    fetchAddField(fieldName, fieldStyle, 1).then(
+      fetchGetAllField(1).then(data => this.props.getAllField(data)),
+    );
   }
   FormCreateField() {}
   render() {
     return (
       <div className="col-lg-12">
-        <form className="form-horizontal">
+        <form
+          onSubmit={this.handleSubmit.bind(this)}
+          className="form-horizontal"
+        >
           <div className="form-group">
-            <label for="inputEmail3" className="col-sm-3 control-label">
+            <label htmlFor="inputEmail3" className="col-sm-3 control-label">
               Field Name
             </label>
             <div className="col-sm-9">
@@ -25,6 +53,8 @@ class FormCreateField extends Component {
                     className="form-control"
                     id="inputPassword3"
                     placeholder="Field name"
+                    value={this.state.fieldName}
+                    onChange={this.handelInputChange.bind(this)}
                   />
                 </div>
               </div>
@@ -32,11 +62,16 @@ class FormCreateField extends Component {
           </div>
 
           <div className="form-group">
-            <label for="sel1" className="col-sm-3 control-label">
+            <label htmlFor="sel1" className="col-sm-3 control-label">
               Field Type
             </label>
             <div className="col-sm-2">
-              <select value={this.state.fileStyle} onChange={(evt)=>this.setState.fileStyle} className="form-control" id="sel1">
+              <select
+                value={this.state.fieldStyle}
+                onChange={this.handleSelectChange.bind(this)}
+                className="form-control"
+                id="sel1"
+              >
                 <option value="1">5 vs 5</option>
                 <option value="2">7 vs 7</option>
               </select>
@@ -56,8 +91,10 @@ class FormCreateField extends Component {
 }
 function mapStateToProps(state) {
   return {
-    fieldOwnerId: state.fieldOwnerId,
+    // fieldOwnerId: state.listField.fieldOwnerId.id
   };
 }
 
-export default connect(mapStateToProps, { createField })(FormCreateField);
+export default connect(mapStateToProps, { createField, getAllField })(
+  FormCreateField,
+);
