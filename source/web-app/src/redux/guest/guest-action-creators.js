@@ -1,4 +1,4 @@
-export function fetchLogin(username, password){
+export function Login(username, password){
     return {
         type: 'LOGIN',
         username, 
@@ -6,7 +6,7 @@ export function fetchLogin(username, password){
     };
 }
 
-export function fetchRegister(username, password){
+export function Register(username, password){
     return {
         type: 'REGISTER',
         username, 
