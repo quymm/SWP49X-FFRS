@@ -29,6 +29,4 @@ public class FieldController {
         List<FieldEntity> fieldEntityList = fieldServices.getFieldEntityByFieldOwnerId(fieldOwnerId);
         return new ResponseEntity(fieldEntityList, HttpStatus.FOUND);
     }
-
-    // tạo bởi branch quy_demo1
 }
