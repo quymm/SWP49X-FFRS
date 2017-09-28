@@ -6,9 +6,21 @@ import Header from './Header';
 import Navigation from './Navigation';
 import FormCreateField from '../containts/Form-Create-Field';
 class Field extends Component {
-
+  constructor(props) {
+    super(props);
+    this.state = {
+      listField: [],
+    };
+  }
+  //bay h redux ko co tac dung. gi noi deo nghe =)), m coi cai video t chi? di
+  // may cai do lam thi biet thoi =)), them cuc redux vao, ve diagram giai thich cho ong khanh chet me,
+  //co may cai architechure diagram, component diagram, .... phair them vao do, dm =))
+  
   componentDidMount() {
-    fetchGetAllField(1).then(data => this.props.getAllField(data));
+    fetchGetAllField(1).then(data => {
+      this.setState({ listField: data });
+      this.props.getAllField(data);
+    });
   }
 
   deleteField(fieldId) {
@@ -17,8 +29,11 @@ class Field extends Component {
     );
   }
 
+  updateListField(listField) {
+    this.setState({ listField });
+  }
   render() {
-    const { listField } = this.props;
+    const { listField } = this.state;
     const renderField = listField.map(listField => {
       return (
         <tr key={listField.id}>
@@ -26,7 +41,13 @@ class Field extends Component {
           <td>{listField.fieldTypeId.name}</td>
           <td>
             <button className="btn btn-info">Update</button>
-            <button className="btn btn-danger">Delete</button>
+            <button
+              value={listField.id}
+              onClick={() => this.deleteField(listField.id)}
+              className="btn btn-danger"
+            >
+              Delete
+            </button>
           </td>
         </tr>
       );
@@ -43,7 +64,9 @@ class Field extends Component {
                 <h2 className="page-header">Field</h2>
               </div>
             </div>
-            <FormCreateField />
+            <FormCreateField
+              updateListField={this.updateListField.bind(this)}
+            />
             <div className="col-lg-8 col-lg-offset-2">
               <div className="table-responsive">
                 <table className="table table-striped">
