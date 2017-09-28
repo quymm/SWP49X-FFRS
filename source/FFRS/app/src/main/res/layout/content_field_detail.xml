@@ -187,6 +187,7 @@
                     android:layout_weight="1"
                     android:background="@android:color/holo_red_dark"
                     android:text="Cancel"
+                    android:onClick="onClickGoBackToTime"
                     android:textColor="@android:color/white"
                     android:textSize="18sp" />
             </LinearLayout>

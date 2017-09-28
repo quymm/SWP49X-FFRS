@@ -89,4 +89,8 @@ public class FieldDetailActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void onClickGoBackToTime(View view) {
+        finish();
+    }
 }
