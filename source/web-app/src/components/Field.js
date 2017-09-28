@@ -6,6 +6,7 @@ import Header from './Header';
 import Navigation from './Navigation';
 import FormCreateField from '../containts/Form-Create-Field';
 class Field extends Component {
+
   componentDidMount() {
     fetchGetAllField(1).then(data => this.props.getAllField(data));
   }

@@ -11,7 +11,7 @@ class FormCreateField extends Component {
     super(props);
     this.state = {
       fieldName: '',
-      fieldStyle: '1',
+      fieldStyle: 1
     };
   }
 
@@ -21,12 +21,12 @@ class FormCreateField extends Component {
   }
 
   handleSelectChange(evt) {
-    this.setState({ fieldStyle: evt.target.value });
+    this.setState({ fieldStyle: parseInt(evt.target.value) });
     console.log(this.state.fieldStyle);
   }
 
   handleSubmit(evt) {
-    evt.preventDefault();
+    // evt.preventDefault();
     const { fieldName, fieldStyle } = this.state;
     // const { fieldOwnerId } = this.props;
     fetchAddField(fieldName, fieldStyle, 1).then(

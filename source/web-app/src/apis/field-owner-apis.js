@@ -49,6 +49,7 @@ export function fetchDeleteField(fieldId) {
 export function fetchAddField(paramFieldName, paramFieldType, fieldOwnerId) {
   return fetch(BASE_URL + ADD_FIELD, {
     method: 'POST',
+    headers:{'content-type': 'application/json'},
     body: JSON.stringify({
       fieldName: paramFieldName,
       fieldOwnerId: fieldOwnerId,
