@@ -12,10 +12,7 @@ class Field extends Component {
       listField: [],
     };
   }
-  //bay h redux ko co tac dung. gi noi deo nghe =)), m coi cai video t chi? di
-  // may cai do lam thi biet thoi =)), them cuc redux vao, ve diagram giai thich cho ong khanh chet me,
-  //co may cai architechure diagram, component diagram, .... phair them vao do, dm =))
-  
+ 
   componentDidMount() {
     fetchGetAllField(1).then(data => {
       this.setState({ listField: data });

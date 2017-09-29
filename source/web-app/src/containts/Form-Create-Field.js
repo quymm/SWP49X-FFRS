@@ -14,7 +14,7 @@ class FormCreateField extends Component {
       fieldStyle: 1,
     };
   }
-//tam thoi t nghi dc cach nay thoi, tao 1 state trong component nay, luu listfield, luc bam create thi goi api, return ok thi add them vao list, la no tu dong update
+  //tam thoi t nghi dc cach nay thoi, tao 1 state trong component nay, luu listfield, luc bam create thi goi api, return ok thi add them vao list, la no tu dong update
   handelInputChange(evt) {
     this.setState({ fieldName: evt.target.value });
     console.log(this.state.fieldName);
@@ -26,20 +26,15 @@ class FormCreateField extends Component {
   }
 
   async handleSubmit(evt) {
-    
     evt.preventDefault();
     const { fieldName, fieldStyle } = this.state;
-    
-    await fetchAddField(fieldName, fieldStyle, 1);
-      const data = await fetchGetAllField(1);
-        debugger
-        
-        this.props.updateListField(data);
-        this.props.getAllField(data)
-      //}),//ham nay dau
-    //);
+
+    await fetchAddField(fieldName, fieldStyle, 1); 
+    const data = await fetchGetAllField(1);        
+    this.props.updateListField(data);
+    this.props.getAllField(data);
   }
-  
+
   render() {
     return (
       <div className="col-lg-12">
@@ -54,8 +49,7 @@ class FormCreateField extends Component {
             <div className="col-sm-9">
               <div className="row">
                 <div className="col-sm-6">
-                  
-                  <input //cho nay de span, chinh style cho no giong button roi gan su kien onlick vao, la sao?
+                  <input
                     type="text"
                     className="form-control"
                     id="inputPassword3"
@@ -98,8 +92,8 @@ class FormCreateField extends Component {
 }
 function mapStateToProps(state) {
   return {
-    fieldList : state.listField,
-    // fieldOwnerId: state.listField.fieldOwnerId.id gan cai data vao day di, data nào ket qua tu response cho goi actio
+    fieldList: state.listField,
+    // fieldOwnerId: state.listField.fieldOwnerId.id 
   };
 }
 

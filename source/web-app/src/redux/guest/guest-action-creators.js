@@ -1,15 +1,15 @@
 export function Login(username, password){
+    const account = {username, password};
     return {
         type: 'LOGIN',
-        username, 
-        password
+        payloads: account
     };
 }
 
 export function Register(username, password){
+    const account = {username, password};
     return {
         type: 'REGISTER',
-        username, 
-        password
+        payloads: account
     };
 }
