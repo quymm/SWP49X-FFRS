@@ -2,8 +2,23 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchMatchByDay } from '../apis/field-owner-apis';
 import { getMatchByDay } from '../redux/field-owner/field-owner-action-creator';
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
+import 'react-datepicker/dist/react-datepicker.css';
 
 class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      dateSelected: moment(),
+    };
+  }
+  async handleDateChange(date) {
+    await this.setState({
+      dateSelected: date,
+    });
+    console.log(this.state.dateSelected);
+  }
   getMatchByDay() {
     fetchMatchByDay().then(data => this.props.getMatchByDay(data));
   }
@@ -77,10 +92,11 @@ class Home extends Component {
               <div className="page-header">
                 <form className="navbar-form navbar-left">
                   <div className="form-group">
-                    <input
-                      type="text"
+                    <DatePicker
+                      selected={this.state.dateSelected}
+                      onChange={this.handleDateChange.bind(this)}
                       className="form-control"
-                      placeholder="20/09/2017"
+                      withPortal
                     />
                   </div>
                   <button className="btn btn-default" type="button">
