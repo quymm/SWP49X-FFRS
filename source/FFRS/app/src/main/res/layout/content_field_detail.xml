@@ -105,11 +105,21 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5sp"
+                        android:text="To: 12:00"
+                        android:textAlignment="textStart"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
                         android:id="@+id/textView3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5sp"
-                        android:text="Duration: 1 tiếng"
+                        android:text="Duration: 2 hours"
                         android:textAlignment="textStart"
                         android:textSize="22sp"
                         android:textStyle="bold" />
@@ -142,7 +152,7 @@
 
                         <RatingBar
                             android:id="@+id/ratingBar"
-                            style="@android:style/Widget.Material.Light.RatingBar.Indicator"
+                            style="@style/Widget.AppCompat.RatingBar.Indicator"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:isIndicator="true"
