@@ -175,7 +175,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@android:color/holo_blue_light"
+                    android:background="#00c5cc"
                     android:text="Pay"
                     android:textColor="@android:color/white"
                     android:textSize="18sp" />
@@ -185,45 +185,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@android:color/holo_red_dark"
+                    android:background="#af0000"
                     android:text="Cancel"
                     android:onClick="onClickGoBackToTime"
                     android:textColor="@android:color/white"
                     android:textSize="18sp" />
             </LinearLayout>
-
-
-            <!--<LinearLayout-->
-            <!--android:id="@+id/tabLayout"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:gravity="center"-->
-            <!--android:orientation="horizontal"-->
-            <!--android:weightSum="2">-->
-
-            <!--<Button-->
-            <!--android:id="@+id/btGames"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:background="@android:color/white"-->
-            <!--android:drawableTop="@drawable/ic_menu_camera"-->
-            <!--android:text="Trận đấu"-->
-            <!--android:textColor="@android:color/black"-->
-            <!--android:textSize="18sp" />-->
-
-            <!--<Button-->
-            <!--android:id="@+id/btFields"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:background="@android:color/holo_blue_dark"-->
-            <!--android:drawableTop="@drawable/ic_menu_send"-->
-            <!--android:text="Sân"-->
-            <!--android:textColor="@android:color/white"-->
-            <!--android:textSize="18sp" />-->
-            <!--</LinearLayout>-->
 
         </RelativeLayout>
 

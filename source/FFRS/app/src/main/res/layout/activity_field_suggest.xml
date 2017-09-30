@@ -20,7 +20,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_field_suggest"
-        app:menu="@menu/activity_field_suggest_drawer" />
+        app:headerLayout="@layout/nav_header_logged_in"
+        app:menu="@menu/activity_field_logged_in_drawer" />
 
 </android.support.v4.widget.DrawerLayout>
