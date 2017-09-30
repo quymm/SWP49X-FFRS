@@ -18,12 +18,14 @@ public class FieldController {
     @Autowired
     FieldServices fieldServices;
 
-    @RequestMapping(value = "/field/createNewField", method = RequestMethod.POST)
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/field/createNewField", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity createNewField(@RequestBody InputFieldDTO inputFieldDTO){
         FieldEntity fieldEntity = fieldServices.createNewField(inputFieldDTO);
         return new ResponseEntity(fieldEntity, HttpStatus.CREATED);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/field/getFieldByFieldOwnerId", method = RequestMethod.GET)
     public ResponseEntity getFieldByFieldOwnerId(@RequestParam("fieldOwnerId") int fieldOwnerId){
         List<FieldEntity> fieldEntityList = fieldServices.getFieldEntityByFieldOwnerId(fieldOwnerId);
