@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -24,6 +25,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "voucher_record")
+@XmlRootElement
 public class VoucherRecordEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,7 +39,7 @@ public class VoucherRecordEntity implements Serializable {
     private boolean status;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserEntity userId;
+    private AccountEntity userId;
     @JoinColumn(name = "voucher_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private VoucherEntity voucherId;
@@ -70,11 +72,11 @@ public class VoucherRecordEntity implements Serializable {
         this.status = status;
     }
 
-    public UserEntity getUserId() {
+    public AccountEntity getUserId() {
         return userId;
     }
 
-    public void setUserId(UserEntity userId) {
+    public void setUserId(AccountEntity userId) {
         this.userId = userId;
     }
 

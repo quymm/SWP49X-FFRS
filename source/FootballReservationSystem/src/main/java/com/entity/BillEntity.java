@@ -20,6 +20,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -27,6 +28,7 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "bill")
+@XmlRootElement
 public class BillEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -45,6 +47,18 @@ public class BillEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private AccountEntity userId;
+    @JoinColumn(name = "friendly_match_id", referencedColumnName = "id")
+    @ManyToOne
+    private FriendlyMatchEntity friendlyMatchId;
+    @JoinColumn(name = "voucher_id", referencedColumnName = "id")
+    @ManyToOne
+    private VoucherEntity voucherId;
+    @JoinColumn(name = "tour_match_id", referencedColumnName = "id")
+    @ManyToOne
+    private TourMatchEntity tourMatchId;
 
     public BillEntity() {
     }
@@ -90,6 +104,38 @@ public class BillEntity implements Serializable {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public AccountEntity getUserId() {
+        return userId;
+    }
+
+    public void setUserId(AccountEntity userId) {
+        this.userId = userId;
+    }
+
+    public FriendlyMatchEntity getFriendlyMatchId() {
+        return friendlyMatchId;
+    }
+
+    public void setFriendlyMatchId(FriendlyMatchEntity friendlyMatchId) {
+        this.friendlyMatchId = friendlyMatchId;
+    }
+
+    public VoucherEntity getVoucherId() {
+        return voucherId;
+    }
+
+    public void setVoucherId(VoucherEntity voucherId) {
+        this.voucherId = voucherId;
+    }
+
+    public TourMatchEntity getTourMatchId() {
+        return tourMatchId;
+    }
+
+    public void setTourMatchId(TourMatchEntity tourMatchId) {
+        this.tourMatchId = tourMatchId;
     }
 
     @Override

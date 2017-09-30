@@ -3,7 +3,6 @@ package com.services;
 import com.dto.InputFieldTypeDTO;
 import com.entity.FieldTypeEntity;
 import com.repository.FieldTypeRepository;
-import com.utils.ConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +15,19 @@ public class FieldTypeServices {
     FieldTypeRepository fieldTypeRepository;
 
     public FieldTypeEntity createNewFieldTypeEntity(InputFieldTypeDTO inputFieldTypeDTO){
-        FieldTypeEntity fieldTypeEntity = ConvertUtil.convertFromInputFieldTypeDTOToFieldTypeEntity(inputFieldTypeDTO);
+        FieldTypeEntity fieldTypeEntity = convertFromInputFieldTypeDTOToFieldTypeEntity(inputFieldTypeDTO);
         return fieldTypeRepository.save(fieldTypeEntity);
     }
 
-    public FieldTypeEntity getFieldTypeEntityByFieldTypeId(int fieldTypeId){
-        return fieldTypeRepository.findById(fieldTypeId);
+    public FieldTypeEntity findFieldTypeEntityById(int fieldTypeId){
+        return fieldTypeRepository.findByIdAndStatus(fieldTypeId, true);
+    }
+
+    public FieldTypeEntity convertFromInputFieldTypeDTOToFieldTypeEntity(InputFieldTypeDTO inputFieldTypeDTO){
+        FieldTypeEntity fieldTypeEntity = new FieldTypeEntity();
+        fieldTypeEntity.setName(inputFieldTypeDTO.getName());
+        fieldTypeEntity.setNumberPlayer(Integer.parseInt(inputFieldTypeDTO.getNumberPlayer()));
+        fieldTypeEntity.setStatus(true);
+        return fieldTypeEntity;
     }
 }
