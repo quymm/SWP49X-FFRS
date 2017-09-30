@@ -24,7 +24,7 @@ public class FieldTypeController {
 
     @RequestMapping(value = "/fieldType/getByFieldTypeId", method = RequestMethod.GET)
     public ResponseEntity getFieldTypeById(@RequestParam("fieldTypeId") int fieldTypeId){
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.getFieldTypeEntityByFieldTypeId(fieldTypeId);
+        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(fieldTypeId);
         return new ResponseEntity(fieldTypeEntity, HttpStatus.FOUND);
     }
 }

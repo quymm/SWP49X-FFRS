@@ -8,6 +8,10 @@ public class InputFieldOwnerDTO {
 
     private String password;
 
+    private String name;
+
+    private String phone;
+
     private String address;
 
     private String longitute;
@@ -16,19 +20,21 @@ public class InputFieldOwnerDTO {
 
     private String creditCard;
 
-    private String profitCommission;
+    private String avatarUrl;
 
     public InputFieldOwnerDTO() {
     }
 
-    public InputFieldOwnerDTO(String username, String password, String address, String longitute, String latitude, String creditCard, String profitCommission) {
+    public InputFieldOwnerDTO(String username, String password, String name, String phone, String address, String longitute, String latitude, String creditCard, String avatarUrl) {
         this.username = username;
         this.password = password;
+        this.name = name;
+        this.phone = phone;
         this.address = address;
         this.longitute = longitute;
         this.latitude = latitude;
         this.creditCard = creditCard;
-        this.profitCommission = profitCommission;
+        this.avatarUrl = avatarUrl;
     }
 
     public String getUsername() {
@@ -45,6 +51,22 @@ public class InputFieldOwnerDTO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getAddress() {
@@ -79,11 +101,11 @@ public class InputFieldOwnerDTO {
         this.creditCard = creditCard;
     }
 
-    public String getProfitCommission() {
-        return profitCommission;
+    public String getAvatarUrl() {
+        return avatarUrl;
     }
 
-    public void setProfitCommission(String profitCommission) {
-        this.profitCommission = profitCommission;
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

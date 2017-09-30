@@ -6,7 +6,7 @@
 package com.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,6 +20,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -27,6 +29,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "field")
+@XmlRootElement
 public class FieldEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -43,7 +46,7 @@ public class FieldEntity implements Serializable {
     private boolean status;
     @JoinColumn(name = "field_owner_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private FieldOwnerEntity fieldOwnerId;
+    private AccountEntity fieldOwnerId;
     @JoinColumn(name = "field_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private FieldTypeEntity fieldTypeId;
@@ -85,11 +88,11 @@ public class FieldEntity implements Serializable {
         this.status = status;
     }
 
-    public FieldOwnerEntity getFieldOwnerId() {
+    public AccountEntity getFieldOwnerId() {
         return fieldOwnerId;
     }
 
-    public void setFieldOwnerId(FieldOwnerEntity fieldOwnerId) {
+    public void setFieldOwnerId(AccountEntity fieldOwnerId) {
         this.fieldOwnerId = fieldOwnerId;
     }
 

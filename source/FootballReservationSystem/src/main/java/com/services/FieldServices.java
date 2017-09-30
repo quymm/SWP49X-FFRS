@@ -1,10 +1,9 @@
 package com.services;
 
 import com.dto.InputFieldDTO;
+import com.entity.AccountEntity;
 import com.entity.FieldEntity;
-import com.entity.FieldOwnerEntity;
 import com.entity.FieldTypeEntity;
-import com.repository.FieldOwnerRepository;
 import com.repository.FieldRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,27 +19,30 @@ public class FieldServices {
     FieldRepository fieldRepository;
 
     @Autowired
-    FieldOwnerServices fieldOwnerServices;
+    AccountServices accountServices;
 
     @Autowired
     FieldTypeServices fieldTypeServices;
 
     public FieldEntity createNewField(InputFieldDTO inputFieldDTO) {
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.getFieldTypeEntityByFieldTypeId(inputFieldDTO.getFieldTypeId());
-        FieldOwnerEntity fieldOwnerEntity = fieldOwnerServices.getFieldOwnerEntityByFieldOwnerId(inputFieldDTO.getFieldOwnerId());
+        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(inputFieldDTO.getFieldTypeId());
+        AccountEntity accountEntity = accountServices.findAccountEntityById(inputFieldDTO.getFieldOwnerId());
         FieldEntity fieldEntity = new FieldEntity();
-        fieldEntity.setFieldOwnerId(fieldOwnerEntity);
-        fieldEntity.setFieldTypeId(fieldTypeEntity);
         fieldEntity.setName(inputFieldDTO.getFieldName());
+        fieldEntity.setFieldOwnerId(accountEntity);
+        fieldEntity.setFieldTypeId(fieldTypeEntity);
         fieldEntity.setStatus(true);
         return fieldRepository.save(fieldEntity);
     }
 
-    public List<FieldEntity> getFieldEntityByFieldOwnerId(int fieldOwnerId){
-        FieldOwnerEntity fieldOwnerEntity = fieldOwnerServices.getFieldOwnerEntityByFieldOwnerId(fieldOwnerId);
-        return fieldRepository.getFieldEntitiesByFieldOwnerId(fieldOwnerEntity);
+    public List<FieldEntity> findFieldEntityByFieldOwnerId(int fieldOwnerId) {
+        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId);
+        return fieldRepository.findByFieldOwnerIdAndStatus(accountEntity, true);
     }
 
-
+    public FieldEntity findFieldEntityByFieldNameAndFieldOwnerId(String fieldName, int fieldOwnerId) {
+        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId);
+        return fieldRepository.findByFieldOwnerIdAndNameAndStatus(accountEntity, fieldName, true);
+    }
 
 }

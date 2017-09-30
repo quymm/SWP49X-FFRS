@@ -6,7 +6,7 @@
 package com.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,6 +20,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -27,6 +29,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "tour_match")
+@XmlRootElement
 public class TourMatchEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,10 +38,12 @@ public class TourMatchEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "kick_off_status")
-    private Boolean kickOffStatus;
+    @Basic(optional = false)
+    @Column(name = "complete_status")
+    private boolean completeStatus;
+    @Basic(optional = false)
     @Column(name = "winner_id")
-    private Integer winnerId;
+    private int winnerId;
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
@@ -47,10 +52,10 @@ public class TourMatchEntity implements Serializable {
     private TimeSlotEntity timeSlotId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserEntity userId;
+    private AccountEntity userId;
     @JoinColumn(name = "opponent_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserEntity opponentId;
+    private AccountEntity opponentId;
 
     public TourMatchEntity() {
     }
@@ -59,8 +64,10 @@ public class TourMatchEntity implements Serializable {
         this.id = id;
     }
 
-    public TourMatchEntity(Integer id, boolean status) {
+    public TourMatchEntity(Integer id, boolean completeStatus, int winnerId, boolean status) {
         this.id = id;
+        this.completeStatus = completeStatus;
+        this.winnerId = winnerId;
         this.status = status;
     }
 
@@ -72,19 +79,19 @@ public class TourMatchEntity implements Serializable {
         this.id = id;
     }
 
-    public Boolean getKickOffStatus() {
-        return kickOffStatus;
+    public boolean getCompleteStatus() {
+        return completeStatus;
     }
 
-    public void setKickOffStatus(Boolean kickOffStatus) {
-        this.kickOffStatus = kickOffStatus;
+    public void setCompleteStatus(boolean completeStatus) {
+        this.completeStatus = completeStatus;
     }
 
-    public Integer getWinnerId() {
+    public int getWinnerId() {
         return winnerId;
     }
 
-    public void setWinnerId(Integer winnerId) {
+    public void setWinnerId(int winnerId) {
         this.winnerId = winnerId;
     }
 
@@ -104,19 +111,19 @@ public class TourMatchEntity implements Serializable {
         this.timeSlotId = timeSlotId;
     }
 
-    public UserEntity getUserId() {
+    public AccountEntity getUserId() {
         return userId;
     }
 
-    public void setUserId(UserEntity userId) {
+    public void setUserId(AccountEntity userId) {
         this.userId = userId;
     }
 
-    public UserEntity getOpponentId() {
+    public AccountEntity getOpponentId() {
         return opponentId;
     }
 
-    public void setOpponentId(UserEntity opponentId) {
+    public void setOpponentId(AccountEntity opponentId) {
         this.opponentId = opponentId;
     }
 

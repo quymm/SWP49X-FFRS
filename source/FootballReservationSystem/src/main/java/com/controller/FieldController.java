@@ -18,21 +18,21 @@ public class FieldController {
     @Autowired
     FieldServices fieldServices;
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/field/createNewField", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/field/createNewField", method = RequestMethod.POST)
     public ResponseEntity createNewField(@RequestBody InputFieldDTO inputFieldDTO){
         FieldEntity fieldEntity = fieldServices.createNewField(inputFieldDTO);
         return new ResponseEntity(fieldEntity, HttpStatus.CREATED);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/field/getFieldByFieldOwnerId", method = RequestMethod.GET)
     public ResponseEntity getFieldByFieldOwnerId(@RequestParam("fieldOwnerId") int fieldOwnerId){
-        List<FieldEntity> fieldEntityList = fieldServices.getFieldEntityByFieldOwnerId(fieldOwnerId);
+        List<FieldEntity> fieldEntityList = fieldServices.findFieldEntityByFieldOwnerId(fieldOwnerId);
         return new ResponseEntity(fieldEntityList, HttpStatus.FOUND);
     }
 
-    // tạo bởi branch quy_demo1
-    // demo001
-    // demo002
+    @RequestMapping(value = "/field/getFieldByFieldOwnerIdAndName", method = RequestMethod.GET)
+    public ResponseEntity getFieldByFieldNameAndFieldOwnerId(@RequestParam("fieldName") String fieldName,
+                                                             @RequestParam("fieldOwnerId") int fieldOwnerId){
+        return new ResponseEntity(fieldServices.findFieldEntityByFieldNameAndFieldOwnerId(fieldName, fieldOwnerId), HttpStatus.FOUND);
+    }
 }

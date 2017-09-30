@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -24,6 +25,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "rating_opponent")
+@XmlRootElement
 public class RatingOpponentEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -32,6 +34,9 @@ public class RatingOpponentEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Basic(optional = false)
+    @Column(name = "win")
+    private boolean win;
     @Basic(optional = false)
     @Column(name = "rating_score")
     private int ratingScore;
@@ -43,10 +48,10 @@ public class RatingOpponentEntity implements Serializable {
     private TourMatchEntity tourMatchId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserEntity userId;
+    private AccountEntity userId;
     @JoinColumn(name = "opponent_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserEntity opponentId;
+    private AccountEntity opponentId;
 
     public RatingOpponentEntity() {
     }
@@ -55,8 +60,9 @@ public class RatingOpponentEntity implements Serializable {
         this.id = id;
     }
 
-    public RatingOpponentEntity(Integer id, int ratingScore, boolean status) {
+    public RatingOpponentEntity(Integer id, boolean win, int ratingScore, boolean status) {
         this.id = id;
+        this.win = win;
         this.ratingScore = ratingScore;
         this.status = status;
     }
@@ -67,6 +73,14 @@ public class RatingOpponentEntity implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public boolean getWin() {
+        return win;
+    }
+
+    public void setWin(boolean win) {
+        this.win = win;
     }
 
     public int getRatingScore() {
@@ -93,19 +107,19 @@ public class RatingOpponentEntity implements Serializable {
         this.tourMatchId = tourMatchId;
     }
 
-    public UserEntity getUserId() {
+    public AccountEntity getUserId() {
         return userId;
     }
 
-    public void setUserId(UserEntity userId) {
+    public void setUserId(AccountEntity userId) {
         this.userId = userId;
     }
 
-    public UserEntity getOpponentId() {
+    public AccountEntity getOpponentId() {
         return opponentId;
     }
 
-    public void setOpponentId(UserEntity opponentId) {
+    public void setOpponentId(AccountEntity opponentId) {
         this.opponentId = opponentId;
     }
 
