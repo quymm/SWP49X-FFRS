@@ -52,8 +52,7 @@ class Field extends Component {
 
     return (
       <div>
-        <Header />
-        <Navigation />
+        
         <div id="page-wrapper">
           <div className="container-fluid">
             <div className="row">
