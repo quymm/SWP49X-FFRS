@@ -9,15 +9,12 @@ class Field extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      listField: [],
-    };
+      isCreateShowed: true
+    }
   }
- 
+
   componentDidMount() {
-    fetchGetAllField(1).then(data => {
-      this.setState({ listField: data });
-      this.props.getAllField(data);
-    });
+    fetchGetAllField(1).then(data => this.props.getAllField(data));
   }
 
   deleteField(fieldId) {
@@ -25,12 +22,14 @@ class Field extends Component {
       fetchGetAllField().then(data => this.props.getAllField(data)),
     );
   }
-
-  updateListField(listField) {
-    this.setState({ listField });
+  
+  shouldComponentUpdate(nextProps, nextState){
+    console.log(nextProps, nextState);
+    return true;
   }
+
   render() {
-    const { listField } = this.state;
+    const { listField } = this.props;
     const renderField = listField.map(listField => {
       return (
         <tr key={listField.id}>
@@ -49,10 +48,9 @@ class Field extends Component {
         </tr>
       );
     });
-
+    const {isCreateShowed} = this.state;
     return (
       <div>
-        
         <div id="page-wrapper">
           <div className="container-fluid">
             <div className="row">
@@ -60,9 +58,8 @@ class Field extends Component {
                 <h2 className="page-header">Field</h2>
               </div>
             </div>
-            <FormCreateField
-              updateListField={this.updateListField.bind(this)}
-            />
+            {isCreateShowed? <FormCreateField /> : null }
+            
             <div className="col-lg-8 col-lg-offset-2">
               <div className="table-responsive">
                 <table className="table table-striped">

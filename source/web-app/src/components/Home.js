@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { fetchMatchByDay } from '../apis/field-owner-apis';
-import { getMatchByDay } from '../redux/field-owner/field-owner-action-creator';
+import { fetchGetMatchByFieldOwnerAndDay } from '../apis/field-owner-apis';
+import { GetMatchByFieldOwnerAndDay } from '../redux/field-owner/field-owner-action-creator';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -20,7 +20,7 @@ class Home extends Component {
     console.log(this.state.dateSelected);
   }
   getMatchByDay() {
-    fetchMatchByDay().then(data => this.props.getMatchByDay(data));
+    // fetchMatchByDay().then(data => this.props.getMatchByDay(data));
   }
 
   render() {
@@ -137,4 +137,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { getMatchByDay })(Home);
+export default connect(mapStateToProps, { GetMatchByFieldOwnerAndDay })(Home);

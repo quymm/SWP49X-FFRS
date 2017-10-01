@@ -8,10 +8,15 @@ import {
   DETELE_FIELD,
 } from './base-URL';
 
-export function fetchMatchByDay(paramDay) {
-  return fetch(BASE_URL + GET_MATCH_BY_DAY + '?&day=' + paramDay).then(res =>
-    res.json(),
-  );
+export function fetchGetMatchByFieldOwnerAndDay(fieldOwnerId, day) {
+  return fetch(
+    BASE_URL +
+      GET_MATCH_BY_DAY +
+      '?&fieldOwnerId=' +
+      fieldOwnerId +
+      '&day=' +
+      day,
+  ).then(res => res.json());
 }
 
 export function fetchCheckTimeSlotStatus(
@@ -49,7 +54,7 @@ export function fetchDeleteField(fieldId) {
 export function fetchAddField(paramFieldName, paramFieldType, fieldOwnerId) {
   return fetch(BASE_URL + ADD_FIELD, {
     method: 'POST',
-    headers:{'content-type': 'application/json'},
+    headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       fieldName: paramFieldName,
       fieldOwnerId: fieldOwnerId,

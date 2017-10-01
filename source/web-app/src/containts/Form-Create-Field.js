@@ -25,14 +25,13 @@ class FormCreateField extends Component {
     console.log(this.state.fieldStyle);
   }
 
-  async handleSubmit(evt) {
-    evt.preventDefault();
+  handleSubmit(evt) {
+    // evt.preventDefault();
     const { fieldName, fieldStyle } = this.state;
-
-    await fetchAddField(fieldName, fieldStyle, 1); 
-    const data = await fetchGetAllField(1);        
-    this.props.updateListField(data);
-    this.props.getAllField(data);
+    fetchAddField(fieldName, fieldStyle, 1);
+    // .then(
+    //   fetchGetAllField(1).then(data => getAllField(data)),
+    // );
   }
 
   render() {
@@ -93,7 +92,7 @@ class FormCreateField extends Component {
 function mapStateToProps(state) {
   return {
     fieldList: state.listField,
-    // fieldOwnerId: state.listField.fieldOwnerId.id 
+    // fieldOwnerId: state.listField.fieldOwnerId.id
   };
 }
 
