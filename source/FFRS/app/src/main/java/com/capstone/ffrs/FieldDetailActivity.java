@@ -18,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RatingBar;
 
+import com.android.volley.toolbox.NetworkImageView;
+
 public class FieldDetailActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -38,6 +40,9 @@ public class FieldDetailActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        NetworkImageView imageView = (NetworkImageView) findViewById(R.id.field_image);
+        imageView.setImageUrl("http://bongda.phanmemvang.com.vn/wp-content/uploads/2015/03/lan2chaoluanganhgnhe-1-e1426212803227.jpg", NetworkController.getInstance(this.getBaseContext()).getImageLoader());
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -57,9 +62,9 @@ public class FieldDetailActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (id == R.id.nav_rewards) {
-            // Handle the camera action
+            Intent intent = new Intent(this, RewardActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_logout) {

@@ -20,7 +20,7 @@
             android:name=".FieldSuggestActivity"
             android:label="@string/title_activity_field_time"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden|adjustNothing"></activity>
+            android:windowSoftInputMode="stateHidden|adjustNothing" />
         <activity
             android:name=".FieldDetailActivity"
             android:label="@string/title_activity_field_detail"
@@ -42,6 +42,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".RewardActivity"
+            android:label="@string/title_activity_reward"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

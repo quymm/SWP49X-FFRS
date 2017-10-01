@@ -23,73 +23,73 @@
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintTop_creator="1">
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="80dp"
-            android:background="@android:color/holo_green_light">
+        <ScrollView
+            android:id="@+id/scroll_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="8dp">
 
-            <ImageView
-                android:id="@+id/icon"
-                android:layout_width="80dp"
-                android:layout_height="fill_parent"
-                android:layout_alignParentBottom="true"
-
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="6dip"
-                android:background="@android:color/holo_green_dark"
-
-                android:src="@android:drawable/ic_menu_agenda" />
-
-            <TextView
-                android:id="@+id/secondLine"
-
-                android:layout_width="fill_parent"
-                android:layout_height="26dip"
-
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@id/icon"
-
-                android:ellipsize="marquee"
-                android:maxLines="1"
-                android:text="333 Phan Văn Trị - Tân Bình - HCM"
-                android:textColor="@android:color/black" />
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-
-                android:layout_above="@id/secondLine"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignWithParentIfMissing="true"
-                android:layout_toRightOf="@id/icon"
-
-                android:gravity="center_vertical"
-                android:text="Sân Chảo Lửa"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-        </RelativeLayout>
-
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-
-            <ScrollView
+            <LinearLayout
+                android:id="@+id/detail_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="7">
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:orientation="vertical">
+
+                <com.android.volley.toolbox.NetworkImageView
+                    android:id="@+id/field_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:scaleType="fitXY" />
 
                 <LinearLayout
-                    android:id="@+id/detail_layout"
-                    android:layout_width="match_parent"
+                    android:id="@+id/field_layout"
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:layout_above="@+id/tabLayout"
-                    android:background="@android:color/white"
+                    android:layout_above="@id/scroll_layout"
+                    android:layout_alignParentTop="true"
                     android:orientation="vertical"
                     android:padding="10dp">
+
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp">
+
+                        <ImageButton
+                            android:id="@+id/btDirections"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_alignParentEnd="true"
+                            android:background="@android:color/holo_green_light"
+                            app:srcCompat="@drawable/ic_location" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_toStartOf="@id/btDirections"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:text="Sân Chảo Lửa"
+                                android:textColor="@android:color/black"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="marquee"
+                                android:text="333 Phan Văn Trị - Tân Bình - HCM"
+                                android:textColor="@android:color/black" />
+                        </LinearLayout>
+                    </RelativeLayout>
 
 
                     <LinearLayout
@@ -254,7 +254,7 @@
                         android:textColor="@android:color/white"
                         android:textSize="18sp" />
                 </LinearLayout>
-            </ScrollView>
-        </RelativeLayout>
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

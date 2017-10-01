@@ -38,8 +38,12 @@
             android:layout_height="50dp"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/editText"
-            android:background="@android:color/holo_blue_light"
+            android:background="#009632"
             android:weightSum="2"
+            app:tabTextColor="@android:color/holo_green_light"
+            app:tabSelectedTextColor="@android:color/white"
+            app:tabIndicatorColor="@android:color/holo_red_dark"
+            app:tabIndicatorHeight="4dp"
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="8dp">
 
@@ -60,7 +64,9 @@
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tab_layout" />
+            android:layout_below="@+id/tab_layout"
+            tools:layout_editor_absoluteY="0dp"
+            tools:layout_editor_absoluteX="8dp" />
 
     </RelativeLayout>
 
