@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.android.volley.toolbox.NetworkImageView;
+
 public class FieldTimeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -26,6 +28,9 @@ public class FieldTimeActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        NetworkImageView imageView = (NetworkImageView) findViewById(R.id.field_image);
+        imageView.setImageUrl("http://bongda.phanmemvang.com.vn/wp-content/uploads/2015/03/lan2chaoluanganhgnhe-1-e1426212803227.jpg", NetworkController.getInstance(this.getBaseContext()).getImageLoader());
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -48,7 +53,8 @@ public class FieldTimeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_rewards) {
-            // Handle the camera action
+            Intent intent = new Intent(this, RewardActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_logout) {

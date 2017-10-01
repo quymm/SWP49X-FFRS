@@ -111,7 +111,8 @@ public class FieldSuggestActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_rewards) {
-            // Handle the camera action
+            Intent intent = new Intent(this, RewardActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_logout) {

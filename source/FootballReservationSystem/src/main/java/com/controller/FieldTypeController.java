@@ -16,12 +16,14 @@ public class FieldTypeController {
     @Autowired
     FieldTypeServices fieldTypeServices;
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/fieldType/createNewFieldType", method = RequestMethod.POST)
     public ResponseEntity createNewFieldType(@RequestBody InputFieldTypeDTO inputFieldTypeDTO){
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.createNewFieldTypeEntity(inputFieldTypeDTO);
         return new ResponseEntity(fieldTypeEntity, HttpStatus.CREATED);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/fieldType/getByFieldTypeId", method = RequestMethod.GET)
     public ResponseEntity getFieldTypeById(@RequestParam("fieldTypeId") int fieldTypeId){
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(fieldTypeId);

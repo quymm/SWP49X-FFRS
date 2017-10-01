@@ -4,15 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.capstone.ffrs.FieldDetailActivity"
     tools:showIn="@layout/app_bar_field_detail">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -22,95 +20,120 @@
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintTop_creator="1">
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="80dp"
-            android:background="@android:color/holo_green_light"
-            android:onClick="">
-
-            <ImageView
-                android:id="@+id/icon"
-                android:layout_width="80dp"
-                android:layout_height="fill_parent"
-                android:layout_alignParentBottom="true"
-
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="6dip"
-                android:background="@android:color/holo_green_dark"
-
-                android:src="@android:drawable/ic_menu_agenda" />
-
-            <TextView
-                android:id="@+id/secondLine"
-
-                android:layout_width="fill_parent"
-                android:layout_height="26dip"
-
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@id/icon"
-
-                android:ellipsize="marquee"
-                android:maxLines="1"
-                android:text="333 Phan Văn Trị - Tân Bình - HCM"
-                android:textColor="@android:color/black" />
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-
-                android:layout_above="@id/secondLine"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignWithParentIfMissing="true"
-                android:layout_toRightOf="@id/icon"
-
-                android:gravity="center_vertical"
-                android:text="Sân Chảo Lửa"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-        </RelativeLayout>
-
-
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/content_layout"
-            android:layout_width="fill_parent"
+        <LinearLayout
+            android:id="@+id/command_button_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white">
+            android:layout_alignParentBottom="true"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            android:weightSum="2">
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <Button
+                android:id="@+id/btPayment"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="#00c5cc"
+                android:text="Pay"
+                android:textColor="@android:color/white"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/btCancel"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="#af0000"
+                android:onClick="onClickGoBackToTime"
+                android:text="Cancel"
+                android:textColor="@android:color/white"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <ScrollView
+            android:id="@+id/content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/command_button_layout"
+            android:layout_alignParentTop="true">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical">
+
+                <com.android.volley.toolbox.NetworkImageView
+                    android:id="@+id/field_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:scaleType="fitXY" />
 
                 <LinearLayout
                     android:id="@+id/detail_layout"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:layout_above="@+id/tabLayout"
-
                     android:orientation="vertical"
-                    android:padding="15dp">
+                    android:padding="10dp">
 
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp">
+
+                        <ImageButton
+                            android:id="@+id/btDirections"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_alignParentEnd="true"
+                            android:background="@android:color/holo_green_light"
+                            app:srcCompat="@drawable/ic_location" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:layout_toStartOf="@id/btDirections">
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+
+                                android:gravity="center_vertical"
+                                android:text="Sân Chảo Lửa"
+                                android:textColor="@android:color/black"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="marquee"
+                                android:text="333 Phan Văn Trị - Tân Bình - HCM"
+                                android:textColor="@android:color/black" />
+                        </LinearLayout>
+
+                    </RelativeLayout>
 
                     <TextView
                         android:id="@+id/textView2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5sp"
-                        android:text="From: 10:00"
+                        android:text="From: 10:00 am"
                         android:textAlignment="textStart"
+                        android:textColor="@android:color/black"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/textView2"
+                        android:id="@+id/textView1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5sp"
-                        android:text="To: 12:00"
+                        android:text="To: 12:00 pm"
                         android:textAlignment="textStart"
+                        android:textColor="@android:color/black"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
@@ -121,6 +144,7 @@
                         android:layout_marginBottom="5sp"
                         android:text="Duration: 2 hours"
                         android:textAlignment="textStart"
+                        android:textColor="@android:color/black"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
@@ -128,8 +152,9 @@
                         android:id="@+id/textView4"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Price: 120.000 VNĐ"
+                        android:text="Price: 240.000 VNĐ"
                         android:textAlignment="textStart"
+                        android:textColor="@android:color/black"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
@@ -147,6 +172,7 @@
                             android:layout_height="wrap_content"
                             android:text="Rating:"
                             android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
                             android:textSize="22sp"
                             android:textStyle="bold" />
 
@@ -160,50 +186,13 @@
                             android:rating="5" />
                     </LinearLayout>
 
-                    <Button
-                        android:id="@+id/btDirections"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/holo_green_dark"
-                        android:text="Show direction"
-                        android:textColor="@android:color/white"
-                        android:textSize="18sp" />
-
                 </LinearLayout>
-            </ScrollView>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <Button
-                    android:id="@+id/btPayment"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="#00c5cc"
-                    android:text="Pay"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp" />
-
-                <Button
-                    android:id="@+id/btCancel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="#af0000"
-                    android:text="Cancel"
-                    android:onClick="onClickGoBackToTime"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp" />
             </LinearLayout>
 
-        </RelativeLayout>
+        </ScrollView>
 
-    </LinearLayout>
+
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
