@@ -29,13 +29,13 @@ public class FieldController {
     @RequestMapping(value = "/field/getFieldByFieldOwnerId", method = RequestMethod.GET)
     public ResponseEntity getFieldByFieldOwnerId(@RequestParam("fieldOwnerId") int fieldOwnerId){
         List<FieldEntity> fieldEntityList = fieldServices.findFieldEntityByFieldOwnerId(fieldOwnerId);
-        return new ResponseEntity(fieldEntityList, HttpStatus.FOUND);
+        return new ResponseEntity(fieldEntityList, HttpStatus.OK);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/field/getFieldByFieldOwnerIdAndName", method = RequestMethod.GET)
     public ResponseEntity getFieldByFieldNameAndFieldOwnerId(@RequestParam("fieldName") String fieldName,
                                                              @RequestParam("fieldOwnerId") int fieldOwnerId){
-        return new ResponseEntity(fieldServices.findFieldEntityByFieldNameAndFieldOwnerId(fieldName, fieldOwnerId), HttpStatus.FOUND);
+        return new ResponseEntity(fieldServices.findFieldEntityByFieldNameAndFieldOwnerId(fieldName, fieldOwnerId), HttpStatus.OK);
     }
 }

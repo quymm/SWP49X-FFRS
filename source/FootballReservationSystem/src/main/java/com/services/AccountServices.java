@@ -38,6 +38,10 @@ public class AccountServices {
         return accountRepository.save(accountEntity);
     }
 
+    public List<AccountEntity> findAccountByRole(String role){
+        return accountRepository.findAllByRoleAndStatus(role, true);
+    }
+
     public AccountEntity findAccountEntityById(int id){
         return accountRepository.findByIdAndStatus(id, true);
     }
@@ -67,11 +71,7 @@ public class AccountServices {
         return profileEntity;
     }
 
-    public AccountEntity findAccountEntityByUsernameAndPasswordAndRole(String username, String password, String role){
-        return accountRepository.findByUsernameAndPasswordAndRoleAndStatus(username, password, role, true);
-    }
 
-    public List<AccountEntity> findAccountEntityByRole(String role){
-        return accountRepository.findByRoleAndStatus(role, true);
-    }
+
+
 }

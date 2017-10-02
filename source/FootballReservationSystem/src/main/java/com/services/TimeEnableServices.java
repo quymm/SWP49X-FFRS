@@ -35,6 +35,11 @@ public class TimeEnableServices {
         return timeEnableRepository.findByFieldOwnerIdAndAndFieldTypeIdAndStatus(fieldOwnerEntity, fieldTypeEntity, true);
     }
 
+    public List<TimeEnableEntity> findTimeEnableByFieldOwnerId(int fieldOwnerId){
+        AccountEntity fieldOwnerEntity = accountServices.findAccountEntityById(fieldOwnerId);
+        return timeEnableRepository.findByFieldOwnerIdAndStatus(fieldOwnerEntity, true);
+    }
+
     public TimeEnableEntity convertFromInputTimeEnableDTOToEntity(InputTimeEnableDTO inputTimeEnableDTO){
         TimeEnableEntity timeEnableEntity = new TimeEnableEntity();
         timeEnableEntity.setDateInWeek(inputTimeEnableDTO.getDayInWeek());

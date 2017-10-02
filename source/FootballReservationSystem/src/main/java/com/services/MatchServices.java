@@ -3,7 +3,6 @@ package com.services;
 import com.dto.InputMatchingRequestDTO;
 import com.dto.OutputMatchDTO;
 import com.entity.*;
-import com.repository.FieldRepository;
 import com.repository.FriendlyMatchRepository;
 import com.repository.MatchingRequestRepository;
 import com.repository.TourMatchRepository;
@@ -41,7 +40,7 @@ public class MatchServices {
     FieldTypeServices fieldTypeServices;
 
     public List<OutputMatchDTO> findMatchByFieldIdAndDate(Date targetDate, int fieldId) {
-        List<TimeSlotEntity> timeSlotEntityList = timeSlotServices.findReserveTimeSlotByFieldIdAndFieldName(targetDate, fieldId);
+        List<TimeSlotEntity> timeSlotEntityList = timeSlotServices.findTimeSlotByDateFieldIdAndReservateStatus(targetDate, fieldId, true);
         List<OutputMatchDTO> outputMatchDTOList = new ArrayList<>();
         for (TimeSlotEntity timeSlot : timeSlotEntityList) {
             FriendlyMatchEntity friendlyMatchEntity = friendlyMatchRepository.findByTimeSlotIdAndStatus(timeSlot, true);
