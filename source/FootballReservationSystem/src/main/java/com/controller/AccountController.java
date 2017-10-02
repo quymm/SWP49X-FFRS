@@ -35,7 +35,13 @@ public class AccountController {
     @RequestMapping(value = "/account/getAccountById", method = RequestMethod.GET)
     public ResponseEntity getFieldOwnerById(@RequestParam("accountId") int accountId){
         AccountEntity accountEntity = accountServices.findAccountEntityById(accountId);
-        return new ResponseEntity(accountEntity, HttpStatus.FOUND);
+        return new ResponseEntity(accountEntity, HttpStatus.OK);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/account/getAccountByRole", method = RequestMethod.GET)
+    public ResponseEntity getAllFieldOwner(@RequestParam("role") String role){
+        return new ResponseEntity(accountServices.findAccountByRole(role), HttpStatus.OK);
     }
 
 

@@ -9,6 +9,8 @@ import com.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by MinhQuy on 9/29/2017.
  */
@@ -34,6 +36,10 @@ public class AccountServices {
         AccountEntity accountEntity = new AccountEntity(inputUserDTO.getUsername(), inputUserDTO.getPassword(),
                 "user", true, savedProfileEntity);
         return accountRepository.save(accountEntity);
+    }
+
+    public List<AccountEntity> findAccountByRole(String role){
+        return accountRepository.findAllByRoleAndStatus(role, true);
     }
 
     public AccountEntity findAccountEntityById(int id){
