@@ -38,5 +38,11 @@ public class AccountController {
         return new ResponseEntity(accountEntity, HttpStatus.FOUND);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/account/getAccountByRole", method = RequestMethod.GET)
+    public ResponseEntity getAllFieldOwner(@RequestParam("role") boolean role){
+        return new ResponseEntity(accountServices.findAccountByRole(role), HttpStatus.FOUND);
+    }
+
 
 }
