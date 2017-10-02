@@ -47,28 +47,29 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onClickLogin(View view) {
-        RequestQueue queue = Volley.newRequestQueue(this);
-        Log.d("Response", "Started");
-        String url = "http://10.0.2.2:8080/account/getUserByUsernameAndPassword?username=string&password=string";
-        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("Response", response.toString());
-                        changeActivity();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("Error.Response", error.toString());
-                    }
-                }) {
-        };
-        queue.add(getRequest);
+//        RequestQueue queue = Volley.newRequestQueue(this);
+//        Log.d("Response", "Started");
+//        String url = "http://10.0.2.2:8080/account/getUserByUsernameAndPassword?username=string&password=string";
+//        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        Log.d("Response", response.toString());
+//                        changeActivity();
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Log.d("Error.Response", error.toString());
+//                    }
+//                }) {
+//        };
+//        queue.add(getRequest);
+        changeActivity();
     }
 
-    public void changeActivity(){
+    public void changeActivity() {
         Intent intent = new Intent(this, FieldSuggestActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

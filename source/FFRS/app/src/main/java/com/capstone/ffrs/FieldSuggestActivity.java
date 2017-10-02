@@ -37,9 +37,9 @@ public class FieldSuggestActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     RequestQueue queue;
 
-    //    String url = "https://api.myjson.com/bins/w86a";
-//    String url = "https://api.myjson.com/bins/1fscel";
-    String url = "http://10.0.2.2:8080/account/getFieldOwners";
+    //  String url = "https://api.myjson.com/bins/1fscel";
+    //  String url = "http://10.0.2.2:8080/account/getFieldOwners";
+    String url = "http://10.0.2.2:8080/account/getAccountByRole?role=owner";
     RecyclerView recyclerView;
 
     List<Field> feedsList = new ArrayList<Field>();
