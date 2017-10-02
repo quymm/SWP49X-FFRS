@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface AccountRepository extends JpaRepository<AccountEntity, Integer> {
     AccountEntity findByIdAndStatus(int id, boolean status);
-    List<AccountEntity> findAllByRoleAndStatus(boolean role, boolean status);
+    List<AccountEntity> findAllByRoleAndStatus(String role, boolean status);
 }
