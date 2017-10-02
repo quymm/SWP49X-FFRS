@@ -21,14 +21,14 @@ public class MatchController {
     @RequestMapping(value = "match/getMatchByFieldIdAndDate", method = RequestMethod.GET)
     public ResponseEntity getMatchByFieldIdAndDate(@RequestParam("fieldId") int fieldId,
                                                    @RequestParam("targetDate")Date targetDate){
-        return new ResponseEntity(matchServices.findMatchByFieldIdAndDate(targetDate, fieldId), HttpStatus.OK);
+        return new ResponseEntity(matchServices.findMatchByFieldIdAndDate(targetDate, fieldId), HttpStatus.FOUND);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "match/getMatchByFieldOwnerIdAndDate", method = RequestMethod.GET)
     public ResponseEntity getMatchByFieldOwnerIdAndDate(@RequestParam("fieldOwnerId") int fieldOwnerId,
                                                         @RequestParam("targetDate") Date targetDate){
-        return new ResponseEntity(matchServices.findMatchByFieldOwnerIdAndDate(targetDate, fieldOwnerId), HttpStatus.OK);
+        return new ResponseEntity(matchServices.findMatchByFieldOwnerIdAndDate(targetDate, fieldOwnerId), HttpStatus.FOUND);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
