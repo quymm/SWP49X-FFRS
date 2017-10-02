@@ -6,10 +6,9 @@ class ProfilePlayer extends Component {
     const divStyle = {
       width: 60,
     };
+    
     return (
       <div>
-        <Header />
-        <Navigation />
         <div id="page-wrapper">
           <div className="container-fluid">
             <div className="row">

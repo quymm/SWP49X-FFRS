@@ -1,6 +1,6 @@
 import { createStore } from 'redux';
-import fieldReducer from './reducers/field-reducer';
+import reducer from './reducers/reducers';
 
-const fieldOwnerStore = createStore(fieldReducer);
+const fieldOwnerStore = createStore(reducer);
 
 export default fieldOwnerStore;
