@@ -38,7 +38,7 @@ public class AccountServices {
         return accountRepository.save(accountEntity);
     }
 
-    public List<AccountEntity> findAccountByRole(boolean role){
+    public List<AccountEntity> findAccountByRole(String role){
         return accountRepository.findAllByRoleAndStatus(role, true);
     }
 

@@ -1,5 +1,6 @@
 package com.services;
 
+import com.dto.InputFriendlyMatch;
 import com.entity.*;
 import com.repository.AccountRepository;
 import com.repository.FieldRepository;
@@ -29,6 +30,9 @@ public class TimeSlotServices {
 
     @Autowired
     TimeEnableRepository timeEnableRepository;
+
+    @Autowired
+    FieldTypeServices fieldTypeServices;
 
     public List<TimeSlotEntity> findTimeSlotByDateFieldIdAndReservateStatus(Date targetDate, int fieldId, boolean reserveStatus) {
         FieldEntity fieldEntity = fieldRepository.findByIdAndStatus(fieldId, true);
@@ -63,6 +67,10 @@ public class TimeSlotServices {
         return savedTimeSlotEntity;
     }
 
-
+//    public TimeSlotEntity reserveFriendlyMatch(InputFriendlyMatch inputFriendlyMatch){
+//        AccountEntity fieldOwnerEntity = accountRepository.findByIdAndStatus(inputFriendlyMatch.getFieldOwnerId(), true);
+//        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(inputFriendlyMatch.getFieldTypeId());
+//        List<FieldEntity> fieldEntityList = fieldRepository.findByFieldOwnerIdAndFieldTypeIdAndStatus(fieldOwnerEntity, fieldTypeEntity, true);
+//    }
 
 }
