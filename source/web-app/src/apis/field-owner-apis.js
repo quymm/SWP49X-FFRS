@@ -14,7 +14,7 @@ export function fetchGetMatchByFieldOwnerAndDay(fieldOwnerId, day) {
       GET_MATCH_BY_DAY +
       '?&fieldOwnerId=' +
       fieldOwnerId +
-      '&day=' +
+      '&targetDate=' +
       day,
   ).then(res => res.json());
 }

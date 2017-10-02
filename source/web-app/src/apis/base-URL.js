@@ -1,7 +1,7 @@
 export const BASE_URL = "http://localhost:8080";
 export const LOGIN = "/fieldowner/login";
 export const REGISTER = "/fieldowner/register";
-export const GET_MATCH_BY_DAY = "/fieldowner/getMatchByDay";
+export const GET_MATCH_BY_DAY = "/match/getMatchByFieldOwnerIdAndDate";
 export const ADD_FIELD = "/field/createNewField";
 export const REMOVE_FIELD = "/filedowner/removeField";
 export const CHECK_TIME_SLOT = "/fieldowner/checkTimeStatus";

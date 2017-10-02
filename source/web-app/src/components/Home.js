@@ -13,24 +13,33 @@ class Home extends Component {
       dateSelected: moment(),
     };
   }
+  componentDidMount() {
+    const { dateSelected } = this.setState;
+    // const date = dateSelected.format('LL');
+    // console.log(date);
+    fetchGetMatchByFieldOwnerAndDay(1, "Sat Sep 30 2017").then(data => {
+      
+      this.props.GetMatchByFieldOwnerAndDay(data)},
+    );
+    
+  }
   async handleDateChange(date) {
     await this.setState({
       dateSelected: date,
     });
-    console.log(this.state.dateSelected);
-  }
-  getMatchByDay() {
-    // fetchMatchByDay().then(data => this.props.getMatchByDay(data));
+    
   }
 
   render() {
-    const { matches } = this.props;
-    const renderMatch = (
+
+    const { listMatch } = this.props;
+    console.log(listMatch);
+    const renderMatch = listMatch.map( listMatch => ( 
       <div className="col-lg-4">
         <div className="panel panel-green">
           <div className="panel-heading">
             <div className="row">
-              <div className="col-lg-6">FIELD 1</div>
+              <div className="col-lg-6">FIELD {listMatch.timeSlotId.fieldId.name}</div>
               <div className="col-lg-6 text-right">
                 <i>20/09/2017</i>
               </div>
@@ -79,7 +88,7 @@ class Home extends Component {
           </a>
         </div>
       </div>
-    );
+    ));
 
     return (
       <div id="page-wrapper">
@@ -97,6 +106,7 @@ class Home extends Component {
                       onChange={this.handleDateChange.bind(this)}
                       className="form-control"
                       withPortal
+                      
                     />
                   </div>
                   <button className="btn btn-default" type="button">
@@ -124,7 +134,7 @@ class Home extends Component {
             </div>
           </div>
           <div className="row">
-            {matches ? 'There is no match to day' : renderMatch}
+            {listMatch ? renderMatch : 'There is no match to day'}
           </div>
         </div>
       </div>
@@ -133,7 +143,7 @@ class Home extends Component {
 }
 function mapStateToProps(state) {
   return {
-    // id: state.id,
+    listMatch : state.match.listMatch,
   };
 }
 

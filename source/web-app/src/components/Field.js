@@ -24,12 +24,13 @@ class Field extends Component {
   }
   
   shouldComponentUpdate(nextProps, nextState){
-    console.log(nextProps, nextState);
+    // console.log(nextProps, nextState);
     return true;
   }
 
   render() {
     const { listField } = this.props;
+    // console.log(listField);
     const renderField = listField.map(listField => {
       return (
         <tr key={listField.id}>
@@ -84,7 +85,7 @@ class Field extends Component {
 }
 function mapStateToProps(state) {
   return {
-    listField: state.listField,
+    listField: state.field.listField,
   };
 }
 
