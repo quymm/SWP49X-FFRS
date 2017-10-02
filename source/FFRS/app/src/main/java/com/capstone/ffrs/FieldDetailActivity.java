@@ -1,12 +1,7 @@
 package com.capstone.ffrs;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,11 +9,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.RatingBar;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.capstone.ffrs.controller.NetworkController;
 
 public class FieldDetailActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -30,9 +24,9 @@ public class FieldDetailActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
-        LayerDrawable stars = (LayerDrawable) ratingBar.getProgressDrawable();
-        stars.getDrawable(2).setColorFilter(Color.rgb(247, 156, 0), PorterDuff.Mode.SRC_ATOP);
+//        RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+//        LayerDrawable stars = (LayerDrawable) ratingBar.getProgressDrawable();
+//        stars.getDrawable(2).setColorFilter(Color.rgb(247, 156, 0), PorterDuff.Mode.SRC_ATOP);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -40,8 +34,9 @@ public class FieldDetailActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        String imageUrl = "http://bongda.phanmemvang.com.vn/wp-content/uploads/2015/03/lan2chaoluanganhgnhe-1-e1426212803227.jpg";
         NetworkImageView imageView = (NetworkImageView) findViewById(R.id.field_image);
-        imageView.setImageUrl("http://bongda.phanmemvang.com.vn/wp-content/uploads/2015/03/lan2chaoluanganhgnhe-1-e1426212803227.jpg", NetworkController.getInstance(this.getBaseContext()).getImageLoader());
+        imageView.setImageUrl(imageUrl, NetworkController.getInstance(this.getBaseContext()).getImageLoader());
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);

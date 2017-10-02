@@ -4,16 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#d3d3d3"
+    android:background="#dbdbdb"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.capstone.ffrs.RewardActivity"
     tools:showIn="@layout/activity_reward">
 
-    <GridLayout
-        android:id="@+id/grid_layout"
+    <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:columnCount="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -21,7 +19,124 @@
         tools:layout_constraintBottom_creator="1"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1"
-        android:layout_margin="7dp">
-    </GridLayout>
+        tools:layout_constraintTop_creator="1">
+
+        <GridLayout
+            android:id="@+id/grid_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="7dp"
+            android:columnCount="2">
+
+            <LinearLayout
+                android:layout_width="163dp"
+                android:layout_height="225dp"
+                android:layout_margin="5dp"
+                android:background="@android:color/white"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_credit_card" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:text="Vouncher discount 50.000"
+                    android:textColor="@android:color/black"
+                    android:textSize="17dp"></TextView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:gravity="center"
+                    android:text="5000 points"
+                    android:textSize="14dp"></TextView>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="#009632"
+                    android:text="Exchange"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="163dp"
+                android:layout_height="225dp"
+                android:layout_margin="5dp"
+                android:background="@android:color/white"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_credit_card" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:text="Vouncher discount 100.000"
+                    android:textColor="@android:color/black"
+                    android:textSize="17dp"></TextView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:gravity="center"
+                    android:text="10000 points"
+                    android:textSize="14dp"></TextView>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="#009632"
+                    android:text="Exchange"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="163dp"
+                android:layout_height="225dp"
+                android:layout_margin="5dp"
+                android:background="@android:color/white"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_credit_card" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:text="Vouncher discount 200.000"
+                    android:textColor="@android:color/black"
+                    android:textSize="17dp"></TextView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:gravity="center"
+                    android:text="20000 points"
+                    android:textSize="14dp"></TextView>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="#009632"
+                    android:text="Exchange"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+        </GridLayout>
+    </ScrollView>
 </android.support.constraint.ConstraintLayout>

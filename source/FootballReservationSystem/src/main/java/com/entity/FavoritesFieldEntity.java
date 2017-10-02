@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -24,6 +25,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "favorites_field")
+@XmlRootElement
 public class FavoritesFieldEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,10 +39,10 @@ public class FavoritesFieldEntity implements Serializable {
     private boolean status;
     @JoinColumn(name = "field_owner_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private FieldOwnerEntity fieldOwnerId;
+    private AccountEntity fieldOwnerId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserEntity userId;
+    private AccountEntity userId;
 
     public FavoritesFieldEntity() {
     }
@@ -70,19 +72,19 @@ public class FavoritesFieldEntity implements Serializable {
         this.status = status;
     }
 
-    public FieldOwnerEntity getFieldOwnerId() {
+    public AccountEntity getFieldOwnerId() {
         return fieldOwnerId;
     }
 
-    public void setFieldOwnerId(FieldOwnerEntity fieldOwnerId) {
+    public void setFieldOwnerId(AccountEntity fieldOwnerId) {
         this.fieldOwnerId = fieldOwnerId;
     }
 
-    public UserEntity getUserId() {
+    public AccountEntity getUserId() {
         return userId;
     }
 
-    public void setUserId(UserEntity userId) {
+    public void setUserId(AccountEntity userId) {
         this.userId = userId;
     }
 

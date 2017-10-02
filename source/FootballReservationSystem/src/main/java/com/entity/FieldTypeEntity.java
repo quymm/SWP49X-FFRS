@@ -6,7 +6,7 @@
 package com.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +18,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -25,6 +27,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "field_type")
+@XmlRootElement
 public class FieldTypeEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -40,9 +43,6 @@ public class FieldTypeEntity implements Serializable {
     @Column(name = "number_player")
     private int numberPlayer;
     @Basic(optional = false)
-    @Column(name = "description")
-    private String description;
-    @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
 
@@ -53,11 +53,10 @@ public class FieldTypeEntity implements Serializable {
         this.id = id;
     }
 
-    public FieldTypeEntity(Integer id, String name, int numberPlayer, String description, boolean status) {
+    public FieldTypeEntity(Integer id, String name, int numberPlayer, boolean status) {
         this.id = id;
         this.name = name;
         this.numberPlayer = numberPlayer;
-        this.description = description;
         this.status = status;
     }
 
@@ -83,14 +82,6 @@ public class FieldTypeEntity implements Serializable {
 
     public void setNumberPlayer(int numberPlayer) {
         this.numberPlayer = numberPlayer;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public boolean getStatus() {
@@ -123,7 +114,7 @@ public class FieldTypeEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "com.entity.FieldTypeRepository[ id=" + id + " ]";
+        return "com.entity.FieldTypeEntity[ id=" + id + " ]";
     }
     
 }

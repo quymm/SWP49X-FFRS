@@ -6,10 +6,8 @@
 package com.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,10 +17,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -30,6 +28,7 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "matching_request")
+@XmlRootElement
 public class MatchingRequestEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -59,7 +58,7 @@ public class MatchingRequestEntity implements Serializable {
     private FieldTypeEntity fieldTypeId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserEntity userId;
+    private AccountEntity userId;
 
     public MatchingRequestEntity() {
     }
@@ -133,11 +132,11 @@ public class MatchingRequestEntity implements Serializable {
         this.fieldTypeId = fieldTypeId;
     }
 
-    public UserEntity getUserId() {
+    public AccountEntity getUserId() {
         return userId;
     }
 
-    public void setUserId(UserEntity userId) {
+    public void setUserId(AccountEntity userId) {
         this.userId = userId;
     }
 

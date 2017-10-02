@@ -6,7 +6,7 @@
 package com.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +18,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -25,6 +27,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "voucher")
+@XmlRootElement
 public class VoucherEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -34,8 +37,8 @@ public class VoucherEntity implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "percent_sale_off")
-    private float percentSaleOff;
+    @Column(name = "voucher_value")
+    private float voucherValue;
     @Basic(optional = false)
     @Column(name = "bonus_point_target")
     private int bonusPointTarget;
@@ -50,9 +53,9 @@ public class VoucherEntity implements Serializable {
         this.id = id;
     }
 
-    public VoucherEntity(Integer id, float percentSaleOff, int bonusPointTarget, boolean status) {
+    public VoucherEntity(Integer id, float voucherValue, int bonusPointTarget, boolean status) {
         this.id = id;
-        this.percentSaleOff = percentSaleOff;
+        this.voucherValue = voucherValue;
         this.bonusPointTarget = bonusPointTarget;
         this.status = status;
     }
@@ -65,12 +68,12 @@ public class VoucherEntity implements Serializable {
         this.id = id;
     }
 
-    public float getPercentSaleOff() {
-        return percentSaleOff;
+    public float getVoucherValue() {
+        return voucherValue;
     }
 
-    public void setPercentSaleOff(float percentSaleOff) {
-        this.percentSaleOff = percentSaleOff;
+    public void setVoucherValue(float voucherValue) {
+        this.voucherValue = voucherValue;
     }
 
     public int getBonusPointTarget() {

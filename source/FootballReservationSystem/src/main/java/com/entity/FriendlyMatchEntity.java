@@ -6,7 +6,7 @@
 package com.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,6 +19,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -26,6 +28,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "friendly_match")
+@XmlRootElement
 public class FriendlyMatchEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -42,7 +45,7 @@ public class FriendlyMatchEntity implements Serializable {
     private TimeSlotEntity timeSlotId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserEntity userId;
+    private AccountEntity userId;
 
     public FriendlyMatchEntity() {
     }
@@ -80,11 +83,11 @@ public class FriendlyMatchEntity implements Serializable {
         this.timeSlotId = timeSlotId;
     }
 
-    public UserEntity getUserId() {
+    public AccountEntity getUserId() {
         return userId;
     }
 
-    public void setUserId(UserEntity userId) {
+    public void setUserId(AccountEntity userId) {
         this.userId = userId;
     }
 
@@ -110,7 +113,7 @@ public class FriendlyMatchEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "com.entity.FriendlyMatchRepository[ id=" + id + " ]";
+        return "com.entity.FriendlyMatchEntity[ id=" + id + " ]";
     }
     
 }

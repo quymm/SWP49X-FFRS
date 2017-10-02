@@ -6,8 +6,8 @@
 package com.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,6 +23,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -30,6 +32,7 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "time_slot")
+@XmlRootElement
 public class TimeSlotEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -54,6 +57,9 @@ public class TimeSlotEntity implements Serializable {
     @Column(name = "price")
     private float price;
     @Basic(optional = false)
+    @Column(name = "reserve_status")
+    private boolean reserveStatus;
+    @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
     @JoinColumn(name = "field_id", referencedColumnName = "id")
@@ -67,12 +73,13 @@ public class TimeSlotEntity implements Serializable {
         this.id = id;
     }
 
-    public TimeSlotEntity(Integer id, Date date, Date startTime, Date endTime, float price, boolean status) {
+    public TimeSlotEntity(Integer id, Date date, Date startTime, Date endTime, float price, boolean reserveStatus, boolean status) {
         this.id = id;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.price = price;
+        this.reserveStatus = reserveStatus;
         this.status = status;
     }
 
@@ -114,6 +121,14 @@ public class TimeSlotEntity implements Serializable {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public boolean getReserveStatus() {
+        return reserveStatus;
+    }
+
+    public void setReserveStatus(boolean reserveStatus) {
+        this.reserveStatus = reserveStatus;
     }
 
     public boolean getStatus() {

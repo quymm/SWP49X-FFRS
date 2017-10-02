@@ -14,15 +14,18 @@ public class InputUserDTO {
 
     private String creditCard;
 
+    private String avatarUrl;
+
     public InputUserDTO() {
     }
 
-    public InputUserDTO(String username, String password, String teamName, String phone, String creditCard) {
+    public InputUserDTO(String username, String password, String teamName, String phone, String creditCard, String avatarUrl) {
         this.username = username;
         this.password = password;
         this.teamName = teamName;
         this.phone = phone;
         this.creditCard = creditCard;
+        this.avatarUrl = avatarUrl;
     }
 
     public String getUsername() {
@@ -63,5 +66,13 @@ public class InputUserDTO {
 
     public void setCreditCard(String creditCard) {
         this.creditCard = creditCard;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

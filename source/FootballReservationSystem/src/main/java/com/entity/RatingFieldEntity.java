@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -24,6 +25,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "rating_field")
+@XmlRootElement
 public class RatingFieldEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,15 +37,17 @@ public class RatingFieldEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "rating_score")
     private int ratingScore;
-    @Basic(optional = false)
     @Column(name = "comment")
     private String comment;
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
+    @JoinColumn(name = "field_owner_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private AccountEntity fieldOwnerId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserEntity userId;
+    private AccountEntity userId;
 
     public RatingFieldEntity() {
     }
@@ -52,10 +56,9 @@ public class RatingFieldEntity implements Serializable {
         this.id = id;
     }
 
-    public RatingFieldEntity(Integer id, int ratingScore, String comment, boolean status) {
+    public RatingFieldEntity(Integer id, int ratingScore, boolean status) {
         this.id = id;
         this.ratingScore = ratingScore;
-        this.comment = comment;
         this.status = status;
     }
 
@@ -91,11 +94,19 @@ public class RatingFieldEntity implements Serializable {
         this.status = status;
     }
 
-    public UserEntity getUserId() {
+    public AccountEntity getFieldOwnerId() {
+        return fieldOwnerId;
+    }
+
+    public void setFieldOwnerId(AccountEntity fieldOwnerId) {
+        this.fieldOwnerId = fieldOwnerId;
+    }
+
+    public AccountEntity getUserId() {
         return userId;
     }
 
-    public void setUserId(UserEntity userId) {
+    public void setUserId(AccountEntity userId) {
         this.userId = userId;
     }
 

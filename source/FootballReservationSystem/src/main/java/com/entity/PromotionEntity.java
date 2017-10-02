@@ -20,6 +20,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -27,8 +28,7 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "promotion")
-@NamedQueries({
-    @NamedQuery(name = "PromotionEntity.findAll", query = "SELECT p FROM PromotionEntity p")})
+@XmlRootElement
 public class PromotionEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,7 +63,7 @@ public class PromotionEntity implements Serializable {
     private boolean status;
     @JoinColumn(name = "field_owner_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private FieldOwnerEntity fieldOwnerId;
+    private AccountEntity fieldOwnerId;
     @JoinColumn(name = "field_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private FieldTypeEntity fieldTypeId;
@@ -149,11 +149,11 @@ public class PromotionEntity implements Serializable {
         this.status = status;
     }
 
-    public FieldOwnerEntity getFieldOwnerId() {
+    public AccountEntity getFieldOwnerId() {
         return fieldOwnerId;
     }
 
-    public void setFieldOwnerId(FieldOwnerEntity fieldOwnerId) {
+    public void setFieldOwnerId(AccountEntity fieldOwnerId) {
         this.fieldOwnerId = fieldOwnerId;
     }
 
