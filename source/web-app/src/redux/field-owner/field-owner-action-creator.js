@@ -1,4 +1,4 @@
-export function getMatchByDay(data){
+export function GetMatchByFieldOwnerAndDay(data){
     return {
         type: 'GET_MATCH_BY_DAY',
         payloads: data

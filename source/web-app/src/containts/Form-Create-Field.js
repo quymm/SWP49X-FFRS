@@ -14,7 +14,7 @@ class FormCreateField extends Component {
       fieldStyle: 1,
     };
   }
-  //tam thoi t nghi dc cach nay thoi, tao 1 state trong component nay, luu listfield, luc bam create thi goi api, return ok thi add them vao list, la no tu dong update
+ 
   handelInputChange(evt) {
     this.setState({ fieldName: evt.target.value });
     console.log(this.state.fieldName);
@@ -25,14 +25,13 @@ class FormCreateField extends Component {
     console.log(this.state.fieldStyle);
   }
 
-  async handleSubmit(evt) {
-    evt.preventDefault();
+  handleSubmit(evt) {
+    // evt.preventDefault();
     const { fieldName, fieldStyle } = this.state;
-
-    await fetchAddField(fieldName, fieldStyle, 1); 
-    const data = await fetchGetAllField(1);        
-    this.props.updateListField(data);
-    this.props.getAllField(data);
+    fetchAddField(fieldName, fieldStyle, 1);
+    // .then(
+    //   fetchGetAllField(1).then(data => getAllField(data)),
+    // );
   }
 
   render() {
@@ -92,8 +91,8 @@ class FormCreateField extends Component {
 }
 function mapStateToProps(state) {
   return {
-    fieldList: state.listField,
-    // fieldOwnerId: state.listField.fieldOwnerId.id 
+    fieldList: state.field.listField,
+    // fieldOwnerId: state.listField.fieldOwnerId.id
   };
 }
 

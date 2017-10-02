@@ -1,21 +1,45 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { fetchMatchByDay } from '../apis/field-owner-apis';
-import { getMatchByDay } from '../redux/field-owner/field-owner-action-creator';
+import { fetchGetMatchByFieldOwnerAndDay } from '../apis/field-owner-apis';
+import { GetMatchByFieldOwnerAndDay } from '../redux/field-owner/field-owner-action-creator';
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
+import 'react-datepicker/dist/react-datepicker.css';
 
 class Home extends Component {
-  getMatchByDay() {
-    fetchMatchByDay().then(data => this.props.getMatchByDay(data));
+  constructor(props) {
+    super(props);
+    this.state = {
+      dateSelected: moment(),
+    };
+  }
+  componentDidMount() {
+    const { dateSelected } = this.setState;
+    // const date = dateSelected.format('LL');
+    // console.log(date);
+    fetchGetMatchByFieldOwnerAndDay(1, "Sat Sep 30 2017").then(data => {
+      
+      this.props.GetMatchByFieldOwnerAndDay(data)},
+    );
+    
+  }
+  async handleDateChange(date) {
+    await this.setState({
+      dateSelected: date,
+    });
+    
   }
 
   render() {
-    const { matches } = this.props;
-    const renderMatch = (
+
+    const { listMatch } = this.props;
+    console.log(listMatch);
+    const renderMatch = listMatch.map( listMatch => ( 
       <div className="col-lg-4">
         <div className="panel panel-green">
           <div className="panel-heading">
             <div className="row">
-              <div className="col-lg-6">FIELD 1</div>
+              <div className="col-lg-6">FIELD {listMatch.timeSlotId.fieldId.name}</div>
               <div className="col-lg-6 text-right">
                 <i>20/09/2017</i>
               </div>
@@ -64,7 +88,7 @@ class Home extends Component {
           </a>
         </div>
       </div>
-    );
+    ));
 
     return (
       <div id="page-wrapper">
@@ -77,10 +101,12 @@ class Home extends Component {
               <div className="page-header">
                 <form className="navbar-form navbar-left">
                   <div className="form-group">
-                    <input
-                      type="text"
+                    <DatePicker
+                      selected={this.state.dateSelected}
+                      onChange={this.handleDateChange.bind(this)}
                       className="form-control"
-                      placeholder="20/09/2017"
+                      withPortal
+                      
                     />
                   </div>
                   <button className="btn btn-default" type="button">
@@ -108,7 +134,7 @@ class Home extends Component {
             </div>
           </div>
           <div className="row">
-            {matches ? 'There is no match to day' : renderMatch}
+            {listMatch ? renderMatch : 'There is no match to day'}
           </div>
         </div>
       </div>
@@ -117,8 +143,8 @@ class Home extends Component {
 }
 function mapStateToProps(state) {
   return {
-    // id: state.id,
+    listMatch : state.match.listMatch,
   };
 }
 
-export default connect(mapStateToProps, { getMatchByDay })(Home);
+export default connect(mapStateToProps, { GetMatchByFieldOwnerAndDay })(Home);
