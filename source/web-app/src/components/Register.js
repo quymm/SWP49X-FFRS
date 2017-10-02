@@ -28,7 +28,6 @@ class Register extends Component {
                                         <div className="form-group">
                                             <input onChange={(text) => this.setState({ password: text })} className="form-control" placeholder="Password" name="password" type="password" value="" />
                                         </div>
-
                                         <a href="index.html" className="btn btn-lg btn-success btn-block">Login</a>
                                     </fieldset>
                                 </form>
