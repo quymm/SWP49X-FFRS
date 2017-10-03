@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,13 +15,21 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.capstone.ffrs.adapter.FieldAdapter;
+import com.capstone.ffrs.controller.NetworkController;
+import com.capstone.ffrs.entity.Field;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -28,13 +37,14 @@ public class FieldSuggestActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     RequestQueue queue;
 
-    String url = "https://api.myjson.com/bins/w86a";
-
+    //  String url = "https://api.myjson.com/bins/1fscel";
+    //  String url = "http://10.0.2.2:8080/account/getFieldOwners";
+    String url = "http://10.0.2.2:8080/account/getAccountByRole?role=owner";
     RecyclerView recyclerView;
 
-    List<NewsFeeds> feedsList = new ArrayList<NewsFeeds>();
+    List<Field> feedsList = new ArrayList<Field>();
 
-    MyRecyclerAdapter adapter;
+    FieldAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,30 +65,30 @@ public class FieldSuggestActivity extends AppCompatActivity
 
         //Initialize RecyclerView
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        adapter = new MyRecyclerAdapter(this, feedsList);
+        adapter = new FieldAdapter(this, feedsList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         recyclerView.setAdapter(adapter);
-//Getting Instance of Volley Request Queue
+        //Getting Instance of Volley Request Queue
         queue = NetworkController.getInstance(this).getRequestQueue();
-//Volley's inbuilt class to make Json array request
+        //Volley's inbuilt class to make Json array request
         JsonArrayRequest newsReq = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
 
                 for (int i = 0; i < response.length(); i++) {
                     try {
-
                         JSONObject obj = response.getJSONObject(i);
-                        NewsFeeds feeds = new NewsFeeds(obj.getString("title"), obj.getString("content"), obj.getString("image"), obj.getInt("ratebar"));
+                        JSONObject profile = obj.getJSONObject("profileId");
+                        Field feeds = new Field(profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
 
-// adding movie to movies array
+                        // adding movie to movies array
                         feedsList.add(feeds);
 
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     } finally {
-//Notify adapter about data changes
+                        //Notify adapter about data changes
                         adapter.notifyItemChanged(i);
                     }
                 }
@@ -88,8 +98,23 @@ public class FieldSuggestActivity extends AppCompatActivity
             public void onErrorResponse(VolleyError error) {
                 System.out.println(error.getMessage());
             }
-        });
-//Adding JsonArrayRequest to Request Queue
+        }) {
+            @Override
+            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
+                try {
+                    String utf8String = new String(response.data, "UTF-8");
+                    return Response.success(new JSONArray(utf8String), HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    // log error
+                    return Response.error(new ParseError(e));
+                } catch (JSONException e) {
+                    // log error
+                    return Response.error(new ParseError(e));
+                }
+            }
+
+        };
+        //Adding JsonArrayRequest to Request Queue
         queue.add(newsReq);
 
     }
