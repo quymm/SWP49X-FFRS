@@ -71,6 +71,16 @@ public class TimeSlotServices {
 //        AccountEntity fieldOwnerEntity = accountRepository.findByIdAndStatus(inputFriendlyMatch.getFieldOwnerId(), true);
 //        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(inputFriendlyMatch.getFieldTypeId());
 //        List<FieldEntity> fieldEntityList = fieldRepository.findByFieldOwnerIdAndFieldTypeIdAndStatus(fieldOwnerEntity, fieldTypeEntity, true);
+//        // tìm list timeslot phù hợp
+//        List<TimeSlotEntity> allTimeSlotEntity = new ArrayList<>();
+//        for (FieldEntity fieldEntity : fieldEntityList) {
+//            List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByDateAndFieldIdAndReserveStatusAndStatus(inputFriendlyMatch.getDate(),
+//                    fieldEntity, false, true);
+//            allTimeSlotEntity.addAll(timeSlotEntityList);
+//        }
+//        for (TimeSlotEntity timeSlotEntity : allTimeSlotEntity) {
+//
+//        }
 //    }
 
 }
