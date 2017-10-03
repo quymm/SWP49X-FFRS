@@ -38,7 +38,7 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyVi
     @Override
     public void onBindViewHolder(FieldTimeAdapter.MyViewHolder holder, int position) {
         FieldTime item = timeList.get(position);
-        //Pass the values of feeds object to Views
+
         holder.title.setText(item.getFromTime() + " - " + item.getToTime());
         holder.price.setText(item.getPrice());
     }

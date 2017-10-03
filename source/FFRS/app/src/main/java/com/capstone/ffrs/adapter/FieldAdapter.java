@@ -46,7 +46,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Field field = fieldList.get(position);
-//Pass the values of feeds object to Views
+
         holder.title.setText(field.getFieldName());
         holder.content.setText(field.getAddress());
         holder.imageview.setImageUrl(field.getImgURL(), NetworkController.getInstance(context).getImageLoader());
@@ -68,6 +68,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
             content = (TextView) itemView.findViewById(R.id.content_view);
             // Volley's NetworkImageView which will load Image from URL
             imageview = (NetworkImageView) itemView.findViewById(R.id.thumbnail);
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

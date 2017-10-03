@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -97,10 +96,10 @@ public class FieldSuggestActivity extends AppCompatActivity
         return true;
     }
 
-    public void onClickShowTime(View view) {
-        Intent intent = new Intent(this, FieldTimeActivity.class);
-        startActivity(intent);
-    }
+//    public void onClickShowTime(View view) {
+//        Intent intent = new Intent(this, FieldTimeActivity.class);
+//        startActivity(intent);
+//    }
 
     public void loadFields() {
         //Initialize RecyclerView
