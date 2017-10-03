@@ -1,13 +1,18 @@
 package com.capstone.ffrs.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.capstone.ffrs.FieldSuggestActivity;
+import com.capstone.ffrs.FieldTimeActivity;
 import com.capstone.ffrs.entity.Field;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.controller.NetworkController;
@@ -33,8 +38,9 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View rootView = inflater.inflate(R.layout.fields_item, parent, false);
-        return new MyViewHolder(rootView);
+        View rootView = inflater.inflate(R.layout.field_item, parent, false);
+        MyViewHolder holder = new MyViewHolder(rootView);
+        return holder;
     }
 
     @Override
@@ -56,14 +62,22 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
         private TextView content, title;
         private NetworkImageView imageview;
 
-        public MyViewHolder(View itemView) {
+        public MyViewHolder(final View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.title_view);
             content = (TextView) itemView.findViewById(R.id.content_view);
-// Volley's NetworkImageView which will load Image from URL
+            // Volley's NetworkImageView which will load Image from URL
             imageview = (NetworkImageView) itemView.findViewById(R.id.thumbnail);
-
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    if (pos == 0) {
+                        Intent intent = new Intent(context, FieldTimeActivity.class);
+                        context.startActivity(intent);
+                    }
+                }
+            });
         }
     }
-
 }

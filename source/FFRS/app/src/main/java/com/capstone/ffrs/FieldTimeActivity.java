@@ -17,6 +17,8 @@ import com.capstone.ffrs.controller.NetworkController;
 public class FieldTimeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    String url = "https://api.myjson.com/bins/15b4xh";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +38,8 @@ public class FieldTimeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        loadFieldTimes();
     }
 
     @Override
@@ -72,5 +76,9 @@ public class FieldTimeActivity extends AppCompatActivity
     public void onClickShowDetail(View view) {
         Intent intent = new Intent(this, FieldDetailActivity.class);
         startActivity(intent);
+    }
+
+    public void loadFieldTimes(){
+
     }
 }

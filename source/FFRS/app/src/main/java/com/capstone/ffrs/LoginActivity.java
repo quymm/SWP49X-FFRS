@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -54,8 +55,11 @@ public class LoginActivity extends AppCompatActivity {
 //                new Response.Listener<JSONObject>() {
 //                    @Override
 //                    public void onResponse(JSONObject response) {
-//                        Log.d("Response", response.toString());
-//                        changeActivity();
+//                        if (response != null) {
+//                            changeActivity();
+//                        } else {
+//                            Toast.makeText(LoginActivity.this,"Invalid username or password!", Toast.LENGTH_SHORT);
+//                        }
 //                    }
 //                },
 //                new Response.ErrorListener() {

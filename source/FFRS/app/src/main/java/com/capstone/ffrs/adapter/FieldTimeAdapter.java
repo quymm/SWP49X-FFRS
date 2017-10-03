@@ -16,7 +16,7 @@ import java.util.List;
  * Created by HuanPMSE61860 on 10/2/2017.
  */
 
-public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyViewHolder>{
+public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyViewHolder> {
 
     private List<FieldTime> timeList;
     private Context context;
@@ -31,7 +31,7 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyVi
 
     @Override
     public FieldTimeAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View rootView = inflater.inflate(R.layout.fields_item, parent, false);
+        View rootView = inflater.inflate(R.layout.field_time_item, parent, false);
         return new FieldTimeAdapter.MyViewHolder(rootView);
     }
 
