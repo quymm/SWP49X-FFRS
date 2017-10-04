@@ -40,7 +40,7 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyVi
         FieldTime item = timeList.get(position);
 
         holder.title.setText(item.getFromTime() + " - " + item.getToTime());
-        holder.price.setText(item.getPrice());
+        holder.price.setText(item.getPrice() + " đ/h");
     }
 
     @Override
@@ -54,8 +54,8 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyVi
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.title_view);
-            price = (TextView) itemView.findViewById(R.id.content_view);
+            title = (TextView) itemView.findViewById(R.id.time_frame);
+            price = (TextView) itemView.findViewById(R.id.hour_price);
         }
     }
 

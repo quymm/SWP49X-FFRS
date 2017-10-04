@@ -28,10 +28,11 @@
             android:layout_below="@+id/tab_layout"
             android:drawableLeft="@android:drawable/ic_menu_search"
             android:ems="10"
-            android:hint="Search"
+            android:drawablePadding="5dp"
+            android:hint="Search field name"
             android:inputType="text"
             android:paddingLeft="10dp"
-            android:textSize="15dp" />
+            android:textSize="16dp" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"

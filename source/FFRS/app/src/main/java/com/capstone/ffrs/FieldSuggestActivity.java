@@ -2,8 +2,10 @@ package com.capstone.ffrs;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -34,21 +36,25 @@ import java.util.ArrayList;
 
 public class FieldSuggestActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    RequestQueue queue;
+
 
     //  String url = "https://api.myjson.com/bins/1fscel";
     //  String url = "http://10.0.2.2:8080/account/getFieldOwners";
     String url = "http://10.0.2.2:8080/account/getAccountByRole?role=owner";
+
     RecyclerView recyclerView;
-
-    List<Field> feedsList = new ArrayList<Field>();
-
+    RequestQueue queue;
+    List<Field> fieldList = new ArrayList<Field>();
     FieldAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_field_suggest);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        TabLayout.Tab tab = tabLayout.getTabAt(1);
+        tab.select();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -96,15 +102,10 @@ public class FieldSuggestActivity extends AppCompatActivity
         return true;
     }
 
-//    public void onClickShowTime(View view) {
-//        Intent intent = new Intent(this, FieldTimeActivity.class);
-//        startActivity(intent);
-//    }
-
     public void loadFields() {
         //Initialize RecyclerView
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        adapter = new FieldAdapter(this, feedsList);
+        adapter = new FieldAdapter(this, fieldList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -119,13 +120,13 @@ public class FieldSuggestActivity extends AppCompatActivity
                     try {
                         JSONObject obj = response.getJSONObject(i);
                         JSONObject profile = obj.getJSONObject("profileId");
-                        Field feeds = new Field(profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
+                        Field field = new Field(profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
 
                         // adding movie to movies array
-                        feedsList.add(feeds);
+                        fieldList.add(field);
 
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        Log.d("EXCEPTION",e.getMessage());
                     } finally {
                         //Notify adapter about data changes
                         adapter.notifyItemChanged(i);
@@ -135,7 +136,7 @@ public class FieldSuggestActivity extends AppCompatActivity
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                System.out.println(error.getMessage());
+                Log.d("EXCEPTION",error.getMessage());
             }
         }) {
             @Override

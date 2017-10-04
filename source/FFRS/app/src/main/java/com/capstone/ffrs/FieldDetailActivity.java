@@ -10,12 +10,15 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.capstone.ffrs.controller.NetworkController;
 
 public class FieldDetailActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    String imageUrl, name, address;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,22 +27,28 @@ public class FieldDetailActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
-//        LayerDrawable stars = (LayerDrawable) ratingBar.getProgressDrawable();
-//        stars.getDrawable(2).setColorFilter(Color.rgb(247, 156, 0), PorterDuff.Mode.SRC_ATOP);
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawer.setDrawerListener(toggle);
+//        toggle.syncState();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        Bundle b = getIntent().getExtras();
 
-        String imageUrl = "http://bongda.phanmemvang.com.vn/wp-content/uploads/2015/03/lan2chaoluanganhgnhe-1-e1426212803227.jpg";
+        name = b.getString("field_name");
+        TextView txtName = (TextView) findViewById(R.id.field_name);
+        txtName.setText(name);
+
+        address = b.getString("field_address");
+        TextView txtAddress = (TextView) findViewById(R.id.field_address);
+        txtAddress.setText(address);
+
+        imageUrl = b.getString("image_url");
         NetworkImageView imageView = (NetworkImageView) findViewById(R.id.field_image);
         imageView.setImageUrl(imageUrl, NetworkController.getInstance(this.getBaseContext()).getImageLoader());
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -50,6 +59,12 @@ public class FieldDetailActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

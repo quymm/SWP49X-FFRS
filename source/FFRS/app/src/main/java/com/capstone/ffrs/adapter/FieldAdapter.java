@@ -49,6 +49,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
 
         holder.title.setText(field.getFieldName());
         holder.content.setText(field.getAddress());
+        holder.setImageURL(field.getImgURL());
         holder.imageview.setImageUrl(field.getImgURL(), NetworkController.getInstance(context).getImageLoader());
     }
 
@@ -61,6 +62,11 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
 
         private TextView content, title;
         private NetworkImageView imageview;
+        private String image_url;
+
+        public void setImageURL(String url) {
+            image_url = url;
+        }
 
         public MyViewHolder(final View itemView) {
             super(itemView);
@@ -72,11 +78,14 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int pos = getAdapterPosition();
-                    if (pos == 0) {
-                        Intent intent = new Intent(context, FieldTimeActivity.class);
-                        context.startActivity(intent);
+                    Intent intent = new Intent(context, FieldTimeActivity.class);
+                    intent.putExtra("field_name", title.getText());
+                    intent.putExtra("field_address", content.getText());
+                    if (image_url.isEmpty()) {
+                        image_url = "http://bongda.phanmemvang.com.vn/wp-content/uploads/2015/03/lan2chaoluanganhgnhe-1-e1426212803227.jpg";
                     }
+                    intent.putExtra("image_url", image_url);
+                    context.startActivity(intent);
                 }
             });
         }

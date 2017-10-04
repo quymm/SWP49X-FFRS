@@ -13,9 +13,11 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         tools:layout_constraintBottom_creator="1"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
@@ -90,16 +92,17 @@
                             android:background="#009632"
                             app:srcCompat="@drawable/ic_location" />
 
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="vertical"
-                            android:layout_toStartOf="@id/btDirections">
+                            android:layout_toStartOf="@id/btDirections"
+                            android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/field_name"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
-
                                 android:gravity="center_vertical"
                                 android:text="Sân Chảo Lửa"
                                 android:textColor="@android:color/black"
@@ -107,6 +110,7 @@
                                 android:textStyle="bold" />
 
                             <TextView
+                                android:id="@+id/field_address"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
                                 android:ellipsize="marquee"
@@ -161,30 +165,30 @@
 
 
                     <!--<LinearLayout-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_marginBottom="5sp"-->
-                        <!--android:gravity="center_vertical"-->
-                        <!--android:orientation="horizontal">-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginBottom="5sp"-->
+                    <!--android:gravity="center_vertical"-->
+                    <!--android:orientation="horizontal">-->
 
-                        <!--<TextView-->
-                            <!--android:id="@+id/textView5"-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:text="Rating:"-->
-                            <!--android:textAlignment="textStart"-->
-                            <!--android:textColor="@android:color/black"-->
-                            <!--android:textSize="22sp"-->
-                            <!--android:textStyle="bold" />-->
+                    <!--<TextView-->
+                    <!--android:id="@+id/textView5"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="Rating:"-->
+                    <!--android:textAlignment="textStart"-->
+                    <!--android:textColor="@android:color/black"-->
+                    <!--android:textSize="22sp"-->
+                    <!--android:textStyle="bold" />-->
 
-                        <!--<RatingBar-->
-                            <!--android:id="@+id/ratingBar"-->
-                            <!--style="@style/Widget.AppCompat.RatingBar.Indicator"-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:isIndicator="true"-->
-                            <!--android:numStars="5"-->
-                            <!--android:rating="5" />-->
+                    <!--<RatingBar-->
+                    <!--android:id="@+id/ratingBar"-->
+                    <!--style="@style/Widget.AppCompat.RatingBar.Indicator"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:isIndicator="true"-->
+                    <!--android:numStars="5"-->
+                    <!--android:rating="5" />-->
                     <!--</LinearLayout>-->
 
                 </LinearLayout>
