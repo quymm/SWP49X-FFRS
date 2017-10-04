@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,14 +19,18 @@ import com.capstone.ffrs.entity.Field;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.controller.NetworkController;
 
+import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Created by AndroidNovice on 6/5/2016.
  */
-public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder> {
+public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder> implements Filterable {
 
     private List<Field> fieldList;
+    private List<Field> mFilteredList;
     private Context context;
     private LayoutInflater inflater;
 
@@ -32,6 +38,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
 
         this.context = context;
         this.fieldList = fieldList;
+        this.mFilteredList = fieldList;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -39,24 +46,72 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View rootView = inflater.inflate(R.layout.field_item, parent, false);
-        MyViewHolder holder = new MyViewHolder(rootView);
-        return holder;
+        return new MyViewHolder(rootView);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        Field field = fieldList.get(position);
+        Field field = mFilteredList.get(position);
 
         holder.title.setText(field.getFieldName());
         holder.content.setText(field.getAddress());
         holder.setImageURL(field.getImgURL());
         holder.imageview.setImageUrl(field.getImgURL(), NetworkController.getInstance(context).getImageLoader());
+
     }
 
     @Override
     public int getItemCount() {
-        return fieldList.size();
+        return mFilteredList.size();
     }
+
+    @Override
+    public Filter getFilter() {
+
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+
+                String charString = charSequence.toString();
+
+                if (charString.isEmpty()) {
+                    mFilteredList = fieldList;
+                } else {
+                    List<Field> filteredList = new ArrayList<>();
+                    for (Field field : fieldList) {
+
+                        // Vietnamese characters handling
+                        String fieldName = field.getFieldName().toLowerCase();
+                        try {
+                            String temp = Normalizer.normalize(fieldName, Normalizer.Form.NFD);
+                            Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+                            fieldName = pattern.matcher(temp).replaceAll("").replaceAll("đ", "d");
+                        } catch (Exception e) {
+                            Log.d("ERROR", e.getMessage());
+                        }
+
+                        // Search like processing
+                        if (fieldName.contains(charString)) {
+                            filteredList.add(field);
+                        }
+
+                        mFilteredList = filteredList;
+                    }
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = mFilteredList;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults
+                    filterResults) {
+                mFilteredList = (ArrayList<Field>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
+
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 

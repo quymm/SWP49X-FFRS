@@ -3,8 +3,13 @@ package com.capstone.ffrs;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Menu;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -14,6 +19,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,6 +74,25 @@ public class FieldSuggestActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        EditText edit_text = (EditText) findViewById(R.id.edit_text);
+        TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
+        edit_text.addTextChangedListener(watcher);
+
         loadFields();
     }
 
@@ -102,6 +127,35 @@ public class FieldSuggestActivity extends AppCompatActivity
         return true;
     }
 
+//    private void search(SearchView searchView) {
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//
+//                adapter.getFilter().filter(newText);
+//                return true;
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//
+//        getMenuInflater().inflate(R.menu.menu_search, menu);
+//
+//        MenuItem search = menu.findItem(R.id.search);
+//        SearchView searchView = (SearchView) MenuItemCompat.getActionView(search);
+//        search(searchView);
+//        return true;
+//    }
+
+
     public void loadFields() {
         //Initialize RecyclerView
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -126,7 +180,7 @@ public class FieldSuggestActivity extends AppCompatActivity
                         fieldList.add(field);
 
                     } catch (Exception e) {
-                        Log.d("EXCEPTION",e.getMessage());
+                        Log.d("EXCEPTION", e.getMessage());
                     } finally {
                         //Notify adapter about data changes
                         adapter.notifyItemChanged(i);
@@ -136,7 +190,7 @@ public class FieldSuggestActivity extends AppCompatActivity
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("EXCEPTION",error.getMessage());
+                Log.d("EXCEPTION", error.getMessage());
             }
         }) {
             @Override
