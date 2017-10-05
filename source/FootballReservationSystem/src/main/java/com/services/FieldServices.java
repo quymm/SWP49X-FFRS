@@ -25,24 +25,39 @@ public class FieldServices {
     FieldTypeServices fieldTypeServices;
 
     public FieldEntity createNewField(InputFieldDTO inputFieldDTO) {
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(inputFieldDTO.getFieldTypeId());
-        AccountEntity accountEntity = accountServices.findAccountEntityById(inputFieldDTO.getFieldOwnerId());
-        FieldEntity fieldEntity = new FieldEntity();
-        fieldEntity.setName(inputFieldDTO.getFieldName());
-        fieldEntity.setFieldOwnerId(accountEntity);
-        fieldEntity.setFieldTypeId(fieldTypeEntity);
-        fieldEntity.setStatus(true);
+        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(inputFieldDTO.getFieldTypeId());
+        AccountEntity accountEntity = accountServices.findAccountEntityById(inputFieldDTO.getFieldOwnerId(), "owner");
+        FieldEntity fieldEntity = fieldRepository.findByFieldOwnerIdAndFieldTypeIdAndNameAndStatus(accountEntity, fieldTypeEntity, inputFieldDTO.getFieldName(), false);
+        if (fieldEntity != null) {
+            fieldEntity.setStatus(true);
+        } else {
+            fieldEntity = new FieldEntity();
+            fieldEntity.setName(inputFieldDTO.getFieldName());
+            fieldEntity.setFieldOwnerId(accountEntity);
+            fieldEntity.setFieldTypeId(fieldTypeEntity);
+            fieldEntity.setStatus(true);
+        }
         return fieldRepository.save(fieldEntity);
     }
 
     public List<FieldEntity> findFieldEntityByFieldOwnerId(int fieldOwnerId) {
-        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId);
+        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
         return fieldRepository.findByFieldOwnerIdAndStatus(accountEntity, true);
     }
 
     public FieldEntity findFieldEntityByFieldNameAndFieldOwnerId(String fieldName, int fieldOwnerId) {
-        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId);
+        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
         return fieldRepository.findByFieldOwnerIdAndNameAndStatus(accountEntity, fieldName, true);
+    }
+
+    public FieldEntity findFieldEntityById(int fieldId) {
+        return fieldRepository.findByIdAndStatus(fieldId, true);
+    }
+
+    public FieldEntity deleteFieldEntity(int fieldId) {
+        FieldEntity fieldEntity = findFieldEntityById(fieldId);
+        fieldEntity.setStatus(false);
+        return fieldRepository.save(fieldEntity);
     }
 
 }

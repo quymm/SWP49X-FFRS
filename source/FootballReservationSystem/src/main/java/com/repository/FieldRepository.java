@@ -16,4 +16,5 @@ public interface FieldRepository extends JpaRepository<FieldEntity, Integer> {
     FieldEntity findByIdAndStatus(int id, boolean status);
     List<FieldEntity> findAllByStatus(boolean status);
     List<FieldEntity> findByFieldOwnerIdAndFieldTypeIdAndStatus(AccountEntity fieldOwnerId, FieldTypeEntity fieldTypeId, boolean status);
+    FieldEntity findByFieldOwnerIdAndFieldTypeIdAndNameAndStatus(AccountEntity fieldOwnerId, FieldTypeEntity fieldTypeId, String name, boolean status);
 }

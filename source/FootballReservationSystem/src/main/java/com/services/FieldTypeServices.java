@@ -14,13 +14,19 @@ public class FieldTypeServices {
     @Autowired
     FieldTypeRepository fieldTypeRepository;
 
-    public FieldTypeEntity createNewFieldTypeEntity(InputFieldTypeDTO inputFieldTypeDTO){
+    public FieldTypeEntity createNewFieldType(InputFieldTypeDTO inputFieldTypeDTO){
         FieldTypeEntity fieldTypeEntity = convertFromInputFieldTypeDTOToFieldTypeEntity(inputFieldTypeDTO);
         return fieldTypeRepository.save(fieldTypeEntity);
     }
 
-    public FieldTypeEntity findFieldTypeEntityById(int fieldTypeId){
+    public FieldTypeEntity findById(int fieldTypeId){
         return fieldTypeRepository.findByIdAndStatus(fieldTypeId, true);
+    }
+
+    public FieldTypeEntity deleteFieldType(int fieldTypeId){
+        FieldTypeEntity fieldTypeEntity = fieldTypeRepository.findByIdAndStatus(fieldTypeId, true);
+        fieldTypeEntity.setStatus(false);
+        return fieldTypeRepository.save(fieldTypeEntity);
     }
 
     public FieldTypeEntity convertFromInputFieldTypeDTOToFieldTypeEntity(InputFieldTypeDTO inputFieldTypeDTO){
