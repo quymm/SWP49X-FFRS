@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#dbdbdb"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.capstone.ffrs.FieldTimeActivity"
     tools:showIn="@layout/app_bar_field_time">
@@ -64,7 +65,7 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_alignParentEnd="true"
-                            android:background="@android:color/holo_green_light"
+                            android:background="#009632"
                             app:srcCompat="@drawable/ic_location" />
 
                         <LinearLayout
@@ -97,13 +98,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp"
                         android:layout_weight="7"
+                        android:background="#009632"
                         android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="4"
-                            android:background="@android:color/holo_green_light"
+
 
                             android:gravity="center_vertical"
                             android:padding="5dp"
@@ -117,7 +119,6 @@
                             android:layout_height="50dp"
                             android:layout_weight="3"
 
-                            android:background="@android:color/holo_green_light"
                             android:gravity="center_vertical"
                             android:padding="5dp"
                             android:text="120.000đ/h"
@@ -132,13 +133,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp"
                         android:layout_weight="7"
+                        android:background="#009632"
                         android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="4"
-                            android:background="@android:color/holo_green_light"
 
                             android:gravity="center_vertical"
                             android:padding="5dp"
@@ -152,7 +153,6 @@
                             android:layout_height="50dp"
                             android:layout_weight="3"
 
-                            android:background="@android:color/holo_green_light"
                             android:gravity="center_vertical"
                             android:padding="5dp"
                             android:text="120.000đ/h"
@@ -167,13 +167,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp"
                         android:layout_weight="7"
+                        android:background="#009632"
                         android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="4"
-                            android:background="@android:color/holo_green_light"
+
 
                             android:gravity="center_vertical"
                             android:padding="5dp"
@@ -187,7 +188,6 @@
                             android:layout_height="50dp"
                             android:layout_weight="3"
 
-                            android:background="@android:color/holo_green_light"
                             android:gravity="center_vertical"
                             android:padding="5dp"
                             android:text="100.000đ/h"
@@ -202,13 +202,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp"
                         android:layout_weight="7"
+                        android:background="#009632"
                         android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="4"
-                            android:background="@android:color/holo_green_light"
+
 
                             android:gravity="center_vertical"
                             android:padding="5dp"
@@ -222,7 +223,6 @@
                             android:layout_height="50dp"
                             android:layout_weight="3"
 
-                            android:background="@android:color/holo_green_light"
                             android:gravity="center_vertical"
                             android:padding="5dp"
                             android:text="150.000đ/h"
