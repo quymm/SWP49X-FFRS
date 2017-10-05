@@ -1,7 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 class SettingTime extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      is5vs5Show: true,
+      
+    }
+  }
+  handelChangeFieldType(type){
+    this.setState = { is5vs5Show: !type } 
+  }
+  handelChangeDay(day){
+    
+  }
   render() {
+    const { timeEnable } = this.props;
+
     return (
       <div id="page-wrapper">
         <div className="container-fluid">
@@ -14,7 +29,7 @@ class SettingTime extends Component {
             <div className="col-lg-4 col-lg-offset-4">
               <div className="row">
                 <div className="col-lg-6">
-                  <button className="btn btn-primary btn-block">5 vs 5</button>
+                  <button className="btn btn-default btn-block" value={this.state.is5vs5Show}>5 vs 5</button>
                 </div>
                 <div className="col-lg-6">
                   <button className="btn btn-primary btn-block">7 vs 7</button>
@@ -26,25 +41,25 @@ class SettingTime extends Component {
           <div className="row">
             <div className="col-lg-2">
               <div className="list-group">
-                <button type="button" className="list-group-item">
+                <button type="button" className="list-group-item" value='Moday'>
                   Monday
                 </button>
-                <button type="button" className="list-group-item">
+                <button type="button" className="list-group-item" value='Tuesday'>
                   Tuesday
                 </button>
-                <button type="button" className="list-group-item">
+                <button type="button" className="list-group-item" value='Wednesday'>
                   Wednesday
                 </button>
-                <button type="button" className="list-group-item">
+                <button type="button" className="list-group-item" value='Thusday'>
                   Thusday
                 </button>
-                <button type="button" className="list-group-item">
+                <button type="button" className="list-group-item" value='Friday'>
                   Friday
                 </button>
-                <button type="button" className="list-group-item">
+                <button type="button" className="list-group-item" value='Saturday'>
                   Saturday
                 </button>
-                <button type="button" className="list-group-item">
+                <button type="button" className="list-group-item" value='Sunday'>
                   Sunday
                 </button>
               </div>
@@ -108,6 +123,8 @@ class SettingTime extends Component {
     );
   }
 }
-function mapStateToProps(state) {}
+function mapStateToProps(state) {
+  return { timeEnable: state.timeEnable }
+}
 
 export default connect(mapStateToProps)(SettingTime);

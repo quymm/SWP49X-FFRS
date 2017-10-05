@@ -6,6 +6,7 @@ import {
   CHECK_TIME_SLOT,
   GET_ALL_FIELD,
   DETELE_FIELD,
+  GET_TIME_ENABLE_IN_WEEK,
 } from './base-URL';
 
 export function fetchGetMatchByFieldOwnerAndDay(fieldOwnerId, day) {
@@ -62,5 +63,9 @@ export function fetchAddField(paramFieldName, paramFieldType, fieldOwnerId) {
     }),
   }).then(res => res.status);
 }
-
+export function fetchGetTimeEnableInWeek(fieldOwnerId) {
+  return fetch(
+    BASE_URL + GET_TIME_ENABLE_IN_WEEK + '?fieldOwnerId=' + fieldOwnerId,
+  ).then(res => res.json());
+}
 //
