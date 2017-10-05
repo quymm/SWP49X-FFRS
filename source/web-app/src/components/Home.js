@@ -5,6 +5,7 @@ import { GetMatchByFieldOwnerAndDay } from '../redux/field-owner/field-owner-act
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
+import { Link } from 'react-router-dom';
 
 class Home extends Component {
   constructor(props) {
@@ -14,41 +15,51 @@ class Home extends Component {
     };
   }
   componentDidMount() {
-    const { dateSelected } = this.setState;
     // const date = dateSelected.format('LL');
     // console.log(date);
-    fetchGetMatchByFieldOwnerAndDay(1, "Sat Sep 30 2017").then(data => {
-      
-      this.props.GetMatchByFieldOwnerAndDay(data)},
-    );
-    
+    console.log('didmount: ', this.state.dateSelected.format('MMM DD YYYY'));
+    fetchGetMatchByFieldOwnerAndDay(
+      1,
+      this.state.dateSelected.format('MMM DD YYYY'),
+    ).then(data => {
+      this.props.GetMatchByFieldOwnerAndDay(data);
+    });
+    // debugger
   }
   async handleDateChange(date) {
+    // console.log("date:", date.format('MMM DD YYYY'));
     await this.setState({
       dateSelected: date,
     });
-    
+    // console.log();
+    fetchGetMatchByFieldOwnerAndDay(
+      1,
+      this.state.dateSelected.format('MMM DD YYYY'),
+    ).then(data => {
+      this.props.GetMatchByFieldOwnerAndDay(data);
+    });
   }
 
   render() {
-
     const { listMatch } = this.props;
     console.log(listMatch);
-    const renderMatch = listMatch.map( listMatch => ( 
-      <div className="col-lg-4">
+    const renderMatch = listMatch.map(listMatch => (
+      <div key={listMatch.timeSlotId.id} className="col-lg-4">
         <div className="panel panel-green">
           <div className="panel-heading">
             <div className="row">
-              <div className="col-lg-6">FIELD {listMatch.timeSlotId.fieldId.name}</div>
+              <div className="col-lg-6">
+                FIELD {listMatch.timeSlotId.fieldId.name}
+              </div>
               <div className="col-lg-6 text-right">
-                <i>20/09/2017</i>
+                <i>{new Date(listMatch.timeSlotId.date).toDateString()}</i>
               </div>
             </div>
           </div>
           <div className="panel-body">
             <div className="row">
               <div className="col-lg-4 text-center">
-                <a href="profile.html">
+                <Link to="/player">
                   <img
                     src={require('../resource/images/ronaldo.jpg')}
                     alt="..."
@@ -56,12 +67,28 @@ class Home extends Component {
                     width="80"
                     height="80"
                   />
-                  <h4>quymm</h4>
-                </a>
+                  <h4>{listMatch.userId.username}</h4>
+                </Link>
               </div>
               <div className="col-lg-4 text-center">
-                <h3>9:00</h3>
-                <h4>5 vs 5</h4>
+                <h3>
+                  {new Date(listMatch.timeSlotId.startTime).getHours()} :{' '}
+                  {new Date(listMatch.timeSlotId.startTime).getMinutes() ===
+                  0 ? (
+                    '00'
+                  ) : (
+                    new Date(listMatch.timeSlotId.startTime).getMinutes()
+                  )}
+                </h3>
+                <h4>
+                  {(new Date(listMatch.timeSlotId.endTime).getHours() -
+                    new Date(listMatch.timeSlotId.startTime).getHours()) *
+                    60 +
+                    (new Date(listMatch.timeSlotId.endTime).getMinutes() -
+                      new Date(listMatch.timeSlotId.startTime).getMinutes()) +
+                    'min'}
+                </h4>
+                <h4>{listMatch.timeSlotId.fieldId.fieldTypeId.name}</h4>
               </div>
               <div className="col-lg-4 text-center">
                 <a href="#">
@@ -72,7 +99,7 @@ class Home extends Component {
                     width="80"
                     height="80"
                   />
-                  <h4>thanhth</h4>
+                  <h4>{listMatch.opponentId.username}</h4>
                 </a>
               </div>
             </div>
@@ -105,8 +132,7 @@ class Home extends Component {
                       selected={this.state.dateSelected}
                       onChange={this.handleDateChange.bind(this)}
                       className="form-control"
-                      withPortal
-                      
+                      todayButton={'Today'}
                     />
                   </div>
                   <button className="btn btn-default" type="button">
@@ -134,7 +160,7 @@ class Home extends Component {
             </div>
           </div>
           <div className="row">
-            {listMatch ? renderMatch : 'There is no match to day'}
+            {listMatch.length > 0 ? renderMatch : 'There is no match today'}
           </div>
         </div>
       </div>
@@ -143,7 +169,7 @@ class Home extends Component {
 }
 function mapStateToProps(state) {
   return {
-    listMatch : state.match.listMatch,
+    listMatch: state.match.listMatch,
   };
 }
 

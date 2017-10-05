@@ -25,3 +25,10 @@ export function createField(myFieldName, myFieldType, myfieldOwnerId){
         payloads: field
     }
 }
+
+export function getAllTimeEnableInWeek(data){
+    return {
+        type: 'GET_ALL_TIME_ENABLE_IN_WEEK',
+        payloads: data
+    }
+}
