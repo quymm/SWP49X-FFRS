@@ -9,14 +9,17 @@ public class InputFriendlyMatch {
 
     private int userId;
 
+    private Date date;
+
     private Date startTime;
 
     private int duration;
 
-    public InputFriendlyMatch(int fieldOwnerId, int fieldTypeId, int userId, Date startTime, int duration) {
+    public InputFriendlyMatch(int fieldOwnerId, int fieldTypeId, int userId, Date date, Date startTime, int duration) {
         this.fieldOwnerId = fieldOwnerId;
         this.fieldTypeId = fieldTypeId;
         this.userId = userId;
+        this.date = date;
         this.startTime = startTime;
         this.duration = duration;
     }
@@ -46,6 +49,14 @@ public class InputFriendlyMatch {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public Date getStartTime() {

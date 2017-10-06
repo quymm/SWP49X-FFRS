@@ -6,9 +6,7 @@
 package com.entity;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,14 +14,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
+ *
  * @author MinhQuy
  */
 @Entity
@@ -44,14 +39,14 @@ public class AccountEntity implements Serializable {
     @Column(name = "password")
     private String password;
     @Basic(optional = false)
-    @Column(name = "role")
-    private String role;
-    @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ProfileEntity profileId;
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private RoleEntity roleId;
 
     public AccountEntity() {
     }
@@ -60,11 +55,10 @@ public class AccountEntity implements Serializable {
         this.id = id;
     }
 
-    public AccountEntity(String username, String password, String role, boolean status, ProfileEntity profileId) {
+    public AccountEntity(Integer id, String username, String password, boolean status) {
+        this.id = id;
         this.username = username;
         this.password = password;
-        this.role = role;
-        this.profileId = profileId;
         this.status = status;
     }
 
@@ -92,14 +86,6 @@ public class AccountEntity implements Serializable {
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
     public boolean getStatus() {
         return status;
     }
@@ -114,6 +100,14 @@ public class AccountEntity implements Serializable {
 
     public void setProfileId(ProfileEntity profileId) {
         this.profileId = profileId;
+    }
+
+    public RoleEntity getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(RoleEntity roleId) {
+        this.roleId = roleId;
     }
 
     @Override
@@ -140,5 +134,5 @@ public class AccountEntity implements Serializable {
     public String toString() {
         return "com.entity.AccountEntity[ id=" + id + " ]";
     }
-
+    
 }

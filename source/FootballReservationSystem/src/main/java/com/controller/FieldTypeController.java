@@ -17,16 +17,22 @@ public class FieldTypeController {
     FieldTypeServices fieldTypeServices;
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/fieldType/createNewFieldType", method = RequestMethod.POST)
+    @RequestMapping(value = "/swp49x-ffrs/field-type/managed-field-type", method = RequestMethod.POST)
     public ResponseEntity createNewFieldType(@RequestBody InputFieldTypeDTO inputFieldTypeDTO){
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.createNewFieldTypeEntity(inputFieldTypeDTO);
+        FieldTypeEntity fieldTypeEntity = fieldTypeServices.createNewFieldType(inputFieldTypeDTO);
         return new ResponseEntity(fieldTypeEntity, HttpStatus.CREATED);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/fieldType/getByFieldTypeId", method = RequestMethod.GET)
-    public ResponseEntity getFieldTypeById(@RequestParam("fieldTypeId") int fieldTypeId){
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(fieldTypeId);
+    @RequestMapping(value = "/swp49x-ffrs/field-type/managed-field-type", method = RequestMethod.GET)
+    public ResponseEntity getFieldTypeById(@RequestParam("field-type-id") int fieldTypeId){
+        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(fieldTypeId);
         return new ResponseEntity(fieldTypeEntity, HttpStatus.OK);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/swp49x-ffrs/field-type/managed-field-type", method = RequestMethod.DELETE)
+    public ResponseEntity delteFieldType(@RequestParam("field-type-id") int fieldTypeId){
+        return new ResponseEntity(fieldTypeServices.deleteFieldType(fieldTypeId), HttpStatus.OK);
     }
 }

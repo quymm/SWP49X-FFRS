@@ -1,3 +1,4 @@
+
 package com.dto;
 
 /**
@@ -43,3 +44,4 @@ public class InputFieldDTO {
         this.fieldTypeId = fieldTypeId;
     }
 }
+

@@ -23,10 +23,10 @@ public class TimeSlotServices {
     TimeSlotRepository timeSlotRepository;
 
     @Autowired
-    FieldRepository fieldRepository;
+    FieldServices fieldServices;
 
     @Autowired
-    AccountRepository accountRepository;
+    AccountServices accountServices;
 
     @Autowired
     TimeEnableRepository timeEnableRepository;
@@ -34,36 +34,19 @@ public class TimeSlotServices {
     @Autowired
     FieldTypeServices fieldTypeServices;
 
-    public List<TimeSlotEntity> findTimeSlotByDateFieldIdAndReservateStatus(Date targetDate, int fieldId, boolean reserveStatus) {
-        FieldEntity fieldEntity = fieldRepository.findByIdAndStatus(fieldId, true);
-        return timeSlotRepository.findByDateAndFieldIdAndReserveStatusAndStatus(targetDate, fieldEntity, reserveStatus, true);
+    public List<TimeSlotEntity> findUpcomingReservationByDate(Date targetDate, int fieldOwnerId, int fieldTypeId) {
+        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(fieldTypeId);
+        return timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatus(accountEntity, fieldTypeEntity, targetDate, true, true);
     }
 
     public List<TimeSlotEntity> createTimeSlotForDate(Date date) {
+        // kiem tra ngay do la thu may trong tuan
         SimpleDateFormat format = new SimpleDateFormat("EE");
         String dayInWeek = format.format(date);
-        List<FieldEntity> fieldEntityList = fieldRepository.findAllByStatus(true);
+
         List<TimeSlotEntity> savedTimeSlotEntity = new ArrayList<>();
-        if (fieldEntityList != null && fieldEntityList.size() != 0) {
-            for (FieldEntity fieldEntity : fieldEntityList) {
-                AccountEntity accountEntity = fieldEntity.getFieldOwnerId();
-                FieldTypeEntity fieldTypeEntity = fieldEntity.getFieldTypeId();
-                List<TimeEnableEntity> timeEnableEntityList = timeEnableRepository.findByFieldOwnerIdAndAndFieldTypeIdAndStatus(accountEntity, fieldTypeEntity, true);
-                for (TimeEnableEntity timeEnableEntity : timeEnableEntityList) {
-                    if (timeEnableEntity.getDateInWeek().equalsIgnoreCase(dayInWeek)) {
-                        TimeSlotEntity timeSlotEntity = new TimeSlotEntity();
-                        timeSlotEntity.setDate(date);
-                        timeSlotEntity.setStartTime(timeEnableEntity.getStartTime());
-                        timeSlotEntity.setEndTime(timeEnableEntity.getEndTime());
-                        timeSlotEntity.setFieldId(fieldEntity);
-                        timeSlotEntity.setPrice(timeEnableEntity.getPrice());
-                        timeSlotEntity.setReserveStatus(false);
-                        timeSlotEntity.setStatus(true);
-                        savedTimeSlotEntity.add(timeSlotRepository.save(timeSlotEntity));
-                    }
-                }
-            }
-        }
+
         return savedTimeSlotEntity;
     }
 
@@ -71,6 +54,16 @@ public class TimeSlotServices {
 //        AccountEntity fieldOwnerEntity = accountRepository.findByIdAndStatus(inputFriendlyMatch.getFieldOwnerId(), true);
 //        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(inputFriendlyMatch.getFieldTypeId());
 //        List<FieldEntity> fieldEntityList = fieldRepository.findByFieldOwnerIdAndFieldTypeIdAndStatus(fieldOwnerEntity, fieldTypeEntity, true);
+//        // tìm list timeslot phù hợp
+//        List<TimeSlotEntity> allTimeSlotEntity = new ArrayList<>();
+//        for (FieldEntity fieldEntity : fieldEntityList) {
+//            List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByDateAndFieldIdAndReserveStatusAndStatus(inputFriendlyMatch.getDate(),
+//                    fieldEntity, false, true);
+//            allTimeSlotEntity.addAll(timeSlotEntityList);
+//        }
+//        for (TimeSlotEntity timeSlotEntity : allTimeSlotEntity) {
+//
+//        }
 //    }
 
 }
