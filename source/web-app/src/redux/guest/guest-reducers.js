@@ -20,6 +20,7 @@ export const guestReducer = (state = defaultState, action) => {
         user: {
           data: action.payloads,
           // isFetched: true,
+          role: action.payloads.roleId.roleName,
           status: {
             ok: true,
             error: false,
@@ -33,6 +34,7 @@ export const guestReducer = (state = defaultState, action) => {
       return {
         user: {
           data: null,
+          role: 1,
           status: {
             ok: false,
             error: true,

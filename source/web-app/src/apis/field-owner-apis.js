@@ -42,7 +42,7 @@ export function fetchCheckTimeSlotStatus(
 //Field
 export function fetchGetAllField(fieldOwnerId) {
   return fetch(
-    BASE_URL + GET_ALL_FIELD + '?&fieldOwnerId=' + fieldOwnerId,
+    BASE_URL + GET_ALL_FIELD + '?&field-owner-id=' + fieldOwnerId,
   ).then(res => res.json());
 }
 
@@ -65,7 +65,7 @@ export function fetchAddField(paramFieldName, paramFieldType, fieldOwnerId) {
 }
 export function fetchGetTimeEnableInWeek(fieldOwnerId) {
   return fetch(
-    BASE_URL + GET_TIME_ENABLE_IN_WEEK + '?fieldOwnerId=' + fieldOwnerId,
+    BASE_URL + GET_TIME_ENABLE_IN_WEEK + '?field-owner-id=' + fieldOwnerId,
   ).then(res => res.json());
 }
 //

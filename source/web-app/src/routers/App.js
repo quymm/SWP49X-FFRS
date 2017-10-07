@@ -21,6 +21,7 @@ class App extends Component {
           <Router>
             <Switch>
               <Route path="/login" component={Login} />
+              {/* <Route path="/register" component={} />> */}
               <Route path="/app" component={Roster} />
             </Switch>
           </Router>

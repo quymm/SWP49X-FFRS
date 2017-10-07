@@ -23,7 +23,7 @@ class Field extends Component {
     }
   }
   componentDidMount() {
-    fetchGetAllField(1).then(data => this.props.getAllField(data));
+    fetchGetAllField(4).then(data => this.props.getAllField(data));
   }
 
   deleteField(fieldId) {

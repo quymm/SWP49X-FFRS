@@ -37,8 +37,8 @@ class FormCreateField extends Component {
       this.setState({ errorMessage: 'Fieldname can not be blank!' });
     }
     if (fieldName !== null && fieldName !== undefined) {
-      debugger;
-      await fetchAddField(fieldName, fieldStyle, 1);
+      // debugger;
+      await fetchAddField(fieldName, fieldStyle, 4);
       this.setState({errorMessage: undefined, fieldName: undefined});
       this.fieldNameInput === '';
       // .then(fetchGetAllField(1))
