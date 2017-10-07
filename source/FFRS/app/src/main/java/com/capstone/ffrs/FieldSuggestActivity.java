@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -20,19 +21,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.capstone.ffrs.adapter.FieldAdapter;
+import com.capstone.ffrs.adapter.SimpleFragmentPagerAdapter;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.Field;
 
@@ -43,24 +51,10 @@ import java.util.ArrayList;
 public class FieldSuggestActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-
-    //  String url = "https://api.myjson.com/bins/1fscel";
-    //  String url = "http://10.0.2.2:8080/account/getFieldOwners";
-    String url = "http://10.0.2.2:8080/account/getAccountByRole?role=owner";
-
-    RecyclerView recyclerView;
-    RequestQueue queue;
-    List<Field> fieldList = new ArrayList<Field>();
-    FieldAdapter adapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_field_suggest);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        TabLayout.Tab tab = tabLayout.getTabAt(1);
-        tab.select();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -74,26 +68,19 @@ public class FieldSuggestActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        EditText edit_text = (EditText) findViewById(R.id.edit_text);
-        TextWatcher watcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        // Find the view pager that will allow the user to swipe between fragments
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 
-            }
+        // Create an adapter that knows which fragment should be shown on each page
+        SimpleFragmentPagerAdapter pagerAdapter = new SimpleFragmentPagerAdapter(this, getSupportFragmentManager());
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.getFilter().filter(s);
-            }
+        // Set the adapter onto the view pager
+        viewPager.setAdapter(pagerAdapter);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        TabLayout.Tab tab = tabLayout.getTabAt(1);
+        tab.select();
+        tabLayout.setupWithViewPager(viewPager);
 
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        };
-        edit_text.addTextChangedListener(watcher);
-
-        loadFields();
     }
 
     @Override
@@ -154,61 +141,4 @@ public class FieldSuggestActivity extends AppCompatActivity
 //        search(searchView);
 //        return true;
 //    }
-
-
-    public void loadFields() {
-        //Initialize RecyclerView
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        adapter = new FieldAdapter(this, fieldList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-
-        //Getting Instance of Volley Request Queue
-        queue = NetworkController.getInstance(this).getRequestQueue();
-        //Volley's inbuilt class to make Json array request
-        JsonArrayRequest newsReq = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-                        JSONObject obj = response.getJSONObject(i);
-                        JSONObject profile = obj.getJSONObject("profileId");
-                        Field field = new Field(profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
-
-                        // adding movie to movies array
-                        fieldList.add(field);
-
-                    } catch (Exception e) {
-                        Log.d("EXCEPTION", e.getMessage());
-                    } finally {
-                        //Notify adapter about data changes
-                        adapter.notifyItemChanged(i);
-                    }
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("EXCEPTION", error.getMessage());
-            }
-        }) {
-            @Override
-            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
-                try {
-                    String utf8String = new String(response.data, "UTF-8");
-                    return Response.success(new JSONArray(utf8String), HttpHeaderParser.parseCacheHeaders(response));
-                } catch (UnsupportedEncodingException e) {
-                    // log error
-                    return Response.error(new ParseError(e));
-                } catch (JSONException e) {
-                    // log error
-                    return Response.error(new ParseError(e));
-                }
-            }
-
-        };
-        //Adding JsonArrayRequest to Request Queue
-        queue.add(newsReq);
-    }
 }

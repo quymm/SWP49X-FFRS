@@ -1,7 +1,11 @@
 package com.capstone.ffrs;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -9,39 +13,47 @@ import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.NetworkImageView;
-import com.capstone.ffrs.adapter.FieldAdapter;
 import com.capstone.ffrs.adapter.FieldTimeAdapter;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.Field;
 import com.capstone.ffrs.entity.FieldTime;
+import com.capstone.ffrs.utils.TimePickerListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class FieldTimeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    String url = "https://api.myjson.com/bins/15b4xh";
+    String url = "https://api.myjson.com/bins/unkad";
 
     RecyclerView recyclerView;
     RequestQueue queue;
@@ -49,11 +61,30 @@ public class FieldTimeActivity extends AppCompatActivity
     FieldTimeAdapter adapter;
 
     String imageUrl, name, address;
+    int id;
+
+    private ProgressBar spinner;
+
+    public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String fromTime = intent.getStringExtra("from");
+            String toTime = intent.getStringExtra("to");
+            EditText from = (EditText) findViewById(R.id.text_from);
+            EditText to = (EditText) findViewById(R.id.text_to);
+            from.setText(fromTime);
+            to.setText(toTime);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_field_time);
+
+        spinner = (ProgressBar) findViewById(R.id.progressBar);
+        spinner.setVisibility(View.VISIBLE);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -77,20 +108,25 @@ public class FieldTimeActivity extends AppCompatActivity
         NetworkImageView imageView = (NetworkImageView) findViewById(R.id.field_image);
         imageView.setImageUrl(imageUrl, NetworkController.getInstance(this.getBaseContext()).getImageLoader());
 
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
+        id = b.getInt("field_id");
+
+        //url = "http://10.0.2.2:8080/swp49x-ffrs/time-enable/managed-time-enable?field-owner-id"+id;
+
+        final EditText from = (EditText) findViewById(R.id.text_from);
+        final EditText to = (EditText) findViewById(R.id.text_to);
+        from.setOnClickListener(new TimePickerListener(this, from));
+        to.setOnClickListener(new TimePickerListener(this, to));
+
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("custom-message"));
 
         loadFieldTimes();
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        super.onBackPressed();
     }
 
     @Override
@@ -121,11 +157,26 @@ public class FieldTimeActivity extends AppCompatActivity
     }
 
     public void onClickShowDetail(View view) {
-        Intent intent = new Intent(this, FieldDetailActivity.class);
-        intent.putExtra("field_name", name);
-        intent.putExtra("field_address", address);
-        intent.putExtra("image_url", imageUrl);
-        startActivity(intent);
+        EditText from = (EditText) findViewById(R.id.text_from);
+        EditText to = (EditText) findViewById(R.id.text_to);
+        SimpleDateFormat sdf = new SimpleDateFormat("h:mm");
+        Log.d("FROM", from.getText().toString());
+        try {
+            Date fromTime = sdf.parse(from.getText().toString());
+            Date toTime = sdf.parse(to.getText().toString());
+
+            Intent intent = new Intent(this, FieldDetailActivity.class);
+            intent.putExtra("field_id", id);
+            intent.putExtra("field_name", name);
+            intent.putExtra("field_address", address);
+            intent.putExtra("image_url", imageUrl);
+            intent.putExtra("time_from", fromTime);
+            intent.putExtra("time_to", toTime);
+            startActivity(intent);
+        } catch (ParseException e) {
+            Log.d("ERROR", e.getMessage());
+            Toast.makeText(getApplicationContext(), "Hãy nhập giờ chơi!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void loadFieldTimes() {
@@ -157,11 +208,22 @@ public class FieldTimeActivity extends AppCompatActivity
                         adapter.notifyItemChanged(i);
                     }
                 }
+                spinner.setVisibility(View.GONE);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("EXCEPTION", error.getMessage());
+                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                    Toast.makeText(getApplicationContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof AuthFailureError) {
+                    Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof ServerError) {
+                    Toast.makeText(getApplicationContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof NetworkError) {
+                    Toast.makeText(getApplicationContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof ParseError) {
+                    Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                }
             }
         }) {
             @Override

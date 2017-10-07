@@ -94,6 +94,13 @@
                         </LinearLayout>
                     </RelativeLayout>
 
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"/>
+
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/recycler_view"
                         android:layout_width="match_parent"
@@ -138,16 +145,20 @@
                     <!--</LinearLayout>-->
 
                     <EditText
+                        android:id="@+id/text_from"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Play from:"
-                        android:inputType="time" />
+                        android:hint="Chơi từ:"
+                        android:inputType="none"
+                        android:focusable="false"/>
 
                     <EditText
+                        android:id="@+id/text_to"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Play to:"
-                        android:inputType="time" />
+                        android:hint="Chơi đến:"
+                        android:inputType="none"
+                        android:focusable="false"/>
 
                     <Button
                         android:id="@+id/btReserve"
@@ -155,7 +166,7 @@
                         android:layout_height="wrap_content"
                         android:background="#009632"
                         android:onClick="onClickShowDetail"
-                        android:text="Reserve"
+                        android:text="Đặt sân"
                         android:textColor="@android:color/white"
                         android:textSize="18sp" />
                 </LinearLayout>

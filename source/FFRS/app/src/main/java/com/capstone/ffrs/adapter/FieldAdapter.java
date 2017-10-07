@@ -53,6 +53,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Field field = mFilteredList.get(position);
 
+        holder.itemView.setTag(R.id.card_view, field.getId());
         holder.title.setText(field.getFieldName());
         holder.content.setText(field.getAddress());
         holder.setImageURL(field.getImgURL());
@@ -134,6 +135,8 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, FieldTimeActivity.class);
+                    int id = (int) itemView.getTag(R.id.card_view);
+                    intent.putExtra("field_id", id);
                     intent.putExtra("field_name", title.getText());
                     intent.putExtra("field_address", content.getText());
                     if (image_url.isEmpty()) {

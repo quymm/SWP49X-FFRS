@@ -15,10 +15,17 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.capstone.ffrs.controller.NetworkController;
 
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class FieldDetailActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     String imageUrl, name, address;
+    Date from, to;
+    int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,18 +54,29 @@ public class FieldDetailActivity extends AppCompatActivity
         NetworkImageView imageView = (NetworkImageView) findViewById(R.id.field_image);
         imageView.setImageUrl(imageUrl, NetworkController.getInstance(this.getBaseContext()).getImageLoader());
 
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
+        from = (Date) b.getSerializable("time_from");
+        to = (Date) b.getSerializable("time_to");
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+
+        id = b.getInt("field_id");
+
+        long hours = Integer.valueOf(Double.valueOf(Math.abs(to.getTime() - from.getTime()) / 36e5).intValue());
+        long minutes = Integer.valueOf(Double.valueOf((Math.abs(to.getTime() - from.getTime()) / (60 * 1000)) % 60).intValue());
+
+        String duration = "Thời lượng chơi: " + (hours != 0 ? hours + " tiếng " : "") + (minutes != 0 ? minutes + " phút" : "");
+
+        TextView txtFrom = (TextView) findViewById(R.id.text_from);
+        txtFrom.setText("Từ: " + sdf.format(from));
+        TextView txtTo = (TextView) findViewById(R.id.text_to);
+        txtTo.setText("Đến: " + sdf.format(to));
+        TextView txtDuration = (TextView) findViewById(R.id.text_duration);
+        txtDuration.setText(duration);
+
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        super.onBackPressed();
     }
 
     @Override

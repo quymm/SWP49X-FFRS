@@ -18,26 +18,27 @@
         android:weightSum="5">
 
         <EditText
-            android:id="@+id/editText2"
+            android:id="@+id/text_username"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:background="@android:color/white"
             android:ems="10"
-            android:hint="Username or Email"
+            android:hint="Tên tài khoản"
             android:inputType="textPersonName"
             android:padding="5dp" />
 
         <EditText
-            android:id="@+id/editText3"
+            android:id="@+id/text_password"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginBottom="15dp"
             android:layout_weight="1"
             android:background="@android:color/white"
             android:ems="10"
-            android:hint="Password"
+            android:hint="Mật khẩu"
             android:inputType="textPassword"
+            android:fontFamily="sans-serif"
             android:padding="5dp" />
 
         <Button
@@ -47,7 +48,7 @@
             android:layout_marginBottom="5dp"
             android:layout_weight="1"
             android:background="#c62323"
-            android:text="Log in"
+            android:text="Đăng nhập"
             android:onClick="onClickLogin"
             android:textColor="@android:color/white" />
 
@@ -58,7 +59,7 @@
             android:layout_marginBottom="20dp"
             android:layout_weight="1"
             android:background="#00af7d"
-            android:text="Create New Account"
+            android:text="Đăng ký"
             android:textColor="@android:color/white" />
 
     </LinearLayout>
