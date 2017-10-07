@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.capstone.ffrs.FieldDetailActivity">
+    tools:context="com.capstone.ffrs.MapActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -16,10 +16,11 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="#009632"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:navigationIcon="@drawable/ic_arrow_back_white"/>
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_field_detail" />
+    <include layout="@layout/content_map" />
 
 </android.support.design.widget.CoordinatorLayout>
