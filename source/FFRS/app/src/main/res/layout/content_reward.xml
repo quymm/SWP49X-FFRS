@@ -44,7 +44,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center"
-                    android:text="Vouncher discount 50.000"
+                    android:text="Vouncher giảm giá 50 ngàn"
                     android:textColor="@android:color/black"
                     android:textSize="17dp"></TextView>
 
@@ -52,14 +52,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="25dp"
                     android:gravity="center"
-                    android:text="5000 points"
+                    android:text="5000 điểm"
                     android:textSize="14dp"></TextView>
 
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="#009632"
-                    android:text="Exchange"
+                    android:text="Đổi quà"
                     android:textSize="16dp"
                     android:textStyle="bold"
                     android:textColor="@android:color/white" />
@@ -81,7 +81,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center"
-                    android:text="Vouncher discount 100.000"
+                    android:text="Vouncher giảm giá 100 ngàn"
                     android:textColor="@android:color/black"
                     android:textSize="17dp"></TextView>
 
@@ -89,13 +89,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="25dp"
                     android:gravity="center"
-                    android:text="10000 points"
+                    android:text="10000 điểm"
                     android:textSize="14dp"></TextView>
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="#009632"
-                    android:text="Exchange"
+                    android:text="Đổi quà"
                     android:textSize="16dp"
                     android:textStyle="bold"
                     android:textColor="@android:color/white" />
@@ -117,7 +117,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center"
-                    android:text="Vouncher discount 200.000"
+                    android:text="Vouncher giảm giá 200 ngàn"
                     android:textColor="@android:color/black"
                     android:textSize="17dp"></TextView>
 
@@ -125,14 +125,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="25dp"
                     android:gravity="center"
-                    android:text="20000 points"
+                    android:text="20000 điểm"
                     android:textSize="14dp"></TextView>
 
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="#009632"
-                    android:text="Exchange"
+                    android:text="Đổi quà"
                     android:textSize="16dp"
                     android:textStyle="bold"
                     android:textColor="@android:color/white" />
