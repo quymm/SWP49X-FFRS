@@ -1,7 +1,8 @@
-import { BASE_URL } from './base-URL';
+import { BASE_URL, LOGIN } from './base-URL';
 
 export function fetchLogin(argUsername, argPassword){
-    return fetch(BASE_URL, {
+    return fetch(BASE_URL + LOGIN , {
+        headers: { 'content-type': 'application/json' },
         method: 'POST',
         body: JSON.stringify({
             username: argPassword, 
