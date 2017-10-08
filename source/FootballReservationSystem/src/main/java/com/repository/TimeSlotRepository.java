@@ -16,4 +16,6 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlotEntity, Intege
     List<TimeSlotEntity> findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatus(AccountEntity accountEntity,
                                                                                           FieldTypeEntity fieldTypeEntity,
                                                                                           Date targetDate, boolean reservateStatus, boolean status);
+    Integer countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(AccountEntity accountEntity, FieldTypeEntity fieldTypeEntity,
+                                                              Date targetDate, boolean status);
 }

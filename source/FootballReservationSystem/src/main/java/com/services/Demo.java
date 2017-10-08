@@ -1,5 +1,7 @@
 package com.services;
 
+import com.utils.DateTimeUtils;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,10 +18,13 @@ public class Demo {
         }
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
         SimpleDateFormat dayOfWeek = new SimpleDateFormat("EE");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
-        Date date = format.parse(abc);
-        System.out.println(date);
-        System.out.println(format.format(date));
-        System.out.println(dayOfWeek.format(date));
+//        Date date = DateTimeUtils.convertFromStringToDate(abc);
+        Date time = DateTimeUtils.convertFromStringToTime(abc);
+        System.out.println(time);
+        System.out.println(time.getTime());
+        time.setTime(time.getTime() + 60000);
+        System.out.println(timeFormat.format(time));
     }
 }
