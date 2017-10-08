@@ -2,29 +2,20 @@ package com.dto;
 
 import java.util.Date;
 
-public class InputFriendlyMatch {
+public class InputReservationDTO {
     private int fieldOwnerId;
 
     private int fieldTypeId;
 
     private int userId;
 
-    private Date date;
+    private String date;
 
-    private Date startTime;
+    private String startTime;
 
     private int duration;
 
-    public InputFriendlyMatch(int fieldOwnerId, int fieldTypeId, int userId, Date date, Date startTime, int duration) {
-        this.fieldOwnerId = fieldOwnerId;
-        this.fieldTypeId = fieldTypeId;
-        this.userId = userId;
-        this.date = date;
-        this.startTime = startTime;
-        this.duration = duration;
-    }
-
-    public InputFriendlyMatch() {
+    public InputReservationDTO() {
     }
 
     public int getFieldOwnerId() {
@@ -51,19 +42,19 @@ public class InputFriendlyMatch {
         this.userId = userId;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
-    public Date getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 

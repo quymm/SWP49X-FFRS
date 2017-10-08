@@ -5,6 +5,7 @@ import com.entity.FieldTypeEntity;
 import com.entity.TimeEnableEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,4 +17,7 @@ public interface TimeEnableRepository extends JpaRepository<TimeEnableEntity, In
     List<TimeEnableEntity> findByFieldOwnerIdAndStatus(AccountEntity accountEntity, boolean status);
 
     List<TimeEnableEntity> findByDateInWeekAndStatus(String dateInWeek, boolean status);
+
+    List<TimeEnableEntity> findByFieldOwnerIdAndFieldTypeIdAndDateInWeekAndStatus(AccountEntity accountEntity, FieldTypeEntity fieldTypeEntity,
+                                                                                  String dateInWeek, boolean status);
 }

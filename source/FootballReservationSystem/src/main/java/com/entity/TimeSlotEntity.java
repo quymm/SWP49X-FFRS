@@ -39,11 +39,11 @@ public class TimeSlotEntity implements Serializable {
     private Date date;
     @Basic(optional = false)
     @Column(name = "start_time")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIME)
     private Date startTime;
     @Basic(optional = false)
     @Column(name = "end_time")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIME)
     private Date endTime;
     @Basic(optional = false)
     @Column(name = "price")
@@ -71,14 +71,15 @@ public class TimeSlotEntity implements Serializable {
         this.id = id;
     }
 
-    public TimeSlotEntity(Integer id, Date date, Date startTime, Date endTime, float price, boolean reserveStatus, boolean status) {
-        this.id = id;
+    public TimeSlotEntity(AccountEntity fieldOwnerId, FieldTypeEntity fieldTypeId, Date date, Date startTime, Date endTime, float price, boolean reserveStatus, boolean status) {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.price = price;
         this.reserveStatus = reserveStatus;
         this.status = status;
+        this.fieldOwnerId = fieldOwnerId;
+        this.fieldTypeId = fieldTypeId;
     }
 
     public Integer getId() {
