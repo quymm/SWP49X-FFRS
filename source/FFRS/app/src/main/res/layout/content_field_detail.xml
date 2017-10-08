@@ -40,6 +40,7 @@
                 android:background="#197a35"
                 android:text="Thanh toán"
                 android:textColor="@android:color/white"
+                android:onClick="onClickReserve"
                 android:textSize="18sp" />
 
             <Button
@@ -90,7 +91,8 @@
                             android:layout_height="40dp"
                             android:layout_alignParentEnd="true"
                             android:background="#009632"
-                            app:srcCompat="@drawable/ic_location" />
+                            app:srcCompat="@drawable/ic_location"
+                            android:onClick="onClickShowMap"/>
 
 
                         <LinearLayout
@@ -119,6 +121,17 @@
                         </LinearLayout>
 
                     </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/text_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5sp"
+                        android:text="Ngay: 8/10/2017"
+                        android:textAlignment="textStart"
+                        android:textColor="@android:color/black"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/text_from"

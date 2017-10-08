@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:background="#dbdbdb"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.capstone.ffrs.FieldTimeActivity"
-    tools:showIn="@layout/app_bar_field_time">
+    tools:context="com.capstone.ffrs.FieldTimeActivity">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -66,7 +65,8 @@
                             android:layout_height="40dp"
                             android:layout_alignParentEnd="true"
                             android:background="#009632"
-                            app:srcCompat="@drawable/ic_location" />
+                            app:srcCompat="@drawable/ic_location"
+                            android:onClick="onClickShowMap"/>
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -94,12 +94,26 @@
                         </LinearLayout>
                     </RelativeLayout>
 
+                    <!--<Spinner-->
+                        <!--android:id="@+id/spinner"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="50dp" />-->
+
+                    <Button
+                        android:id="@+id/date_picker"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="dd/MM/yyyy"
+                        android:background="#009632"
+                        android:textColor="@android:color/white"
+                        android:textSize="20dp"/>
+
                     <ProgressBar
                         android:id="@+id/progressBar"
                         style="?android:attr/progressBarStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"/>
+                        android:layout_centerHorizontal="true" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/recycler_view"
@@ -110,55 +124,55 @@
                         tools:layout_editor_absoluteY="0dp" />
 
                     <!--<LinearLayout-->
-                        <!--android:layout_width="fill_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_marginBottom="5dp"-->
-                        <!--android:layout_weight="7"-->
-                        <!--android:background="#009632"-->
-                        <!--android:orientation="horizontal">-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginBottom="5dp"-->
+                    <!--android:layout_weight="7"-->
+                    <!--android:background="#009632"-->
+                    <!--android:orientation="horizontal">-->
 
-                        <!--<TextView-->
-                            <!--android:layout_width="0dp"-->
-                            <!--android:layout_height="50dp"-->
-                            <!--android:layout_weight="4"-->
+                    <!--<TextView-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="50dp"-->
+                    <!--android:layout_weight="4"-->
 
 
-                            <!--android:gravity="center_vertical"-->
-                            <!--android:padding="5dp"-->
-                            <!--android:text="7:00 am - 8:30am"-->
-                            <!--android:textColor="@android:color/white"-->
-                            <!--android:textSize="18sp"-->
-                            <!--android:textStyle="bold" />-->
+                    <!--android:gravity="center_vertical"-->
+                    <!--android:padding="5dp"-->
+                    <!--android:text="7:00 am - 8:30am"-->
+                    <!--android:textColor="@android:color/white"-->
+                    <!--android:textSize="18sp"-->
+                    <!--android:textStyle="bold" />-->
 
-                        <!--<TextView-->
-                            <!--android:layout_width="0dp"-->
-                            <!--android:layout_height="50dp"-->
-                            <!--android:layout_weight="3"-->
+                    <!--<TextView-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="50dp"-->
+                    <!--android:layout_weight="3"-->
 
-                            <!--android:gravity="center_vertical"-->
-                            <!--android:padding="5dp"-->
-                            <!--android:text="120.000đ/h"-->
-                            <!--android:textAlignment="textEnd"-->
-                            <!--android:textColor="@android:color/white"-->
-                            <!--android:textSize="18sp"-->
-                            <!--android:textStyle="bold" />-->
+                    <!--android:gravity="center_vertical"-->
+                    <!--android:padding="5dp"-->
+                    <!--android:text="120.000đ/h"-->
+                    <!--android:textAlignment="textEnd"-->
+                    <!--android:textColor="@android:color/white"-->
+                    <!--android:textSize="18sp"-->
+                    <!--android:textStyle="bold" />-->
                     <!--</LinearLayout>-->
 
                     <EditText
                         android:id="@+id/text_from"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:focusable="false"
                         android:hint="Chơi từ:"
-                        android:inputType="none"
-                        android:focusable="false"/>
+                        android:inputType="none" />
 
                     <EditText
                         android:id="@+id/text_to"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:focusable="false"
                         android:hint="Chơi đến:"
-                        android:inputType="none"
-                        android:focusable="false"/>
+                        android:inputType="none" />
 
                     <Button
                         android:id="@+id/btReserve"

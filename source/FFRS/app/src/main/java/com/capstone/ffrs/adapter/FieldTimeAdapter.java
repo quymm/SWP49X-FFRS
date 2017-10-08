@@ -15,6 +15,7 @@ import com.capstone.ffrs.R;
 import com.capstone.ffrs.entity.FieldTime;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 
@@ -68,8 +69,13 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyVi
                     Intent intent = new Intent("custom-message");
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                     String[] hours = title.getText().toString().split(" - ");
-                    intent.putExtra("from",hours[0]);
-                    intent.putExtra("to",hours[1]);
+                    intent.putExtra("from", hours[0]);
+                    intent.putExtra("to", hours[1]);
+                    try {
+                        intent.putExtra("price", NumberFormat.getNumberInstance(Locale.US).parse(price.getText().toString().replace(" đ/h", "")).intValue());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }
