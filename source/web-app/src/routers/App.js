@@ -9,6 +9,7 @@ import Field from '../components/Field';
 import ProfilePlayer from '../components/ProfilePlayer';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
+import SettingTime from '../components/Setting-time';
 //import Store from '../redux/store';
 // import { BASE_URL, LOGIN } from '../apis/base-URL'
 class App extends Component {
@@ -22,6 +23,8 @@ class App extends Component {
             <Route path="/index" component={Home} />
             <Route path="/field" component={Field} />
             <Route path="/player" component={ProfilePlayer} />
+            <Route path="/setting-time" component={SettingTime} />
+
           </div>
         </Router>
       </Provider>

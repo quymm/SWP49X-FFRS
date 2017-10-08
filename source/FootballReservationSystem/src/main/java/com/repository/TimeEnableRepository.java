@@ -11,5 +11,9 @@ import java.util.List;
  * Created by MinhQuy on 9/23/2017.
  */
 public interface TimeEnableRepository extends JpaRepository<TimeEnableEntity, Integer> {
-    List<TimeEnableEntity> findByFieldOwnerIdAndAndFieldTypeIdAndStatus(AccountEntity accountEntity, FieldTypeEntity fieldTypeEntity, boolean status);
+    List<TimeEnableEntity> findByFieldOwnerIdAndFieldTypeIdAndStatus(AccountEntity accountEntity, FieldTypeEntity fieldTypeEntity, boolean status);
+
+    List<TimeEnableEntity> findByFieldOwnerIdAndStatus(AccountEntity accountEntity, boolean status);
+
+    List<TimeEnableEntity> findByDateInWeekAndStatus(String dateInWeek, boolean status);
 }

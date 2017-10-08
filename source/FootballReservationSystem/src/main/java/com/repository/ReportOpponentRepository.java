@@ -8,3 +8,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ReportOpponentRepository extends JpaRepository<ReportOpponentEntity, Integer> {
 }
+

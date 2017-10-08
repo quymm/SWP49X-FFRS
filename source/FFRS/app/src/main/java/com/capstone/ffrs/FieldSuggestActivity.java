@@ -2,8 +2,16 @@ package com.capstone.ffrs;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Menu;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,29 +20,36 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.capstone.ffrs.adapter.FieldAdapter;
+import com.capstone.ffrs.adapter.SimpleFragmentPagerAdapter;
+import com.capstone.ffrs.controller.NetworkController;
+import com.capstone.ffrs.entity.Field;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.ArrayList;
 
 public class FieldSuggestActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    RequestQueue queue;
-
-    String url = "https://api.myjson.com/bins/w86a";
-
-    RecyclerView recyclerView;
-
-    List<NewsFeeds> feedsList = new ArrayList<NewsFeeds>();
-
-    MyRecyclerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,44 +68,18 @@ public class FieldSuggestActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //Initialize RecyclerView
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        adapter = new MyRecyclerAdapter(this, feedsList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        // Find the view pager that will allow the user to swipe between fragments
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 
-        recyclerView.setAdapter(adapter);
-//Getting Instance of Volley Request Queue
-        queue = NetworkController.getInstance(this).getRequestQueue();
-//Volley's inbuilt class to make Json array request
-        JsonArrayRequest newsReq = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
+        // Create an adapter that knows which fragment should be shown on each page
+        SimpleFragmentPagerAdapter pagerAdapter = new SimpleFragmentPagerAdapter(this, getSupportFragmentManager());
 
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-
-                        JSONObject obj = response.getJSONObject(i);
-                        NewsFeeds feeds = new NewsFeeds(obj.getString("title"), obj.getString("content"), obj.getString("image"), obj.getInt("ratebar"));
-
-// adding movie to movies array
-                        feedsList.add(feeds);
-
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    } finally {
-//Notify adapter about data changes
-                        adapter.notifyItemChanged(i);
-                    }
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println(error.getMessage());
-            }
-        });
-//Adding JsonArrayRequest to Request Queue
-        queue.add(newsReq);
+        // Set the adapter onto the view pager
+        viewPager.setAdapter(pagerAdapter);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        TabLayout.Tab tab = tabLayout.getTabAt(1);
+        tab.select();
+        tabLayout.setupWithViewPager(viewPager);
 
     }
 
@@ -125,8 +114,31 @@ public class FieldSuggestActivity extends AppCompatActivity
         return true;
     }
 
-    public void onClickShowTime(View view) {
-        Intent intent = new Intent(this, FieldTimeActivity.class);
-        startActivity(intent);
-    }
+//    private void search(SearchView searchView) {
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//
+//                adapter.getFilter().filter(newText);
+//                return true;
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//
+//        getMenuInflater().inflate(R.menu.menu_search, menu);
+//
+//        MenuItem search = menu.findItem(R.id.search);
+//        SearchView searchView = (SearchView) MenuItemCompat.getActionView(search);
+//        search(searchView);
+//        return true;
+//    }
 }

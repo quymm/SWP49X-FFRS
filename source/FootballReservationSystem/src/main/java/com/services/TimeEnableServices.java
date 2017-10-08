@@ -30,16 +30,25 @@ public class TimeEnableServices {
     }
 
     public List<TimeEnableEntity> findTimeEnableByFieldOwnerIdAndFieldTypeId(int fieldOwnerId, int fieldTypeId){
-        AccountEntity fieldOwnerEntity = accountServices.findAccountEntityById(fieldOwnerId);
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(fieldTypeId);
-        return timeEnableRepository.findByFieldOwnerIdAndAndFieldTypeIdAndStatus(fieldOwnerEntity, fieldTypeEntity, true);
+        AccountEntity fieldOwnerEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(fieldTypeId);
+        return timeEnableRepository.findByFieldOwnerIdAndFieldTypeIdAndStatus(fieldOwnerEntity, fieldTypeEntity, true);
+    }
+
+    public List<TimeEnableEntity> findTimeEnableByFieldOwnerId(int fieldOwnerId){
+        AccountEntity fieldOwnerEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        return timeEnableRepository.findByFieldOwnerIdAndStatus(fieldOwnerEntity, true);
+    }
+
+    public List<TimeEnableEntity> findTimeEnableByDateInWeek(String dateInWeek){
+        return timeEnableRepository.findByDateInWeekAndStatus(dateInWeek, true);
     }
 
     public TimeEnableEntity convertFromInputTimeEnableDTOToEntity(InputTimeEnableDTO inputTimeEnableDTO){
         TimeEnableEntity timeEnableEntity = new TimeEnableEntity();
         timeEnableEntity.setDateInWeek(inputTimeEnableDTO.getDayInWeek());
-        timeEnableEntity.setFieldOwnerId(accountServices.findAccountEntityById(inputTimeEnableDTO.getFieldOwnerId()));
-        timeEnableEntity.setFieldTypeId(fieldTypeServices.findFieldTypeEntityById(inputTimeEnableDTO.getFieldTypeId()));
+        timeEnableEntity.setFieldOwnerId(accountServices.findAccountEntityById(inputTimeEnableDTO.getFieldOwnerId(), "owner"));
+        timeEnableEntity.setFieldTypeId(fieldTypeServices.findById(inputTimeEnableDTO.getFieldTypeId()));
         timeEnableEntity.setStartTime(inputTimeEnableDTO.getStartTime());
         timeEnableEntity.setEndTime(inputTimeEnableDTO.getEndTime());
         timeEnableEntity.setPrice(inputTimeEnableDTO.getPrice());

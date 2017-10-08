@@ -17,7 +17,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -25,7 +24,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "voucher_record")
-@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "VoucherRecordEntity.findAll", query = "SELECT v FROM VoucherRecordEntity v")})
 public class VoucherRecordEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
