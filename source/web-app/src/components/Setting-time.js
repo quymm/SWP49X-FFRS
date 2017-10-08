@@ -9,6 +9,10 @@ class SettingTime extends Component {
     this.state = {
       fieldType: '5 vs 5',
       daySelected: 'Monday',
+      startDay: null,
+      endDay: null, 
+      price: null,
+      isShowUpdate: false,
     };
   }
   // defaultProps = { timeEnable: {} };
@@ -24,9 +28,16 @@ class SettingTime extends Component {
     await this.setState({ daySelected: evt.target.value });
     console.log(this.state.daySelected);
   }
+
+  handleInputTimeEnableChange(evt){
+    if (evt.length > 0) {
+      this.setState({startDay: evt[0].startTime, endDay: evt[0].endTime, price: evt[0].price })
+    } 
+  }
+
   render() {
     const { timeEnable } = this.props;
-    const { daySelected, fieldType } = this.state;
+    const { daySelected, fieldType, endDay, startDay, price } = this.state;
     console.log(timeEnable.timeEnable);
     // debugger
     const dayAfterFilter =
@@ -40,8 +51,8 @@ class SettingTime extends Component {
     if (!dayAfterFilter) {
       return <h1>loading...</h1>;
     }
-
-    console.log(new Date(dayAfterFilter[0].startTime));
+    // this.handleInputTimeEnableChange(dayAfterFilter);
+  //  console.log(new Date(dayAfterFilter[0].startTime));
     return (
       <div id="page-wrapper">
         <div className="container-fluid">
@@ -153,7 +164,8 @@ class SettingTime extends Component {
                           className="form-control"
                           id="inputPassword3"
                           placeholder="Start time"
-                          value={dayAfterFilter[0].startTime}
+                          value={dayAfterFilter.length > 0? dayAfterFilter[0].startTime : 'Chưa thiết lập'  }
+                          readOnly
                         />
                       </div>
                     </div>
@@ -175,16 +187,38 @@ class SettingTime extends Component {
                           className="form-control"
                           id="inputPassword3"
                           placeholder="End time"
-                          value={dayAfterFilter[0].endTime}
+                          value={dayAfterFilter.length > 0?  dayAfterFilter[0].endTime : 'Chưa thiết lập'}
+                          readOnly
                         />
                       </div>
                     </div>
                   </div>
                 </div>
-
+                <div className="form-group">
+                  <label
+                    htmlFor="inputEmail3"
+                    className="col-sm-3 control-label"
+                  >
+                    Giá 
+                  </label>
+                  <div className="col-sm-9">
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="inputPassword3"
+                          placeholder="End time"
+                          value={dayAfterFilter.length > 0? dayAfterFilter[0].price : 'Chưa thiết lập'}
+                          readOnly                         
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div className="form-group">
                   <div className="col-sm-offset-3 col-sm-9">
-                    <button type="submit" className="btn btn-primary">
+                    <button className="btn btn-primary">
                       Cập nhật
                     </button>
                   </div>
