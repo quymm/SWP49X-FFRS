@@ -5,19 +5,24 @@ import {
   getAllField,
 } from '../redux/field-owner/field-owner-action-creator';
 import { fetchAddField, fetchGetAllField } from '../apis/field-owner-apis';
+import { withRouter } from 'react-router-dom';
 
 class FormCreateField extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      fieldName: '',
+      fieldName: undefined,
       fieldStyle: 1,
+      errorMessage: undefined,
     };
   }
- 
+
+  componentDidMount() {
+    console.log('form', this.props);
+  }
+
   handelInputChange(evt) {
     this.setState({ fieldName: evt.target.value });
-    console.log(this.state.fieldName);
   }
 
   handleSelectChange(evt) {
@@ -25,22 +30,38 @@ class FormCreateField extends Component {
     console.log(this.state.fieldStyle);
   }
 
-  handleSubmit(evt) {
-    // evt.preventDefault();
+  async handleSubmit(evt) {
+    evt.preventDefault();
     const { fieldName, fieldStyle } = this.state;
-    fetchAddField(fieldName, fieldStyle, 1);
-    // .then(
-    //   fetchGetAllField(1).then(data => getAllField(data)),
-    // );
+    if (fieldName === null || fieldName === undefined) {
+      this.setState({ errorMessage: 'Fieldname can not be blank!' });
+    }
+    if (fieldName !== null && fieldName !== undefined) {
+      // debugger;
+      await fetchAddField(fieldName, fieldStyle, 4);
+      this.setState({errorMessage: undefined, fieldName: undefined});
+      this.fieldNameInput === '';
+      // .then(fetchGetAllField(1))
+      // .then(data => this.props.getAllField());
+      const data = await fetchGetAllField(1);
+      await this.props.getAllField(data);
+      console.log('form', this.props);
+      this.props.history.push('/app/field');
+    }
   }
 
   render() {
+    const { errorMessage } = this.state;
     return (
       <div className="col-lg-12">
         <form
           onSubmit={this.handleSubmit.bind(this)}
           className="form-horizontal"
         >
+        {errorMessage === undefined ?  null :  (<div className="alert alert-danger">
+            <strong>Danger!</strong> {errorMessage}
+          </div>)  }
+          
           <div className="form-group">
             <label htmlFor="inputEmail3" className="col-sm-3 control-label">
               Field Name
@@ -55,6 +76,7 @@ class FormCreateField extends Component {
                     placeholder="Field name"
                     value={this.state.fieldName}
                     onChange={this.handelInputChange.bind(this)}
+                    ref = {el => this.fieldNameInput = el}
                   />
                 </div>
               </div>
@@ -91,11 +113,11 @@ class FormCreateField extends Component {
 }
 function mapStateToProps(state) {
   return {
-    fieldList: state.field.listField,
+    fieldList: state.listField.listField,
     // fieldOwnerId: state.listField.fieldOwnerId.id
   };
 }
 
-export default connect(mapStateToProps, { createField, getAllField })(
-  FormCreateField,
+export default withRouter(
+  connect(mapStateToProps, { createField, getAllField })(FormCreateField),
 );

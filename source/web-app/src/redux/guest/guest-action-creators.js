@@ -1,15 +1,26 @@
-export function Login(username, password){
-    const account = {username, password};
+export function doLogin(data){
     return {
         type: 'LOGIN',
-        payloads: account
+        payloads: data
     };
 }
 
-export function Register(username, password){
-    const account = {username, password};
+export function doRegister(data){
     return {
         type: 'REGISTER',
-        payloads: account
+        payloads: data
     };
+}
+
+export function doLoginError(data){
+    return {
+        type: 'LOGIN_ERROR',
+        payloads: data
+    }
+}
+
+export function accessDenied(){
+    return {
+        type: 'ACCESS_DENIED',
+    }
 }

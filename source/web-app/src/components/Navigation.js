@@ -8,11 +8,11 @@ export class Navigation extends Component {
                 <ul className="nav" id="side-menu">
 
                     <li>
-                        <NavLink to="/index" activeClassName="active" > <i className="glyphicon glyphicon-home"></i> Home </NavLink>
+                        <NavLink to="/app/index" activeClassName="active" > <i className="glyphicon glyphicon-home"></i> Home </NavLink>
                         
                     </li>
                     <li>
-                    <NavLink to="/field" activeClassName="active" > <i className="glyphicon glyphicon-list-alt"></i> Management Field </NavLink>
+                    <NavLink to="/app/field" activeClassName="active" > <i className="glyphicon glyphicon-list-alt"></i> Management Field </NavLink>
                     </li>
                 </ul>
             </div>
