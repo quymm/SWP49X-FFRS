@@ -168,8 +168,9 @@ class Home extends Component {
   }
 }
 function mapStateToProps(state) {
+  console.log("show state in match: ", state);
   return {
-    listMatch: state.match.listMatch,
+    listMatch: state.listMatch.listMatch,
   };
 }
 

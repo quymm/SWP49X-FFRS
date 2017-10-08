@@ -2,19 +2,28 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchGetAllField, fetchDeleteField } from '../apis/field-owner-apis';
 import { getAllField } from '../redux/field-owner/field-owner-action-creator';
-import Header from './Header';
-import Navigation from './Navigation';
 import FormCreateField from '../containts/Form-Create-Field';
+import { Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import { accessDenied } from '../redux/guest/guest-action-creators';
 class Field extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isCreateShowed: true
-    }
+      isCreateShowed: true,
+    };
   }
 
+  componentWillMount() {
+    const { role } = this.props.auth.user;
+    if (role !== 1) {
+      this.props.accessDenied();
+      this.props.history.push("/login");
+      
+    }
+  }
   componentDidMount() {
-    fetchGetAllField(1).then(data => this.props.getAllField(data));
+    fetchGetAllField(4).then(data => this.props.getAllField(data));
   }
 
   deleteField(fieldId) {
@@ -22,15 +31,10 @@ class Field extends Component {
       fetchGetAllField().then(data => this.props.getAllField(data)),
     );
   }
-  
-  shouldComponentUpdate(nextProps, nextState){
-    // console.log(nextProps, nextState);
-    return true;
-  }
 
   render() {
     const { listField } = this.props;
-    // console.log(listField);
+    console.log(listField);
     const renderField = listField.map(listField => {
       return (
         <tr key={listField.id}>
@@ -49,7 +53,7 @@ class Field extends Component {
         </tr>
       );
     });
-    const {isCreateShowed} = this.state;
+    const { isCreateShowed } = this.state;
     return (
       <div>
         <div id="page-wrapper">
@@ -59,8 +63,8 @@ class Field extends Component {
                 <h2 className="page-header">Field</h2>
               </div>
             </div>
-            {isCreateShowed? <FormCreateField /> : null }
-            
+            {isCreateShowed ? <FormCreateField /> : null}
+
             <div className="col-lg-8 col-lg-offset-2">
               <div className="table-responsive">
                 <table className="table table-striped">
@@ -84,9 +88,11 @@ class Field extends Component {
   }
 }
 function mapStateToProps(state) {
+  console.log("state in field: ", state);
   return {
-    listField: state.field.listField,
+    listField: state.listField.listField,
+    auth: state.auth,
   };
 }
 
-export default connect(mapStateToProps, { getAllField })(Field);
+export default withRouter(connect(mapStateToProps, { getAllField, accessDenied })(Field));
