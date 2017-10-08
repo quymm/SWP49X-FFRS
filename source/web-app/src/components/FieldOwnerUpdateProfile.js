@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { fetchFieldOwnerUpdateProfile } from '../apis/field-owner-apis';
-
+import {updateOwnerField} from '../'
 class FieldOwnerUpdateProfile extends Component {
     constructor(props) {
         super(props);
@@ -17,8 +17,16 @@ class FieldOwnerUpdateProfile extends Component {
         }
     }
 
+    componentDidMount(){
+
+    }
+
     handleChangeUsername(event) {
         this.setState({username: event.target.value});
+        const model ={
+            field:"username",
+            value: event.target.value
+        }
     }
 
     handleChangePassword(event) {
