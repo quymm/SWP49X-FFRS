@@ -8,16 +8,16 @@ class SettingTime extends Component {
     super(props);
     this.state = {
       fieldType: '5 vs 5',
-      daySelected: 'Monday',
+      daySelected: 'Mon',
       startDay: null,
-      endDay: null, 
+      endDay: null,
       price: null,
       isShowUpdate: false,
     };
   }
   // defaultProps = { timeEnable: {} };
   async componentDidMount() {
-    const data = await fetchGetTimeEnableInWeek(4); //.then(data =>
+    const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
     this.props.getAllTimeEnableInWeek(data);
     //);
   }
@@ -29,15 +29,30 @@ class SettingTime extends Component {
     console.log(this.state.daySelected);
   }
 
-  handleInputTimeEnableChange(evt){
+  handleInputTimeEnableChange(evt) {
     if (evt.length > 0) {
-      this.setState({startDay: evt[0].startTime, endDay: evt[0].endTime, price: evt[0].price })
-    } 
+      this.setState({
+        startDay: evt[0].startTime,
+        endDay: evt[0].endTime,
+        price: evt[0].price,
+      });
+    }
   }
-
+  handelShowChange(evt) {
+    console.log(evt);
+    evt.preventDefault();
+    this.setState({ isShowUpdate: true });
+  }
   render() {
     const { timeEnable } = this.props;
-    const { daySelected, fieldType, endDay, startDay, price } = this.state;
+    const {
+      daySelected,
+      fieldType,
+      endDay,
+      startDay,
+      price,
+      isShowUpdate,
+    } = this.state;
     console.log(timeEnable.timeEnable);
     // debugger
     const dayAfterFilter =
@@ -52,7 +67,7 @@ class SettingTime extends Component {
       return <h1>loading...</h1>;
     }
     // this.handleInputTimeEnableChange(dayAfterFilter);
-  //  console.log(new Date(dayAfterFilter[0].startTime));
+    //  console.log(new Date(dayAfterFilter[0].startTime));
     return (
       <div id="page-wrapper">
         <div className="container-fluid">
@@ -92,7 +107,7 @@ class SettingTime extends Component {
                 <button
                   type="button"
                   className="list-group-item"
-                  value="Monday"
+                  value="Mon"
                   onClick={this.handelDaySelected.bind(this)}
                 >
                   Thứ hai
@@ -100,7 +115,7 @@ class SettingTime extends Component {
                 <button
                   type="button"
                   className="list-group-item"
-                  value="Tuesday"
+                  value="Tue"
                   onClick={this.handelDaySelected.bind(this)}
                 >
                   Thứ ba
@@ -108,7 +123,7 @@ class SettingTime extends Component {
                 <button
                   type="button"
                   className="list-group-item"
-                  value="Wednesday"
+                  value="Wed"
                   onClick={this.handelDaySelected.bind(this)}
                 >
                   Thứ tư
@@ -116,7 +131,7 @@ class SettingTime extends Component {
                 <button
                   type="button"
                   className="list-group-item"
-                  value="Thusday"
+                  value="Thu"
                   onClick={this.handelDaySelected.bind(this)}
                 >
                   Thứ năm
@@ -124,7 +139,7 @@ class SettingTime extends Component {
                 <button
                   type="button"
                   className="list-group-item"
-                  value="Friday"
+                  value="Fri"
                   onClick={this.handelDaySelected.bind(this)}
                 >
                   Thứ sáu
@@ -132,7 +147,7 @@ class SettingTime extends Component {
                 <button
                   type="button"
                   className="list-group-item"
-                  value="Saturday"
+                  value="Sat"
                   onClick={this.handelDaySelected.bind(this)}
                 >
                   Thứ bảy
@@ -140,7 +155,7 @@ class SettingTime extends Component {
                 <button
                   type="button"
                   className="list-group-item"
-                  value="Sunday"
+                  value="Sun"
                   onClick={this.handelDaySelected.bind(this)}
                 >
                   Chủ nhật
@@ -148,82 +163,168 @@ class SettingTime extends Component {
               </div>
             </div>
             <div className="col-lg-10">
-              <form className="form-horizontal">
-                <div className="form-group">
-                  <label
-                    htmlFor="inputEmail3"
-                    className="col-sm-3 control-label"
-                  >
-                    Mở cửa
-                  </label>
-                  <div className="col-sm-9">
-                    <div className="row">
-                      <div className="col-sm-6">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="inputPassword3"
-                          placeholder="Start time"
-                          value={dayAfterFilter.length > 0? dayAfterFilter[0].startTime : 'Chưa thiết lập'  }
-                          readOnly
-                        />
+              {isShowUpdate ? (
+                <form className="form-horizontal">
+                  <div className="form-group">
+                    <label
+                      htmlFor="inputEmail3"
+                      className="col-sm-3 control-label"
+                    >
+                      Mở cửa
+                    </label>
+                    <div className="col-sm-9">
+                      <div className="row">
+                        <div className="col-sm-6">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="inputPassword3"
+                            placeholder="Start time"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="form-group">
-                  <label
-                    htmlFor="inputEmail3"
-                    className="col-sm-3 control-label"
-                  >
-                    Đóng cửa
-                  </label>
-                  <div className="col-sm-9">
-                    <div className="row">
-                      <div className="col-sm-6">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="inputPassword3"
-                          placeholder="End time"
-                          value={dayAfterFilter.length > 0?  dayAfterFilter[0].endTime : 'Chưa thiết lập'}
-                          readOnly
-                        />
+                  <div className="form-group">
+                    <label
+                      htmlFor="inputEmail3"
+                      className="col-sm-3 control-label"
+                    >
+                      Đóng cửa
+                    </label>
+                    <div className="col-sm-9">
+                      <div className="row">
+                        <div className="col-sm-6">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="inputPassword3"
+                            placeholder="End time"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="form-group">
-                  <label
-                    htmlFor="inputEmail3"
-                    className="col-sm-3 control-label"
-                  >
-                    Giá 
-                  </label>
-                  <div className="col-sm-9">
-                    <div className="row">
-                      <div className="col-sm-6">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="inputPassword3"
-                          placeholder="End time"
-                          value={dayAfterFilter.length > 0? dayAfterFilter[0].price : 'Chưa thiết lập'}
-                          readOnly                         
-                        />
+                  <div className="form-group">
+                    <label
+                      htmlFor="inputEmail3"
+                      className="col-sm-3 control-label"
+                    >
+                      Giá
+                    </label>
+                    <div className="col-sm-9">
+                      <div className="row">
+                        <div className="col-sm-6">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="inputPassword3"
+                            placeholder="End time"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="form-group">
-                  <div className="col-sm-offset-3 col-sm-9">
-                    <button className="btn btn-primary">
-                      Cập nhật
-                    </button>
+                  <div className="form-group">
+                    <div className="col-sm-offset-3 col-sm-9">
+                      <button className="btn btn-primary">Cập nhật</button>
+                    </div>
                   </div>
-                </div>
-              </form>
+                </form>
+              ) : (
+                <form className="form-horizontal">
+                  <div className="form-group">
+                    <label
+                      htmlFor="inputEmail3"
+                      className="col-sm-3 control-label"
+                    >
+                      Mở cửa
+                    </label>
+                    <div className="col-sm-9">
+                      <div className="row">
+                        <div className="col-sm-6">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="inputPassword3"
+                            placeholder="Start time"
+                            value={
+                              dayAfterFilter.length > 0
+                                ? dayAfterFilter[0].startTime
+                                : 'Chưa thiết lập'
+                            }
+                            readOnly
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label
+                      htmlFor="inputEmail3"
+                      className="col-sm-3 control-label"
+                    >
+                      Đóng cửa
+                    </label>
+                    <div className="col-sm-9">
+                      <div className="row">
+                        <div className="col-sm-6">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="inputPassword3"
+                            placeholder="End time"
+                            value={
+                              dayAfterFilter.length > 0
+                                ? dayAfterFilter[0].endTime
+                                : 'Chưa thiết lập'
+                            }
+                            readOnly
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label
+                      htmlFor="inputEmail3"
+                      className="col-sm-3 control-label"
+                    >
+                      Giá
+                    </label>
+                    <div className="col-sm-9">
+                      <div className="row">
+                        <div className="col-sm-6">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="inputPassword3"
+                            placeholder="End time"
+                            value={
+                              dayAfterFilter.length > 0
+                                ? dayAfterFilter[0].price
+                                : 'Chưa thiết lập'
+                            }
+                            readOnly
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <div className="col-sm-offset-3 col-sm-9">
+                      <button
+                        className="btn btn-primary"
+                        onClick={this.handelShowChange.bind(this)}
+                      >
+                        Cập nhật
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         </div>

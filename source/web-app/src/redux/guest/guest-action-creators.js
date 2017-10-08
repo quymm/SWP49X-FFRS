@@ -1,6 +1,6 @@
-export function doLogin(data){
+export function doLoginSuccessful(data){
     return {
-        type: 'LOGIN',
+        type: 'LOGIN_SUCCESSFUL',
         payloads: data
     };
 }

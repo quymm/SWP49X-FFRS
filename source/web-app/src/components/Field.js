@@ -15,15 +15,20 @@ class Field extends Component {
   }
 
   componentWillMount() {
-    const { role } = this.props.auth.user;
-    if (role !== 1) {
+    const { role } = this.props.auth.user
+    console.log(role);
+    if (role !== 'owner') {
+      // debugger
       this.props.accessDenied();
       this.props.history.push("/login");
       
     }
   }
   componentDidMount() {
-    fetchGetAllField(4).then(data => this.props.getAllField(data));
+    const { id } = this.props.auth.user.data;
+    console.log(id);
+    debugger
+    fetchGetAllField(id).then(data => this.props.getAllField(data));
   }
 
   deleteField(fieldId) {
@@ -60,7 +65,7 @@ class Field extends Component {
           <div className="container-fluid">
             <div className="row">
               <div className="col-lg-4">
-                <h2 className="page-header">Field</h2>
+                <h2 className="page-header">Quản lý sân</h2>
               </div>
             </div>
             {isCreateShowed ? <FormCreateField /> : null}
@@ -70,9 +75,9 @@ class Field extends Component {
                 <table className="table table-striped">
                   <thead>
                     <tr>
-                      <th>Field Name</th>
-                      <th>Field Type</th>
-                      <th>Action</th>
+                      <th>Tên sân</th>
+                      <th>Loại sân</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>

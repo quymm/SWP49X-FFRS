@@ -32,13 +32,14 @@ class FormCreateField extends Component {
 
   async handleSubmit(evt) {
     evt.preventDefault();
+    const { id } = this.props.auth.user.data;
     const { fieldName, fieldStyle } = this.state;
     if (fieldName === null || fieldName === undefined) {
       this.setState({ errorMessage: 'Fieldname can not be blank!' });
     }
     if (fieldName !== null && fieldName !== undefined) {
       // debugger;
-      await fetchAddField(fieldName, fieldStyle, 4);
+      await fetchAddField(fieldName, fieldStyle, id);
       this.setState({errorMessage: undefined, fieldName: undefined});
       this.fieldNameInput === '';
       // .then(fetchGetAllField(1))
@@ -114,7 +115,7 @@ class FormCreateField extends Component {
 function mapStateToProps(state) {
   return {
     fieldList: state.listField.listField,
-    // fieldOwnerId: state.listField.fieldOwnerId.id
+    auth: state.auth
   };
 }
 
