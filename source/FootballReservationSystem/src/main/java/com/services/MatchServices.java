@@ -1,17 +1,11 @@
 package com.services;
 
-import com.dto.InputMatchingRequestDTO;
-import com.dto.OutputMatchDTO;
-import com.entity.*;
 import com.repository.FriendlyMatchRepository;
 import com.repository.MatchingRequestRepository;
 import com.repository.TourMatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by MinhQuy on 9/29/2017.

@@ -6,6 +6,8 @@ import com.repository.FieldTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by MinhQuy on 9/24/2017.
  */
@@ -35,5 +37,9 @@ public class FieldTypeServices {
         fieldTypeEntity.setNumberPlayer(Integer.parseInt(inputFieldTypeDTO.getNumberPlayer()));
         fieldTypeEntity.setStatus(true);
         return fieldTypeEntity;
+    }
+
+    public List<FieldTypeEntity> findAllFieldType(){
+        return fieldTypeRepository.findAllByStatus(true);
     }
 }

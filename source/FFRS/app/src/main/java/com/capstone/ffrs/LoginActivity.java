@@ -6,11 +6,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -47,26 +50,40 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onClickLogin(View view) {
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//        Log.d("Response", "Started");
-//        String url = "http://10.0.2.2:8080/account/getUserByUsernameAndPassword?username=string&password=string";
-//        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-//                new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        Log.d("Response", response.toString());
-//                        changeActivity();
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Log.d("Error.Response", error.toString());
-//                    }
-//                }) {
-//        };
-//        queue.add(getRequest);
-        changeActivity();
+        RequestQueue queue = Volley.newRequestQueue(this);
+        EditText username = (EditText) findViewById(R.id.text_username);
+        EditText password = (EditText) findViewById(R.id.text_password);
+        if (TextUtils.isEmpty(username.getText().toString())) {
+            username.setError("Hãy nhập tên tài khoản");
+            username.requestFocus();
+            return;
+        }
+
+        if (TextUtils.isEmpty(password.getText().toString())) {
+            password.setError("Hãy nhập mật khẩu");
+            password.requestFocus();
+            return;
+        }
+        String url = "http://10.0.2.2:8080/swp49x-ffrs/account/login-user?username=" + username.getText().toString() + "&password=" + password.getText().toString();
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if (response != null) {
+                            changeActivity();
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Sai tên tài khoản hay mật khẩu!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error.Response", error.toString());
+                    }
+                }) {
+        };
+        queue.add(getRequest);
     }
 
     public void changeActivity() {

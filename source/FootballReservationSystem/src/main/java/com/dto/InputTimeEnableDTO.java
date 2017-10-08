@@ -12,20 +12,11 @@ public class InputTimeEnableDTO {
 
     private String dayInWeek;
 
-    private Date startTime;
+    private String startTime;
 
-    private Date endTime;
+    private String endTime;
 
-    private Float price;
-
-    public InputTimeEnableDTO(Integer fieldTypeId, Integer fieldOwnerId, String dayInWeek, Date startTime, Date endTime, Float price) {
-        this.fieldTypeId = fieldTypeId;
-        this.fieldOwnerId = fieldOwnerId;
-        this.dayInWeek = dayInWeek;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.price = price;
-    }
+    private String price;
 
     public InputTimeEnableDTO() {
     }
@@ -54,27 +45,27 @@ public class InputTimeEnableDTO {
         this.dayInWeek = dayInWeek;
     }
 
-    public Date getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
 
-    public Float getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(Float price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 }

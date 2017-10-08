@@ -7,11 +7,21 @@ package com.capstone.ffrs.entity;
 public class Field {
 
     private String imgURL, fieldName, address;
+    private int id;
 
-    public Field(String fieldName, String address, String imgURL) {
+    public Field(int id, String fieldName, String address, String imgURL) {
+        this.id = id;
         this.imgURL = imgURL;
         this.fieldName = fieldName;
         this.address = address;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getImgURL() {

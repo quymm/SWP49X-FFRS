@@ -9,39 +9,20 @@
     tools:context="com.capstone.ffrs.FieldSuggestActivity"
     tools:showIn="@layout/app_bar_field_suggest">
 
-    <RelativeLayout
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintLeft_creator="1"
+        android:layout_height="0dp"
+        android:background="#dbdbdb"
+        tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1">
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@android:color/white"
-            android:layout_below="@+id/tab_layout"
-            android:drawableLeft="@android:drawable/ic_menu_search"
-            android:ems="10"
-            android:hint="Search"
-            android:inputType="text"
-            android:paddingLeft="10dp"
-            android:textSize="15dp" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#dbdbdb"
-            android:layout_below="@id/editText"
-            tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="0dp" />
-
-    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

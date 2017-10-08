@@ -20,7 +20,7 @@ public class NetworkController {
     private NetworkController(Context context) {
         mCtx = context;
         mRequestQueue = getRequestQueue();
-        // This will Load Images from Network in Separate Thread
+        // Load Images from Network in Separate Thread
         mImageLoader = new ImageLoader(mRequestQueue,
                 new ImageLoader.ImageCache() {
                     //Create ImageCache of max size 10MB
@@ -48,8 +48,8 @@ public class NetworkController {
 
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
-        // getApplicationContext() is key, it keeps you from leaking the
-        // Activity or BroadcastReceiver if someone passes one in.
+            // getApplicationContext() is key, it keeps you from leaking the
+            // Activity or BroadcastReceiver if someone passes one in.
             mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
         }
         return mRequestQueue;

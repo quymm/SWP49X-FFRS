@@ -29,6 +29,7 @@ class Login extends Component {
       doLogin(data);
       if (data.user.role === 1) {
         this.props.history.push('/index');
+        console.log('da login thanh cong')
         window.location.reload();
       }
       else if (data.user.role === 2) {
@@ -60,7 +61,7 @@ class Login extends Component {
                         onChange={this.handleUsernameChange.bind(this)}
                         className="form-control"
                         placeholder="Username"
-                        name="email"
+                        name="username"
                         type="text"
                       />
                     </div>
@@ -79,12 +80,16 @@ class Login extends Component {
                         <Link to="/register">Register</Link>
                       </label>
                     </div>
-                    <a
+                    {/* <a
                       href="index.html"
                       className="btn btn-lg btn-success btn-block"
                     >
                       Login
-                    </a>
+                    </a> */}
+
+                    <button type="submit" className="btn btn-lg btn-success btn-block">
+                      Login                        
+                    </button>
                   </fieldset>
                 </form>
               </div>

@@ -18,7 +18,8 @@
             android:background="#009632"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:tabGravity="fill"
-            app:tabMode="fixed" />
+            app:tabMode="fixed"
+            app:layout_scrollFlags="scroll|enterAlways"/>
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"
@@ -26,7 +27,6 @@
             android:layout_height="50dp"
             android:layout_alignParentStart="true"
             android:background="#009632"
-            android:weightSum="2"
             app:tabIndicatorColor="@android:color/holo_red_dark"
             app:tabIndicatorHeight="4dp"
             app:tabSelectedTextColor="@android:color/white"
@@ -37,14 +37,12 @@
             <android.support.design.widget.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Matches" />
+                android:text="Tìm đối thủ" />
 
             <android.support.design.widget.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Fields" />
+                android:text="Tìm sân" />
         </android.support.design.widget.TabLayout>
 
     </android.support.design.widget.AppBarLayout>

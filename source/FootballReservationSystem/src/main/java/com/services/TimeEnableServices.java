@@ -5,6 +5,7 @@ import com.entity.AccountEntity;
 import com.entity.FieldTypeEntity;
 import com.entity.TimeEnableEntity;
 import com.repository.TimeEnableRepository;
+import com.utils.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,10 +50,14 @@ public class TimeEnableServices {
         timeEnableEntity.setDateInWeek(inputTimeEnableDTO.getDayInWeek());
         timeEnableEntity.setFieldOwnerId(accountServices.findAccountEntityById(inputTimeEnableDTO.getFieldOwnerId(), "owner"));
         timeEnableEntity.setFieldTypeId(fieldTypeServices.findById(inputTimeEnableDTO.getFieldTypeId()));
-        timeEnableEntity.setStartTime(inputTimeEnableDTO.getStartTime());
-        timeEnableEntity.setEndTime(inputTimeEnableDTO.getEndTime());
-        timeEnableEntity.setPrice(inputTimeEnableDTO.getPrice());
+        timeEnableEntity.setStartTime(DateTimeUtils.convertFromStringToTime(inputTimeEnableDTO.getStartTime()));
+        timeEnableEntity.setEndTime(DateTimeUtils.convertFromStringToTime(inputTimeEnableDTO.getEndTime()));
+        timeEnableEntity.setPrice(Float.parseFloat(inputTimeEnableDTO.getPrice()));
         timeEnableEntity.setStatus(true);
         return timeEnableEntity;
+    }
+
+    public List<TimeEnableEntity> findTimeEnableByFieldOwnerTypeAndDate(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity, String dateInWeek){
+        return timeEnableRepository.findByFieldOwnerIdAndFieldTypeIdAndDateInWeekAndStatus(fieldOwner, fieldTypeEntity, dateInWeek, true);
     }
 }

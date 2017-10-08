@@ -4,6 +4,7 @@ import com.entity.AccountEntity;
 import com.entity.FieldEntity;
 import com.entity.FieldTypeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface FieldRepository extends JpaRepository<FieldEntity, Integer> {
     List<FieldEntity> findAllByStatus(boolean status);
     List<FieldEntity> findByFieldOwnerIdAndFieldTypeIdAndStatus(AccountEntity fieldOwnerId, FieldTypeEntity fieldTypeId, boolean status);
     FieldEntity findByFieldOwnerIdAndFieldTypeIdAndNameAndStatus(AccountEntity fieldOwnerId, FieldTypeEntity fieldTypeId, String name, boolean status);
+
+    Integer countByFieldOwnerIdAndAndFieldTypeIdAndStatus(AccountEntity fieldOwnerEntity, FieldTypeEntity fieldTypeEntity, boolean status);
 }
