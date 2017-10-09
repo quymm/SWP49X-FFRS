@@ -36,15 +36,15 @@ public class TimeSlotController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/swp49x-ffrs/match/match-ongoing", method = RequestMethod.GET)
-    public ResponseEntity getOnGoingMatch(@RequestParam("field-owner-id") int fieldOwnerId, @RequestParam("field-type-id") int fieldTypeId,
+    @RequestMapping(value = "/swp49x-ffrs/match/free-field", method = RequestMethod.GET)
+    public ResponseEntity getFreeField(@RequestParam("field-owner-id") int fieldOwnerId, @RequestParam("field-type-id") int fieldTypeId,
                                           @RequestParam("date") String targetDate, @RequestParam("time") String targetTime){
         return new ResponseEntity(timeSlotServices.getListFreeFieldAtSpecificTime(targetDate, targetTime, fieldOwnerId, fieldTypeId), HttpStatus.OK);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/swp49x-ffrs/match/set-field", method = RequestMethod.PUT)
-    public ResponseEntity getOnGoingMatch(@RequestParam("time-slot-id") int timeSlotId, @RequestParam("field-id") int fieldId){
+    public ResponseEntity setFieldForMatch(@RequestParam("time-slot-id") int timeSlotId, @RequestParam("field-id") int fieldId){
         return new ResponseEntity(timeSlotServices.setTimeForTimeSlot(timeSlotId, fieldId), HttpStatus.OK);
     }
 
