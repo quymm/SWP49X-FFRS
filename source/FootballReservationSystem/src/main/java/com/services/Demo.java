@@ -24,7 +24,8 @@ public class Demo {
         Date time = DateTimeUtils.convertFromStringToTime(abc);
         System.out.println(time);
         System.out.println(time.getTime());
-        time.setTime(time.getTime() + 60000);
+        Date time2 = new Date(time.getTime() + 60000);
         System.out.println(timeFormat.format(time));
+        System.out.println((int) (time2.getTime()-time.getTime())/3000);
     }
 }

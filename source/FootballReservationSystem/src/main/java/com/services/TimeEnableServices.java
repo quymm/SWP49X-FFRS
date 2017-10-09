@@ -9,6 +9,7 @@ import com.utils.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,27 +26,31 @@ public class TimeEnableServices {
     @Autowired
     FieldTypeServices fieldTypeServices;
 
-    public TimeEnableEntity setUpTimeEnable(InputTimeEnableDTO inputTimeEnableDTO){
-        TimeEnableEntity timeEnableEntity = convertFromInputTimeEnableDTOToEntity(inputTimeEnableDTO);
-        return timeEnableRepository.save(timeEnableEntity);
+    public List<TimeEnableEntity> setUpTimeEnable(List<InputTimeEnableDTO> inputTimeEnableDTOList) {
+        List<TimeEnableEntity> savedTimeEnableEntity = new ArrayList<>();
+        for (InputTimeEnableDTO inputTimeEnableDTO : inputTimeEnableDTOList) {
+            TimeEnableEntity timeEnableEntity = convertFromInputTimeEnableDTOToEntity(inputTimeEnableDTO);
+            savedTimeEnableEntity.add(timeEnableRepository.save(timeEnableEntity));
+        }
+        return savedTimeEnableEntity;
     }
 
-    public List<TimeEnableEntity> findTimeEnableByFieldOwnerIdAndFieldTypeId(int fieldOwnerId, int fieldTypeId){
+    public List<TimeEnableEntity> findTimeEnableByFieldOwnerIdAndFieldTypeId(int fieldOwnerId, int fieldTypeId) {
         AccountEntity fieldOwnerEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(fieldTypeId);
         return timeEnableRepository.findByFieldOwnerIdAndFieldTypeIdAndStatus(fieldOwnerEntity, fieldTypeEntity, true);
     }
 
-    public List<TimeEnableEntity> findTimeEnableByFieldOwnerId(int fieldOwnerId){
+    public List<TimeEnableEntity> findTimeEnableByFieldOwnerId(int fieldOwnerId) {
         AccountEntity fieldOwnerEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
         return timeEnableRepository.findByFieldOwnerIdAndStatus(fieldOwnerEntity, true);
     }
 
-    public List<TimeEnableEntity> findTimeEnableByDateInWeek(String dateInWeek){
+    public List<TimeEnableEntity> findTimeEnableByDateInWeek(String dateInWeek) {
         return timeEnableRepository.findByDateInWeekAndStatus(dateInWeek, true);
     }
 
-    public TimeEnableEntity convertFromInputTimeEnableDTOToEntity(InputTimeEnableDTO inputTimeEnableDTO){
+    public TimeEnableEntity convertFromInputTimeEnableDTOToEntity(InputTimeEnableDTO inputTimeEnableDTO) {
         TimeEnableEntity timeEnableEntity = new TimeEnableEntity();
         timeEnableEntity.setDateInWeek(inputTimeEnableDTO.getDayInWeek());
         timeEnableEntity.setFieldOwnerId(accountServices.findAccountEntityById(inputTimeEnableDTO.getFieldOwnerId(), "owner"));
@@ -57,7 +62,7 @@ public class TimeEnableServices {
         return timeEnableEntity;
     }
 
-    public List<TimeEnableEntity> findTimeEnableByFieldOwnerTypeAndDate(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity, String dateInWeek){
-        return timeEnableRepository.findByFieldOwnerIdAndFieldTypeIdAndDateInWeekAndStatus(fieldOwner, fieldTypeEntity, dateInWeek, true);
+    public List<TimeEnableEntity> findTimeEnableByFieldOwnerTypeAndDate(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity, String dateInWeek) {
+        return timeEnableRepository.findByFieldOwnerAndTypeAndDateAndDateInWeekOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, true);
     }
 }
