@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import Header from '../components/Header';
-import Navigation from '../components/Navigation';
 class ProfilePlayer extends Component {
   render() {
     const divStyle = {

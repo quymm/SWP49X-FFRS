@@ -13,6 +13,7 @@ class Home extends Component {
     this.state = {
       dateSelected: moment(),
       currentTime: new Date().toLocaleTimeString(),
+      currentShowPage: '',
     };
     this.timer = setInterval(() => {
       this.setState({ currentTime: new Date().toLocaleTimeString() });
@@ -162,11 +163,17 @@ class Home extends Component {
             </div>
           </div>
           <div className="col-lg-12">
-            <div className="row">
+            {/* <div className="row">
               <div className="col-lg-3"> <button className="btn btn-primary btn-block">Các trận đang đá</button> </div>
               <div className="col-lg-3"> <button className="btn btn-default btn-block">Các sắp diễn ra</button> </div>
               <div className="col-lg-3"> <button className="btn btn-default btn-block">Thời gian rảnh</button> </div>
               <div className="col-lg-3"> <button className="btn btn-default btn-block">Đặt sân</button> </div>
+            </div> */}
+            <div className="btn-group btn-group-justified">
+            <a className="btn btn-primary">Các trận đang đá</a>
+            <a className="btn btn-default">Các sắp diễn ra</a>
+            <a className="btn btn-default">Thời gian rảnh</a>
+            <a className="btn btn-default">Đặt sân</a>
             </div>
           </div>
           <div className="col-lg-12">

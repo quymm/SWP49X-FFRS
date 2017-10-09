@@ -7,6 +7,7 @@ import {
   GET_ALL_FIELD,
   DETELE_FIELD,
   GET_TIME_ENABLE_IN_WEEK,
+  UPDATE_TIME_ENABLE_IN_WEEK,
 } from './base-URL';
 
 export function fetchGetMatchByFieldOwnerAndDay(fieldOwnerId, day) {
@@ -68,4 +69,27 @@ export function fetchGetTimeEnableInWeek(fieldOwnerId) {
     BASE_URL + GET_TIME_ENABLE_IN_WEEK + '?field-owner-id=' + fieldOwnerId,
   ).then(res => res.json());
 }
+
+export function fetchUpdateTimeEnableInWeek(
+  paramfieldOwnerId,
+  paramDayInWeek,
+  startday,
+  endDay,
+  paramPrice,
+  paramFieldTypeId
+) {
+  return fetch(BASE_URL + UPDATE_TIME_ENABLE_IN_WEEK, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      dayInWeek: paramDayInWeek,
+      endTime: endDay,
+      fieldOwnerId: paramfieldOwnerId,
+      fieldTypeId: paramFieldTypeId,
+      price: paramPrice,
+      startTime: startday,
+    }),
+  }).then(res => res.json());
+}
+
 //

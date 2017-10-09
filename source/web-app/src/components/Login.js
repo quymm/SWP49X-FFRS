@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchLogin } from '../apis/guest-apis';
-import { doLogin, doLoginError } from '../redux/guest/guest-action-creators';
+import { doLoginSuccessful, doLoginError } from '../redux/guest/guest-action-creators';
 
 class Login extends Component {
   constructor(props) {
@@ -25,19 +25,20 @@ class Login extends Component {
     evt.preventDefault();
     const { username, password } = this.state;
     const data = await fetchLogin(username, password);
-    if (data.lenght > 0) {
-      doLogin(data);
-      if (data.user.role === 1) {
-        this.props.history.push('/index');
-        console.log('da login thanh cong')
-        window.location.reload();
+    console.log(data.roleId.roleName);
+    if (data !== null) {
+      
+      this.props.doLoginSuccessful(data);
+      if (data.roleId.roleName === 'owner') {
+        this.props.history.push('/app/index');
+        debugger
       }
       else if (data.user.role === 2) {
         
       }     
     }
     else{
-      doLoginError(data);
+      // this.props.doLoginError(data);
     }
   }
   render() {
@@ -103,4 +104,4 @@ class Login extends Component {
 function mapStateToProps(state){
   return {auth: state.auth};
 }
-export default connect( mapStateToProps, {doLogin} )(Login);
+export default connect( mapStateToProps, {doLoginSuccessful, doLoginError} )(Login);
