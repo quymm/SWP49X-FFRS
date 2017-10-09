@@ -1,6 +1,7 @@
 export const BASE_URL = "http://localhost:8080/swp49x-ffrs";
 export const LOGIN = "/account/login-field-owner";
 export const REGISTER = "/account/managed-field-owner";
+export const UPDATE = "/account/managed-field-owner";
 export const GET_MATCH_BY_DAY = "/match/getMatchByFieldOwnerIdAndDate";
 export const ADD_FIELD = "/field/managed-field";
 export const REMOVE_FIELD = "/filedowner/removeField";
