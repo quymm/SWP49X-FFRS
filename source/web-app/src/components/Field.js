@@ -24,17 +24,18 @@ class Field extends Component {
       
     // }
   }
-  componentDidMount() {
+  async componentDidMount() {
     const { id } = this.props.auth.user.data;
     console.log(id);
-    debugger
-    fetchGetAllField(1).then(data => this.props.getAllField(data));
+    const data = await fetchGetAllField(1);
+    await this.props.getAllField(data);
   }
 
-  deleteField(fieldId) {
-    fetchDeleteField(fieldId).then(
-      fetchGetAllField().then(data => this.props.getAllField(data)),
-    );
+  async deleteField(evt) {
+    const fieldId = evt.target.value;
+    await fetchDeleteField(fieldId);
+    const data = await fetchGetAllField(1);
+    await this.props.getAllField(data);   
   }
 
   render() {
@@ -49,7 +50,7 @@ class Field extends Component {
             <button className="btn btn-info">Update</button>
             <button
               value={listField.id}
-              onClick={() => this.deleteField(listField.id)}
+              onClick={this.deleteField.bind(this)}
               className="btn btn-danger"
             >
               Delete

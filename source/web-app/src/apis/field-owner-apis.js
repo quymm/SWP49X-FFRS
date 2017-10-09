@@ -48,7 +48,7 @@ export function fetchGetAllField(fieldOwnerId) {
 }
 
 export function fetchDeleteField(fieldId) {
-  return fetch(BASE_URL + DETELE_FIELD + '?&fieldId=' + fieldId).then(res =>
+  return fetch(BASE_URL + DETELE_FIELD + '?&field-id=' + fieldId, {method: 'DELETE'}).then(res =>
     res.json(),
   );
 }
@@ -81,14 +81,15 @@ export function fetchUpdateTimeEnableInWeek(
   return fetch(BASE_URL + UPDATE_TIME_ENABLE_IN_WEEK, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
+    body: JSON.stringify([{
       dayInWeek: paramDayInWeek,
       endTime: endDay,
       fieldOwnerId: paramfieldOwnerId,
       fieldTypeId: paramFieldTypeId,
       price: paramPrice,
       startTime: startday,
-    }),
+    }]),
+    
   }).then(res => res.json());
 }
 

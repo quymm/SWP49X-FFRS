@@ -13,6 +13,7 @@ class SettingTime extends Component {
     super(props);
     this.state = {
       fieldType: '5 vs 5',
+      fieldTypeId: 1,
       daySelected: 'Mon',
       startDay: null,
       endDay: null,
@@ -27,6 +28,22 @@ class SettingTime extends Component {
     //);
   }
 
+  async handelFieldType1Change(evt) {
+    
+    await this.setState({
+      fieldType: evt.target.value,
+      fieldTypeId: 1,
+    });
+    console.log(this.state);
+  }
+  async handelFieldType2Change(evt) {
+    await this.setState({
+      fieldType: evt.target.value,
+      fieldTypeId: 2,
+    });
+    console.log(this.state);
+  }
+
   async handleInputChange(evt) {
     const target = evt.target;
     const value = target.value;
@@ -34,14 +51,12 @@ class SettingTime extends Component {
     await this.setState({ [name]: value });
     console.log('state in time: ', this.state);
   }
-  async handelTimeStartDayInputChange(evt){
-    
-    await this.setState({startDay: evt.format('HH:mm')});
+  async handelTimeStartDayInputChange(evt) {
+    await this.setState({ startDay: evt.format('HH:mm') });
     console.log(this.state);
   }
-  async handelTimeEndDayInputChange(evt){
-    
-    await this.setState({endDay: evt.format('HH:mm')});
+  async handelTimeEndDayInputChange(evt) {
+    await this.setState({ endDay: evt.format('HH:mm') });
     console.log(this.state);
   }
   handleInputTimeEnableChange(evt) {
@@ -122,7 +137,7 @@ class SettingTime extends Component {
                     className="btn btn-default btn-block"
                     name="fieldType"
                     value="5 vs 5"
-                    onClick={this.handleInputChange.bind(this)}
+                    onClick={this.handelFieldType1Change.bind(this)}
                   >
                     5 vs 5
                   </button>
@@ -132,7 +147,7 @@ class SettingTime extends Component {
                     className="btn btn-default btn-block"
                     value="7 vs 7"
                     name="fieldType"
-                    onClick={this.handleInputChange.bind(this)}
+                    onClick={this.handelFieldType2Change.bind(this)}
                   >
                     7 vs 7
                   </button>
@@ -228,7 +243,9 @@ class SettingTime extends Component {
                           <TimePicker
                             showSecond={false}
                             name="startDay"
-                            onChange={this.handelTimeStartDayInputChange.bind(this)}
+                            onChange={this.handelTimeStartDayInputChange.bind(
+                              this,
+                            )}
                           />
                           {/* <input
                             type="text"
@@ -254,10 +271,12 @@ class SettingTime extends Component {
                     <div className="col-sm-9">
                       <div className="row">
                         <div className="col-sm-6">
-                        <TimePicker
+                          <TimePicker
                             showSecond={false}
                             name="endDay"
-                            onChange={this.handelTimeEndDayInputChange.bind(this)}
+                            onChange={this.handelTimeEndDayInputChange.bind(
+                              this,
+                            )}
                           />
                           {/* <input
                             type="text"

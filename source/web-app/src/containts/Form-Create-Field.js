@@ -44,10 +44,10 @@ class FormCreateField extends Component {
       this.fieldNameInput === '';
       // .then(fetchGetAllField(1))
       // .then(data => this.props.getAllField());
-      const data = await fetchGetAllField(id);
+      const data = await fetchGetAllField(1);
       await this.props.getAllField(data);
       console.log('form', this.props);
-      this.props.history.push('/app/field');
+      await this.props.history.push('/app/field');
     }
   }
 
