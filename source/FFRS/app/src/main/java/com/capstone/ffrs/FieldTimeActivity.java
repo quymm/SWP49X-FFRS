@@ -31,6 +31,7 @@ import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.ServerError;
@@ -38,6 +39,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.capstone.ffrs.adapter.FieldTimeAdapter;
 import com.capstone.ffrs.controller.NetworkController;
@@ -57,8 +59,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 
 public class FieldTimeActivity extends AppCompatActivity {
 
@@ -114,7 +117,7 @@ public class FieldTimeActivity extends AppCompatActivity {
         imageView.setImageUrl(imageUrl, NetworkController.getInstance(this.getBaseContext()).getImageLoader());
 
         id = b.getInt("field_id");
-
+        Log.d("receivedId", id + "");
 
         final Button date = (Button) findViewById(R.id.date_picker);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -190,20 +193,59 @@ public class FieldTimeActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
         Log.d("FROM", from.getText().toString());
         try {
-            Date date = new SimpleDateFormat("dd/MM/yyyy").parse(btDate.getText().toString());
-            Date fromTime = sdf.parse(from.getText().toString());
-            Date toTime = sdf.parse(to.getText().toString());
+            final Date date = new SimpleDateFormat("dd/MM/yyyy").parse(btDate.getText().toString());
+            final Date fromTime = sdf.parse(from.getText().toString());
+            final Date toTime = sdf.parse(to.getText().toString());
 
-            Intent intent = new Intent(this, FieldDetailActivity.class);
-            intent.putExtra("field_id", id);
-            intent.putExtra("field_name", name);
-            intent.putExtra("field_address", address);
-            intent.putExtra("image_url", imageUrl);
-            intent.putExtra("time_from", fromTime);
-            intent.putExtra("time_to", toTime);
-            intent.putExtra("date", date);
-            intent.putExtra("price", price);
-            startActivity(intent);
+            String url = "http://10.0.2.2:8080/swp49x-ffrs/match/friendly-match";
+            queue = NetworkController.getInstance(this).getRequestQueue();
+            Map<String, Object> params = new HashMap<>();
+            params.put("date", new SimpleDateFormat("dd/MM/yyyy").format(date));
+            params.put("duration", (Math.abs(toTime.getTime() - fromTime.getTime()) / 36e5) * 60);
+            params.put("fieldOwnerId", id);
+            params.put("fieldTypeId", 1);
+            params.put("startTime", from.getText().toString());
+            params.put("userId", 1);
+            JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            if (response != null) {
+                                try {
+                                    JSONObject timeSlot = response.getJSONObject("timeSlotId");
+                                    Intent intent = new Intent(FieldTimeActivity.this, FieldDetailActivity.class);
+                                    intent.putExtra("field_id", id);
+                                    intent.putExtra("field_name", name);
+                                    intent.putExtra("field_address", address);
+                                    intent.putExtra("image_url", imageUrl);
+                                    intent.putExtra("date", date);
+                                    intent.putExtra("time_from", fromTime);
+                                    intent.putExtra("time_to", toTime);
+                                    intent.putExtra("price", timeSlot.getInt("price"));
+                                    startActivity(intent);
+                                } catch (Exception e) {
+                                    Log.d("EXCEPTION", e.getMessage());
+                                }
+                            } else {
+                                Toast.makeText(FieldTimeActivity.this, "Không thể đặt sân!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d("Error.Response", error.toString());
+                        }
+                    }) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Content-Type", "application/json; charset=utf-8");
+                    return headers;
+                }
+            };
+            queue.add(postRequest);
         } catch (ParseException e) {
             Log.d("ERROR", e.getMessage());
             Toast.makeText(getApplicationContext(), "Hãy nhập giờ chơi!", Toast.LENGTH_SHORT).show();
@@ -212,6 +254,7 @@ public class FieldTimeActivity extends AppCompatActivity {
 
     public void onClickShowMap(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
+        intent.putExtra("field_id", id);
         startActivity(intent);
     }
 
@@ -240,7 +283,6 @@ public class FieldTimeActivity extends AppCompatActivity {
                 for (int i = 0; i < response.length(); i++) {
                     try {
                         JSONObject obj = response.getJSONObject(i);
-
 
                         FieldTime fieldTime = new FieldTime(sdf.format(sdf.parse(obj.getString("startTime"))), sdf.format(sdf.parse(obj.getString("endTime"))), obj.getInt("price"));
 

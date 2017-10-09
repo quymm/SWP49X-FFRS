@@ -136,6 +136,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
                 public void onClick(View v) {
                     Intent intent = new Intent(context, FieldTimeActivity.class);
                     int id = (int) itemView.getTag(R.id.card_view);
+                    Log.d("ID",id+"");
                     intent.putExtra("field_id", id);
                     intent.putExtra("field_name", title.getText());
                     intent.putExtra("field_address", content.getText());
