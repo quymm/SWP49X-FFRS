@@ -15,20 +15,20 @@ class Field extends Component {
   }
 
   componentWillMount() {
-    const { role } = this.props.auth.user
-    console.log(role);
-    if (role !== 'owner') {
-      // debugger
-      this.props.accessDenied();
-      this.props.history.push("/login");
+    // const { role } = this.props.auth.user
+    // console.log(role);
+    // if (role !== 'owner') {
+    //   // debugger
+    //   this.props.accessDenied();
+    //   this.props.history.push("/login");
       
-    }
+    // }
   }
   componentDidMount() {
     const { id } = this.props.auth.user.data;
     console.log(id);
     debugger
-    fetchGetAllField(id).then(data => this.props.getAllField(data));
+    fetchGetAllField(1).then(data => this.props.getAllField(data));
   }
 
   deleteField(fieldId) {

@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { fetchGetTimeEnableInWeek } from '../apis/field-owner-apis';
+import {
+  fetchGetTimeEnableInWeek,
+  fetchUpdateTimeEnableInWeek,
+} from '../apis/field-owner-apis';
 import { getAllTimeEnableInWeek } from '../redux/field-owner/field-owner-action-creator';
 
 class SettingTime extends Component {
@@ -15,18 +18,19 @@ class SettingTime extends Component {
       isShowUpdate: false,
     };
   }
-  // defaultProps = { timeEnable: {} };
+
   async componentDidMount() {
     const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
     this.props.getAllTimeEnableInWeek(data);
     //);
   }
-  handelChangeFieldType(evt) {
-    this.setState({ fieldType: evt.target.value });
-  }
-  async handelDaySelected(evt) {
-    await this.setState({ daySelected: evt.target.value });
-    console.log(this.state.daySelected);
+
+  async handleInputChange(evt) {
+    const target = evt.target;
+    const value = target.value;
+    const name = target.name;
+    await this.setState({ [name]: value });
+    console.log('state in time: ', this.state);
   }
 
   handleInputTimeEnableChange(evt) {
@@ -38,11 +42,35 @@ class SettingTime extends Component {
       });
     }
   }
+
   handelShowChange(evt) {
     console.log(evt);
     evt.preventDefault();
-    this.setState({ isShowUpdate: true });
+    const { isShowUpdate } = this.state;
+    this.setState({ isShowUpdate: !isShowUpdate });
   }
+
+  async handleSubmitTimeInWeek(evt) {
+    evt.preventDefault();
+    const { startDay, endDay, price, daySelected, isShowUpdate } = this.state;
+
+    if (startDay !== null && endDay !== null && price !== null) {
+      await fetchUpdateTimeEnableInWeek(
+        1,
+        daySelected,
+        startDay,
+        endDay,
+        price,
+        2,
+      );
+      await this.setState({isShowUpdate: !isShowUpdate});
+      const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
+      this.props.getAllTimeEnableInWeek(data);
+      //);
+      this.props.history.push('/app/setting-time');
+    }
+  }
+
   render() {
     const { timeEnable } = this.props;
     const {
@@ -66,8 +94,6 @@ class SettingTime extends Component {
     if (!dayAfterFilter) {
       return <h1>loading...</h1>;
     }
-    // this.handleInputTimeEnableChange(dayAfterFilter);
-    //  console.log(new Date(dayAfterFilter[0].startTime));
     return (
       <div id="page-wrapper">
         <div className="container-fluid">
@@ -82,8 +108,9 @@ class SettingTime extends Component {
                 <div className="col-lg-6">
                   <button
                     className="btn btn-default btn-block"
+                    name="fieldType"
                     value="5 vs 5"
-                    onClick={this.handelChangeFieldType.bind(this)}
+                    onClick={this.handleInputChange.bind(this)}
                   >
                     5 vs 5
                   </button>
@@ -92,7 +119,8 @@ class SettingTime extends Component {
                   <button
                     className="btn btn-default btn-block"
                     value="7 vs 7"
-                    onClick={this.handelChangeFieldType.bind(this)}
+                    name="fieldType"
+                    onClick={this.handleInputChange.bind(this)}
                   >
                     7 vs 7
                   </button>
@@ -108,7 +136,8 @@ class SettingTime extends Component {
                   type="button"
                   className="list-group-item"
                   value="Mon"
-                  onClick={this.handelDaySelected.bind(this)}
+                  name="daySelected"
+                  onClick={this.handleInputChange.bind(this)}
                 >
                   Thứ hai
                 </button>
@@ -116,7 +145,8 @@ class SettingTime extends Component {
                   type="button"
                   className="list-group-item"
                   value="Tue"
-                  onClick={this.handelDaySelected.bind(this)}
+                  name="daySelected"
+                  onClick={this.handleInputChange.bind(this)}
                 >
                   Thứ ba
                 </button>
@@ -124,7 +154,8 @@ class SettingTime extends Component {
                   type="button"
                   className="list-group-item"
                   value="Wed"
-                  onClick={this.handelDaySelected.bind(this)}
+                  name="daySelected"
+                  onClick={this.handleInputChange.bind(this)}
                 >
                   Thứ tư
                 </button>
@@ -132,7 +163,8 @@ class SettingTime extends Component {
                   type="button"
                   className="list-group-item"
                   value="Thu"
-                  onClick={this.handelDaySelected.bind(this)}
+                  name="daySelected"
+                  onClick={this.handleInputChange.bind(this)}
                 >
                   Thứ năm
                 </button>
@@ -140,7 +172,8 @@ class SettingTime extends Component {
                   type="button"
                   className="list-group-item"
                   value="Fri"
-                  onClick={this.handelDaySelected.bind(this)}
+                  name="daySelected"
+                  onClick={this.handleInputChange.bind(this)}
                 >
                   Thứ sáu
                 </button>
@@ -148,7 +181,8 @@ class SettingTime extends Component {
                   type="button"
                   className="list-group-item"
                   value="Sat"
-                  onClick={this.handelDaySelected.bind(this)}
+                  name="daySelected"
+                  onClick={this.handleInputChange.bind(this)}
                 >
                   Thứ bảy
                 </button>
@@ -156,7 +190,8 @@ class SettingTime extends Component {
                   type="button"
                   className="list-group-item"
                   value="Sun"
-                  onClick={this.handelDaySelected.bind(this)}
+                  name="daySelected"
+                  onClick={this.handleInputChange.bind(this)}
                 >
                   Chủ nhật
                 </button>
@@ -164,7 +199,10 @@ class SettingTime extends Component {
             </div>
             <div className="col-lg-10">
               {isShowUpdate ? (
-                <form className="form-horizontal">
+                <form
+                  className="form-horizontal"
+                  onSubmit={this.handleSubmitTimeInWeek.bind(this)}
+                >
                   <div className="form-group">
                     <label
                       htmlFor="inputEmail3"
@@ -180,6 +218,9 @@ class SettingTime extends Component {
                             className="form-control"
                             id="inputPassword3"
                             placeholder="Start time"
+                            name="startDay"
+                            value={this.state.startDay}
+                            onChange={this.handleInputChange.bind(this)}
                           />
                         </div>
                       </div>
@@ -201,6 +242,9 @@ class SettingTime extends Component {
                             className="form-control"
                             id="inputPassword3"
                             placeholder="End time"
+                            name="endDay"
+                            value={this.state.endDay}
+                            onChange={this.handleInputChange.bind(this)}
                           />
                         </div>
                       </div>
@@ -221,6 +265,9 @@ class SettingTime extends Component {
                             className="form-control"
                             id="inputPassword3"
                             placeholder="End time"
+                            name="price"
+                            value={this.state.price}
+                            onChange={this.handleInputChange.bind(this)}
                           />
                         </div>
                       </div>
@@ -228,7 +275,9 @@ class SettingTime extends Component {
                   </div>
                   <div className="form-group">
                     <div className="col-sm-offset-3 col-sm-9">
-                      <button className="btn btn-primary">Cập nhật</button>
+                      <button className="btn btn-primary" type="submit">
+                        Cập nhật
+                      </button>
                     </div>
                   </div>
                 </form>
@@ -317,6 +366,7 @@ class SettingTime extends Component {
                     <div className="col-sm-offset-3 col-sm-9">
                       <button
                         className="btn btn-primary"
+                        name="isShowUpdate"
                         onClick={this.handelShowChange.bind(this)}
                       >
                         Cập nhật
