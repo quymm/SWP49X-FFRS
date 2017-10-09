@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 public class TimeEnableController {
@@ -16,8 +18,8 @@ public class TimeEnableController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/swp49x-ffrs/time-enable/managed-time-enable", method = RequestMethod.POST)
-    public ResponseEntity setUpTimeEnable(@RequestBody InputTimeEnableDTO inputTimeEnableDTO){
-        return new ResponseEntity(timeEnableServices.setUpTimeEnable(inputTimeEnableDTO), HttpStatus.CREATED);
+    public ResponseEntity setUpTimeEnable(@RequestBody List<InputTimeEnableDTO> inputTimeEnableDTOList){
+        return new ResponseEntity(timeEnableServices.setUpTimeEnable(inputTimeEnableDTOList), HttpStatus.CREATED);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
