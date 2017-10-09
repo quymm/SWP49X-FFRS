@@ -5,6 +5,8 @@ import {
   fetchUpdateTimeEnableInWeek,
 } from '../apis/field-owner-apis';
 import { getAllTimeEnableInWeek } from '../redux/field-owner/field-owner-action-creator';
+import TimePicker from 'rc-time-picker';
+import 'rc-time-picker/assets/index.css';
 
 class SettingTime extends Component {
   constructor(props) {
@@ -14,7 +16,7 @@ class SettingTime extends Component {
       daySelected: 'Mon',
       startDay: null,
       endDay: null,
-      price: null,
+      price: undefined,
       isShowUpdate: false,
     };
   }
@@ -32,7 +34,16 @@ class SettingTime extends Component {
     await this.setState({ [name]: value });
     console.log('state in time: ', this.state);
   }
-
+  async handelTimeStartDayInputChange(evt){
+    
+    await this.setState({startDay: evt.format('HH:mm')});
+    console.log(this.state);
+  }
+  async handelTimeEndDayInputChange(evt){
+    
+    await this.setState({endDay: evt.format('HH:mm')});
+    console.log(this.state);
+  }
   handleInputTimeEnableChange(evt) {
     if (evt.length > 0) {
       this.setState({
@@ -63,12 +74,13 @@ class SettingTime extends Component {
         price,
         2,
       );
-      await this.setState({isShowUpdate: !isShowUpdate});
+      await this.setState({ isShowUpdate: !isShowUpdate });
       const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
       this.props.getAllTimeEnableInWeek(data);
       //);
       this.props.history.push('/app/setting-time');
     }
+    await this.setState({ isShowUpdate: !isShowUpdate });
   }
 
   render() {
@@ -213,7 +225,12 @@ class SettingTime extends Component {
                     <div className="col-sm-9">
                       <div className="row">
                         <div className="col-sm-6">
-                          <input
+                          <TimePicker
+                            showSecond={false}
+                            name="startDay"
+                            onChange={this.handelTimeStartDayInputChange.bind(this)}
+                          />
+                          {/* <input
                             type="text"
                             className="form-control"
                             id="inputPassword3"
@@ -221,7 +238,7 @@ class SettingTime extends Component {
                             name="startDay"
                             value={this.state.startDay}
                             onChange={this.handleInputChange.bind(this)}
-                          />
+                          /> */}
                         </div>
                       </div>
                     </div>
@@ -237,7 +254,12 @@ class SettingTime extends Component {
                     <div className="col-sm-9">
                       <div className="row">
                         <div className="col-sm-6">
-                          <input
+                        <TimePicker
+                            showSecond={false}
+                            name="endDay"
+                            onChange={this.handelTimeEndDayInputChange.bind(this)}
+                          />
+                          {/* <input
                             type="text"
                             className="form-control"
                             id="inputPassword3"
@@ -245,7 +267,7 @@ class SettingTime extends Component {
                             name="endDay"
                             value={this.state.endDay}
                             onChange={this.handleInputChange.bind(this)}
-                          />
+                          /> */}
                         </div>
                       </div>
                     </div>
@@ -264,7 +286,7 @@ class SettingTime extends Component {
                             type="text"
                             className="form-control"
                             id="inputPassword3"
-                            placeholder="End time"
+                            placeholder="Giá"
                             name="price"
                             value={this.state.price}
                             onChange={this.handleInputChange.bind(this)}
