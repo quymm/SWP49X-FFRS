@@ -15,7 +15,7 @@ import java.util.List;
  * Created by MinhQuy on 9/23/2017.
  */
 public interface TimeSlotRepository extends JpaRepository<TimeSlotEntity, Integer> {
-    List<TimeSlotEntity> findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatus(AccountEntity accountEntity,
+    List<TimeSlotEntity> findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(AccountEntity accountEntity,
                                                                                           FieldTypeEntity fieldTypeEntity,
                                                                                           Date targetDate, boolean reservateStatus, boolean status);
     Integer countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(AccountEntity accountEntity, FieldTypeEntity fieldTypeEntity,
