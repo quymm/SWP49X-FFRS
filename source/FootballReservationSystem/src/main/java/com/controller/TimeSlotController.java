@@ -64,4 +64,26 @@ public class TimeSlotController {
     public ResponseEntity createNewMatchingRequest(@RequestBody InputMatchingRequestDTO inputMatchingRequestDTO){
         return new ResponseEntity(matchServices.createNewMatchingRequest(inputMatchingRequestDTO), HttpStatus.CREATED);
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/swp49x-ffrs/match/matching-request", method = RequestMethod.GET)
+    public ResponseEntity suggestOpponent(@RequestParam("user-id") int userId, @RequestParam("field-type-id") int fieldTypeId,
+                                          @RequestParam("longitute") String longitute, @RequestParam("latitute") String latitute,
+                                          @RequestParam("date") String date, @RequestParam("start-time") String startTime){
+        return new ResponseEntity(matchServices.suggestOpponent(userId, fieldTypeId, longitute, latitute, date, startTime), HttpStatus.OK);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/swp49x-ffrs/match/choose-field", method = RequestMethod.POST)
+    public ResponseEntity chooseSuitableField(@RequestBody InputMatchingRequestDTO inputMatchingRequestDTO, @RequestParam("matching-request-id") int matchingRequestId){
+        return new ResponseEntity(matchServices.chooseSuitableField(inputMatchingRequestDTO, matchingRequestId), HttpStatus.CREATED);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/swp49x-ffrs/match/tour-match", method = RequestMethod.POST)
+    public ResponseEntity reserveTourMatch(@RequestParam("time-slot-id") int timeSlotId, @RequestParam("user-id") int userId, @RequestParam("opponent-id") int opponentId){
+        return new ResponseEntity(matchServices.reserveTourMatch(timeSlotId, userId, opponentId), HttpStatus.CREATED);
+    }
+
+
 }
