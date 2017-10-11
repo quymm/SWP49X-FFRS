@@ -6,13 +6,21 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Link } from 'react-router-dom';
-
+import Clock from './Clock';
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
       dateSelected: moment(),
+      currentTime: new Date().toLocaleTimeString(),
+      currentShowPage: '',
     };
+    this.timer = setInterval(() => {
+      this.setState({ currentTime: new Date().toLocaleTimeString() });
+    }, 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.timer);
   }
   componentDidMount() {
     // const date = dateSelected.format('LL');
@@ -73,12 +81,9 @@ class Home extends Component {
               <div className="col-lg-4 text-center">
                 <h3>
                   {new Date(listMatch.timeSlotId.startTime).getHours()} :{' '}
-                  {new Date(listMatch.timeSlotId.startTime).getMinutes() ===
-                  0 ? (
-                    '00'
-                  ) : (
-                    new Date(listMatch.timeSlotId.startTime).getMinutes()
-                  )}
+                  {new Date(listMatch.timeSlotId.startTime).getMinutes() === 0
+                    ? '00'
+                    : new Date(listMatch.timeSlotId.startTime).getMinutes()}
                 </h3>
                 <h4>
                   {(new Date(listMatch.timeSlotId.endTime).getHours() -
@@ -121,10 +126,14 @@ class Home extends Component {
       <div id="page-wrapper">
         <div className="container-fluid">
           <div className="row">
-            <div className="col-lg-4">
-              <h2 className="page-header">Home</h2>
+            <div className="col-lg-3">
+              <h2 className="page-header">Trang chủ</h2>
             </div>
-            <div className="col-lg-4">
+            <div className="col-lg-3">
+              <Clock time={this.state.currentTime} />
+            </div>
+
+            <div className="col-lg-3">
               <div className="page-header">
                 <form className="navbar-form navbar-left">
                   <div className="form-group">
@@ -135,14 +144,11 @@ class Home extends Component {
                       todayButton={'Today'}
                     />
                   </div>
-                  <button className="btn btn-default" type="button">
-                    <i className="glyphicon glyphicon-calendar" />
-                  </button>
                 </form>
               </div>
             </div>
 
-            <div className="col-lg-4">
+            <div className="col-lg-3">
               <div className="page-header">
                 <form className="navbar-form navbar-left">
                   <div className="form-group">
@@ -152,15 +158,28 @@ class Home extends Component {
                       placeholder="Search"
                     />
                   </div>
-                  <button className="btn btn-default" type="button">
-                    <i className="glyphicon glyphicon-search" />
-                  </button>
                 </form>
               </div>
             </div>
           </div>
+          <div className="col-lg-12">
+            {/* <div className="row">
+              <div className="col-lg-3"> <button className="btn btn-primary btn-block">Các trận đang đá</button> </div>
+              <div className="col-lg-3"> <button className="btn btn-default btn-block">Các sắp diễn ra</button> </div>
+              <div className="col-lg-3"> <button className="btn btn-default btn-block">Thời gian rảnh</button> </div>
+              <div className="col-lg-3"> <button className="btn btn-default btn-block">Đặt sân</button> </div>
+            </div> */}
+            <div className="btn-group btn-group-justified">
+            <a className="btn btn-primary">Các trận đang đá</a>
+            <a className="btn btn-default">Các sắp diễn ra</a>
+            <a className="btn btn-default">Thời gian rảnh</a>
+            <a className="btn btn-default">Đặt sân</a>
+            </div>
+          </div>
+          <div className="col-lg-12">
           <div className="row">
             {listMatch.length > 0 ? renderMatch : 'There is no match today'}
+          </div>
           </div>
         </div>
       </div>
@@ -168,7 +187,7 @@ class Home extends Component {
   }
 }
 function mapStateToProps(state) {
-  console.log("show state in match: ", state);
+  console.log('show state in match: ', state);
   return {
     listMatch: state.listMatch.listMatch,
   };

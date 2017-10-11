@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import { Link } from 'react-router-dom';
 class Header extends Component {
     render(){
         return(
@@ -11,7 +11,7 @@ class Header extends Component {
                     <span className="icon-bar"></span>
                     <span className="icon-bar"></span>
                 </button>
-                <a className="navbar-brand" href="index.html">FOOTBALL</a>
+                <Link className="navbar-brand" to="/app/index">FOOTBALL</Link>
             </div>
             </nav>
         );

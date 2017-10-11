@@ -8,4 +8,5 @@ export const REMOVE_FIELD = "/filedowner/removeField";
 export const CHECK_TIME_SLOT = "/fieldowner/checkTimeStatus";
 export const GET_ALL_FIELD = "/field/field-owner";
 export const DETELE_FIELD = "/fieldowner/deleteField";
-export const GET_TIME_ENABLE_IN_WEEK = "/time-enable/managed-time-enable"
+export const GET_TIME_ENABLE_IN_WEEK = "/time-enable/managed-time-enable";
+export const UPDATE_TIME_ENABLE_IN_WEEK = "/time-enable/managed-time-enable";

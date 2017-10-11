@@ -60,4 +60,12 @@ public class FieldServices {
         return fieldRepository.save(fieldEntity);
     }
 
+    public List<FieldEntity> findFieldEntityByFieldOwnerAndFieldType(AccountEntity fieldOwner, FieldTypeEntity fieldType){
+        return fieldRepository.findByFieldOwnerIdAndFieldTypeIdAndStatus(fieldOwner, fieldType, true);
+    }
+
+    public Integer countNumberOfFieldByFieldOwnerAndFieldType(AccountEntity fieldOwner, FieldTypeEntity fieldType){
+        return fieldRepository.countByFieldOwnerIdAndAndFieldTypeIdAndStatus(fieldOwner, fieldType, true);
+    }
+
 }

@@ -43,11 +43,11 @@ public class PromotionEntity implements Serializable {
     private Date dateTo;
     @Basic(optional = false)
     @Column(name = "start_time")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIME)
     private Date startTime;
     @Basic(optional = false)
     @Column(name = "end_time")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIME)
     private Date endTime;
     @Basic(optional = false)
     @Column(name = "sale_off")
