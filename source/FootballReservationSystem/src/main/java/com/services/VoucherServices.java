@@ -31,4 +31,7 @@ public class VoucherServices {
         voucherEntity.setStatus(false);
         return  voucherRepository.save(voucherEntity);
     }
+    public VoucherEntity findVoucherEntityById(int voucherId) {
+        return voucherRepository.findByIdAndStatus(voucherId, true);
+    }
 }

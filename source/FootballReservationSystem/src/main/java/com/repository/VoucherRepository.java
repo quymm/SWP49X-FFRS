@@ -8,5 +8,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface VoucherRepository extends JpaRepository<VoucherEntity, Integer> {
     VoucherEntity findByIdAndStatus(int id, boolean status);
-
 }
