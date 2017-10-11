@@ -1,7 +1,9 @@
+export const GOOGLE_MAP_KEY = "AIzaSyBHg0iReiIw8DpfaSaPxeaDRrJVP0FWs9A";
+export const GOOGLE_MAP_URL = "https://maps.googleapis.com/maps/api/geocode/json?"
 export const BASE_URL = "http://localhost:8080/swp49x-ffrs";
 export const LOGIN = "/account/login-field-owner";
 export const REGISTER = "/account/managed-field-owner";
-export const GET_MATCH_BY_DAY = "/match/getMatchByFieldOwnerIdAndDate";
+export const GET_MATCH_BY_DAY = "/match/match-upcoming";
 export const ADD_FIELD = "/field/managed-field";
 export const REMOVE_FIELD = "/filedowner/removeField";
 export const CHECK_TIME_SLOT = "/fieldowner/checkTimeStatus";

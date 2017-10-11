@@ -29,7 +29,6 @@ class SettingTime extends Component {
   }
 
   async handelFieldType1Change(evt) {
-    
     await this.setState({
       fieldType: evt.target.value,
       fieldTypeId: 1,
@@ -78,7 +77,14 @@ class SettingTime extends Component {
 
   async handleSubmitTimeInWeek(evt) {
     evt.preventDefault();
-    const { startDay, endDay, price, daySelected, isShowUpdate } = this.state;
+    const {
+      startDay,
+      endDay,
+      price,
+      daySelected,
+      isShowUpdate,
+      fieldTypeId,
+    } = this.state;
 
     if (startDay !== null && endDay !== null && price !== null) {
       await fetchUpdateTimeEnableInWeek(
@@ -87,7 +93,7 @@ class SettingTime extends Component {
         startDay,
         endDay,
         price,
-        2,
+        fieldTypeId,
       );
       await this.setState({ isShowUpdate: !isShowUpdate });
       const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
@@ -99,7 +105,7 @@ class SettingTime extends Component {
   }
 
   render() {
-    const { timeEnable } = this.props;
+    const { timeEnable } = this.props.timeEnable;
     const {
       daySelected,
       fieldType,
@@ -108,19 +114,21 @@ class SettingTime extends Component {
       price,
       isShowUpdate,
     } = this.state;
-    console.log(timeEnable.timeEnable);
+    console.log(timeEnable);
     // debugger
     const dayAfterFilter =
-      timeEnable.timeEnable &&
-      timeEnable.timeEnable.filter(
+      timeEnable &&
+      timeEnable.filter(
         data =>
           data.dateInWeek === daySelected &&
           data.fieldTypeId.name === fieldType,
       );
-    console.log(dayAfterFilter);
+
     if (!dayAfterFilter) {
       return <h1>loading...</h1>;
     }
+    // const affterConvertArr = Object.values(dayAfterFilter);
+    console.log(dayAfterFilter);
     return (
       <div id="page-wrapper">
         <div className="container-fluid">
@@ -235,7 +243,7 @@ class SettingTime extends Component {
                       htmlFor="inputEmail3"
                       className="col-sm-3 control-label"
                     >
-                      Mở cửa
+                      Từ
                     </label>
                     <div className="col-sm-9">
                       <div className="row">
@@ -247,15 +255,6 @@ class SettingTime extends Component {
                               this,
                             )}
                           />
-                          {/* <input
-                            type="text"
-                            className="form-control"
-                            id="inputPassword3"
-                            placeholder="Start time"
-                            name="startDay"
-                            value={this.state.startDay}
-                            onChange={this.handleInputChange.bind(this)}
-                          /> */}
                         </div>
                       </div>
                     </div>
@@ -266,7 +265,7 @@ class SettingTime extends Component {
                       htmlFor="inputEmail3"
                       className="col-sm-3 control-label"
                     >
-                      Đóng cửa
+                      Đến
                     </label>
                     <div className="col-sm-9">
                       <div className="row">
@@ -278,15 +277,6 @@ class SettingTime extends Component {
                               this,
                             )}
                           />
-                          {/* <input
-                            type="text"
-                            className="form-control"
-                            id="inputPassword3"
-                            placeholder="End time"
-                            name="endDay"
-                            value={this.state.endDay}
-                            onChange={this.handleInputChange.bind(this)}
-                          /> */}
                         </div>
                       </div>
                     </div>
@@ -314,6 +304,7 @@ class SettingTime extends Component {
                       </div>
                     </div>
                   </div>
+                  
                   <div className="form-group">
                     <div className="col-sm-offset-3 col-sm-9">
                       <button className="btn btn-primary" type="submit">
@@ -324,85 +315,77 @@ class SettingTime extends Component {
                 </form>
               ) : (
                 <form className="form-horizontal">
-                  <div className="form-group">
-                    <label
-                      htmlFor="inputEmail3"
-                      className="col-sm-3 control-label"
-                    >
-                      Mở cửa
-                    </label>
-                    <div className="col-sm-9">
-                      <div className="row">
-                        <div className="col-sm-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="inputPassword3"
-                            placeholder="Start time"
-                            value={
-                              dayAfterFilter.length > 0
-                                ? dayAfterFilter[0].startTime
-                                : 'Chưa thiết lập'
-                            }
-                            readOnly
-                          />
+                  {dayAfterFilter.map(affterConvertArr => (
+                    <div key={affterConvertArr.id}>
+                      <div className="form-group">
+                        <label
+                          htmlFor="inputEmail3"
+                          className="col-sm-3 control-label"
+                        >
+                          Từ
+                        </label>
+                        <div className="col-sm-9">
+                          <div className="row">
+                            <div className="col-sm-6">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="inputPassword3"
+                                placeholder="Start time"
+                                value={affterConvertArr.startTime}
+                                readOnly
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="form-group">
-                    <label
-                      htmlFor="inputEmail3"
-                      className="col-sm-3 control-label"
-                    >
-                      Đóng cửa
-                    </label>
-                    <div className="col-sm-9">
-                      <div className="row">
-                        <div className="col-sm-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="inputPassword3"
-                            placeholder="End time"
-                            value={
-                              dayAfterFilter.length > 0
-                                ? dayAfterFilter[0].endTime
-                                : 'Chưa thiết lập'
-                            }
-                            readOnly
-                          />
+                      <div className="form-group">
+                        <label
+                          htmlFor="inputEmail3"
+                          className="col-sm-3 control-label"
+                        >
+                          Đến
+                        </label>
+                        <div className="col-sm-9">
+                          <div className="row">
+                            <div className="col-sm-6">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="inputPassword3"
+                                placeholder="End time"
+                                value={affterConvertArr.endTime}
+                                readOnly
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="form-group">
+                        <label
+                          htmlFor="inputEmail3"
+                          className="col-sm-3 control-label"
+                        >
+                          Giá
+                        </label>
+                        <div className="col-sm-9">
+                          <div className="row">
+                            <div className="col-sm-6">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="inputPassword3"
+                                placeholder="End time"
+                                value={affterConvertArr.price}
+                                readOnly
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="form-group">
-                    <label
-                      htmlFor="inputEmail3"
-                      className="col-sm-3 control-label"
-                    >
-                      Giá
-                    </label>
-                    <div className="col-sm-9">
-                      <div className="row">
-                        <div className="col-sm-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="inputPassword3"
-                            placeholder="End time"
-                            value={
-                              dayAfterFilter.length > 0
-                                ? dayAfterFilter[0].price
-                                : 'Chưa thiết lập'
-                            }
-                            readOnly
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                   <div className="form-group">
                     <div className="col-sm-offset-3 col-sm-9">
                       <button

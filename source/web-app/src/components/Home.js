@@ -7,6 +7,7 @@ import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Link } from 'react-router-dom';
 import Clock from './Clock';
+
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -23,26 +24,23 @@ class Home extends Component {
     clearInterval(this.timer);
   }
   componentDidMount() {
-    // const date = dateSelected.format('LL');
-    // console.log(date);
     console.log('didmount: ', this.state.dateSelected.format('MMM DD YYYY'));
     fetchGetMatchByFieldOwnerAndDay(
       1,
-      this.state.dateSelected.format('MMM DD YYYY'),
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      1,
     ).then(data => {
       this.props.GetMatchByFieldOwnerAndDay(data);
     });
-    // debugger
   }
   async handleDateChange(date) {
-    // console.log("date:", date.format('MMM DD YYYY'));
     await this.setState({
       dateSelected: date,
     });
-    // console.log();
     fetchGetMatchByFieldOwnerAndDay(
       1,
-      this.state.dateSelected.format('MMM DD YYYY'),
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      1,
     ).then(data => {
       this.props.GetMatchByFieldOwnerAndDay(data);
     });
@@ -52,15 +50,13 @@ class Home extends Component {
     const { listMatch } = this.props;
     console.log(listMatch);
     const renderMatch = listMatch.map(listMatch => (
-      <div key={listMatch.timeSlotId.id} className="col-lg-4">
+      <div key={listMatch.id} className="col-lg-4">
         <div className="panel panel-green">
           <div className="panel-heading">
             <div className="row">
-              <div className="col-lg-6">
-                FIELD {listMatch.timeSlotId.fieldId.name}
-              </div>
+              <div className="col-lg-6">Sân</div>
               <div className="col-lg-6 text-right">
-                <i>{new Date(listMatch.timeSlotId.date).toDateString()}</i>
+                <i>{new Date(listMatch.date).toDateString()}</i>
               </div>
             </div>
           </div>
@@ -75,25 +71,18 @@ class Home extends Component {
                     width="80"
                     height="80"
                   />
-                  <h4>{listMatch.userId.username}</h4>
+                  <h4 />
                 </Link>
               </div>
               <div className="col-lg-4 text-center">
-                <h3>
-                  {new Date(listMatch.timeSlotId.startTime).getHours()} :{' '}
-                  {new Date(listMatch.timeSlotId.startTime).getMinutes() === 0
-                    ? '00'
-                    : new Date(listMatch.timeSlotId.startTime).getMinutes()}
-                </h3>
+                <h3>{moment('10-10-2017 ' + listMatch.startTime).format('HH:mm')}</h3>
                 <h4>
-                  {(new Date(listMatch.timeSlotId.endTime).getHours() -
-                    new Date(listMatch.timeSlotId.startTime).getHours()) *
-                    60 +
-                    (new Date(listMatch.timeSlotId.endTime).getMinutes() -
-                      new Date(listMatch.timeSlotId.startTime).getMinutes()) +
-                    'min'}
+                  {moment('10-10-2017 ' + listMatch.endTime).hour() * 60 +
+                    moment('10-10-2017 ' + listMatch.endTime).minute() -
+                    (moment('10-10-2017 ' + listMatch.startTime).hour() * 60 +
+                      moment('10-10-2017 ' + listMatch.startTime).minute())} phút
                 </h4>
-                <h4>{listMatch.timeSlotId.fieldId.fieldTypeId.name}</h4>
+                <h4>{listMatch.fieldTypeId.name}</h4>
               </div>
               <div className="col-lg-4 text-center">
                 <a href="#">
@@ -104,14 +93,13 @@ class Home extends Component {
                     width="80"
                     height="80"
                   />
-                  <h4>{listMatch.opponentId.username}</h4>
                 </a>
               </div>
             </div>
           </div>
           <a href="#">
             <div className="panel-footer">
-              <span className="pull-left">Feedback</span>
+              <span className="pull-left">Cập nhật sân</span>
               <span className="pull-right">
                 <i className="fa fa-arrow-circle-right" />
               </span>
@@ -170,16 +158,16 @@ class Home extends Component {
               <div className="col-lg-3"> <button className="btn btn-default btn-block">Đặt sân</button> </div>
             </div> */}
             <div className="btn-group btn-group-justified">
-            <a className="btn btn-primary">Các trận đang đá</a>
-            <a className="btn btn-default">Các sắp diễn ra</a>
-            <a className="btn btn-default">Thời gian rảnh</a>
-            <a className="btn btn-default">Đặt sân</a>
+              <a className="btn btn-primary">Các trận đang đá</a>
+              <a className="btn btn-primary active">Các trận trong ngày</a>
+              <a className="btn btn-primary">Thời gian rảnh</a>
+              <a className="btn btn-primary">Đặt sân</a>
             </div>
           </div>
           <div className="col-lg-12">
-          <div className="row">
-            {listMatch.length > 0 ? renderMatch : 'There is no match today'}
-          </div>
+            <div className="row">
+              {listMatch.length > 0 ? renderMatch : 'There is no match today'}
+            </div>
           </div>
         </div>
       </div>
