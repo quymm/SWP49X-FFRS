@@ -42,12 +42,17 @@ public class MatchingRequestEntity implements Serializable {
     @Column(name = "latitude")
     private String latitude;
     @Basic(optional = false)
-    @Column(name = "start_time")
+    @Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
+    private Date date;
+    @Basic(optional = false)
+    @Column(name = "start_time")
+    @Temporal(TemporalType.TIME)
     private Date startTime;
     @Basic(optional = false)
-    @Column(name = "duration")
-    private int duration;
+    @Column(name = "end_time")
+    @Temporal(TemporalType.TIME)
+    private Date endTime;
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
@@ -65,13 +70,19 @@ public class MatchingRequestEntity implements Serializable {
         this.id = id;
     }
 
-    public MatchingRequestEntity(Integer id, String longitude, String latitude, Date startTime, int duration, boolean status) {
-        this.id = id;
+    public MatchingRequestEntity(String longitude, String latitude, Date date, Date startTime, Date endTime, boolean status, FieldTypeEntity fieldTypeId, AccountEntity userId) {
         this.longitude = longitude;
         this.latitude = latitude;
+        this.date = date;
         this.startTime = startTime;
-        this.duration = duration;
+        this.endTime = endTime;
         this.status = status;
+        this.fieldTypeId = fieldTypeId;
+        this.userId = userId;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
 
     public Integer getId() {
@@ -98,6 +109,14 @@ public class MatchingRequestEntity implements Serializable {
         this.latitude = latitude;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     public Date getStartTime() {
         return startTime;
     }
@@ -106,15 +125,15 @@ public class MatchingRequestEntity implements Serializable {
         this.startTime = startTime;
     }
 
-    public int getDuration() {
-        return duration;
+    public Date getEndTime() {
+        return endTime;
     }
 
-    public void setDuration(int duration) {
-        this.duration = duration;
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
-    public boolean getStatus() {
+    public boolean isStatus() {
         return status;
     }
 

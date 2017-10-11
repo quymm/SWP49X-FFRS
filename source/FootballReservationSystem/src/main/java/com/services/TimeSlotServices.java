@@ -31,9 +31,6 @@ public class TimeSlotServices {
     @Autowired
     FieldTypeServices fieldTypeServices;
 
-    @Autowired
-    FriendlyMatchServices friendlyMatchServices;
-
     public List<TimeSlotEntity> findUpcomingReservationByDate(String dateString, int fieldOwnerId, int fieldTypeId) {
         Date targetDate = DateTimeUtils.convertFromStringToDate(dateString);
         AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
@@ -87,7 +84,7 @@ public class TimeSlotServices {
         return savedTimeSlotEntityList;
     }
 
-    public FriendlyMatchEntity reserveFriendlyMatch(InputReservationDTO inputReservationDTO) {
+    public TimeSlotEntity reserveTimeSlot(InputReservationDTO inputReservationDTO) {
         AccountEntity fieldOwner = accountServices.findAccountEntityById(inputReservationDTO.getFieldOwnerId(), "owner");
         FieldTypeEntity fieldType = fieldTypeServices.findById(inputReservationDTO.getFieldTypeId());
         Date targetDate = DateTimeUtils.convertFromStringToDate(inputReservationDTO.getDate());
@@ -96,15 +93,16 @@ public class TimeSlotServices {
         }
         Date startTime = DateTimeUtils.convertFromStringToTime(inputReservationDTO.getStartTime());
 
-        Date endTime = new Date(startTime.getTime() + inputReservationDTO.getDuration() * 60000);
-//        endTime.setTime(startTime.getTime() + inputReservationDTO.getDuration() * 60000);
+        Date endTime = DateTimeUtils.convertFromStringToTime(inputReservationDTO.getEndTime());
+
+        int duration = (int) ((endTime.getTime() - startTime.getTime()) / 60000);
         // get tất cả thời gian rảnh theo chủ sân, loại sân và ngày
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(fieldOwner, fieldType, targetDate, false, true);
         for (TimeSlotEntity timeSlotEntity : timeSlotEntityList) {
             boolean checkStart = timeSlotEntity.getStartTime().before(startTime) || timeSlotEntity.getStartTime().equals(startTime);
             boolean checkEnd = timeSlotEntity.getEndTime().after(endTime) || timeSlotEntity.getEndTime().equals(endTime);
             if (checkStart && checkEnd) {
-                float price = calculatePriceForTimeSlot(startTime, inputReservationDTO.getDuration(), targetDate, fieldOwner, fieldType);
+                float price = calculatePriceForTimeSlot(startTime, duration, targetDate, fieldOwner, fieldType);
                 if (timeSlotEntity.getStartTime().before(startTime) && timeSlotEntity.getEndTime().after(endTime)) {
                     // khoảng thời gian trước giờ đặt
                     TimeSlotEntity timeSlotEntity1 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
@@ -119,8 +117,7 @@ public class TimeSlotServices {
                     timeSlotRepository.delete(timeSlotEntity);
                     timeSlotRepository.save(timeSlotEntity1);
                     timeSlotRepository.save(timeSlotEntity3);
-
-                    return friendlyMatchServices.createNewFriendlyMatch(timeSlotRepository.save(timeSlotEntity2), inputReservationDTO.getUserId());
+                    return timeSlotRepository.save(timeSlotEntity2);
                 } else if (timeSlotEntity.getStartTime().before(startTime) && timeSlotEntity.getEndTime().equals(startTime)) {
                     // khoảng thời gian trước giờ đặt
                     TimeSlotEntity timeSlotEntity1 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
@@ -130,7 +127,7 @@ public class TimeSlotServices {
                             startTime, endTime, price, true, true);
                     timeSlotRepository.delete(timeSlotEntity);
                     timeSlotRepository.save(timeSlotEntity1);
-                    return friendlyMatchServices.createNewFriendlyMatch(timeSlotRepository.save(timeSlotEntity2), inputReservationDTO.getUserId());
+                    return timeSlotRepository.save(timeSlotEntity2);
                 } else if (timeSlotEntity.getStartTime().equals(startTime) && timeSlotEntity.getEndTime().after(endTime)) {
                     // khoảng thời gian đặt
                     TimeSlotEntity timeSlotEntity1 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
@@ -140,12 +137,12 @@ public class TimeSlotServices {
                             endTime, timeSlotEntity.getEndTime(), Float.valueOf(0), false, true);
                     timeSlotRepository.delete(timeSlotEntity);
                     timeSlotRepository.save(timeSlotEntity2);
-                    return friendlyMatchServices.createNewFriendlyMatch(timeSlotRepository.save(timeSlotEntity1), inputReservationDTO.getUserId());
+                    return timeSlotRepository.save(timeSlotEntity1);
                 } else {
                     // khoảng thời gian đặt bằng chính timeslot
                     timeSlotEntity.setReserveStatus(true);
                     timeSlotEntity.setPrice(price);
-                    return friendlyMatchServices.createNewFriendlyMatch(timeSlotRepository.save(timeSlotEntity), inputReservationDTO.getUserId());
+                    return timeSlotRepository.save(timeSlotEntity);
                 }
             }
         }
@@ -259,6 +256,5 @@ public class TimeSlotServices {
         timeSlotEntity.setFieldId(fieldEntity);
         return timeSlotRepository.save(timeSlotEntity);
     }
-
 
 }
