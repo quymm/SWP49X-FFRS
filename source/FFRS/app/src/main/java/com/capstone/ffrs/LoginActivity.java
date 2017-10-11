@@ -35,6 +35,8 @@ import java.util.Map;
  */
 public class LoginActivity extends AppCompatActivity {
 
+    String localhost = "http://10.0.2.2:8080";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
             password.requestFocus();
             return;
         }
-        String url = "http://10.0.2.2:8080/swp49x-ffrs/account/login-user?username=" + username.getText().toString() + "&password=" + password.getText().toString();
+        String url = localhost + "/swp49x-ffrs/account/login-user?username=" + username.getText().toString() + "&password=" + password.getText().toString();
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override

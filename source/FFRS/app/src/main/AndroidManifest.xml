@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -75,6 +76,14 @@
         <activity
             android:name=".ReservationResultActivity"
             android:label="@string/title_activity_reservation_result"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".MatchMapActivity"
+            android:label="@string/title_activity_match_map"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".MatchActivity"
+            android:label="@string/title_activity_match"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

@@ -38,8 +38,6 @@ public class FieldDetailActivity extends AppCompatActivity
     Date from, to, date;
     int id, totalPrice;
 
-    RequestQueue queue;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +63,7 @@ public class FieldDetailActivity extends AppCompatActivity
 
         from = (Date) b.getSerializable("time_from");
         to = (Date) b.getSerializable("time_to");
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
 
         id = b.getInt("field_id");
 

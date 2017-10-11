@@ -40,7 +40,6 @@ import java.util.List;
 
 public class FieldSearchFragment extends Fragment {
 
-    //  String url = "https://api.myjson.com/bins/1fscel";
     String url = "http://10.0.2.2:8080/swp49x-ffrs/account?role=owner";
 
     RecyclerView recyclerView;
