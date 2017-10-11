@@ -7,15 +7,21 @@ public class InputReservationDTO {
 
     private int fieldTypeId;
 
-    private int userId;
-
     private String date;
 
     private String startTime;
 
-    private int duration;
+    private String endTime;
 
     public InputReservationDTO() {
+    }
+
+    public InputReservationDTO(int fieldOwnerId, int fieldTypeId, String date, String startTime, String endTime) {
+        this.fieldOwnerId = fieldOwnerId;
+        this.fieldTypeId = fieldTypeId;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     public int getFieldOwnerId() {
@@ -34,14 +40,6 @@ public class InputReservationDTO {
         this.fieldTypeId = fieldTypeId;
     }
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
     public String getDate() {
         return date;
     }
@@ -58,11 +56,11 @@ public class InputReservationDTO {
         this.startTime = startTime;
     }
 
-    public int getDuration() {
-        return duration;
+    public String getEndTime() {
+        return endTime;
     }
 
-    public void setDuration(int duration) {
-        this.duration = duration;
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 }

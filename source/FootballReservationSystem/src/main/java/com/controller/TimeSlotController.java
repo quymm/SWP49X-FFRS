@@ -1,6 +1,8 @@
 package com.controller;
 
+import com.dto.InputMatchingRequestDTO;
 import com.dto.InputReservationDTO;
+import com.services.MatchServices;
 import com.services.TimeSlotServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,9 @@ public class TimeSlotController {
     @Autowired
     TimeSlotServices timeSlotServices;
 
+    @Autowired
+    MatchServices matchServices;
+
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/swp49x-ffrs/match/free-time", method = RequestMethod.GET)
     public ResponseEntity getFreeTime(@RequestParam("field-owner-id") int fieldOwnerId, @RequestParam("field-type-id") int fieldTypeId,
@@ -23,9 +28,9 @@ public class TimeSlotController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/swp49x-ffrs/match/friendly-match", method = RequestMethod.POST)
-    public ResponseEntity reserveFriendMatch(@RequestBody InputReservationDTO inputReservationDTO){
-        return new ResponseEntity(timeSlotServices.reserveFriendlyMatch(inputReservationDTO), HttpStatus.CREATED);
+    @RequestMapping(value = "/swp49x-ffrs/match/reserve-time-slot", method = RequestMethod.POST)
+    public ResponseEntity reserveTimeSlot(@RequestBody InputReservationDTO inputReservationDTO){
+        return new ResponseEntity(timeSlotServices.reserveTimeSlot(inputReservationDTO), HttpStatus.CREATED);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
@@ -48,5 +53,15 @@ public class TimeSlotController {
         return new ResponseEntity(timeSlotServices.setTimeForTimeSlot(timeSlotId, fieldId), HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/swp49x-ffrs/match/friendly-match", method = RequestMethod.POST)
+    public ResponseEntity reserveFriendlyMatch(@RequestParam("time-slot-id") int timeSlotId, @RequestParam("user-id") int userId){
+        return new ResponseEntity(matchServices.reserveFriendlyMatch(timeSlotId, userId), HttpStatus.CREATED);
+    }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/swp49x-ffrs/match/matching-request", method = RequestMethod.POST)
+    public ResponseEntity createNewMatchingRequest(@RequestBody InputMatchingRequestDTO inputMatchingRequestDTO){
+        return new ResponseEntity(matchServices.createNewMatchingRequest(inputMatchingRequestDTO), HttpStatus.CREATED);
+    }
 }
