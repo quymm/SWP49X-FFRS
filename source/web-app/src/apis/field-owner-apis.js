@@ -8,6 +8,8 @@ import {
   DETELE_FIELD,
   GET_TIME_ENABLE_IN_WEEK,
   UPDATE_TIME_ENABLE_IN_WEEK,
+  GET_FREE_TIME,
+  BOOK_MATCH,
 } from './base-URL';
 
 export function fetchGetMatchByFieldOwnerAndDay(
@@ -18,8 +20,9 @@ export function fetchGetMatchByFieldOwnerAndDay(
   return fetch(
     BASE_URL +
       GET_MATCH_BY_DAY +
-      '?&field-owner-id=' + fieldOwnerId
-      +'&field-type-id=' +
+      '?&field-owner-id=' +
+      fieldOwnerId +
+      '&field-type-id=' +
       fieldTypeId +
       '&date=' +
       day,
@@ -99,4 +102,31 @@ export function fetchUpdateTimeEnableInWeek(
   }).then(res => res.json());
 }
 
+export function fetchGetFreeTime(fieldownerid, fieldTypeId, argDate) {
+  return fetch(
+    BASE_URL +
+      GET_FREE_TIME +
+      '?field-owner-id=' +
+      fieldownerid +
+      '&field-type-id= ' +
+      fieldTypeId +
+      '&date=' +
+      argDate,
+  ).then(res => res.json());
+}
+export function fetchBookMatch(argDate, argDuration, argFieldOwnerId, argFieldTypeId, argStartTime) {
+  return fetch(BASE_URL + BOOK_MATCH, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(
+      {
+        date: argDate,
+        endTime: argDuration,
+        fieldOwnerId: argFieldOwnerId,
+        fieldTypeId: argFieldTypeId,
+        startTime: argStartTime,
+      },
+    ),
+  }).then(res => res.json());
+}
 //

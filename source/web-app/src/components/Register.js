@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { fetchRegister, fechGetAddressByLocationGoogleMap } from '../apis/guest-apis';
-import { geolocated } from 'react-geolocated';
+import {
+  fetchRegister,
+  fechGetAddressByLocationGoogleMap,
+} from '../apis/guest-apis';
 class Register extends Component {
   constructor(props) {
     super(props);
@@ -19,18 +21,20 @@ class Register extends Component {
     };
   }
 
-   componentDidMount() {
+  componentDidMount() {
     // navigator.geolocated.getCurrentPosition(s => console.log(s), e => console.log(e));
     // console.log(navigator.geolocation.getCurrentPosition(e => console.log(e)));
     navigator.geolocation.getCurrentPosition(async location => {
-        const address = await fechGetAddressByLocationGoogleMap(location.coords.latitude, location.coords.longitude);
-       this.setState({
+      const address = await fechGetAddressByLocationGoogleMap(
+        location.coords.latitude,
+        location.coords.longitude,
+      );
+      this.setState({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        address : address,
-      })},
-    );
-    
+        address: address,
+      });
+    });
   }
 
   async handleInputChange(evt) {
@@ -132,9 +136,7 @@ class Register extends Component {
                         <i>Hãy chắc chắn rằng đây là địa chỉ của bạn</i>
                       </label>
                       <input
-                        value={
-                          address? address : 'Đang lấy địa chỉ'
-                        }
+                        value={address ? address : 'Đang lấy địa chỉ'}
                         onChange={this.handelSetLocation.bind(this)}
                         className="form-control"
                         name="address"

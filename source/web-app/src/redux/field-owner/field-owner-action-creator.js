@@ -32,3 +32,17 @@ export function getAllTimeEnableInWeek(data){
         payloads: data
     }
 }
+
+export function getAllFreeTime5vs5(data){
+    return { 
+        type: 'GET_ALL_FREE_TIME_5VS5',
+        payloads: data
+     }
+}
+
+export function getAllFreeTime7vs7(data){
+    return { 
+        type: 'GET_ALL_FREE_TIME_7VS7',
+        payloads: data
+     }
+}

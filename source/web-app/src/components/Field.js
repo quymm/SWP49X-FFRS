@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { fetchGetAllField, fetchDeleteField } from '../apis/field-owner-apis';
 import { getAllField } from '../redux/field-owner/field-owner-action-creator';
 import FormCreateField from '../containts/Form-Create-Field';
-import { Redirect } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import { accessDenied } from '../redux/guest/guest-action-creators';
 class Field extends Component {
@@ -27,14 +26,14 @@ class Field extends Component {
   async componentDidMount() {
     const { id } = this.props.auth.user.data;
     console.log(id);
-    const data = await fetchGetAllField(1);
+    const data = await fetchGetAllField(2);
     await this.props.getAllField(data);
   }
 
   async deleteField(evt) {
     const fieldId = evt.target.value;
     await fetchDeleteField(fieldId);
-    const data = await fetchGetAllField(1);
+    const data = await fetchGetAllField(2);
     await this.props.getAllField(data);   
   }
 
@@ -47,13 +46,13 @@ class Field extends Component {
           <td>{listField.name}</td>
           <td>{listField.fieldTypeId.name}</td>
           <td>
-            <button className="btn btn-info">Update</button>
+            <button className="btn btn-info">Cập nhật</button>
             <button
               value={listField.id}
               onClick={this.deleteField.bind(this)}
               className="btn btn-danger"
             >
-              Delete
+              Xoá
             </button>
           </td>
         </tr>

@@ -39,12 +39,12 @@ class FormCreateField extends Component {
     }
     if (fieldName !== null && fieldName !== undefined) {
       // debugger;
-      await fetchAddField(fieldName, fieldStyle, 1);
+      await fetchAddField(fieldName, fieldStyle, 2);
       this.setState({errorMessage: undefined, fieldName: undefined});
       this.fieldNameInput === '';
       // .then(fetchGetAllField(1))
       // .then(data => this.props.getAllField());
-      const data = await fetchGetAllField(1);
+      const data = await fetchGetAllField(2);
       await this.props.getAllField(data);
       console.log('form', this.props);
       await this.props.history.push('/app/field');
@@ -65,7 +65,7 @@ class FormCreateField extends Component {
           
           <div className="form-group">
             <label htmlFor="inputEmail3" className="col-sm-3 control-label">
-              Field Name
+              Tên sân
             </label>
             <div className="col-sm-9">
               <div className="row">
@@ -86,7 +86,7 @@ class FormCreateField extends Component {
 
           <div className="form-group">
             <label htmlFor="sel1" className="col-sm-3 control-label">
-              Field Type
+              Loại sân
             </label>
             <div className="col-sm-2">
               <select
