@@ -89,7 +89,7 @@ public class MapsActivity extends AppCompatActivity implements
 //        String directionApiPath = Helper.getUrl(String.valueOf(currentPosition.latitude), String.valueOf(currentPosition.longitude),
 //                String.valueOf(fieldLocation.latitude), String.valueOf(fieldLocation.longitude));
 
-        url = "http://10.0.2.2:8080/swp49x-ffrs/account/managed-field-owner?field-owner-id=" + id;
+        url = "http://172.20.10.3:8080/swp49x-ffrs/account/managed-field-owner?field-owner-id=" + id;
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -168,7 +168,7 @@ public class MapsActivity extends AppCompatActivity implements
                             try {
                                 JSONObject profile = response.getJSONObject("profileId");
                                 // Add a marker in Sydney and move the camera
-                                LatLng fieldLocation = new LatLng(Double.parseDouble(profile.getString("longitude")), (Double.parseDouble(profile.getString("latitude"))));
+                                LatLng fieldLocation = new LatLng(Double.parseDouble(profile.getString("latitude")), (Double.parseDouble(profile.getString("longitude"))));
                                 mMap.addMarker(new MarkerOptions().position(fieldLocation).title("Marker"));
                                 mMap.moveCamera(CameraUpdateFactory.zoomTo(15f));
                                 mMap.moveCamera(CameraUpdateFactory.newLatLng(fieldLocation));

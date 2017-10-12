@@ -38,6 +38,10 @@ public class FieldDetailActivity extends AppCompatActivity
     Date from, to, date;
     int id, totalPrice;
 
+    String localhost = "http://172.20.10.3:8080";
+
+    RequestQueue queue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,7 +132,33 @@ public class FieldDetailActivity extends AppCompatActivity
     }
 
     public void onClickReserve(View view) {
-        Intent intent = new Intent(FieldDetailActivity.this, ReservationResultActivity.class);
-        startActivity(intent);
+        Bundle b = getIntent().getExtras();
+
+        queue = NetworkController.getInstance(this).getRequestQueue();
+        String url = localhost + "/swp49x-ffrs/match/friendly-match?time-slot-id="+ b.getInt("time_slot_id") +"&user-id="+b.getInt("user_id");
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if (response != null) {
+                            try {
+                                Intent intent = new Intent(FieldDetailActivity.this, ReservationResultActivity.class);
+                                startActivity(intent);
+                            } catch (Exception e) {
+                                Log.d("EXCEPTION", e.getMessage());
+                            }
+                        } else {
+                            Toast.makeText(FieldDetailActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error.Response", error.toString());
+                    }
+                });
+        queue.add(postRequest);
+
     }
 }

@@ -40,7 +40,7 @@ import java.util.List;
 
 public class FieldSearchFragment extends Fragment {
 
-    String url = "http://10.0.2.2:8080/swp49x-ffrs/account?role=owner";
+    String url = "http://172.20.10.3:8080/swp49x-ffrs/account?role=owner";
 
     RecyclerView recyclerView;
     RequestQueue queue;
@@ -85,9 +85,11 @@ public class FieldSearchFragment extends Fragment {
     }
 
     public void loadFields(View view) {
+        Bundle b = getActivity().getIntent().getExtras();
         //Initialize RecyclerView
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         adapter = new FieldAdapter(this.getContext(), fieldList);
+        adapter.setUserId(b.getInt("user_id"));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 

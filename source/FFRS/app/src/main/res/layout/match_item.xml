@@ -62,7 +62,7 @@
                 android:layout_toLeftOf="@id/right_sector">
 
                 <TextView
-                    android:id="@+id/title_view"
+                    android:id="@+id/team_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="7dp"
@@ -72,7 +72,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/content_view"
+                    android:id="@+id/time_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="7dp"

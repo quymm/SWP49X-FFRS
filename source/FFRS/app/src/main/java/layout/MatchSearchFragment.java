@@ -96,15 +96,18 @@ public class MatchSearchFragment extends Fragment {
         from.setOnClickListener(new TimePickerListener(view.getContext(), from));
         to.setOnClickListener(new TimePickerListener(view.getContext(), to));
 
+
         Button btLocation = (Button) view.findViewById(R.id.btChooseLocation);
         btLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Bundle b = getActivity().getIntent().getExtras();
                 Intent intent = new Intent(v.getContext(), MatchMapActivity.class);
                 intent.putExtra("field_type_id", 1);
                 intent.putExtra("field_date", date.getText().toString());
                 intent.putExtra("field_start_time", from.getText().toString());
-                intent.putExtra("field_end_time", to.getText().toString());
+                //intent.putExtra("field_end_time", to.getText().toString());
+                intent.putExtra("user_id",b.getInt("user_id"));
                 startActivity(intent);
             }
         });

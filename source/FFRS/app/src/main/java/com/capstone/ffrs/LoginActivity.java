@@ -24,6 +24,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -35,7 +36,7 @@ import java.util.Map;
  */
 public class LoginActivity extends AppCompatActivity {
 
-    String localhost = "http://10.0.2.2:8080";
+    String localhost = "http://172.20.10.3:8080";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         if (response != null) {
-                            changeActivity();
+                            changeActivity(response);
                         } else {
                             Toast.makeText(LoginActivity.this, "Sai tên tài khoản hay mật khẩu!", Toast.LENGTH_SHORT).show();
                         }
@@ -88,8 +89,13 @@ public class LoginActivity extends AppCompatActivity {
         queue.add(getRequest);
     }
 
-    public void changeActivity() {
+    public void changeActivity(JSONObject response) {
         Intent intent = new Intent(this, FieldSuggestActivity.class);
+        try {
+            intent.putExtra("user_id", response.getInt("id"));
+        } catch (JSONException e) {
+            Log.d("EXCEPTION", e.getMessage());
+        }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

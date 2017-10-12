@@ -59,7 +59,7 @@ import java.util.Map;
 public class FieldTimeActivity extends AppCompatActivity {
 
     String url;
-    String localhost = "http://10.0.2.2:8080";
+    String localhost = "http://172.20.10.3:8080";
 
     RecyclerView recyclerView;
     RequestQueue queue;
@@ -205,6 +205,8 @@ public class FieldTimeActivity extends AppCompatActivity {
             final Date fromTime = sdf.parse(from.getText().toString());
             final Date toTime = sdf.parse(to.getText().toString());
 
+            final Bundle b = getIntent().getExtras();
+
             String url = localhost + "/swp49x-ffrs/match/reserve-time-slot";
             queue = NetworkController.getInstance(this).getRequestQueue();
             Map<String, Object> params = new HashMap<>();
@@ -213,7 +215,7 @@ public class FieldTimeActivity extends AppCompatActivity {
             params.put("fieldOwnerId", id);
             params.put("fieldTypeId", 1);
             params.put("startTime", from.getText().toString());
-            params.put("userId", 1);
+            params.put("userId", b.getInt("user_id"));
             JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
                     new Response.Listener<JSONObject>() {
                         @Override
@@ -229,6 +231,8 @@ public class FieldTimeActivity extends AppCompatActivity {
                                     intent.putExtra("time_from", fromTime);
                                     intent.putExtra("time_to", toTime);
                                     intent.putExtra("price", response.getInt("price"));
+                                    intent.putExtra("user_id", b.getInt("user_id"));
+                                    intent.putExtra("time_slot_id", response.getInt("id"));
                                     startActivity(intent);
                                 } catch (Exception e) {
                                     Log.d("EXCEPTION", e.getMessage());

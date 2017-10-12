@@ -74,13 +74,18 @@ public class MatchMapActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     public void onClickFindMatch(View view) {
-        Bundle b = getIntent().getExtras();
-        Intent intent = new Intent(MatchMapActivity.this, MatchActivity.class);
-        intent.putExtra("field_type_id", b.getInt("field_type_id"));
-        intent.putExtra("field_date", b.getString("field_date"));
-        intent.putExtra("field_start_time", b.getString("field_start_time"));
-        intent.putExtra("field_end_time", b.getString("field_end_time"));
-        startActivity(intent);
+        if (currentPosition != null) {
+            Bundle b = getIntent().getExtras();
+            Intent intent = new Intent(MatchMapActivity.this, MatchActivity.class);
+            intent.putExtra("field_type_id", b.getInt("field_type_id"));
+            intent.putExtra("field_date", b.getString("field_date"));
+            intent.putExtra("field_start_time", b.getString("field_start_time"));
+            //intent.putExtra("field_end_time", b.getString("field_end_time"));
+            intent.putExtra("latitude", currentPosition.latitude);
+            intent.putExtra("longitude", currentPosition.longitude);
+            intent.putExtra("user_id",b.getInt("user_id"));
+            startActivity(intent);
+        }
     }
 
     @Override
