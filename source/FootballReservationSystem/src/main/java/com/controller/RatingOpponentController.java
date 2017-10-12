@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.dto.InputRatingOpponentDTO;
 import com.entity.RatingOpponentEntity;
 import com.services.RatingOpponentServices;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,5 +30,13 @@ public class RatingOpponentController {
                                                                            @RequestParam("opponent-id") int opponentId,
                                                                            @RequestParam("tourmatch-id") int tourMatchId){
         return new ResponseEntity(ratingOpponentServices.findByUserIdAndOpponentIdAndTourMatchIdAndStatus(userId, opponentId,tourMatchId, true), HttpStatus.OK);
+    }
+
+//    createNewRatingOpponent
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/swp49x-ffrs/rating/create-new-rating", method = RequestMethod.POST)
+    public ResponseEntity createNewRatingOpponent(@RequestBody InputRatingOpponentDTO inputRatingOpponentDTO){
+        RatingOpponentEntity ratingOpponentEntity = ratingOpponentServices.createNewRatingOpponent(inputRatingOpponentDTO);
+        return new ResponseEntity(ratingOpponentEntity, HttpStatus.CREATED);
     }
 }

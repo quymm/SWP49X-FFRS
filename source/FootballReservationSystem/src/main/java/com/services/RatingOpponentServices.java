@@ -1,5 +1,6 @@
 package com.services;
 
+import com.dto.InputRatingOpponentDTO;
 import com.entity.AccountEntity;
 import com.entity.RatingOpponentEntity;
 import com.entity.TourMatchEntity;
@@ -40,4 +41,17 @@ public class RatingOpponentServices {
         return ratingOpponentRepository.findByUserIdAndOpponentIdAndTourMatchIdAndStatus(userAccountEntity, opponentAccountEntity, tourMatchEntity,true);
     }
 
+    public RatingOpponentEntity createNewRatingOpponent(InputRatingOpponentDTO inputRatingOpponentDTO){
+        RatingOpponentEntity ratingOpponentEntity = new RatingOpponentEntity();
+        AccountEntity userAccountEntity = accountServices.findAccountEntityById(inputRatingOpponentDTO.getUserId(), "user");
+        AccountEntity opponentAccountEntity = accountServices.findAccountEntityById(inputRatingOpponentDTO.getOpponentId(), "user");
+        TourMatchEntity tourMatchEntity = tourMatchServices.findTourMatchEntityById(inputRatingOpponentDTO.getTourMatchId());
+        ratingOpponentEntity.setUserId(userAccountEntity);
+        ratingOpponentEntity.setOpponentId(opponentAccountEntity);
+        ratingOpponentEntity.setTourMatchId(tourMatchEntity);
+        ratingOpponentEntity.setRatingScore(inputRatingOpponentDTO.getRatingScore());
+        ratingOpponentEntity.setWin(inputRatingOpponentDTO.isWin());
+        ratingOpponentEntity.setStatus(true);
+        return  ratingOpponentRepository.save(ratingOpponentEntity);
+    }
 }
