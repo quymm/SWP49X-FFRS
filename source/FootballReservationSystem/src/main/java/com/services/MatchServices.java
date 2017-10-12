@@ -51,6 +51,7 @@ public class MatchServices {
         AccountEntity userEntity = accountServices.findAccountEntityById(userId, "user");
         TimeSlotEntity timeSlotEntity = timeSlotServices.findById(timeSlotId);
         FriendlyMatchEntity friendlyMatchEntity = new FriendlyMatchEntity();
+        friendlyMatchEntity.setTimeSlotId(timeSlotEntity);
         friendlyMatchEntity.setUserId(userEntity);
         friendlyMatchEntity.setStatus(true);
         return friendlyMatchRepository.save(friendlyMatchEntity);
@@ -89,14 +90,14 @@ public class MatchServices {
         AccountEntity user = accountServices.findAccountEntityById(userId, "user");
         FieldTypeEntity fieldType = fieldTypeServices.findById(fieldTypeId);
 
-        Date date = DateTimeUtils.convertFromStringToDateTime(dateStr);
+        Date date = DateTimeUtils.convertFromStringToDate(dateStr);
         Date time = DateTimeUtils.convertFromStringToTime(startTimeStr);
         Date startTime = new Date(time.getTime() - 30 * 60000);
         Date endTime = new Date(time.getTime() + 30 * 60000);
 
         int ratingScore = user.getProfileId().getRatingScore();
         // tìm các request cùng loại sân, thời gian dao động trong khoảng trước và sau 30 phút, rating score dao động trong khoảng 100 điểm
-        List<MatchingRequestEntity> similarMatchingRequestList = matchingRequestRepository.findSimilarMatchingRequest(fieldType, true, ratingScore - 100, ratingScore + 100, date, startTime, endTime);
+        List<MatchingRequestEntity> similarMatchingRequestList = matchingRequestRepository.findSimilarMatchingRequest(fieldType, true, date, startTime, endTime);
         CordinationPoint cordinationPointA = new CordinationPoint(NumberUtils.parseFromStringToDouble(longitute), NumberUtils.parseFromStringToDouble(latitute));
         List<MatchingRequestEntity> returnMatchingRequest = new ArrayList<>();
         if (!similarMatchingRequestList.isEmpty()) {
@@ -105,8 +106,11 @@ public class MatchServices {
                 CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(matchingRequest.getLongitude())
                         , NumberUtils.parseFromStringToDouble(matchingRequest.getLatitude()));
                 double distance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
+
+                boolean checkRatingScore = matchingRequest.getUserId().getProfileId().getRatingScore() > (ratingScore - 100)
+                        && matchingRequest.getUserId().getProfileId().getRatingScore() < (ratingScore + 100);
                 // khoảng cách là dưới 5km
-                if (matchingRequest.getUserId().getId() != userId && distance < 5) {
+                if (matchingRequest.getUserId().getId() != userId && distance < 5 && checkRatingScore) {
                     returnMatchingRequest.add(matchingRequest);
                 }
             }
@@ -117,11 +121,11 @@ public class MatchServices {
     public TimeSlotEntity chooseSuitableField(InputMatchingRequestDTO inputMatchingRequestDTO, int matchingRequestId) {
         MatchingRequestEntity matchingRequestEntity = findMatchingRequestEntityById(matchingRequestId);
 
-        double longitute = (NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLongitude()) - NumberUtils.parseFromStringToDouble(matchingRequestEntity.getLongitude())) / 2;
-        double latitute = (NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()) - NumberUtils.parseFromStringToDouble(matchingRequestEntity.getLatitude())) / 2;
+        double longitute = (NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLongitude()) + NumberUtils.parseFromStringToDouble(matchingRequestEntity.getLongitude())) / 2;
+        double latitute = (NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()) + NumberUtils.parseFromStringToDouble(matchingRequestEntity.getLatitude())) / 2;
         CordinationPoint midCordinationPoint = new CordinationPoint();
-        midCordinationPoint.setLongitute(longitute);
-        midCordinationPoint.setLatitute(latitute);
+        midCordinationPoint.setLongitude(longitute);
+        midCordinationPoint.setLatitude(latitute);
 
         InputReservationDTO inputReservationDTO = new InputReservationDTO();
         inputReservationDTO.setDate(inputMatchingRequestDTO.getDate());
@@ -162,6 +166,7 @@ public class MatchServices {
                 }
             }
         for (FieldOwnerAndDistance fieldOwnerAndDistance : fieldOwnerListAndDistance) {
+            inputReservationDTO.setFieldOwnerId(fieldOwnerAndDistance.getFieldOwner().getId());
             TimeSlotEntity timeSlotEntity = timeSlotServices.reserveTimeSlot(inputReservationDTO);
             if (timeSlotEntity != null) {
                 return timeSlotEntity;
