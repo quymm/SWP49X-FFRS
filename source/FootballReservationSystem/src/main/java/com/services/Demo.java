@@ -25,12 +25,12 @@ public class Demo {
 //        Double bDouble = Double.parseDouble(b);
 
 //        CordinationPoint cordinationPoint1 = new CordinationPoint();
-//        cordinationPoint1.setLongitute("10.797507");
-//        cordinationPoint1.setLatitute("106.675181");
+//        cordinationPoint1.setLongitude("10.797507");
+//        cordinationPoint1.setLatitude("106.675181");
 //
 //        CordinationPoint cordinationPoint2 = new CordinationPoint();
-//        cordinationPoint2.setLongitute("10.796088");
-//        cordinationPoint2.setLatitute("106.677798");
+//        cordinationPoint2.setLongitude("10.796088");
+//        cordinationPoint2.setLatitude("106.677798");
 
 //        System.out.println(MapUtils.calculateDistanceBetweenTwoPoint(cordinationPoint1, cordinationPoint2));
 

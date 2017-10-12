@@ -4,31 +4,31 @@ package com.dto;
  * @author MinhQuy
  */
 public class CordinationPoint {
-    private double longitute;
+    private double longitude;
 
-    private double latitute;
+    private double latitude;
 
-    public CordinationPoint(double longitute, double latitute) {
-        this.longitute = longitute;
-        this.latitute = latitute;
+    public CordinationPoint(double longitude, double latitude) {
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 
     public CordinationPoint() {
     }
 
-    public double getLongitute() {
-        return longitute;
+    public double getLongitude() {
+        return longitude;
     }
 
-    public void setLongitute(double longitute) {
-        this.longitute = longitute;
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
-    public double getLatitute() {
-        return latitute;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setLatitute(double latitute) {
-        this.latitute = latitute;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 }
