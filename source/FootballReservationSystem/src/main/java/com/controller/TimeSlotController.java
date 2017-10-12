@@ -68,9 +68,9 @@ public class TimeSlotController {
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/swp49x-ffrs/match/matching-request", method = RequestMethod.GET)
     public ResponseEntity suggestOpponent(@RequestParam("user-id") int userId, @RequestParam("field-type-id") int fieldTypeId,
-                                          @RequestParam("longitute") String longitute, @RequestParam("latitute") String latitute,
+                                          @RequestParam("longitude") String longitude, @RequestParam("latitude") String latitude,
                                           @RequestParam("date") String date, @RequestParam("start-time") String startTime){
-        return new ResponseEntity(matchServices.suggestOpponent(userId, fieldTypeId, longitute, latitute, date, startTime), HttpStatus.OK);
+        return new ResponseEntity(matchServices.suggestOpponent(userId, fieldTypeId, longitude, latitude, date, startTime), HttpStatus.OK);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
