@@ -30,6 +30,22 @@ public class DateTimeUtils {
         return null;
     }
 
+    public static Date convertFromStringToDateTime(String dateTimeString){
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        try {
+            Date dateTime = format.parse(dateTimeString);
+            return dateTime;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String formatTime(Date time){
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        return format.format(time);
+    }
+
     public static String returnDayInWeek(Date date){
         SimpleDateFormat format = new SimpleDateFormat("EE");
         return format.format(date);
