@@ -15,12 +15,12 @@ public class RatingOpponentController {
     RatingOpponentServices ratingOpponentServices;
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/swp49x-ffrs/rating/by-userId", method = RequestMethod.GET)
+    @RequestMapping(value = "/swp49x-ffrs/rating/by-user-id", method = RequestMethod.GET)
     public ResponseEntity findByUserId(@RequestParam("user-id") int userId){
         return new ResponseEntity(ratingOpponentServices.findByUserId(userId), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/swp49x-ffrs/rating/to-opponentId", method = RequestMethod.GET)
+    @RequestMapping(value = "/swp49x-ffrs/rating/to-opponent-id", method = RequestMethod.GET)
     public ResponseEntity findByOpponentId(@RequestParam("opponent-id") int opponentId){
         return new ResponseEntity(ratingOpponentServices.findByOpponentId(opponentId), HttpStatus.OK);
     }
