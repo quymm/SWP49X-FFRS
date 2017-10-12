@@ -47,7 +47,6 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyVi
         FieldTime item = timeList.get(position);
 
         holder.title.setText(item.getFromTime() + " - " + item.getToTime());
-        holder.price.setText(NumberFormat.getNumberInstance(Locale.US).format(item.getPrice()) + " đ/h");
     }
 
     @Override
@@ -57,12 +56,11 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyVi
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView price, title;
+        private TextView title;
 
         public MyViewHolder(final View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.time_frame);
-            price = (TextView) itemView.findViewById(R.id.hour_price);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -71,11 +69,6 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyVi
                     String[] hours = title.getText().toString().split(" - ");
                     intent.putExtra("from", hours[0]);
                     intent.putExtra("to", hours[1]);
-                    try {
-                        intent.putExtra("price", NumberFormat.getNumberInstance(Locale.US).parse(price.getText().toString().replace(" đ/h", "")).intValue());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
                 }
             });
         }

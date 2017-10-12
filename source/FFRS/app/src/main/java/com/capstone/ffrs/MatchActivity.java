@@ -1,16 +1,14 @@
-package layout;
+package com.capstone.ffrs;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -25,76 +23,74 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.capstone.ffrs.R;
-import com.capstone.ffrs.adapter.FieldAdapter;
+import com.capstone.ffrs.adapter.MatchAdapter;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.Field;
+import com.capstone.ffrs.entity.Match;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class FieldSearchFragment extends Fragment {
-
-    String url = "http://172.20.10.3:8080/swp49x-ffrs/account?role=owner";
+public class MatchActivity extends AppCompatActivity {
+    String url;
 
     RecyclerView recyclerView;
     RequestQueue queue;
-    List<Field> fieldList = new ArrayList<Field>();
-    FieldAdapter adapter;
-
-    public FieldSearchFragment() {
-        // Required empty public constructor
-    }
+    List<Match> opponentList = new ArrayList<Match>();
+    MatchAdapter adapter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_match);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        loadMatches();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_field_search, container, false);
-        EditText edit_text = (EditText) view.findViewById(R.id.edit_text);
-        TextWatcher watcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.getFilter().filter(s);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        };
-        edit_text.addTextChangedListener(watcher);
-
-        loadFields(view);
-        return view;
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
-    public void loadFields(View view) {
-        Bundle b = getActivity().getIntent().getExtras();
+    public void loadMatches() {
+        Bundle b = getIntent().getExtras();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String strDate;
+        try {
+            Date date = sdf.parse(b.getString("field_date"));
+            sdf = new SimpleDateFormat("dd-MM-yyyy");
+            strDate = sdf.format(date);
+            url = "http://172.20.10.3:8080/swp49x-ffrs/match/matching-request";
+            url += "?user-id=" + b.getInt("user_id");
+            url += "&field-type-id=" + b.getInt("field_type_id");
+            url += "&longitude=" + b.getDouble("longitude");
+            url += "&latitude=" + b.getDouble("latitude");
+            url += "&date=" + strDate;
+            url += "&start-time=" + b.getString("field_start_time");
+            Log.d("URL", url);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         //Initialize RecyclerView
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        adapter = new FieldAdapter(this.getContext(), fieldList);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        adapter = new MatchAdapter(this, opponentList);
         adapter.setUserId(b.getInt("user_id"));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
         //Getting Instance of Volley Request Queue
-        queue = NetworkController.getInstance(getContext()).getRequestQueue();
+        queue = NetworkController.getInstance(this).getRequestQueue();
         //Volley's inbuilt class to make Json array request
         JsonArrayRequest newsReq = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
@@ -103,11 +99,15 @@ public class FieldSearchFragment extends Fragment {
                 for (int i = 0; i < response.length(); i++) {
                     try {
                         JSONObject obj = response.getJSONObject(i);
-                        JSONObject profile = obj.getJSONObject("profileId");
-                        Field field = new Field(profile.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
-
+                        Match match = new Match();
+                        match.setId(obj.getInt("id"));
+                        match.setTeamName(obj.getJSONObject("userId").getJSONObject("profileId").getString("name"));
+                        match.setDate(obj.getString("date"));
+                        match.setStartTime(obj.getString("startTime"));
+                        match.setEndTime(obj.getString("endTime"));
+                        match.setRatingScore(obj.getJSONObject("userId").getJSONObject("profileId").getInt("ratingScore"));
                         // adding movie to movies array
-                        fieldList.add(field);
+                        opponentList.add(match);
 
                     } catch (Exception e) {
                         Log.d("EXCEPTION", e.getMessage());
@@ -121,15 +121,15 @@ public class FieldSearchFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                    Toast.makeText(getContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
                 } else if (error instanceof AuthFailureError) {
-                    Toast.makeText(getContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
                 } else if (error instanceof ServerError) {
-                    Toast.makeText(getContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
                 } else if (error instanceof NetworkError) {
-                    Toast.makeText(getContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
                 } else if (error instanceof ParseError) {
-                    Toast.makeText(getContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
                 }
             }
         }) {

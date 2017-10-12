@@ -6,12 +6,10 @@ package com.capstone.ffrs.entity;
 
 public class FieldTime {
     private String fromTime, toTime;
-    private int price;
 
-    public FieldTime(String fromTime, String toTime, int price) {
+    public FieldTime(String fromTime, String toTime) {
         this.fromTime = fromTime;
         this.toTime = toTime;
-        this.price = price;
     }
 
     public String getFromTime() {
@@ -30,11 +28,4 @@ public class FieldTime {
         this.toTime = toTime;
     }
 
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
 }

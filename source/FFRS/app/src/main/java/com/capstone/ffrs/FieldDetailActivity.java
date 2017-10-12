@@ -36,7 +36,9 @@ public class FieldDetailActivity extends AppCompatActivity
 
     String imageUrl, name, address;
     Date from, to, date;
-    int id, price;
+    int id, totalPrice;
+
+    String localhost = "http://172.20.10.3:8080";
 
     RequestQueue queue;
 
@@ -65,15 +67,11 @@ public class FieldDetailActivity extends AppCompatActivity
 
         from = (Date) b.getSerializable("time_from");
         to = (Date) b.getSerializable("time_to");
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
 
         id = b.getInt("field_id");
 
-        price = b.getInt("price");
-
-        double baseDuration = Math.abs(to.getTime() - from.getTime()) / 36e5;
-
-        int totalPrice = Double.valueOf(baseDuration * price).intValue();
+        totalPrice = b.getInt("price");
 
         long hours = Integer.valueOf(Double.valueOf(Math.abs(to.getTime() - from.getTime()) / 36e5).intValue());
         long minutes = Integer.valueOf(Double.valueOf((Math.abs(to.getTime() - from.getTime()) / (60 * 1000)) % 60).intValue());
@@ -89,7 +87,7 @@ public class FieldDetailActivity extends AppCompatActivity
         TextView txtDuration = (TextView) findViewById(R.id.text_duration);
         txtDuration.setText(duration);
         TextView txtPrice = (TextView) findViewById(R.id.text_total_price);
-        txtPrice.setText("Tổng giá: " + (totalPrice / 1000) + " ngàn đồng");
+        txtPrice.setText("Tổng giá: " + (totalPrice / 1000) + "K đồng");
     }
 
     @Override
@@ -129,28 +127,28 @@ public class FieldDetailActivity extends AppCompatActivity
 
     public void onClickShowMap(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
+        intent.putExtra("field_id", id);
         startActivity(intent);
     }
 
     public void onClickReserve(View view) {
-        String url = "http://10.0.2.2:8080/swp49x-ffrs/match/friendly-match";
+        Bundle b = getIntent().getExtras();
+
         queue = NetworkController.getInstance(this).getRequestQueue();
-        Map<String, Object> params = new HashMap<>();
-        params.put("date", new SimpleDateFormat("dd/MM/yyyy").format(date));
-        params.put("duration", (Math.abs(to.getTime() - from.getTime()) / 36e5) * 60);
-        params.put("fieldOwnerId", id);
-        params.put("fieldTypeId", 1);
-        params.put("startTime", new SimpleDateFormat("H:mm").format(from));
-        params.put("userId", 1);
-        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
+        String url = localhost + "/swp49x-ffrs/match/friendly-match?time-slot-id="+ b.getInt("time_slot_id") +"&user-id="+b.getInt("user_id");
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         if (response != null) {
-                            Intent intent = new Intent(FieldDetailActivity.this, ReservationResultActivity.class);
-                            startActivity(intent);
+                            try {
+                                Intent intent = new Intent(FieldDetailActivity.this, ReservationResultActivity.class);
+                                startActivity(intent);
+                            } catch (Exception e) {
+                                Log.d("EXCEPTION", e.getMessage());
+                            }
                         } else {
-                            Toast.makeText(FieldDetailActivity.this, "Cannot reserve!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(FieldDetailActivity.this, "Error!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 },
@@ -159,15 +157,7 @@ public class FieldDetailActivity extends AppCompatActivity
                     public void onErrorResponse(VolleyError error) {
                         Log.d("Error.Response", error.toString());
                     }
-                }) {
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                return headers;
-            }
-        };
+                });
         queue.add(postRequest);
 
     }
