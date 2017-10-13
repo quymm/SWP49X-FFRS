@@ -32,3 +32,10 @@ export function getAllTimeEnableInWeek(data){
         payloads: data
     }
 }
+
+export function updateOwnerField(data){
+    return {
+        type: 'UPDATE_OWNER',
+        payloads: data
+    }
+}

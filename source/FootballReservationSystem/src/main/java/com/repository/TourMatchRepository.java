@@ -9,5 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface TourMatchRepository extends JpaRepository<TourMatchEntity, Integer> {
     TourMatchEntity findByTimeSlotIdAndStatus(TimeSlotEntity timeSlotEntity, boolean status);
+    TourMatchEntity findByIdAndStatus(int id, boolean status);
 }
 
