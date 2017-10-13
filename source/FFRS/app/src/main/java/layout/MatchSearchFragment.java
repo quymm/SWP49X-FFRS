@@ -33,6 +33,7 @@ import java.util.Calendar;
 public class MatchSearchFragment extends Fragment {
 
     String displayFormat = "dd/MM/yyyy";
+    String localhost;
 
     public MatchSearchFragment() {
         // Required empty public constructor
@@ -47,6 +48,7 @@ public class MatchSearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        localhost = getResources().getString(R.string.local_host);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_match_search, container, false);
 
