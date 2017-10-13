@@ -20,11 +20,13 @@ public class RatingOpponentController {
         return new ResponseEntity(ratingOpponentServices.findByUserId(userId), HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/swp49x-ffrs/rating/to-opponent-id", method = RequestMethod.GET)
     public ResponseEntity findByOpponentId(@RequestParam("opponent-id") int opponentId){
         return new ResponseEntity(ratingOpponentServices.findByOpponentId(opponentId), HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/swp49x-ffrs/rating/user-opponent-tourmatch", method = RequestMethod.GET)
     public ResponseEntity findByUserIdAndOpponentIdAndTourMatchIdAndStatus(@RequestParam("user-id") int userId,
                                                                            @RequestParam("opponent-id") int opponentId,
@@ -32,7 +34,6 @@ public class RatingOpponentController {
         return new ResponseEntity(ratingOpponentServices.findByUserIdAndOpponentIdAndTourMatchIdAndStatus(userId, opponentId,tourMatchId, true), HttpStatus.OK);
     }
 
-//    createNewRatingOpponent
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/swp49x-ffrs/rating/create-new-rating", method = RequestMethod.POST)
     public ResponseEntity createNewRatingOpponent(@RequestBody InputRatingOpponentDTO inputRatingOpponentDTO){
