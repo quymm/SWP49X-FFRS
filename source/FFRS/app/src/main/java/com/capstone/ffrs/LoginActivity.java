@@ -36,14 +36,14 @@ import java.util.Map;
  */
 public class LoginActivity extends AppCompatActivity {
 
-    String localhost = "http://172.20.10.3:8080";
+    String localhost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_login);
-
+        localhost = getResources().getString(R.string.local_host);
     }
 
     @Override

@@ -59,7 +59,7 @@ import java.util.Map;
 public class FieldTimeActivity extends AppCompatActivity {
 
     String url;
-    String localhost = "http://172.20.10.3:8080";
+    String localhost;
 
     RecyclerView recyclerView;
     RequestQueue queue;
@@ -97,6 +97,8 @@ public class FieldTimeActivity extends AppCompatActivity {
         spinner = (ProgressBar) findViewById(R.id.progressBar);
 
         txtNotFound = (TextView) findViewById(R.id.text_no_free_time);
+
+        localhost = getResources().getString(R.string.local_host);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
