@@ -20,7 +20,10 @@ public class ReservationResultActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Bundle b = getIntent().getExtras();
+
         Intent intent = new Intent(this, FieldSuggestActivity.class);
+        intent.putExtra("user_id", b.getInt("user_id"));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

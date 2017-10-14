@@ -1,7 +1,6 @@
 package com.capstone.ffrs;
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,13 +11,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -31,6 +25,7 @@ import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.ServerError;
@@ -38,10 +33,10 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.capstone.ffrs.adapter.FieldTimeAdapter;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.Field;
 import com.capstone.ffrs.entity.FieldTime;
 import com.capstone.ffrs.utils.TimePickerListener;
 
@@ -57,12 +52,14 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 
 public class FieldTimeActivity extends AppCompatActivity {
 
-    String url = "https://api.myjson.com/bins/unkad";
+    String url;
+    String localhost = "http://172.20.10.3:8080";
 
     RecyclerView recyclerView;
     RequestQueue queue;
@@ -73,7 +70,11 @@ public class FieldTimeActivity extends AppCompatActivity {
     int id;
     int price = 0;
 
+    String displayFormat = "dd/MM/yyyy";
+    String serverFormat = "dd-MM-yyyy";
+
     private ProgressBar spinner;
+    private TextView txtNotFound;
 
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -94,7 +95,8 @@ public class FieldTimeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_field_time);
 
         spinner = (ProgressBar) findViewById(R.id.progressBar);
-        spinner.setVisibility(View.VISIBLE);
+
+        txtNotFound = (TextView) findViewById(R.id.text_no_free_time);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -114,14 +116,18 @@ public class FieldTimeActivity extends AppCompatActivity {
         imageView.setImageUrl(imageUrl, NetworkController.getInstance(this.getBaseContext()).getImageLoader());
 
         id = b.getInt("field_id");
-
+        Log.d("receivedId", id + "");
 
         final Button date = (Button) findViewById(R.id.date_picker);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        String strCurrentDate = sdf.format(System.currentTimeMillis());
+        SimpleDateFormat sdf = new SimpleDateFormat(displayFormat);
+
+        long currentMillis = System.currentTimeMillis();
+        String strCurrentDate = sdf.format(currentMillis);
         date.setText(strCurrentDate);
 
-        url = "http://10.0.2.2:8080/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + 1 + "&date=" + strCurrentDate;
+        sdf = new SimpleDateFormat(serverFormat);
+
+        url = localhost + "/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + 1 + "&date=" + sdf.format(currentMillis);
 
         final Calendar dateSelected = Calendar.getInstance();
         final DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
@@ -134,15 +140,20 @@ public class FieldTimeActivity extends AppCompatActivity {
                 dateSelected.set(Calendar.YEAR, year);
                 dateSelected.set(Calendar.MONTH, monthOfYear);
                 dateSelected.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                String myFormat = "dd/MM/yyyy"; //In which you need put here
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+
+                //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(displayFormat);
 
                 date.setText(sdf.format(dateSelected.getTime()));
 
-                url = "http://10.0.2.2:8080/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + 1 + "&date=" + sdf.format(dateSelected.getTime());
+                sdf = new SimpleDateFormat(serverFormat);
+
+                url = localhost + "/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + 1 + "&date=" + sdf.format(dateSelected.getTime());
 
                 clearData();
 
+                spinner.setVisibility(View.VISIBLE);
+                txtNotFound.setVisibility(View.GONE);
                 loadFieldTimes();
             }
 
@@ -190,20 +201,62 @@ public class FieldTimeActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
         Log.d("FROM", from.getText().toString());
         try {
-            Date date = new SimpleDateFormat("dd/MM/yyyy").parse(btDate.getText().toString());
-            Date fromTime = sdf.parse(from.getText().toString());
-            Date toTime = sdf.parse(to.getText().toString());
+            final Date date = new SimpleDateFormat("dd/MM/yyyy").parse(btDate.getText().toString());
+            final Date fromTime = sdf.parse(from.getText().toString());
+            final Date toTime = sdf.parse(to.getText().toString());
 
-            Intent intent = new Intent(this, FieldDetailActivity.class);
-            intent.putExtra("field_id", id);
-            intent.putExtra("field_name", name);
-            intent.putExtra("field_address", address);
-            intent.putExtra("image_url", imageUrl);
-            intent.putExtra("time_from", fromTime);
-            intent.putExtra("time_to", toTime);
-            intent.putExtra("date", date);
-            intent.putExtra("price", price);
-            startActivity(intent);
+            final Bundle b = getIntent().getExtras();
+
+            String url = localhost + "/swp49x-ffrs/match/reserve-time-slot";
+            queue = NetworkController.getInstance(this).getRequestQueue();
+            Map<String, Object> params = new HashMap<>();
+            params.put("date", new SimpleDateFormat("dd-MM-yyyy").format(date));
+            params.put("endTime", to.getText().toString());
+            params.put("fieldOwnerId", id);
+            params.put("fieldTypeId", 1);
+            params.put("startTime", from.getText().toString());
+            params.put("userId", b.getInt("user_id"));
+            JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            if (response != null) {
+                                try {
+                                    Intent intent = new Intent(FieldTimeActivity.this, FieldDetailActivity.class);
+                                    intent.putExtra("field_id", id);
+                                    intent.putExtra("field_name", name);
+                                    intent.putExtra("field_address", address);
+                                    intent.putExtra("image_url", imageUrl);
+                                    intent.putExtra("date", date);
+                                    intent.putExtra("time_from", fromTime);
+                                    intent.putExtra("time_to", toTime);
+                                    intent.putExtra("price", response.getInt("price"));
+                                    intent.putExtra("user_id", b.getInt("user_id"));
+                                    intent.putExtra("time_slot_id", response.getInt("id"));
+                                    startActivity(intent);
+                                } catch (Exception e) {
+                                    Log.d("EXCEPTION", e.getMessage());
+                                }
+                            } else {
+                                Toast.makeText(FieldTimeActivity.this, "Không thể đặt sân!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d("Error.Response", error.toString());
+                        }
+                    }) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Content-Type", "application/json; charset=utf-8");
+                    return headers;
+                }
+            };
+            queue.add(postRequest);
         } catch (ParseException e) {
             Log.d("ERROR", e.getMessage());
             Toast.makeText(getApplicationContext(), "Hãy nhập giờ chơi!", Toast.LENGTH_SHORT).show();
@@ -212,6 +265,7 @@ public class FieldTimeActivity extends AppCompatActivity {
 
     public void onClickShowMap(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
+        intent.putExtra("field_id", id);
         startActivity(intent);
     }
 
@@ -236,34 +290,36 @@ public class FieldTimeActivity extends AppCompatActivity {
         JsonArrayRequest newsReq = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
+                if (response != null && response.length() > 0) {
+                    for (int i = 0; i < response.length(); i++) {
+                        try {
+                            JSONObject obj = response.getJSONObject(i);
 
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-                        JSONObject obj = response.getJSONObject(i);
+                            FieldTime fieldTime = new FieldTime(sdf.format(sdf.parse(obj.getString("startTime"))), sdf.format(sdf.parse(obj.getString("endTime"))));
 
+                            // adding movie to movies array
+                            fieldTimeList.add(fieldTime);
 
-                        FieldTime fieldTime = new FieldTime(sdf.format(sdf.parse(obj.getString("startTime"))), sdf.format(sdf.parse(obj.getString("endTime"))), obj.getInt("price"));
-
-                        // adding movie to movies array
-                        fieldTimeList.add(fieldTime);
-
-                    } catch (Exception e) {
-                        Log.d("EXCEPTION", e.getMessage());
-                    } finally {
-                        //Notify adapter about data changes\
-                        Collections.sort(fieldTimeList, new Comparator<FieldTime>() {
-                            @Override
-                            public int compare(FieldTime o1, FieldTime o2) {
-                                try {
-                                    return sdf.parse(o1.getFromTime()).compareTo(sdf.parse(o2.getFromTime()));
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
+                        } catch (Exception e) {
+                            Log.d("EXCEPTION", e.getMessage());
+                        } finally {
+                            //Notify adapter about data changes\
+                            Collections.sort(fieldTimeList, new Comparator<FieldTime>() {
+                                @Override
+                                public int compare(FieldTime o1, FieldTime o2) {
+                                    try {
+                                        return sdf.parse(o1.getFromTime()).compareTo(sdf.parse(o2.getFromTime()));
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                    return 0;
                                 }
-                                return 0;
-                            }
-                        });
-                        adapter.notifyItemChanged(i);
+                            });
+                            adapter.notifyItemChanged(i);
+                        }
                     }
+                } else {
+                    txtNotFound.setVisibility(View.VISIBLE);
                 }
                 spinner.setVisibility(View.GONE);
             }

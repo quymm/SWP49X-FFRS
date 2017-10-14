@@ -76,9 +76,9 @@ public class FieldSuggestActivity extends AppCompatActivity
 
         // Set the adapter onto the view pager
         viewPager.setAdapter(pagerAdapter);
+        viewPager.setCurrentItem(1);
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        TabLayout.Tab tab = tabLayout.getTabAt(1);
-        tab.select();
         tabLayout.setupWithViewPager(viewPager);
 
     }

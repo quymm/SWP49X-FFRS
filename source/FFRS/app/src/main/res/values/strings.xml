@@ -5,7 +5,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="title_activity_field_detail">Ứng dụng đặt sân</string>
+    <string name="title_activity_field_detail">Thông tin đặt sân</string>
     <string name="title_activity_field_time">Ứng dụng đặt sân</string>
     <string name="title_activity_login">Ứng dụng đặt sân</string>
 
@@ -13,7 +13,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_map">MapActivity</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="title_activity_reservation_result">ReservationResultActivity</string>
+    <string name="title_activity_maps">Bản đồ</string>
+    <string name="title_activity_reservation_result">Ứng dụng đặt sân</string>
+    <string name="title_activity_match_map">Bản đồ</string>
+    <string name="title_activity_match">Kết quả tìm kiềm đối thủ</string>
 </resources>
