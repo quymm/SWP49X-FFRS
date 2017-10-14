@@ -135,47 +135,12 @@
                         tools:layout_editor_absoluteX="8dp"
                         tools:layout_editor_absoluteY="0dp" />
 
-                    <!--<LinearLayout-->
-                    <!--android:layout_width="fill_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginBottom="5dp"-->
-                    <!--android:layout_weight="7"-->
-                    <!--android:background="#009632"-->
-                    <!--android:orientation="horizontal">-->
-
-                    <!--<TextView-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="50dp"-->
-                    <!--android:layout_weight="4"-->
-
-
-                    <!--android:gravity="center_vertical"-->
-                    <!--android:padding="5dp"-->
-                    <!--android:text="7:00 am - 8:30am"-->
-                    <!--android:textColor="@android:color/white"-->
-                    <!--android:textSize="18sp"-->
-                    <!--android:textStyle="bold" />-->
-
-                    <!--<TextView-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="50dp"-->
-                    <!--android:layout_weight="3"-->
-
-                    <!--android:gravity="center_vertical"-->
-                    <!--android:padding="5dp"-->
-                    <!--android:text="120.000đ/h"-->
-                    <!--android:textAlignment="textEnd"-->
-                    <!--android:textColor="@android:color/white"-->
-                    <!--android:textSize="18sp"-->
-                    <!--android:textStyle="bold" />-->
-                    <!--</LinearLayout>-->
-
                     <EditText
                         android:id="@+id/text_from"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
-                        android:hint="Chơi từ:"
+                        android:hint="Thời gian bắt đầu:"
                         android:inputType="none" />
 
                     <EditText
@@ -183,18 +148,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
-                        android:hint="Chơi đến:"
+                        android:hint="Thời gian kết thúc:"
                         android:inputType="none" />
 
                     <Button
                         android:id="@+id/btReserve"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="#009632"
+                        android:background="#dbdbdb"
                         android:onClick="onClickShowDetail"
                         android:text="Đặt sân"
                         android:textColor="@android:color/white"
-                        android:textSize="18sp" />
+                        android:textSize="18sp"
+                        android:enabled="false"/>
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

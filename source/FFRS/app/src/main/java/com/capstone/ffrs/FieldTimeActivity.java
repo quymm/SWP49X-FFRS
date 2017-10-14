@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -86,8 +87,54 @@ public class FieldTimeActivity extends AppCompatActivity {
             EditText to = (EditText) findViewById(R.id.text_to);
             from.setText(fromTime);
             to.setText(toTime);
+            toggleButton();
         }
     };
+
+    public BroadcastReceiver timeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            toggleButton();
+        }
+    };
+
+    private void toggleButton() {
+        EditText from = (EditText) findViewById(R.id.text_from);
+        EditText to = (EditText) findViewById(R.id.text_to);
+        Button btReserve = (Button) findViewById(R.id.btReserve);
+        if (!from.getText().toString().isEmpty() && !to.getText().toString().isEmpty()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+            try {
+                Date startTime = sdf.parse(from.getText().toString());
+                Date endTime = sdf.parse(to.getText().toString());
+                if (startTime.compareTo(endTime) < 0) {
+                    boolean flag = false;
+                    for (FieldTime time : fieldTimeList) {
+                        Date startFrameTime = sdf.parse(time.getFromTime());
+                        Date endFrameTime = sdf.parse(time.getToTime());
+                        if (startTime.compareTo(startFrameTime) >= 0 && endTime.compareTo(endFrameTime) <= 0) {
+                            flag = true;
+                        }
+                    }
+                    if (flag) {
+                        btReserve.setEnabled(true);
+                        btReserve.setBackgroundColor(Color.parseColor("#009632"));
+                    } else {
+                        btReserve.setEnabled(false);
+                        btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
+                    }
+                } else {
+                    btReserve.setEnabled(false);
+                    btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } else {
+            btReserve.setEnabled(false);
+            btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,6 +229,9 @@ public class FieldTimeActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("custom-message"));
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(timeReceiver,
+                new IntentFilter("timepicker-message"));
+
         loadFieldTimes();
     }
 
@@ -201,7 +251,6 @@ public class FieldTimeActivity extends AppCompatActivity {
         EditText from = (EditText) findViewById(R.id.text_from);
         EditText to = (EditText) findViewById(R.id.text_to);
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
-        Log.d("FROM", from.getText().toString());
         try {
             final Date date = new SimpleDateFormat("dd/MM/yyyy").parse(btDate.getText().toString());
             final Date fromTime = sdf.parse(from.getText().toString());
