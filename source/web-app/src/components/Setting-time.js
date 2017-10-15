@@ -19,6 +19,55 @@ class SettingTime extends Component {
       endDay: null,
       price: undefined,
       isShowUpdate: false,
+      buttonGroupDayInWeek: [
+        {
+          id: 1,
+          value: 'Mon',
+          text: 'Thứ hai',
+        },
+        {
+          id: 2,
+          value: 'Tue',
+          text: 'Thứ ba',
+        },
+        {
+          id: 3,
+          value: 'Wed',
+          text: 'Thứ tư',
+        },
+        {
+          id: 4,
+          value: 'Thu',
+          text: 'Thứ năm',
+        },
+        {
+          id: 5,
+          value: 'Fri',
+          text: 'Thứ sáu',
+        },
+        {
+          id: 6,
+          value: 'Sat',
+          text: 'Thứ bảy',
+        },
+        {
+          id: 7,
+          value: 'Sun',
+          text: 'Chủ nhật',
+        },
+      ],
+      buttonGroupFieldType: [
+        {
+          id: 1,
+          value: '5 vs 5',
+          text: 'Loại sân 5 người',
+        },
+        {
+          id: 2,
+          value: '7 vs 7',
+          text: 'Loại sân 7 người',
+        },
+      ],
     };
   }
 
@@ -27,28 +76,11 @@ class SettingTime extends Component {
     this.props.getAllTimeEnableInWeek(data);
     //);
   }
-
-  async handelFieldType1Change(evt) {
-    await this.setState({
-      fieldType: evt.target.value,
-      fieldTypeId: 1,
-    });
-    console.log(this.state);
-  }
-  async handelFieldType2Change(evt) {
-    await this.setState({
-      fieldType: evt.target.value,
-      fieldTypeId: 2,
-    });
-    console.log(this.state);
-  }
-
   async handleInputChange(evt) {
     const target = evt.target;
     const value = target.value;
     const name = target.name;
     await this.setState({ [name]: value });
-    console.log('state in time: ', this.state);
   }
   async handelTimeStartDayInputChange(evt) {
     await this.setState({ startDay: evt.format('HH:mm') });
@@ -69,7 +101,6 @@ class SettingTime extends Component {
   }
 
   handelShowChange(evt) {
-    console.log(evt);
     evt.preventDefault();
     const { isShowUpdate } = this.state;
     this.setState({ isShowUpdate: !isShowUpdate });
@@ -96,9 +127,8 @@ class SettingTime extends Component {
         fieldTypeId,
       );
       await this.setState({ isShowUpdate: !isShowUpdate });
-      const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
+      const data = await fetchGetTimeEnableInWeek(1); 
       this.props.getAllTimeEnableInWeek(data);
-      //);
       this.props.history.push('/app/setting-time');
     }
     await this.setState({ isShowUpdate: !isShowUpdate });
@@ -114,8 +144,6 @@ class SettingTime extends Component {
       price,
       isShowUpdate,
     } = this.state;
-    console.log(timeEnable);
-    // debugger
     const dayAfterFilter =
       timeEnable &&
       timeEnable.filter(
@@ -127,8 +155,8 @@ class SettingTime extends Component {
     if (!dayAfterFilter) {
       return <h1>loading...</h1>;
     }
-    // const affterConvertArr = Object.values(dayAfterFilter);
-    console.log(dayAfterFilter);
+    const { buttonGroupDayInWeek, buttonGroupFieldType } = this.state;
+    // console.log(dayAfterFilter);
     return (
       <div id="page-wrapper">
         <div className="container-fluid">
@@ -138,28 +166,34 @@ class SettingTime extends Component {
             </div>
           </div>
           <div className="col-lg-12">
-            <div className="col-lg-4 col-lg-offset-4">
-              <div className="row">
-                <div className="col-lg-6">
-                  <button
-                    className="btn btn-default btn-block"
-                    name="fieldType"
-                    value="5 vs 5"
-                    onClick={this.handelFieldType1Change.bind(this)}
-                  >
-                    5 vs 5
-                  </button>
+            <div className="row">
+              <div className="col-lg-4 col-lg-offset-4">
+                <div className="row">
+                  {buttonGroupFieldType.map(fieldType => (
+                    <div className="col-lg-6" key={fieldType.id}>
+                      <button
+                        className={`btn btn-default btn-block ${fieldType.value ==
+                        this.state.fieldType
+                          ? 'active'
+                          : ''}`}
+                        name="fieldType"
+                        value={fieldType.value}
+                        onClick={this.handleInputChange.bind(this)}
+                      >
+                        {fieldType.text}
+                      </button>
+                    </div>
+                  ))}
                 </div>
-                <div className="col-lg-6">
-                  <button
-                    className="btn btn-default btn-block"
-                    value="7 vs 7"
-                    name="fieldType"
-                    onClick={this.handelFieldType2Change.bind(this)}
-                  >
-                    7 vs 7
-                  </button>
-                </div>
+              </div>
+              <div className="col=sm-4">
+                <button
+                  className="btn btn-primary"
+                  name="isShowUpdate"
+                  onClick={this.handelShowChange.bind(this)}
+                >
+                  Thêm mới khung giờ
+                </button>
               </div>
             </div>
           </div>
@@ -167,69 +201,22 @@ class SettingTime extends Component {
           <div className="row">
             <div className="col-lg-2">
               <div className="list-group">
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Mon"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Thứ hai
-                </button>
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Tue"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Thứ ba
-                </button>
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Wed"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Thứ tư
-                </button>
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Thu"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Thứ năm
-                </button>
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Fri"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Thứ sáu
-                </button>
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Sat"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Thứ bảy
-                </button>
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Sun"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Chủ nhật
-                </button>
+                {buttonGroupDayInWeek.map(day => (
+                  <div key={day.id}>
+                    <button
+                      type="button"
+                      className={`list-group-item ${day.value ==
+                      this.state.daySelected
+                        ? 'active'
+                        : ''}`}
+                      value={day.value}
+                      name="daySelected"
+                      onClick={this.handleInputChange.bind(this)}
+                    >
+                      {day.text}
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
             <div className="col-lg-10">
@@ -304,7 +291,7 @@ class SettingTime extends Component {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="form-group">
                     <div className="col-sm-offset-3 col-sm-9">
                       <button className="btn btn-primary" type="submit">
@@ -384,19 +371,20 @@ class SettingTime extends Component {
                           </div>
                         </div>
                       </div>
+                      <div className="form-group">
+                        <div className="col-sm-offset-3 col-sm-9">
+                          <button
+                            className="btn btn-primary"
+                            name="isShowUpdate"
+                            onClick={this.handelShowChange.bind(this)}
+                          >
+                            Cập nhật
+                          </button>
+                          <button className="btn btn-danger">Xoá</button>
+                        </div>
+                      </div>
                     </div>
                   ))}
-                  <div className="form-group">
-                    <div className="col-sm-offset-3 col-sm-9">
-                      <button
-                        className="btn btn-primary"
-                        name="isShowUpdate"
-                        onClick={this.handelShowChange.bind(this)}
-                      >
-                        Cập nhật
-                      </button>
-                    </div>
-                  </div>
                 </form>
               )}
             </div>
