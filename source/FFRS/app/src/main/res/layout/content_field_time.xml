@@ -94,10 +94,10 @@
                         </LinearLayout>
                     </RelativeLayout>
 
-                    <!--<Spinner-->
-                    <!--android:id="@+id/spinner"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="50dp" />-->
+                    <Spinner
+                        android:id="@+id/spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp" />
 
                     <Button
                         android:id="@+id/date_picker"
@@ -122,9 +122,9 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="16dp"
                         android:text="Không có khung giờ rảnh nào trong ngày này"
-                        android:textStyle="bold"
                         android:textAlignment="center"
                         android:textSize="16dp"
+                        android:textStyle="bold"
                         android:visibility="gone" />
 
                     <android.support.v7.widget.RecyclerView
@@ -156,11 +156,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="#dbdbdb"
+                        android:enabled="false"
                         android:onClick="onClickShowDetail"
                         android:text="Đặt sân"
                         android:textColor="@android:color/white"
-                        android:textSize="18sp"
-                        android:enabled="false"/>
+                        android:textSize="18sp" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
