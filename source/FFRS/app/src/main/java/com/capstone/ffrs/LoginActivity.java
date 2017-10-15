@@ -1,7 +1,14 @@
 package com.capstone.ffrs;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -42,8 +49,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
-        setContentView(R.layout.activity_login);
         localhost = getResources().getString(R.string.local_host);
+        setContentView(R.layout.activity_login);
     }
 
     @Override
@@ -53,7 +60,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onClickLogin(View view) {
-        RequestQueue queue = Volley.newRequestQueue(this);
         EditText username = (EditText) findViewById(R.id.text_username);
         EditText password = (EditText) findViewById(R.id.text_password);
         if (TextUtils.isEmpty(username.getText().toString())) {
@@ -67,12 +73,17 @@ public class LoginActivity extends AppCompatActivity {
             password.requestFocus();
             return;
         }
-        String url = localhost + "/swp49x-ffrs/account/login-user?username=" + username.getText().toString() + "&password=" + password.getText().toString();
+        requestLogin(username.getText().toString(), password.getText().toString());
+    }
+
+    public void requestLogin(String username, String password) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = localhost + "/swp49x-ffrs/account/login-user?username=" + username + "&password=" + password;
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if (response != null) {
+                        if (response != null && response.length() > 0) {
                             changeActivity(response);
                         } else {
                             Toast.makeText(LoginActivity.this, "Sai tên tài khoản hay mật khẩu!", Toast.LENGTH_SHORT).show();
@@ -91,7 +102,15 @@ public class LoginActivity extends AppCompatActivity {
 
     public void changeActivity(JSONObject response) {
         Intent intent = new Intent(this, FieldSuggestActivity.class);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         try {
+            if (!sharedPreferences.contains("user_id") || !sharedPreferences.contains("username") || !sharedPreferences.contains("password")) {
+                editor.putInt("user_id", response.getInt("id"));
+                editor.putString("username", response.getString("username"));
+                editor.putString("password", response.getString("password"));
+                editor.commit();
+            }
             intent.putExtra("user_id", response.getInt("id"));
         } catch (JSONException e) {
             Log.d("EXCEPTION", e.getMessage());

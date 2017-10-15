@@ -36,7 +36,7 @@ public class FieldDetailActivity extends AppCompatActivity
 
     String imageUrl, name, address;
     Date from, to, date;
-    int id, totalPrice;
+    int id, totalPrice, fieldTypeId;
 
     String localhost;
 
@@ -70,6 +70,7 @@ public class FieldDetailActivity extends AppCompatActivity
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
 
         id = b.getInt("field_id");
+        fieldTypeId = b.getInt("field_type_id");
 
         totalPrice = b.getInt("price");
 
@@ -86,6 +87,25 @@ public class FieldDetailActivity extends AppCompatActivity
         txtTo.setText("Đến: " + sdf.format(to));
         TextView txtDuration = (TextView) findViewById(R.id.text_duration);
         txtDuration.setText(duration);
+
+        String strFieldType = "Loại sân: ";
+        switch (fieldTypeId) {
+            case 1:
+                strFieldType += "5 vs 5";
+                break;
+            case 2:
+                strFieldType += "7 vs 7";
+                break;
+            case 3:
+                strFieldType += "11 vs 11";
+                break;
+            default:
+                strFieldType += "Chưa xác định";
+                break;
+        }
+        TextView txtFieldType = (TextView) findViewById(R.id.text_field_type);
+        txtFieldType.setText(strFieldType);
+
         TextView txtPrice = (TextView) findViewById(R.id.text_total_price);
         txtPrice.setText("Tổng giá: " + (totalPrice / 1000) + "K đồng");
     }

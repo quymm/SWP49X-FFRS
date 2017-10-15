@@ -47,16 +47,20 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustNothing" />
         <activity
-            android:name=".LoginActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:name=".MainActivity"
             android:label="@string/title_activity_login"
-            android:windowSoftInputMode="stateHidden|adjustNothing">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="stateHidden|adjustNothing"/>
         <activity
             android:name=".RewardActivity"
             android:label="@string/title_activity_reward"

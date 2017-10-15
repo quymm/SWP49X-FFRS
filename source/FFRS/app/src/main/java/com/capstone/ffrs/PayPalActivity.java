@@ -113,6 +113,7 @@ public class PayPalActivity extends AppCompatActivity {
                                             Bundle b = getIntent().getExtras();
                                             Intent intent = new Intent(PayPalActivity.this, ReservationResultActivity.class);
                                             intent.putExtra("user_id", b.getInt("user_id"));
+                                            intent.putExtra("payment_result", "Succeed");
                                             startActivity(intent);
                                         } catch (Exception e) {
                                             Log.d("EXCEPTION", e.getMessage());
@@ -132,10 +133,17 @@ public class PayPalActivity extends AppCompatActivity {
 
                 }
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                System.out.println("The user canceled.");
+                Bundle b = getIntent().getExtras();
+                Intent intent = new Intent(PayPalActivity.this, ReservationResultActivity.class);
+                intent.putExtra("user_id", b.getInt("user_id"));
+                intent.putExtra("payment_result", "Cancelled");
+                startActivity(intent);
             } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
-                System.out
-                        .println("An invalid Payment or PayPalConfiguration was submitted. Please see the docs.");
+                Bundle b = getIntent().getExtras();
+                Intent intent = new Intent(PayPalActivity.this, ReservationResultActivity.class);
+                intent.putExtra("user_id", b.getInt("user_id"));
+                intent.putExtra("payment_result", "Invalid configuration");
+                startActivity(intent);
             }
         } else if (requestCode == REQUEST_CODE_FUTURE_PAYMENT) {
             if (resultCode == Activity.RESULT_OK) {
