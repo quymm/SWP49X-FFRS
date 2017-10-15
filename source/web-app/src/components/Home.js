@@ -24,11 +24,11 @@ class Home extends Component {
       dateSelected: moment(),
       currentTime: new Date().toLocaleTimeString([], { hour12: false }),
       currentShowPage: '',
-      openedTab: 4,
+      openedTab: 2,
       bookMatchStartTime: undefined,
       bookMatchEndTime: 60,
       bookMatchMessage: undefined,
-      bookMatchFieldType: undefined,
+      bookMatchFieldType: 1,
     };
     this.timer = setInterval(() => {
       this.setState({
@@ -39,62 +39,67 @@ class Home extends Component {
   componentWillUnmount() {
     clearInterval(this.timer);
   }
+
   async componentDidMount() {
     console.log('didmount: ', this.state.dateSelected.format('MMM DD YYYY'));
-    const {} = this.props.auth;
+    const { id } = this.props.auth.user;
+    try {
     fetchGetMatchByFieldOwnerAndDay(
-      2,
+      1,
       this.state.dateSelected.format('DD-MM-YYYY'),
       1,
     ).then(data => {
       this.props.GetMatchByFieldOwnerAndDay(data);
     });
     const data5vs5 = await fetchGetFreeTime(
-      2,
+      1,
       1,
       this.state.dateSelected.format('DD-MM-YYYY'),
     );
     const data7vs7 = await fetchGetFreeTime(
-      2,
+      1,
       2,
       this.state.dateSelected.format('DD-MM-YYYY'),
     );
     await this.props.getAllFreeTime5vs5(data5vs5);
     await this.props.getAllFreeTime7vs7(data7vs7);
+  } catch (error) {
+    console.log('error: ', error);
+  }
   }
   async handelEndTimeInputChange(evt) {
     await this.setState({ bookMatchEndTime: evt.format('HH:mm') });
-    console.log(this.state);
   }
 
   async handelTimeStartDayInputChange(evt) {
     await this.setState({ bookMatchStartTime: evt.format('HH:mm') });
-    console.log(this.state);
   }
 
   async handleSubmitBookMatch(evt) {
     evt.preventDefault();
+    console.log('submit book match');
     const {
-      
       bookMatchMessagem,
       bookMatchEndTime,
       bookMatchFieldType,
       dateSelected,
-      bookMatchStartTime
+      bookMatchStartTime,
     } = this.state;
+    console.log(this.state);
     if (
       (bookMatchEndTime !== undefined && bookMatchStartTime !== undefined,
       bookMatchFieldType !== undefined)
     ) {
       await fetchBookMatch(
         dateSelected.format('DD-MM-YYYY'),
-        2,
+        1,
+        bookMatchEndTime,
         bookMatchFieldType,
-        
         bookMatchStartTime,
-        bookMatchEndTime
+        bookMatchEndTime,
       );
-      this.setState({openedTab: 2})
+      this.setState({ openedTab: 2 });
+      debugger;
     }
   }
   async handleDateChange(date) {
@@ -109,12 +114,12 @@ class Home extends Component {
       this.props.GetMatchByFieldOwnerAndDay(data);
     });
     const data5vs5 = await fetchGetFreeTime(
-      2,
+      1,
       1,
       this.state.dateSelected.format('DD-MM-YYYY'),
     );
     const data7vs7 = await fetchGetFreeTime(
-      2,
+      1,
       2,
       this.state.dateSelected.format('DD-MM-YYYY'),
     );
@@ -148,7 +153,9 @@ class Home extends Component {
         onSubmit={this.handleSubmitBookMatch.bind(this)}
       >
         <div>
-          <p>{this.state.bookMatchMessage? this.state.bookMatchMessage : null}</p>
+          <p>
+            {this.state.bookMatchMessage ? this.state.bookMatchMessage : null}
+          </p>
           <div className="form-group">
             <label htmlFor="inputEmail3" className="col-sm-3 control-label">
               Từ
@@ -206,6 +213,7 @@ class Home extends Component {
                 className="form-control"
                 id="sel1"
                 name="bookMatchFieldType"
+                type="checkbox"
               >
                 <option value="1">5 vs 5</option>
                 <option value="2">7 vs 7</option>
@@ -215,7 +223,11 @@ class Home extends Component {
         </div>
         <div className="form-group">
           <div className="col-sm-offset-3 col-sm-9">
-            <button className="btn btn-primary" name="isShowUpdate">
+            <button
+              className="btn btn-primary"
+              type="submit"
+              name="isShowUpdate"
+            >
               Đặt sân
             </button>
           </div>
@@ -232,14 +244,17 @@ class Home extends Component {
             </div>
           ))}
         </div>
-        <div className="col-lg-6">
-          <h3 className="text-center">7 vs 7</h3>
-          {freeTime7vs7.map(freeTime7vs7 => (
-            <div>
-              <h4>{freeTime7vs7.startTime}</h4> <h4>{freeTime7vs7.endTime}</h4>{' '}
-            </div>
-          ))}
-        </div>
+        {
+          <div className="col-lg-6">
+            <h3 className="text-center">7 vs 7</h3>
+            {freeTime7vs7.map(freeTime7vs7 => (
+              <div>
+                <h4>{freeTime7vs7.startTime}</h4>{' '}
+                <h4>{freeTime7vs7.endTime}</h4>{' '}
+              </div>
+            ))}
+          </div>
+        }
       </div>
     );
     const renderMatch = listMatch.map(listMatch => (

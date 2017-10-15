@@ -114,19 +114,18 @@ export function fetchGetFreeTime(fieldownerid, fieldTypeId, argDate) {
       argDate,
   ).then(res => res.json());
 }
+
 export function fetchBookMatch(argDate, argDuration, argFieldOwnerId, argFieldTypeId, argStartTime) {
   return fetch(BASE_URL + BOOK_MATCH, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(
-      {
-        date: argDate,
-        endTime: argDuration,
-        fieldOwnerId: argFieldOwnerId,
-        fieldTypeId: argFieldTypeId,
-        startTime: argStartTime,
-      },
-    ),
+    body: JSON.stringify({
+      date: argDate,
+      endTime: argDuration,
+      fieldOwnerId: argFieldOwnerId,
+      fieldTypeId: argFieldTypeId,
+      startTime: argStartTime,
+    }),
   }).then(res => res.json());
 }
 //

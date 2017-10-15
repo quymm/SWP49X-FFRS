@@ -21,7 +21,7 @@ class Register extends Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // navigator.geolocated.getCurrentPosition(s => console.log(s), e => console.log(e));
     // console.log(navigator.geolocation.getCurrentPosition(e => console.log(e)));
     navigator.geolocation.getCurrentPosition(async location => {
@@ -29,11 +29,14 @@ class Register extends Component {
         location.coords.latitude,
         location.coords.longitude,
       );
-      this.setState({
+      
+      await this.setState({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
         address: address,
+        
       });
+      console.log(this.state);
     });
   }
 
@@ -59,7 +62,7 @@ class Register extends Component {
       avatarUrl,
       creditCard,
       latitude,
-      longitute,
+      longitude,
       name,
       phone,
       message,
@@ -72,18 +75,25 @@ class Register extends Component {
       confirmPassword !== undefined
     ) {
       if (password === confirmPassword) {
-        const data = await fetchRegister(
+        // try {
+        const registerRes = await fetchRegister(
           username,
           password,
           address,
           avatarUrl,
-          creditCard,
+          '123456',
           latitude,
-          longitute,
+          longitude,
           name,
-          phone,
-          message,
+          phone
         );
+        debugger;
+        if (registerRes.status === 201) {
+          const data = registerRes.json();
+          this.props.history.push('/login');
+        } else {
+          this.setState({ message: 'Đăng kí không thành công' });
+        }
       } else {
         this.setState({ message: 'Mật khẩu không giống nhau' });
       }
@@ -133,7 +143,7 @@ class Register extends Component {
                     </div>
                     <div className="form-group">
                       <label htmlFor="exampleInputEmail1">
-                        <i>Hãy chắc chắn rằng đây là địa chỉ của bạn</i>
+                        <i>Chúng tôi sẽ lấy vị trí của bạn làm địa chỉ</i>
                       </label>
                       <input
                         value={address ? address : 'Đang lấy địa chỉ'}
@@ -152,6 +162,15 @@ class Register extends Component {
                         className="form-control"
                         name="phone"
                         type="text"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Hình ảnh</label>
+                      <input
+                        value={this.state.avatarUrl}
+                        onChange={this.handleInputChange.bind(this)}
+                        name="avatarUrl"
+                        type="file"
                       />
                     </div>
                     <div className="form-group">

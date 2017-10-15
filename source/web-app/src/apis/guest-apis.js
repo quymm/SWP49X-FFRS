@@ -6,7 +6,7 @@ import {
   GOOGLE_MAP_URL,
 } from './base-URL';
 
-export function fetchLogin(argUsername, argPassword) {
+export async function fetchLogin(argUsername, argPassword) {
   return fetch(
     BASE_URL + LOGIN + '?username=' + argUsername + '&password=' + argPassword,
   ).then(res => res.json());
@@ -27,17 +27,17 @@ export function fetchRegister(
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
-      username: argUsername,
-      password: argPassword,
       address: argAddress,
       avatarUrl: argAvatarUrl,
-      creditCard: argCreditCard,
+      creditCard: '123456',
       latitude: argLatitude,
       longitute: argLongitute,
       name: argName,
+      password: argPassword,
       phone: argPhone,
+      username: argUsername,
     }),
-  }).then(res => res.json());
+  });
 }
 
 export function fechGetAddressByLocationGoogleMap(argLatitude, argLongitute) {
@@ -49,5 +49,7 @@ export function fechGetAddressByLocationGoogleMap(argLatitude, argLongitute) {
       argLongitute +
       '&key=' +
       GOOGLE_MAP_KEY,
-  ).then(res => res.json()).then(resJSON => resJSON.results[0].formatted_address);
+  )
+    .then(res => res.json())
+    .then(resJSON => resJSON.results[0].formatted_address);
 }

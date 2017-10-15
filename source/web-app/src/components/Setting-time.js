@@ -23,7 +23,7 @@ class SettingTime extends Component {
   }
 
   async componentDidMount() {
-    const data = await fetchGetTimeEnableInWeek(2); //.then(data =>
+    const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
     this.props.getAllTimeEnableInWeek(data);
     //);
   }
@@ -88,7 +88,7 @@ class SettingTime extends Component {
 
     if (startDay !== null && endDay !== null && price !== null) {
       await fetchUpdateTimeEnableInWeek(
-        2,
+        1,
         daySelected,
         startDay,
         endDay,
@@ -96,7 +96,7 @@ class SettingTime extends Component {
         fieldTypeId,
       );
       await this.setState({ isShowUpdate: !isShowUpdate });
-      const data = await fetchGetTimeEnableInWeek(2); //.then(data =>
+      const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
       this.props.getAllTimeEnableInWeek(data);
       //);
       this.props.history.push('/app/setting-time');

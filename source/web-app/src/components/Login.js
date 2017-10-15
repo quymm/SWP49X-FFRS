@@ -2,14 +2,17 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchLogin } from '../apis/guest-apis';
-import { doLoginSuccessful, doLoginError } from '../redux/guest/guest-action-creators';
+import {
+  doLoginSuccessful,
+  doLoginError,
+} from '../redux/guest/guest-action-creators';
 
 class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
-      password: '',
+      username: undefined,
+      password: undefined,
     };
   }
 
@@ -21,24 +24,32 @@ class Login extends Component {
     this.setState({ password: password.target.value });
   }
 
-  async handleLogin(evt){
+  async handleLogin(evt) {
     evt.preventDefault();
     const { username, password } = this.state;
-    const data = await fetchLogin(username, password);
-    console.log(data.roleId.roleName);
-    if (data !== null) {
-      
-      this.props.doLoginSuccessful(data);
-      if (data.roleId.roleName === 'owner') {
-        this.props.history.push('/app/index');
-        debugger
+    const loginRes = await fetchLogin(username, password);
+
+    console.log(loginRes);
+
+    if (username !== undefined && password !== undefined) {
+      if (loginRes.status === 200) {
+        const dataLogin = loginRes.body;
+        if (dataLogin !== null) {
+          await this.props.doLoginSuccessful(dataLogin);
+          console.log(this.props);
+          debugger
+          if (dataLogin.roleId.roleName === 'owner') {
+            this.props.history.push('/app/index');
+          }
+        } else if (dataLogin.user.role === 'staff') {
+        } else {
+          this.props.doLoginError('Sai tên đăng nhập hoặc mật khẩu');
+        }
+      } else {
+        this.props.doLoginError('Sai tên đăng nhập hoặc mật khẩu');
       }
-      else if (data.user.role === 2) {
-        
-      }     
-    }
-    else{
-      // this.props.doLoginError(data);
+    } else {
+      this.props.doLoginError('Điền đầy đủ các trường');
     }
   }
   render() {
@@ -50,18 +61,20 @@ class Login extends Component {
           <div className="col-md-4 col-md-offset-4">
             <div className="login-panel panel panel-default">
               <div className="panel-heading">
-                <h3 className="panel-title">Please Sign In</h3>
+                <h3 className="panel-title">Đăng nhập</h3>
               </div>
               <div className="panel-body">
                 <form onSubmit={this.handleLogin.bind(this)}>
                   <fieldset>
-                    <p className="text-center text-danger"><i>{message===null? null: message}</i></p>
+                    <p className="text-center text-danger">
+                      <i>{message === null ? null : message}</i>
+                    </p>
                     <div className="form-group">
                       <input
                         value={this.state.username}
                         onChange={this.handleUsernameChange.bind(this)}
                         className="form-control"
-                        placeholder="Username"
+                        placeholder="Tên đăng nhập"
                         name="username"
                         type="text"
                       />
@@ -70,7 +83,7 @@ class Login extends Component {
                       <input
                         onChange={this.handlePasswordChange.bind(this)}
                         className="form-control"
-                        placeholder="Password"
+                        placeholder="Mật khẩu"
                         name="password"
                         type="password"
                         value={this.state.password}
@@ -78,7 +91,7 @@ class Login extends Component {
                     </div>
                     <div className="checkbox">
                       <label>
-                        <Link to="/register">Register</Link>
+                        <Link to="/register">Đăng kí trở thành chủ sân</Link>
                       </label>
                     </div>
                     {/* <a
@@ -88,8 +101,11 @@ class Login extends Component {
                       Login
                     </a> */}
 
-                    <button type="submit" className="btn btn-lg btn-success btn-block">
-                      Login                        
+                    <button
+                      type="submit"
+                      className="btn btn-lg btn-success btn-block"
+                    >
+                      Đăng nhập
                     </button>
                   </fieldset>
                 </form>
@@ -101,7 +117,9 @@ class Login extends Component {
     );
   }
 }
-function mapStateToProps(state){
-  return {auth: state.auth};
+function mapStateToProps(state) {
+  return { auth: state.auth };
 }
-export default connect( mapStateToProps, {doLoginSuccessful, doLoginError} )(Login);
+export default connect(mapStateToProps, { doLoginSuccessful, doLoginError })(
+  Login,
+);
