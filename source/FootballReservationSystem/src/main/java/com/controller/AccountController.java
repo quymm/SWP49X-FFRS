@@ -64,15 +64,32 @@ public class AccountController {
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-user", method = RequestMethod.GET)
     public ResponseEntity getUserById(@RequestParam("user-id") int userId){
-        AccountEntity accountEntity = accountServices.findAccountEntityById(userId, "user");
-        return new ResponseEntity(accountEntity, HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityById(userId, "user"), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account", method = RequestMethod.GET)
     public ResponseEntity getAllAccountByRole(@RequestParam("role") String role){
-        return new ResponseEntity(accountServices.findAccountByRole(role), HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(accountServices.findAccountByRole(role), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
+
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/account/top-10-field-owner", method = RequestMethod.GET)
+    public ResponseEntity get10FieldOwnerNearest(@RequestParam("longitude") String longitude, @RequestParam("latitude") String latitude){
+        Wrapper wrapper = new Wrapper(accountServices.findMax10FieldOwnerNearByPosition(longitude, latitude), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/account/name", method = RequestMethod.GET)
+    public ResponseEntity searchByNameAndRole(@RequestParam("name") String name, @RequestParam("role") String role){
+        Wrapper wrapper = new Wrapper(accountServices.findByNameLikeAndRole(name, role), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+
 
 
 }
