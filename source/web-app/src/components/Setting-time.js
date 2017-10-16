@@ -72,9 +72,73 @@ class SettingTime extends Component {
   }
 
   async componentDidMount() {
+    const { id } = this.props.auth.user.data;
+    console.log(id);
     const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
     this.props.getAllTimeEnableInWeek(data);
     //);
+  }
+  configTimeDiable() {
+    return [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+    ];
   }
   async handleInputChange(evt) {
     const target = evt.target;
@@ -90,15 +154,6 @@ class SettingTime extends Component {
     await this.setState({ endDay: evt.format('HH:mm') });
     console.log(this.state);
   }
-  handleInputTimeEnableChange(evt) {
-    if (evt.length > 0) {
-      this.setState({
-        startDay: evt[0].startTime,
-        endDay: evt[0].endTime,
-        price: evt[0].price,
-      });
-    }
-  }
 
   handelShowChange(evt) {
     evt.preventDefault();
@@ -108,6 +163,7 @@ class SettingTime extends Component {
 
   async handleSubmitTimeInWeek(evt) {
     evt.preventDefault();
+    const {id} = this.props.auth.user.data
     const {
       startDay,
       endDay,
@@ -127,7 +183,7 @@ class SettingTime extends Component {
         fieldTypeId,
       );
       await this.setState({ isShowUpdate: !isShowUpdate });
-      const data = await fetchGetTimeEnableInWeek(1); 
+      const data = await fetchGetTimeEnableInWeek(1);
       this.props.getAllTimeEnableInWeek(data);
       this.props.history.push('/app/setting-time');
     }
@@ -167,15 +223,14 @@ class SettingTime extends Component {
           </div>
           <div className="col-lg-12">
             <div className="row">
-              <div className="col-lg-4 col-lg-offset-4">
+              <div className="col-lg-6 col-lg-offset-3">
                 <div className="row">
                   {buttonGroupFieldType.map(fieldType => (
                     <div className="col-lg-6" key={fieldType.id}>
                       <button
-                        className={`btn btn-default btn-block ${fieldType.value ==
-                        this.state.fieldType
-                          ? 'active'
-                          : ''}`}
+                        className={`${fieldType.value == this.state.fieldType
+                          ? 'btn btn-primary btn-lg btn-block'
+                          : 'btn btn-default btn-lg btn-block'}`}
                         name="fieldType"
                         value={fieldType.value}
                         onClick={this.handleInputChange.bind(this)}
@@ -188,7 +243,7 @@ class SettingTime extends Component {
               </div>
               <div className="col=sm-4">
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-info"
                   name="isShowUpdate"
                   onClick={this.handelShowChange.bind(this)}
                 >
@@ -241,6 +296,7 @@ class SettingTime extends Component {
                             onChange={this.handelTimeStartDayInputChange.bind(
                               this,
                             )}
+                            disabledMinutes={this.configTimeDiable.bind(this)}
                           />
                         </div>
                       </div>
@@ -395,7 +451,10 @@ class SettingTime extends Component {
   }
 }
 function mapStateToProps(state) {
-  return { timeEnable: state.timeEnable };
+  return {
+    timeEnable: state.timeEnable,
+    auth: state.auth,
+  };
 }
 
 export default connect(mapStateToProps, { getAllTimeEnableInWeek })(

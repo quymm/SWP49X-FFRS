@@ -26,14 +26,14 @@ class Field extends Component {
   async componentDidMount() {
     const { id } = this.props.auth.user.data;
     console.log(id);
-    const data = await fetchGetAllField(2);
+    const data = await fetchGetAllField(1);
     await this.props.getAllField(data);
   }
 
   async deleteField(evt) {
     const fieldId = evt.target.value;
     await fetchDeleteField(fieldId);
-    const data = await fetchGetAllField(2);
+    const data = await fetchGetAllField(1);
     await this.props.getAllField(data);   
   }
 

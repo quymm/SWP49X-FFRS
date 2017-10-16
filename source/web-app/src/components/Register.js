@@ -3,6 +3,7 @@ import {
   fetchRegister,
   fechGetAddressByLocationGoogleMap,
 } from '../apis/guest-apis';
+import { Link } from 'react-router-dom';
 class Register extends Component {
   constructor(props) {
     super(props);
@@ -11,13 +12,14 @@ class Register extends Component {
       password: undefined,
       confirmPassword: undefined,
       address: undefined,
-      avatarUrl: undefined,
+      avatarUrl: '',
       creditCard: undefined,
       latitude: undefined,
       longitude: undefined,
       name: undefined,
       phone: undefined,
       message: undefined,
+      messageSuccess: false,
     };
   }
 
@@ -29,12 +31,11 @@ class Register extends Component {
         location.coords.latitude,
         location.coords.longitude,
       );
-      
+
       await this.setState({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
         address: address,
-        
       });
       console.log(this.state);
     });
@@ -54,12 +55,15 @@ class Register extends Component {
   }
 
   async handleSubmit(event) {
+    
     event.preventDefault();
+    const {avatarUrl} = this.state;
+    let avatarUrlAfter = avatarUrl.slice(avatarUrl.indexOf('fakepath') + 9, avatarUrl.length);
+    console.log(avatarUrlAfter);
     const {
       username,
       password,
       address,
-      avatarUrl,
       creditCard,
       latitude,
       longitude,
@@ -72,26 +76,31 @@ class Register extends Component {
       username !== undefined &&
       password !== undefined &&
       address !== undefined &&
-      confirmPassword !== undefined
+      confirmPassword !== undefined &&
+      avatarUrl !== ''
     ) {
       if (password === confirmPassword) {
         // try {
+        
         const registerRes = await fetchRegister(
           username,
           password,
           address,
-          avatarUrl,
+          avatarUrlAfter,
           '123456',
           latitude,
           longitude,
           name,
-          phone
+          phone,
         );
         debugger;
-        if (registerRes.status === 201) {
-          const data = registerRes.json();
-          this.props.history.push('/login');
-        } else {
+        if (registerRes.status === 200) {
+          this.setState({ messageSuccess: true });
+        } 
+        else if(registerRes.status === 400){
+          this.setState({message: 'Tên đăng nhập đã tồn tại'})
+        }
+        else {
           this.setState({ message: 'Đăng kí không thành công' });
         }
       } else {
@@ -104,7 +113,7 @@ class Register extends Component {
 
   render() {
     console.log(this.state);
-    const { message, address } = this.state;
+    const { message, address, messageSuccess } = this.state;
     return (
       <div className="container">
         <div className="row">
@@ -119,6 +128,16 @@ class Register extends Component {
                     <p className="text-center text-danger">
                       <i>{message === null ? null : message}</i>
                     </p>
+                    {messageSuccess ? (
+                      <p className="text-center text-success">
+                        <i>
+                          Đăng kí thành công. Nhấn vào đây để{' '}
+                          <Link to="/login">
+                            <strong>đăng nhập</strong>
+                          </Link>
+                        </i>
+                      </p>
+                    ) : null}
                     <div className="form-group">
                       <label htmlFor="exampleInputEmail1">Tên đăng nhập</label>
                       <input

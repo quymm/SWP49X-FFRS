@@ -25,7 +25,7 @@ class Home extends Component {
       dateSelected: moment(),
       currentTime: new Date().toLocaleTimeString([], { hour12: false }),
       currentShowPage: '',
-      openedTab: 3,
+      openedTab: 2,
       bookMatchStartTime: undefined,
       bookMatchEndTime: 60,
       bookMatchMessage: undefined,
@@ -110,16 +110,21 @@ class Home extends Component {
       (bookMatchEndTime !== undefined && bookMatchStartTime !== undefined,
       bookMatchFieldType !== undefined)
     ) {
-      await fetchBookMatch(
+      const bookMatchRes = await fetchBookMatch(
         dateSelected.format('DD-MM-YYYY'),
-        1,
         bookMatchEndTime,
+        1,        
         bookMatchFieldType,
         bookMatchStartTime,
         bookMatchEndTime,
       );
-      this.setState({ openedTab: 2 });
-      debugger;
+      if (bookMatchRes.status === 200) {
+        this.setState({ openedTab: 2 });
+        debugger;
+      }
+      else{
+        this.setState({bookMatchMessage: 'Đặt sân thất bại'})
+      }
     }
   }
   async handleDateChange(date) {
@@ -160,7 +165,7 @@ class Home extends Component {
   render() {
     const myStyle = { padding: 20 };
     const { listMatch, freeTime5vs5, freeTime7vs7 } = this.props;
-    const { openedTab, buttonGroupTab } = this.state;
+    const { openedTab, buttonGroupTab, bookMatchMessage } = this.state;
     console.log(this.props);
     const renerBookMatch = (
       <form
@@ -176,6 +181,7 @@ class Home extends Component {
               Từ
             </label>
             <div className="col-sm-9">
+              <p className="text-center text-danger">{bookMatchMessage? bookMatchMessage : null}</p>
               <div className="row">
                 <div className="col-sm-6">
                   <TimePicker
@@ -273,7 +279,7 @@ class Home extends Component {
                       onChange={this.handleDateChange.bind(this)}
                       className="form-control"
                       todayButton={'Today'}
-                      withPortal
+                      
                     />
                   </div>
                 </form>
@@ -299,10 +305,10 @@ class Home extends Component {
               {buttonGroupTab.map(tab => (
                 <div className="col-lg-3" key={tab.id}>
                   <button
-                    className={`btn btn-lg btn-primary btn-block ${tab.value ==
+                    className={`${tab.value ==
                     this.state.openedTab
-                      ? 'active'
-                      : ''}`}
+                      ? 'btn btn-lg btn-primary btn-block'
+                      : 'btn btn-lg btn-default btn-block'}`}
                     onClick={this.handleInputChange.bind(this)}
                     name="openedTab"
                     value={tab.value}

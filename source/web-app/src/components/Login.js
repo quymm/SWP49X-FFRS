@@ -27,21 +27,17 @@ class Login extends Component {
   async handleLogin(evt) {
     evt.preventDefault();
     const { username, password } = this.state;
-    const loginRes = await fetchLogin(username, password);
-
-    console.log(loginRes);
-
     if (username !== undefined && password !== undefined) {
+      const loginRes = await fetchLogin(username, password);
       if (loginRes.status === 200) {
         const dataLogin = loginRes.body;
         if (dataLogin !== null) {
           await this.props.doLoginSuccessful(dataLogin);
-          console.log(this.props);
-          debugger
           if (dataLogin.roleId.roleName === 'owner') {
             this.props.history.push('/app/index');
           }
         } else if (dataLogin.user.role === 'staff') {
+          this.props.history.push('/staff/index');
         } else {
           this.props.doLoginError('Sai tên đăng nhập hoặc mật khẩu');
         }

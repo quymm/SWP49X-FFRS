@@ -37,7 +37,7 @@ export function fetchRegister(
       phone: argPhone,
       username: argUsername,
     }),
-  });
+  }).then(res => res.json());
 }
 
 export function fechGetAddressByLocationGoogleMap(argLatitude, argLongitute) {

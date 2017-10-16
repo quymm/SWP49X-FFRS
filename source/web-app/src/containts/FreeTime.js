@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import moment from 'moment';
 export default props => {
   const { freeTime5vs5, freeTime7vs7 } = props;
   return (
@@ -9,7 +9,10 @@ export default props => {
         {freeTime5vs5.length > 0
           ? freeTime5vs5.map(freeTime => (
               <div key={freeTime.id}>
-                <h4>{freeTime.startTime}</h4> <h4>{freeTime.endTime}</h4>{' '}
+                <h4>
+                  {moment('10-10-2017 ' + freeTime.startTime).format('HH:mm')} -{' '}
+                  {moment('10-10-2017 ' + freeTime.endTime).format('HH:mm')}
+                </h4>
               </div>
             ))
           : 'Không có thời gian rảnh'}
@@ -19,7 +22,10 @@ export default props => {
         {freeTime7vs7.length > 0
           ? freeTime7vs7.map(freeTime => (
               <div key={freeTime.id}>
-                <h4>{freeTime.startTime}</h4> <h4>{freeTime.endTime}</h4>{' '}
+                <h4>
+                  {moment('10-10-2017 ' + freeTime.startTime).format('HH:mm')} -{' '}
+                  {moment('10-10-2017 ' + freeTime.endTime).format('HH:mm')}
+                </h4>
               </div>
             ))
           : 'Không có thời gian rảnh'}

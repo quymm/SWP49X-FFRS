@@ -15,3 +15,4 @@ export const GET_TIME_ENABLE_IN_WEEK = "/time-enable/managed-time-enable";
 export const UPDATE_TIME_ENABLE_IN_WEEK = "/time-enable/managed-time-enable";
 export const GET_FREE_TIME = '/match/free-time';
 export const BOOK_MATCH = '/match/reserve-time-slot';
+export const FREE_FIELD = '/match/free-field';
