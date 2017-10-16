@@ -7,6 +7,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.capstone.ffrs.CreateMatchingRequestActivity"
     tools:showIn="@layout/activity_create_matching_request">
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
