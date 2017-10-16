@@ -82,6 +82,13 @@ public class AccountController {
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/account/name", method = RequestMethod.GET)
+    public ResponseEntity searchByNameAndRole(@RequestParam("name") String name, @RequestParam("role") String role){
+        Wrapper wrapper = new Wrapper(accountServices.findByNameLikeAndRole(name, role), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
 
 
 

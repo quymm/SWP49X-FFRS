@@ -165,5 +165,20 @@ public class AccountServices {
         return fieldOwnerList;
     }
 
+    public List<AccountEntity> findByNameLikeAndRole(String name, String role){
+        RoleEntity roleEntity = roleServices.findByRoleName(role);
+        List<ProfileEntity> profileEntityList = profileRepository.searchByName("%" + name + "%", true);
+
+        List<AccountEntity> returnAccountEntityList = new ArrayList<>();
+
+        for (ProfileEntity profileEntity : profileEntityList) {
+            AccountEntity accountEntity = accountRepository.findByProfileIdAndRoleIdAndStatus(profileEntity, roleEntity, true);
+            if(accountEntity != null){
+                returnAccountEntityList.add(accountEntity);
+            }
+        }
+        return returnAccountEntityList;
+    }
+
 
 }
