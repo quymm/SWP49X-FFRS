@@ -13,49 +13,149 @@ class SettingTime extends Component {
     super(props);
     this.state = {
       fieldType: '5 vs 5',
+      fieldTypeId: 1,
       daySelected: 'Mon',
       startDay: null,
       endDay: null,
       price: undefined,
       isShowUpdate: false,
+      buttonGroupDayInWeek: [
+        {
+          id: 1,
+          value: 'Mon',
+          text: 'Thứ hai',
+        },
+        {
+          id: 2,
+          value: 'Tue',
+          text: 'Thứ ba',
+        },
+        {
+          id: 3,
+          value: 'Wed',
+          text: 'Thứ tư',
+        },
+        {
+          id: 4,
+          value: 'Thu',
+          text: 'Thứ năm',
+        },
+        {
+          id: 5,
+          value: 'Fri',
+          text: 'Thứ sáu',
+        },
+        {
+          id: 6,
+          value: 'Sat',
+          text: 'Thứ bảy',
+        },
+        {
+          id: 7,
+          value: 'Sun',
+          text: 'Chủ nhật',
+        },
+      ],
+      buttonGroupFieldType: [
+        {
+          id: 1,
+          value: '5 vs 5',
+          text: 'Loại sân 5 người',
+        },
+        {
+          id: 2,
+          value: '7 vs 7',
+          text: 'Loại sân 7 người',
+        },
+      ],
     };
   }
 
   async componentDidMount() {
+    const { id } = this.props.auth.user.data;
+    console.log(id);
     const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
     this.props.getAllTimeEnableInWeek(data);
     //);
   }
-
+  configTimeDiable() {
+    return [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+    ];
+  }
   async handleInputChange(evt) {
     const target = evt.target;
     const value = target.value;
     const name = target.name;
     await this.setState({ [name]: value });
-    console.log('state in time: ', this.state);
   }
-  async handelTimeStartDayInputChange(evt){
-    
-    await this.setState({startDay: evt.format('HH:mm')});
+  async handelTimeStartDayInputChange(evt) {
+    await this.setState({ startDay: evt.format('HH:mm') });
     console.log(this.state);
   }
-  async handelTimeEndDayInputChange(evt){
-    
-    await this.setState({endDay: evt.format('HH:mm')});
+  async handelTimeEndDayInputChange(evt) {
+    await this.setState({ endDay: evt.format('HH:mm') });
     console.log(this.state);
-  }
-  handleInputTimeEnableChange(evt) {
-    if (evt.length > 0) {
-      this.setState({
-        startDay: evt[0].startTime,
-        endDay: evt[0].endTime,
-        price: evt[0].price,
-      });
-    }
   }
 
   handelShowChange(evt) {
-    console.log(evt);
     evt.preventDefault();
     const { isShowUpdate } = this.state;
     this.setState({ isShowUpdate: !isShowUpdate });
@@ -63,7 +163,15 @@ class SettingTime extends Component {
 
   async handleSubmitTimeInWeek(evt) {
     evt.preventDefault();
-    const { startDay, endDay, price, daySelected, isShowUpdate } = this.state;
+    const {id} = this.props.auth.user.data
+    const {
+      startDay,
+      endDay,
+      price,
+      daySelected,
+      isShowUpdate,
+      fieldTypeId,
+    } = this.state;
 
     if (startDay !== null && endDay !== null && price !== null) {
       await fetchUpdateTimeEnableInWeek(
@@ -72,19 +180,18 @@ class SettingTime extends Component {
         startDay,
         endDay,
         price,
-        2,
+        fieldTypeId,
       );
       await this.setState({ isShowUpdate: !isShowUpdate });
-      const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
+      const data = await fetchGetTimeEnableInWeek(1);
       this.props.getAllTimeEnableInWeek(data);
-      //);
       this.props.history.push('/app/setting-time');
     }
     await this.setState({ isShowUpdate: !isShowUpdate });
   }
 
   render() {
-    const { timeEnable } = this.props;
+    const { timeEnable } = this.props.timeEnable;
     const {
       daySelected,
       fieldType,
@@ -93,19 +200,19 @@ class SettingTime extends Component {
       price,
       isShowUpdate,
     } = this.state;
-    console.log(timeEnable.timeEnable);
-    // debugger
     const dayAfterFilter =
-      timeEnable.timeEnable &&
-      timeEnable.timeEnable.filter(
+      timeEnable &&
+      timeEnable.filter(
         data =>
           data.dateInWeek === daySelected &&
           data.fieldTypeId.name === fieldType,
       );
-    console.log(dayAfterFilter);
+
     if (!dayAfterFilter) {
       return <h1>loading...</h1>;
     }
+    const { buttonGroupDayInWeek, buttonGroupFieldType } = this.state;
+    // console.log(dayAfterFilter);
     return (
       <div id="page-wrapper">
         <div className="container-fluid">
@@ -115,28 +222,33 @@ class SettingTime extends Component {
             </div>
           </div>
           <div className="col-lg-12">
-            <div className="col-lg-4 col-lg-offset-4">
-              <div className="row">
-                <div className="col-lg-6">
-                  <button
-                    className="btn btn-default btn-block"
-                    name="fieldType"
-                    value="5 vs 5"
-                    onClick={this.handleInputChange.bind(this)}
-                  >
-                    5 vs 5
-                  </button>
+            <div className="row">
+              <div className="col-lg-6 col-lg-offset-3">
+                <div className="row">
+                  {buttonGroupFieldType.map(fieldType => (
+                    <div className="col-lg-6" key={fieldType.id}>
+                      <button
+                        className={`${fieldType.value == this.state.fieldType
+                          ? 'btn btn-primary btn-lg btn-block'
+                          : 'btn btn-default btn-lg btn-block'}`}
+                        name="fieldType"
+                        value={fieldType.value}
+                        onClick={this.handleInputChange.bind(this)}
+                      >
+                        {fieldType.text}
+                      </button>
+                    </div>
+                  ))}
                 </div>
-                <div className="col-lg-6">
-                  <button
-                    className="btn btn-default btn-block"
-                    value="7 vs 7"
-                    name="fieldType"
-                    onClick={this.handleInputChange.bind(this)}
-                  >
-                    7 vs 7
-                  </button>
-                </div>
+              </div>
+              <div className="col=sm-4">
+                <button
+                  className="btn btn-info"
+                  name="isShowUpdate"
+                  onClick={this.handelShowChange.bind(this)}
+                >
+                  Thêm mới khung giờ
+                </button>
               </div>
             </div>
           </div>
@@ -144,69 +256,22 @@ class SettingTime extends Component {
           <div className="row">
             <div className="col-lg-2">
               <div className="list-group">
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Mon"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Thứ hai
-                </button>
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Tue"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Thứ ba
-                </button>
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Wed"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Thứ tư
-                </button>
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Thu"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Thứ năm
-                </button>
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Fri"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Thứ sáu
-                </button>
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Sat"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Thứ bảy
-                </button>
-                <button
-                  type="button"
-                  className="list-group-item"
-                  value="Sun"
-                  name="daySelected"
-                  onClick={this.handleInputChange.bind(this)}
-                >
-                  Chủ nhật
-                </button>
+                {buttonGroupDayInWeek.map(day => (
+                  <div key={day.id}>
+                    <button
+                      type="button"
+                      className={`list-group-item ${day.value ==
+                      this.state.daySelected
+                        ? 'active'
+                        : ''}`}
+                      value={day.value}
+                      name="daySelected"
+                      onClick={this.handleInputChange.bind(this)}
+                    >
+                      {day.text}
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
             <div className="col-lg-10">
@@ -220,7 +285,7 @@ class SettingTime extends Component {
                       htmlFor="inputEmail3"
                       className="col-sm-3 control-label"
                     >
-                      Mở cửa
+                      Từ
                     </label>
                     <div className="col-sm-9">
                       <div className="row">
@@ -228,17 +293,11 @@ class SettingTime extends Component {
                           <TimePicker
                             showSecond={false}
                             name="startDay"
-                            onChange={this.handelTimeStartDayInputChange.bind(this)}
+                            onChange={this.handelTimeStartDayInputChange.bind(
+                              this,
+                            )}
+                            disabledMinutes={this.configTimeDiable.bind(this)}
                           />
-                          {/* <input
-                            type="text"
-                            className="form-control"
-                            id="inputPassword3"
-                            placeholder="Start time"
-                            name="startDay"
-                            value={this.state.startDay}
-                            onChange={this.handleInputChange.bind(this)}
-                          /> */}
                         </div>
                       </div>
                     </div>
@@ -249,25 +308,18 @@ class SettingTime extends Component {
                       htmlFor="inputEmail3"
                       className="col-sm-3 control-label"
                     >
-                      Đóng cửa
+                      Đến
                     </label>
                     <div className="col-sm-9">
                       <div className="row">
                         <div className="col-sm-6">
-                        <TimePicker
+                          <TimePicker
                             showSecond={false}
                             name="endDay"
-                            onChange={this.handelTimeEndDayInputChange.bind(this)}
+                            onChange={this.handelTimeEndDayInputChange.bind(
+                              this,
+                            )}
                           />
-                          {/* <input
-                            type="text"
-                            className="form-control"
-                            id="inputPassword3"
-                            placeholder="End time"
-                            name="endDay"
-                            value={this.state.endDay}
-                            onChange={this.handleInputChange.bind(this)}
-                          /> */}
                         </div>
                       </div>
                     </div>
@@ -295,6 +347,7 @@ class SettingTime extends Component {
                       </div>
                     </div>
                   </div>
+
                   <div className="form-group">
                     <div className="col-sm-offset-3 col-sm-9">
                       <button className="btn btn-primary" type="submit">
@@ -305,96 +358,89 @@ class SettingTime extends Component {
                 </form>
               ) : (
                 <form className="form-horizontal">
-                  <div className="form-group">
-                    <label
-                      htmlFor="inputEmail3"
-                      className="col-sm-3 control-label"
-                    >
-                      Mở cửa
-                    </label>
-                    <div className="col-sm-9">
-                      <div className="row">
-                        <div className="col-sm-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="inputPassword3"
-                            placeholder="Start time"
-                            value={
-                              dayAfterFilter.length > 0
-                                ? dayAfterFilter[0].startTime
-                                : 'Chưa thiết lập'
-                            }
-                            readOnly
-                          />
+                  {dayAfterFilter.map(affterConvertArr => (
+                    <div key={affterConvertArr.id}>
+                      <div className="form-group">
+                        <label
+                          htmlFor="inputEmail3"
+                          className="col-sm-3 control-label"
+                        >
+                          Từ
+                        </label>
+                        <div className="col-sm-9">
+                          <div className="row">
+                            <div className="col-sm-6">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="inputPassword3"
+                                placeholder="Start time"
+                                value={affterConvertArr.startTime}
+                                readOnly
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="form-group">
-                    <label
-                      htmlFor="inputEmail3"
-                      className="col-sm-3 control-label"
-                    >
-                      Đóng cửa
-                    </label>
-                    <div className="col-sm-9">
-                      <div className="row">
-                        <div className="col-sm-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="inputPassword3"
-                            placeholder="End time"
-                            value={
-                              dayAfterFilter.length > 0
-                                ? dayAfterFilter[0].endTime
-                                : 'Chưa thiết lập'
-                            }
-                            readOnly
-                          />
+                      <div className="form-group">
+                        <label
+                          htmlFor="inputEmail3"
+                          className="col-sm-3 control-label"
+                        >
+                          Đến
+                        </label>
+                        <div className="col-sm-9">
+                          <div className="row">
+                            <div className="col-sm-6">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="inputPassword3"
+                                placeholder="End time"
+                                value={affterConvertArr.endTime}
+                                readOnly
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="form-group">
+                        <label
+                          htmlFor="inputEmail3"
+                          className="col-sm-3 control-label"
+                        >
+                          Giá
+                        </label>
+                        <div className="col-sm-9">
+                          <div className="row">
+                            <div className="col-sm-6">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="inputPassword3"
+                                placeholder="End time"
+                                value={affterConvertArr.price}
+                                readOnly
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="form-group">
+                        <div className="col-sm-offset-3 col-sm-9">
+                          <button
+                            className="btn btn-primary"
+                            name="isShowUpdate"
+                            onClick={this.handelShowChange.bind(this)}
+                          >
+                            Cập nhật
+                          </button>
+                          <button className="btn btn-danger">Xoá</button>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="form-group">
-                    <label
-                      htmlFor="inputEmail3"
-                      className="col-sm-3 control-label"
-                    >
-                      Giá
-                    </label>
-                    <div className="col-sm-9">
-                      <div className="row">
-                        <div className="col-sm-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="inputPassword3"
-                            placeholder="End time"
-                            value={
-                              dayAfterFilter.length > 0
-                                ? dayAfterFilter[0].price
-                                : 'Chưa thiết lập'
-                            }
-                            readOnly
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="form-group">
-                    <div className="col-sm-offset-3 col-sm-9">
-                      <button
-                        className="btn btn-primary"
-                        name="isShowUpdate"
-                        onClick={this.handelShowChange.bind(this)}
-                      >
-                        Cập nhật
-                      </button>
-                    </div>
-                  </div>
+                  ))}
                 </form>
               )}
             </div>
@@ -405,7 +451,10 @@ class SettingTime extends Component {
   }
 }
 function mapStateToProps(state) {
-  return { timeEnable: state.timeEnable };
+  return {
+    timeEnable: state.timeEnable,
+    auth: state.auth,
+  };
 }
 
 export default connect(mapStateToProps, { getAllTimeEnableInWeek })(

@@ -4,7 +4,7 @@ class Clock extends Component {
     render() {
         const {time} = this.props;
         return (
-            <h3>{time}</h3>
+            <h2 className="text-center text-danger">{time}</h2>
         );
     }
 }
