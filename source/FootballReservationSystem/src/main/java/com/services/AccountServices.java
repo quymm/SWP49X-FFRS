@@ -1,5 +1,7 @@
 package com.services;
 
+import com.dto.CordinationPoint;
+import com.dto.FieldOwnerAndDistance;
 import com.dto.InputFieldOwnerDTO;
 import com.dto.InputUserDTO;
 import com.entity.AccountEntity;
@@ -7,11 +9,14 @@ import com.entity.ProfileEntity;
 import com.entity.RoleEntity;
 import com.repository.AccountRepository;
 import com.repository.ProfileRepository;
+import com.utils.MapUtils;
+import com.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +33,9 @@ public class AccountServices {
 
     @Autowired
     RoleServices roleServices;
+
+    @Autowired
+    MatchServices matchServices;
 
     public AccountEntity createNewFieldOwner(InputFieldOwnerDTO inputFieldOwnerDTO) {
         RoleEntity roleEntity = roleServices.findByRoleName("owner");
@@ -126,6 +134,35 @@ public class AccountServices {
         profileEntity.setRatingScore(2000);
         profileEntity.setStatus(true);
         return profileEntity;
+    }
+
+    public List<AccountEntity> findMax10FieldOwnerNearByPosition(String longitudeStr, String latitudeStr){
+        double longitude = NumberUtils.parseFromStringToDouble(longitudeStr);
+        double latitude = NumberUtils.parseFromStringToDouble(latitudeStr);
+        CordinationPoint cordinationPointA = new CordinationPoint(longitude, latitude);
+
+        List<AccountEntity> fieldOwnerList = findAccountByRole("owner");
+        List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
+        List<AccountEntity> returnFieldOwnerList = new ArrayList<>();
+
+        if(!fieldOwnerList.isEmpty() && fieldOwnerList.size() > 1){
+            for (AccountEntity fieldOwner : fieldOwnerList) {
+                CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(fieldOwner.getProfileId().getLongitude()),
+                        NumberUtils.parseFromStringToDouble(fieldOwner.getProfileId().getLatitude()));
+                double distance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
+                FieldOwnerAndDistance fieldOwnerAndDistance = new FieldOwnerAndDistance(fieldOwner, distance);
+                fieldOwnerAndDistanceList.add(fieldOwnerAndDistance);
+            }
+
+        // sắp xếp theo thứ tự khoảng cách tăng dần
+        matchServices.arrangeFieldOwnerByDistance(fieldOwnerAndDistanceList);
+            for (int i = 0; i < (fieldOwnerAndDistanceList.size()<10 ? fieldOwnerAndDistanceList.size() : 10); i++) {
+                AccountEntity returnFieldOwner = fieldOwnerAndDistanceList.get(i).getFieldOwner();
+                returnFieldOwnerList.add(returnFieldOwner);
+            }
+            return returnFieldOwnerList;
+        }
+        return fieldOwnerList;
     }
 
 
