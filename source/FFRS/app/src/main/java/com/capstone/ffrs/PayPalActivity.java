@@ -108,23 +108,28 @@ public class PayPalActivity extends AppCompatActivity {
                             new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
-                                    if (response != null) {
-                                        try {
-                                            Bundle b = getIntent().getExtras();
-                                            Intent intent = new Intent(PayPalActivity.this, ReservationResultActivity.class);
-                                            intent.putExtra("user_id", b.getInt("user_id"));
-                                            intent.putExtra("reserve_id", response.getInt("id"));
-                                            intent.putExtra("field_id", b.getInt("field_id"));
-                                            intent.putExtra("field_name", b.getString("field_name"));
-                                            intent.putExtra("field_address", b.getString("field_address"));
-                                            intent.putExtra("image_url", b.getString("image_url"));
-                                            intent.putExtra("payment_result", "Succeed");
-                                            startActivity(intent);
-                                        } catch (Exception e) {
-                                            Log.d("EXCEPTION", e.getMessage());
+                                    try {
+                                        JSONObject body = response.getJSONObject("body");
+                                        if (body != null && body.length() > 0) {
+                                            try {
+                                                Bundle b = getIntent().getExtras();
+                                                Intent intent = new Intent(PayPalActivity.this, ReservationResultActivity.class);
+                                                intent.putExtra("user_id", b.getInt("user_id"));
+                                                intent.putExtra("reserve_id", body.getInt("id"));
+                                                intent.putExtra("field_id", b.getInt("field_id"));
+                                                intent.putExtra("field_name", b.getString("field_name"));
+                                                intent.putExtra("field_address", b.getString("field_address"));
+                                                intent.putExtra("image_url", b.getString("image_url"));
+                                                intent.putExtra("payment_result", "Succeed");
+                                                startActivity(intent);
+                                            } catch (Exception e) {
+                                                Log.d("EXCEPTION", e.getMessage());
+                                            }
+                                        } else {
+                                            Toast.makeText(PayPalActivity.this, "Error!", Toast.LENGTH_SHORT).show();
                                         }
-                                    } else {
-                                        Toast.makeText(PayPalActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
                                     }
                                 }
                             },

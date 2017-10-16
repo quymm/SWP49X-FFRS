@@ -312,26 +312,31 @@ public class FieldTimeActivity extends AppCompatActivity {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            if (response != null) {
-                                try {
-                                    Intent intent = new Intent(FieldTimeActivity.this, FieldDetailActivity.class);
-                                    intent.putExtra("field_id", id);
-                                    intent.putExtra("field_name", name);
-                                    intent.putExtra("field_address", address);
-                                    intent.putExtra("field_type_id", spinner.getSelectedItemPosition() + 1);
-                                    intent.putExtra("image_url", imageUrl);
-                                    intent.putExtra("date", date);
-                                    intent.putExtra("time_from", fromTime);
-                                    intent.putExtra("time_to", toTime);
-                                    intent.putExtra("price", response.getInt("price"));
-                                    intent.putExtra("user_id", b.getInt("user_id"));
-                                    intent.putExtra("time_slot_id", response.getInt("id"));
-                                    startActivity(intent);
-                                } catch (Exception e) {
-                                    Log.d("EXCEPTION", e.getMessage());
+                            try {
+                                JSONObject body = response.getJSONObject("body");
+                                if (body != null && body.length() > 0) {
+                                    try {
+                                        Intent intent = new Intent(FieldTimeActivity.this, FieldDetailActivity.class);
+                                        intent.putExtra("field_id", id);
+                                        intent.putExtra("field_name", name);
+                                        intent.putExtra("field_address", address);
+                                        intent.putExtra("field_type_id", spinner.getSelectedItemPosition() + 1);
+                                        intent.putExtra("image_url", imageUrl);
+                                        intent.putExtra("date", date);
+                                        intent.putExtra("time_from", fromTime);
+                                        intent.putExtra("time_to", toTime);
+                                        intent.putExtra("price", body.getInt("price"));
+                                        intent.putExtra("user_id", b.getInt("user_id"));
+                                        intent.putExtra("time_slot_id", body.getInt("id"));
+                                        startActivity(intent);
+                                    } catch (Exception e) {
+                                        Log.d("EXCEPTION", e.getMessage());
+                                    }
+                                } else {
+                                    Toast.makeText(FieldTimeActivity.this, "Không thể đặt sân!", Toast.LENGTH_SHORT).show();
                                 }
-                            } else {
-                                Toast.makeText(FieldTimeActivity.this, "Không thể đặt sân!", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                Log.d("ParseException", e.getMessage());
                             }
                         }
                     },
@@ -380,41 +385,46 @@ public class FieldTimeActivity extends AppCompatActivity {
         final SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
 
         //Volley's inbuilt class to make Json array request
-        JsonArrayRequest newsReq = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
+        JsonObjectRequest newsReq = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONArray response) {
-                if (response != null && response.length() > 0) {
-                    for (int i = 0; i < response.length(); i++) {
-                        try {
-                            JSONObject obj = response.getJSONObject(i);
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray body = response.getJSONArray("body");
+                    if (body != null && body.length() > 0) {
+                        for (int i = 0; i < body.length(); i++) {
+                            try {
+                                JSONObject obj = body.getJSONObject(i);
 
-                            FieldTime fieldTime = new FieldTime(sdf.format(sdf.parse(obj.getString("startTime"))), sdf.format(sdf.parse(obj.getString("endTime"))));
+                                FieldTime fieldTime = new FieldTime(sdf.format(sdf.parse(obj.getString("startTime"))), sdf.format(sdf.parse(obj.getString("endTime"))));
 
-                            // adding movie to movies array
-                            fieldTimeList.add(fieldTime);
+                                // adding movie to movies array
+                                fieldTimeList.add(fieldTime);
 
-                        } catch (Exception e) {
-                            Log.d("EXCEPTION", e.getMessage());
-                        } finally {
-                            //Notify adapter about data changes\
-                            Collections.sort(fieldTimeList, new Comparator<FieldTime>() {
-                                @Override
-                                public int compare(FieldTime o1, FieldTime o2) {
-                                    try {
-                                        return sdf.parse(o1.getFromTime()).compareTo(sdf.parse(o2.getFromTime()));
-                                    } catch (ParseException e) {
-                                        e.printStackTrace();
+                            } catch (Exception e) {
+                                Log.d("EXCEPTION", e.getMessage());
+                            } finally {
+                                //Notify adapter about data changes\
+                                Collections.sort(fieldTimeList, new Comparator<FieldTime>() {
+                                    @Override
+                                    public int compare(FieldTime o1, FieldTime o2) {
+                                        try {
+                                            return sdf.parse(o1.getFromTime()).compareTo(sdf.parse(o2.getFromTime()));
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                        return 0;
                                     }
-                                    return 0;
-                                }
-                            });
-                            adapter.notifyItemChanged(i);
+                                });
+                                adapter.notifyItemChanged(i);
+                            }
                         }
+                    } else {
+                        txtNotFound.setVisibility(View.VISIBLE);
                     }
-                } else {
-                    txtNotFound.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                progressBar.setVisibility(View.GONE);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -433,10 +443,10 @@ public class FieldTimeActivity extends AppCompatActivity {
             }
         }) {
             @Override
-            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
                 try {
                     String utf8String = new String(response.data, "UTF-8");
-                    return Response.success(new JSONArray(utf8String), HttpHeaderParser.parseCacheHeaders(response));
+                    return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
                 } catch (UnsupportedEncodingException e) {
                     // log error
                     return Response.error(new ParseError(e));

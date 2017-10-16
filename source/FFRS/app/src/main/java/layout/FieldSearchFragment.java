@@ -128,7 +128,6 @@ public class FieldSearchFragment extends Fragment {
         JsonArrayRequest newsReq = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-
                 for (int i = 0; i < response.length(); i++) {
                     try {
                         JSONObject obj = response.getJSONObject(i);
@@ -145,6 +144,7 @@ public class FieldSearchFragment extends Fragment {
                         adapter.notifyItemChanged(i);
                     }
                 }
+
             }
         }, new Response.ErrorListener() {
             @Override

@@ -39,7 +39,6 @@ import java.util.Date;
 public class MatchSearchFragment extends Fragment {
 
     private String displayFormat = "dd/MM/yyyy";
-    private String localhost;
     private Spinner spinner;
 
     public MatchSearchFragment() {
@@ -55,7 +54,6 @@ public class MatchSearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        localhost = getResources().getString(R.string.local_host);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_match_search, container, false);
 

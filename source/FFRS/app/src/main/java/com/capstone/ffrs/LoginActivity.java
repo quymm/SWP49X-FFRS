@@ -83,12 +83,17 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if (response != null && response.length() > 0) {
-                            changeActivity(response);
-                        } else {
-                            EditText password = (EditText) findViewById(R.id.text_password);
-                            password.setText("");
-                            Toast.makeText(LoginActivity.this, "Sai tên tài khoản hay mật khẩu!", Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONObject body = response.getJSONObject("body");
+                            if (body != null && body.length() > 0) {
+                                changeActivity(body);
+                            } else {
+                                EditText password = (EditText) findViewById(R.id.text_password);
+                                password.setText("");
+                                Toast.makeText(LoginActivity.this, "Sai tên tài khoản hay mật khẩu!", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            Log.d("ParseException", e.getMessage());
                         }
                     }
                 },
@@ -105,18 +110,18 @@ public class LoginActivity extends AppCompatActivity {
         queue.add(getRequest);
     }
 
-    public void changeActivity(JSONObject response) {
+    public void changeActivity(JSONObject body) {
         Intent intent = new Intent(this, FieldSuggestActivity.class);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         try {
             if (!sharedPreferences.contains("user_id") || !sharedPreferences.contains("username") || !sharedPreferences.contains("password")) {
-                editor.putInt("user_id", response.getInt("id"));
-                editor.putString("username", response.getString("username"));
-                editor.putString("password", response.getString("password"));
+                editor.putInt("user_id", body.getInt("id"));
+                editor.putString("username", body.getString("username"));
+                editor.putString("password", body.getString("password"));
                 editor.commit();
             }
-            intent.putExtra("user_id", response.getInt("id"));
+            intent.putExtra("user_id", body.getInt("id"));
         } catch (JSONException e) {
             Log.d("EXCEPTION", e.getMessage());
         }
