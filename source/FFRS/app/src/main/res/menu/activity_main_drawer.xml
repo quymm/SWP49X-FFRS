@@ -13,6 +13,10 @@
             android:icon="@drawable/ic_reward"
             android:title="Đổi thưởng" />
         <item
+            android:id="@+id/nav_notifications"
+            android:icon="@drawable/ic_notifications"
+            android:title="Thông báo" />
+        <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
             android:title="Cài đặt" />

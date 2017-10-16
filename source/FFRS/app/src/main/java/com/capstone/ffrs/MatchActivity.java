@@ -28,7 +28,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.adapter.MatchAdapter;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.Match;
+import com.capstone.ffrs.entity.MatchRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,7 +53,7 @@ public class MatchActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     RequestQueue queue;
-    List<Match> opponentList = new ArrayList<Match>();
+    List<MatchRequest> opponentList = new ArrayList<MatchRequest>();
     MatchAdapter adapter;
     String localhost;
 
@@ -114,7 +114,7 @@ public class MatchActivity extends AppCompatActivity {
                     for (int i = 0; i < body.length(); i++) {
                         try {
                             JSONObject obj = body.getJSONObject(i);
-                            Match match = new Match();
+                            MatchRequest match = new MatchRequest();
                             match.setId(obj.getInt("id"));
                             match.setTeamName(obj.getJSONObject("userId").getJSONObject("profileId").getString("name"));
                             match.setDate(obj.getString("date"));
@@ -212,10 +212,31 @@ public class MatchActivity extends AppCompatActivity {
     }
 
     public void onClickSendRequest(View view) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference();
+//
+//        Bundle b = getIntent().getExtras();
+//        List<Integer> matchingRequestIdList = new ArrayList<>();
+//        for (MatchRequest opponent: opponentList){
+//            matchingRequestIdList.add(opponent.getId());
+//        }
+//        myRef.child("tourMatch").child(b.getInt("user_id")+"").setValue(matchingRequestIdList);
+//        myRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // This method is called once with the initial value and again
+//                // whenever data at this location is updated.
+//                String value = dataSnapshot.getValue(String.class);
+//                Toast.makeText(getApplicationContext(), "Value is: " + value, Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                // Failed to read value
+//                Log.w("TAG", "Failed to read value.", error.toException());
+//            }
+//        });
 
-        myRef.setValue("Hello, World!");
 
     }
 }

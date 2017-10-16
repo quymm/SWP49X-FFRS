@@ -139,7 +139,7 @@ public class MapsActivity extends AppCompatActivity implements
 
                 if (currentMarker == null) {
                     currentPosition = new LatLng(arg0.getLatitude(), arg0.getLongitude());
-                    currentMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).title("My Location"));
+                    currentMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).title("Vị trí của tôi"));
                 }
 
 //                try {
@@ -167,22 +167,17 @@ public class MapsActivity extends AppCompatActivity implements
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject body = response.getJSONObject("body");
-                            if (body != null && body.length() > 0) {
-                                try {
-                                    JSONObject profile = body.getJSONObject("profileId");
-                                    // Add a marker in Sydney and move the camera
-                                    LatLng fieldLocation = new LatLng(Double.parseDouble(profile.getString("latitude")), (Double.parseDouble(profile.getString("longitude"))));
-                                    mMap.addMarker(new MarkerOptions().position(fieldLocation).title("Marker"));
-                                    mMap.moveCamera(CameraUpdateFactory.zoomTo(15f));
-                                    mMap.moveCamera(CameraUpdateFactory.newLatLng(fieldLocation));
-                                } catch (Exception e) {
-                                    Log.d("EXCEPTION", e.getMessage());
-                                }
+                        if (response != null && response.length() > 0) {
+                            try {
+                                JSONObject profile = response.getJSONObject("profileId");
+                                // Add a marker in Sydney and move the camera
+                                LatLng fieldLocation = new LatLng(Double.parseDouble(profile.getString("latitude")), (Double.parseDouble(profile.getString("longitude"))));
+                                mMap.addMarker(new MarkerOptions().position(fieldLocation).title(profile.getString("name")));
+                                mMap.moveCamera(CameraUpdateFactory.zoomTo(15f));
+                                mMap.moveCamera(CameraUpdateFactory.newLatLng(fieldLocation));
+                            } catch (Exception e) {
+                                Log.d("EXCEPTION", e.getMessage());
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
                     }
                 },
