@@ -8,8 +8,10 @@ import com.entity.RoleEntity;
 import com.repository.AccountRepository;
 import com.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 /**
@@ -28,10 +30,14 @@ public class AccountServices {
     RoleServices roleServices;
 
     public AccountEntity createNewFieldOwner(InputFieldOwnerDTO inputFieldOwnerDTO) {
+        RoleEntity roleEntity = roleServices.findByRoleName("owner");
+        if (accountRepository.findByUsernameAndStatusAndRoleId(inputFieldOwnerDTO.getUsername(), true, roleEntity) != null) {
+            throw new DuplicateKeyException(String.format("Username: %s is already exists!", inputFieldOwnerDTO.getUsername()));
+        }
+
         ProfileEntity profileEntity = createProfileEntityForFieldOwner(inputFieldOwnerDTO);
         ProfileEntity savedProfileEntity = profileRepository.save(profileEntity);
 
-        RoleEntity roleEntity = roleServices.findByRoleName("owner");
 
         AccountEntity accountEntity = new AccountEntity();
         accountEntity.setUsername(inputFieldOwnerDTO.getUsername());
@@ -60,10 +66,13 @@ public class AccountServices {
     }
 
     public AccountEntity createNewUser(InputUserDTO inputUserDTO) {
+        RoleEntity roleEntity = roleServices.findByRoleName("user");
+        if (accountRepository.findByUsernameAndStatusAndRoleId(inputUserDTO.getUsername(), true, roleEntity) != null) {
+            throw new DuplicateKeyException(String.format("Username: %s is already exists!", inputUserDTO.getUsername()));
+        }
         ProfileEntity profileEntity = createProfileEntityForUser(inputUserDTO);
         ProfileEntity savedProfileEntity = profileRepository.save(profileEntity);
 
-        RoleEntity roleEntity = roleServices.findByRoleName("user");
 
         AccountEntity accountEntity = new AccountEntity();
 
@@ -87,7 +96,11 @@ public class AccountServices {
 
     public AccountEntity checkLogin(String username, String password, String role){
         RoleEntity roleEntity = roleServices.findByRoleName(role);
-        return accountRepository.findByUsernamePasswordAndRoleEntity(username, password, roleEntity, true);
+        AccountEntity accountEntity = accountRepository.findByUsernamePasswordAndRoleEntity(username, password, roleEntity, true);
+        if(accountEntity == null){
+            throw new EntityNotFoundException(String.format("Not found account have username: %s and password: %s",username, password));
+        }
+        return accountEntity;
     }
 
     public ProfileEntity createProfileEntityForFieldOwner(InputFieldOwnerDTO inputFieldOwnerDTO) {

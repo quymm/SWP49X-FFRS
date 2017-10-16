@@ -46,6 +46,11 @@ public class DateTimeUtils {
         return format.format(time);
     }
 
+    public static String formatDate(Date date){
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+        return format.format(date);
+    }
+
     public static String returnDayInWeek(Date date){
         SimpleDateFormat format = new SimpleDateFormat("EE");
         return format.format(date);

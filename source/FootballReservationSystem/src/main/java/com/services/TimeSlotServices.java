@@ -1,6 +1,7 @@
 package com.services;
 
 import com.dto.InputReservationDTO;
+import com.dto.MatchReturnDTO;
 import com.dto.TimeSlotDTO;
 import com.entity.*;
 import com.repository.TimeSlotRepository;
@@ -9,6 +10,7 @@ import org.hibernate.validator.internal.xml.FieldType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.*;
 
 /**
@@ -31,11 +33,30 @@ public class TimeSlotServices {
     @Autowired
     FieldTypeServices fieldTypeServices;
 
-    public List<TimeSlotEntity> findUpcomingReservationByDate(String dateString, int fieldOwnerId, int fieldTypeId) {
+    @Autowired
+    MatchServices matchServices;
+
+    public List<MatchReturnDTO> findUpcomingReservationByDate(String dateString, int fieldOwnerId, int fieldTypeId) {
         Date targetDate = DateTimeUtils.convertFromStringToDate(dateString);
         AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(fieldTypeId);
-        return timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(accountEntity, fieldTypeEntity, targetDate, true, true);
+        List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(accountEntity, fieldTypeEntity, targetDate, true, true);
+        List<MatchReturnDTO> matchReturnDTOList = new ArrayList<>();
+
+        if (!timeSlotEntityList.isEmpty()) {
+            for (TimeSlotEntity timeSlotEntity : timeSlotEntityList){
+                FriendlyMatchEntity friendlyMatchEntity = matchServices.findFriendlyMatchByTimeSlot(timeSlotEntity.getId());
+                if (friendlyMatchEntity == null) {
+                    TourMatchEntity tourMatchEntity = matchServices.findTourMatchByTimeSlot(timeSlotEntity.getId());
+                    MatchReturnDTO matchReturnDTO = new MatchReturnDTO(tourMatchEntity.getUserId(), tourMatchEntity.getOpponentId(), timeSlotEntity);
+                    matchReturnDTOList.add(matchReturnDTO);
+                } else{
+                    MatchReturnDTO matchReturnDTO = new MatchReturnDTO(friendlyMatchEntity.getUserId(), friendlyMatchEntity.getUserId(), timeSlotEntity);
+                    matchReturnDTOList.add(matchReturnDTO);
+                }
+            }
+        }
+        return matchReturnDTOList;
     }
 
     public List<TimeSlotEntity> createTimeSlotForDate(Date date, AccountEntity fieldOwnerEntity, FieldTypeEntity fieldTypeEntity) {
@@ -156,7 +177,9 @@ public class TimeSlotServices {
         if (timeSlotRepository.countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(fieldOwner, fieldType, targetDate, true) == 0) {
             List<TimeSlotEntity> timeSlotEntityList = createTimeSlotForDate(targetDate, fieldOwner, fieldType);
             List<TimeSlotEntity> returnTimeSlotEntityList = new ArrayList<>();
-            returnTimeSlotEntityList.add(timeSlotEntityList.get(0));
+            if (!timeSlotEntityList.isEmpty()) {
+                returnTimeSlotEntityList.add(timeSlotEntityList.get(0));
+            }
             return returnTimeSlotEntityList;
         } else {
             List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(fieldOwner,
@@ -250,7 +273,7 @@ public class TimeSlotServices {
         return timeSlotRepository.findByIdAndStatus(timeSlotId, true);
     }
 
-    public TimeSlotEntity setTimeForTimeSlot(int timeSlotId, int fieldId) {
+    public TimeSlotEntity setFieldForTimeSlot(int timeSlotId, int fieldId) {
         TimeSlotEntity timeSlotEntity = findById(timeSlotId);
         FieldEntity fieldEntity = fieldServices.findFieldEntityById(fieldId);
         timeSlotEntity.setFieldId(fieldEntity);
