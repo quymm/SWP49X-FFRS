@@ -16,7 +16,7 @@
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/thumbnail"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="190dp"
             android:layout_alignParentLeft="true"
             android:layout_marginBottom="10dp"
             android:scaleType="fitXY" />

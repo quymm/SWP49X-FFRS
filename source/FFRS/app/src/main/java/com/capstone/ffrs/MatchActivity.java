@@ -28,7 +28,12 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.adapter.MatchAdapter;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.Match;
+import com.capstone.ffrs.entity.MatchRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,7 +53,7 @@ public class MatchActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     RequestQueue queue;
-    List<Match> opponentList = new ArrayList<Match>();
+    List<MatchRequest> opponentList = new ArrayList<MatchRequest>();
     MatchAdapter adapter;
     String localhost;
 
@@ -87,7 +92,6 @@ public class MatchActivity extends AppCompatActivity {
             url += "&latitude=" + b.getDouble("latitude");
             url += "&date=" + strDate;
             url += "&start-time=" + b.getString("field_start_time");
-            Log.d("URL", url);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -102,29 +106,33 @@ public class MatchActivity extends AppCompatActivity {
         //Getting Instance of Volley Request Queue
         queue = NetworkController.getInstance(this).getRequestQueue();
         //Volley's inbuilt class to make Json array request
-        JsonArrayRequest newsReq = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
+        JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONArray response) {
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray body = response.getJSONArray("body");
+                    for (int i = 0; i < body.length(); i++) {
+                        try {
+                            JSONObject obj = body.getJSONObject(i);
+                            MatchRequest match = new MatchRequest();
+                            match.setId(obj.getInt("id"));
+                            match.setTeamName(obj.getJSONObject("userId").getJSONObject("profileId").getString("name"));
+                            match.setDate(obj.getString("date"));
+                            match.setStartTime(obj.getString("startTime"));
+                            match.setEndTime(obj.getString("endTime"));
+                            match.setRatingScore(obj.getJSONObject("userId").getJSONObject("profileId").getInt("ratingScore"));
+                            // adding movie to movies array
+                            opponentList.add(match);
 
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-                        JSONObject obj = response.getJSONObject(i);
-                        Match match = new Match();
-                        match.setId(obj.getInt("id"));
-                        match.setTeamName(obj.getJSONObject("userId").getJSONObject("profileId").getString("name"));
-                        match.setDate(obj.getString("date"));
-                        match.setStartTime(obj.getString("startTime"));
-                        match.setEndTime(obj.getString("endTime"));
-                        match.setRatingScore(obj.getJSONObject("userId").getJSONObject("profileId").getInt("ratingScore"));
-                        // adding movie to movies array
-                        opponentList.add(match);
-
-                    } catch (Exception e) {
-                        Log.d("EXCEPTION", e.getMessage());
-                    } finally {
-                        //Notify adapter about data changes
-                        adapter.notifyItemChanged(i);
+                        } catch (Exception e) {
+                            Log.d("EXCEPTION", e.getMessage());
+                        } finally {
+                            //Notify adapter about data changes
+                            adapter.notifyItemChanged(i);
+                        }
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
         }, new Response.ErrorListener() {
@@ -144,10 +152,10 @@ public class MatchActivity extends AppCompatActivity {
             }
         }) {
             @Override
-            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
                 try {
                     String utf8String = new String(response.data, "UTF-8");
-                    return Response.success(new JSONArray(utf8String), HttpHeaderParser.parseCacheHeaders(response));
+                    return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
                 } catch (UnsupportedEncodingException e) {
                     // log error
                     return Response.error(new ParseError(e));
@@ -201,5 +209,34 @@ public class MatchActivity extends AppCompatActivity {
         } catch (ParseException e) {
             Log.d("Parse_Exception", e.getMessage());
         }
+    }
+
+    public void onClickSendRequest(View view) {
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference();
+//
+//        Bundle b = getIntent().getExtras();
+//        List<Integer> matchingRequestIdList = new ArrayList<>();
+//        for (MatchRequest opponent: opponentList){
+//            matchingRequestIdList.add(opponent.getId());
+//        }
+//        myRef.child("tourMatch").child(b.getInt("user_id")+"").setValue(matchingRequestIdList);
+//        myRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // This method is called once with the initial value and again
+//                // whenever data at this location is updated.
+//                String value = dataSnapshot.getValue(String.class);
+//                Toast.makeText(getApplicationContext(), "Value is: " + value, Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                // Failed to read value
+//                Log.w("TAG", "Failed to read value.", error.toException());
+//            }
+//        });
+
+
     }
 }
