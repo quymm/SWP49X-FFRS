@@ -1,16 +1,23 @@
 package layout;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
+import android.widget.SearchView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -40,8 +47,8 @@ import java.util.List;
 
 public class FieldSearchFragment extends Fragment {
 
-    //  String url = "https://api.myjson.com/bins/1fscel";
-    String url = "http://10.0.2.2:8080/swp49x-ffrs/account?role=owner";
+    String url;
+    String localhost;
 
     RecyclerView recyclerView;
     RequestQueue queue;
@@ -60,37 +67,60 @@ public class FieldSearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        localhost = getResources().getString(R.string.local_host);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_field_search, container, false);
-        EditText edit_text = (EditText) view.findViewById(R.id.edit_text);
-        TextWatcher watcher = new TextWatcher() {
+
+        final EditText edit_text = (EditText) view.findViewById(R.id.edit_text);
+        edit_text.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        edit_text.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
+                    InputMethodManager inputManager = (InputMethodManager)
+                            getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
+                    inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                            InputMethodManager.HIDE_NOT_ALWAYS);
+                    adapter.getFilter().filter(v.getText().toString());
+                    return true;
+                }
+                return false;
             }
+        });
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.getFilter().filter(s);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        };
-        edit_text.addTextChangedListener(watcher);
+//        TextWatcher watcher = new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//
+//            }
+//        };
+//        edit_text.addTextChangedListener(watcher);
 
         loadFields(view);
         return view;
     }
 
     public void loadFields(View view) {
+        Bundle b = getActivity().getIntent().getExtras();
         //Initialize RecyclerView
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         adapter = new FieldAdapter(this.getContext(), fieldList);
+        adapter.setUserId(b.getInt("user_id"));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+
+        url = localhost + "/swp49x-ffrs/account?role=owner";
 
         //Getting Instance of Volley Request Queue
         queue = NetworkController.getInstance(getContext()).getRequestQueue();

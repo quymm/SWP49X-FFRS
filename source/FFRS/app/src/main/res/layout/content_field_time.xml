@@ -65,8 +65,8 @@
                             android:layout_height="40dp"
                             android:layout_alignParentEnd="true"
                             android:background="#009632"
-                            app:srcCompat="@drawable/ic_location"
-                            android:onClick="onClickShowMap"/>
+                            android:onClick="onClickShowMap"
+                            app:srcCompat="@drawable/ic_location" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -94,19 +94,19 @@
                         </LinearLayout>
                     </RelativeLayout>
 
-                    <!--<Spinner-->
-                        <!--android:id="@+id/spinner"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="50dp" />-->
+                    <Spinner
+                        android:id="@+id/spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp" />
 
                     <Button
                         android:id="@+id/date_picker"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="dd/MM/yyyy"
                         android:background="#009632"
+                        android:text="dd/MM/yyyy"
                         android:textColor="@android:color/white"
-                        android:textSize="20dp"/>
+                        android:textSize="20dp" />
 
                     <ProgressBar
                         android:id="@+id/progressBar"
@@ -114,6 +114,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true" />
+
+                    <TextView
+                        android:id="@+id/text_no_free_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="16dp"
+                        android:text="Không có khung giờ rảnh nào trong ngày này"
+                        android:textAlignment="center"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/recycler_view"
@@ -123,47 +135,12 @@
                         tools:layout_editor_absoluteX="8dp"
                         tools:layout_editor_absoluteY="0dp" />
 
-                    <!--<LinearLayout-->
-                    <!--android:layout_width="fill_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginBottom="5dp"-->
-                    <!--android:layout_weight="7"-->
-                    <!--android:background="#009632"-->
-                    <!--android:orientation="horizontal">-->
-
-                    <!--<TextView-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="50dp"-->
-                    <!--android:layout_weight="4"-->
-
-
-                    <!--android:gravity="center_vertical"-->
-                    <!--android:padding="5dp"-->
-                    <!--android:text="7:00 am - 8:30am"-->
-                    <!--android:textColor="@android:color/white"-->
-                    <!--android:textSize="18sp"-->
-                    <!--android:textStyle="bold" />-->
-
-                    <!--<TextView-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="50dp"-->
-                    <!--android:layout_weight="3"-->
-
-                    <!--android:gravity="center_vertical"-->
-                    <!--android:padding="5dp"-->
-                    <!--android:text="120.000đ/h"-->
-                    <!--android:textAlignment="textEnd"-->
-                    <!--android:textColor="@android:color/white"-->
-                    <!--android:textSize="18sp"-->
-                    <!--android:textStyle="bold" />-->
-                    <!--</LinearLayout>-->
-
                     <EditText
                         android:id="@+id/text_from"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
-                        android:hint="Chơi từ:"
+                        android:hint="Thời gian bắt đầu:"
                         android:inputType="none" />
 
                     <EditText
@@ -171,14 +148,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
-                        android:hint="Chơi đến:"
+                        android:hint="Thời gian kết thúc:"
                         android:inputType="none" />
 
                     <Button
                         android:id="@+id/btReserve"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="#009632"
+                        android:background="#dbdbdb"
+                        android:enabled="false"
                         android:onClick="onClickShowDetail"
                         android:text="Đặt sân"
                         android:textColor="@android:color/white"

@@ -33,6 +33,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
     private List<Field> mFilteredList;
     private Context context;
     private LayoutInflater inflater;
+    private int userId;
 
     public FieldAdapter(Context context, List<Field> fieldList) {
 
@@ -40,6 +41,10 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
         this.fieldList = fieldList;
         this.mFilteredList = fieldList;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public void setUserId(int userId){
+        this.userId = userId;
     }
 
     @Override
@@ -143,6 +148,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
                         image_url = "http://bongda.phanmemvang.com.vn/wp-content/uploads/2015/03/lan2chaoluanganhgnhe-1-e1426212803227.jpg";
                     }
                     intent.putExtra("image_url", image_url);
+                    intent.putExtra("user_id",userId);
                     context.startActivity(intent);
                 }
             });

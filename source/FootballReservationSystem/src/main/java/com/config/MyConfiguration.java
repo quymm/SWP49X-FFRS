@@ -7,7 +7,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 /**
- * Created by truonghuuthanh on 10/15/17.
+ * @author MinhQuy
  */
 public class MyConfiguration {
     @Bean
@@ -24,4 +24,3 @@ public class MyConfiguration {
         return bean;
     }
 }
-

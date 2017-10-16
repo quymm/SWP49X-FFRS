@@ -2,7 +2,7 @@ package com.controller;
 
 import com.dto.InputFieldOwnerDTO;
 import com.dto.InputUserDTO;
-import com.dto.Wapper;
+import com.dto.Wrapper;
 import com.entity.AccountEntity;
 import com.services.AccountServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +22,10 @@ public class AccountController {
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-field-owner", method = RequestMethod.POST)
     public ResponseEntity createNewFieldOwner(@RequestBody InputFieldOwnerDTO inputFieldOwnerDTO) {
-        System.out.println(inputFieldOwnerDTO.getAddress());
         AccountEntity fieldOwnerEntity = accountServices.createNewFieldOwner(inputFieldOwnerDTO);
         return new ResponseEntity(fieldOwnerEntity, HttpStatus.CREATED);
     }
+
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-field-owner", method = RequestMethod.PUT)
     public ResponseEntity updateFieldOwner(@RequestBody InputFieldOwnerDTO inputFieldOwnerDTO, @RequestParam("field-owner-id") int fieldOwnerId) {
@@ -49,34 +49,47 @@ public class AccountController {
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/login-field-owner", method = RequestMethod.GET)
-    public Wapper checkLoginFieldOwner(@RequestParam("username") String username, @RequestParam("password") String password){
-        AccountEntity login = accountServices.checkLogin(username, password, "owner");
-        int status = login != null ? 200 : 404;
-                   String message = "Not Found";
-        if (status == 200){
-                         message = "Success";
-        }
-        return new Wapper(login, status, message)  ;
+    public ResponseEntity<Wrapper> checkLoginFieldOwner(@RequestParam("username") String username, @RequestParam("password") String password){
+        Wrapper wrapper = new Wrapper(accountServices.checkLogin(username, password, "owner"), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity<>(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/login-user", method = RequestMethod.GET)
-    public ResponseEntity checkLoginUser(@RequestParam("username") String username, @RequestParam("password") String password){
-        return new ResponseEntity(accountServices.checkLogin(username, password, "user"), HttpStatus.OK);
+    public ResponseEntity<Wrapper> checkLoginUser(@RequestParam("username") String username, @RequestParam("password") String password){
+        Wrapper wrapper = new Wrapper(accountServices.checkLogin(username, password, "user"), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity<>(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-user", method = RequestMethod.GET)
     public ResponseEntity getUserById(@RequestParam("user-id") int userId){
-        AccountEntity accountEntity = accountServices.findAccountEntityById(userId, "user");
-        return new ResponseEntity(accountEntity, HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityById(userId, "user"), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account", method = RequestMethod.GET)
     public ResponseEntity getAllAccountByRole(@RequestParam("role") String role){
-        return new ResponseEntity(accountServices.findAccountByRole(role), HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(accountServices.findAccountByRole(role), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
+
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/account/top-10-field-owner", method = RequestMethod.GET)
+    public ResponseEntity get10FieldOwnerNearest(@RequestParam("longitude") String longitude, @RequestParam("latitude") String latitude){
+        Wrapper wrapper = new Wrapper(accountServices.findMax10FieldOwnerNearByPosition(longitude, latitude), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/account/name", method = RequestMethod.GET)
+    public ResponseEntity searchByNameAndRole(@RequestParam("name") String name, @RequestParam("role") String role){
+        Wrapper wrapper = new Wrapper(accountServices.findByNameLikeAndRole(name, role), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+
 
 
 }
