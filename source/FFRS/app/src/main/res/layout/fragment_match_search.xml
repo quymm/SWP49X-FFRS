@@ -24,15 +24,13 @@
                     android:id="@+id/text_field_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:text="Loại sân:" />
 
-                <EditText
-                    android:id="@+id/input_field_type"
+                <Spinner
+                    android:id="@+id/spinner"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Field type"
-                    android:inputType="textPersonName" />
+                    android:layout_height="40dp" />
 
             </TableRow>
 
@@ -44,7 +42,7 @@
                     android:id="@+id/text_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ngày: " />
+                    android:text="Ngày chơi: " />
 
                 <EditText
                     android:id="@+id/input_date"
@@ -65,7 +63,7 @@
                     android:id="@+id/text_start_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Từ" />
+                    android:text="Thời gian bắt đầu: " />
 
                 <EditText
                     android:id="@+id/input_start_time"
@@ -73,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:focusable="false"
-                    android:hint="Giờ bắt đầu"
+                    android:hint="Thời gian bắt đầu"
                     android:inputType="none" />
 
             </TableRow>
@@ -83,10 +81,10 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/text_End_time"
+                    android:id="@+id/text_end_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Đến: " />
+                    android:text="Thời gian kết thúc: " />
 
                 <EditText
                     android:id="@+id/input_end_time"
@@ -94,10 +92,11 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:focusable="false"
-                    android:hint="Giờ kết thúc"
+                    android:hint="Thời gian kết thúc"
                     android:inputType="none" />
 
             </TableRow>
+
         </TableLayout>
 
         <Button

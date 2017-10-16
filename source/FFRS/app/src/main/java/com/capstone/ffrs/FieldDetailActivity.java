@@ -156,7 +156,10 @@ public class FieldDetailActivity extends AppCompatActivity
         Intent intent = new Intent(FieldDetailActivity.this, PayPalActivity.class);
         intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
         intent.putExtra("user_id", b.getInt("user_id"));
+        intent.putExtra("field_id", id);
         intent.putExtra("field_name", name);
+        intent.putExtra("field_address", address);
+        intent.putExtra("image_url", imageUrl);
         intent.putExtra("price", totalPrice);
         startActivity(intent);
     }

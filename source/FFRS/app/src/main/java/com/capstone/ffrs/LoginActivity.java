@@ -86,6 +86,8 @@ public class LoginActivity extends AppCompatActivity {
                         if (response != null && response.length() > 0) {
                             changeActivity(response);
                         } else {
+                            EditText password = (EditText) findViewById(R.id.text_password);
+                            password.setText("");
                             Toast.makeText(LoginActivity.this, "Sai tên tài khoản hay mật khẩu!", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -93,6 +95,9 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        EditText password = (EditText) findViewById(R.id.text_password);
+                        password.setText("");
+                        Toast.makeText(LoginActivity.this, "Sai tên tài khoản hay mật khẩu!", Toast.LENGTH_SHORT).show();
                         Log.d("Error.Response", error.toString());
                     }
                 }) {

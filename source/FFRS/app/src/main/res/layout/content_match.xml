@@ -47,13 +47,13 @@
                 android:textSize="18sp" />
 
             <Button
-                android:id="@+id/btCancel"
+                android:id="@+id/btCreate"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:background="#af0000"
-                android:onClick="onClickRefresh"
-                android:text="Tìm yêu cầu mới"
+                android:onClick="onClickCreate"
+                android:text="Tạo yêu cầu mới"
                 android:textColor="@android:color/white"
                 android:textSize="18sp" />
         </LinearLayout>

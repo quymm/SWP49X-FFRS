@@ -61,7 +61,7 @@
             android:name=".LoginActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_login"
-            android:windowSoftInputMode="stateHidden|adjustNothing"/>
+            android:windowSoftInputMode="stateHidden|adjustNothing" />
         <activity
             android:name=".RewardActivity"
             android:label="@string/title_activity_reward"
@@ -97,6 +97,9 @@
         <activity
             android:name=".PayPalActivity"
             android:label="@string/title_activity_pay_pal"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CreateMatchingRequestActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

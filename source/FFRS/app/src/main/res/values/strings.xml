@@ -19,4 +19,10 @@
     <string name="title_activity_match">Kết quả tìm kiềm đối thủ</string>
     <string name="title_activity_pay_pal">PayPal</string>
     <string name="local_host">http://10.0.2.2:8080</string>
+    <string-array name="field_types">
+        <item>5 vs 5</item>
+        <item>7 vs 7</item>
+        <item>11 vs 11</item>
+    </string-array>
+    <string name="title_activity_create_matching_request">CreateMatchingRequestActivity</string>
 </resources>
