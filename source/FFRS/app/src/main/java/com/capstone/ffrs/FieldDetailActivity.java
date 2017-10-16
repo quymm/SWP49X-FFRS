@@ -36,11 +36,9 @@ public class FieldDetailActivity extends AppCompatActivity
 
     String imageUrl, name, address;
     Date from, to, date;
-    int id, totalPrice;
+    int id, totalPrice, fieldTypeId;
 
-    String localhost = "http://172.20.10.3:8080";
-
-    RequestQueue queue;
+    String localhost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +46,8 @@ public class FieldDetailActivity extends AppCompatActivity
         setContentView(R.layout.activity_field_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        localhost = getResources().getString(R.string.local_host);
 
         Bundle b = getIntent().getExtras();
 
@@ -70,6 +70,7 @@ public class FieldDetailActivity extends AppCompatActivity
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
 
         id = b.getInt("field_id");
+        fieldTypeId = b.getInt("field_type_id");
 
         totalPrice = b.getInt("price");
 
@@ -86,6 +87,25 @@ public class FieldDetailActivity extends AppCompatActivity
         txtTo.setText("Đến: " + sdf.format(to));
         TextView txtDuration = (TextView) findViewById(R.id.text_duration);
         txtDuration.setText(duration);
+
+        String strFieldType = "Loại sân: ";
+        switch (fieldTypeId) {
+            case 1:
+                strFieldType += "5 vs 5";
+                break;
+            case 2:
+                strFieldType += "7 vs 7";
+                break;
+            case 3:
+                strFieldType += "11 vs 11";
+                break;
+            default:
+                strFieldType += "Chưa xác định";
+                break;
+        }
+        TextView txtFieldType = (TextView) findViewById(R.id.text_field_type);
+        txtFieldType.setText(strFieldType);
+
         TextView txtPrice = (TextView) findViewById(R.id.text_total_price);
         txtPrice.setText("Tổng giá: " + (totalPrice / 1000) + "K đồng");
     }
@@ -133,32 +153,11 @@ public class FieldDetailActivity extends AppCompatActivity
 
     public void onClickReserve(View view) {
         Bundle b = getIntent().getExtras();
-
-        queue = NetworkController.getInstance(this).getRequestQueue();
-        String url = localhost + "/swp49x-ffrs/match/friendly-match?time-slot-id="+ b.getInt("time_slot_id") +"&user-id="+b.getInt("user_id");
-        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        if (response != null) {
-                            try {
-                                Intent intent = new Intent(FieldDetailActivity.this, ReservationResultActivity.class);
-                                startActivity(intent);
-                            } catch (Exception e) {
-                                Log.d("EXCEPTION", e.getMessage());
-                            }
-                        } else {
-                            Toast.makeText(FieldDetailActivity.this, "Error!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("Error.Response", error.toString());
-                    }
-                });
-        queue.add(postRequest);
-
+        Intent intent = new Intent(FieldDetailActivity.this, PayPalActivity.class);
+        intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
+        intent.putExtra("user_id", b.getInt("user_id"));
+        intent.putExtra("field_name", name);
+        intent.putExtra("price", totalPrice);
+        startActivity(intent);
     }
 }

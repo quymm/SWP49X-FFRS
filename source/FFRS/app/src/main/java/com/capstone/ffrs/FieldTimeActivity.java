@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,10 +14,13 @@ import android.util.Log;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +63,7 @@ import java.util.Map;
 public class FieldTimeActivity extends AppCompatActivity {
 
     String url;
-    String localhost = "http://172.20.10.3:8080";
+    String localhost;
 
     RecyclerView recyclerView;
     RequestQueue queue;
@@ -73,8 +77,10 @@ public class FieldTimeActivity extends AppCompatActivity {
     String displayFormat = "dd/MM/yyyy";
     String serverFormat = "dd-MM-yyyy";
 
-    private ProgressBar spinner;
+    private ProgressBar progressBar;
     private TextView txtNotFound;
+    private Spinner spinner;
+    private Button date;
 
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -86,20 +92,70 @@ public class FieldTimeActivity extends AppCompatActivity {
             EditText to = (EditText) findViewById(R.id.text_to);
             from.setText(fromTime);
             to.setText(toTime);
+            toggleButton();
         }
     };
+
+    public BroadcastReceiver timeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            toggleButton();
+        }
+    };
+
+    private void toggleButton() {
+        EditText from = (EditText) findViewById(R.id.text_from);
+        EditText to = (EditText) findViewById(R.id.text_to);
+        Button btReserve = (Button) findViewById(R.id.btReserve);
+        if (!from.getText().toString().isEmpty() && !to.getText().toString().isEmpty()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+            try {
+                Date startTime = sdf.parse(from.getText().toString());
+                Date endTime = sdf.parse(to.getText().toString());
+                if (startTime.compareTo(endTime) < 0) {
+                    boolean flag = false;
+                    for (FieldTime time : fieldTimeList) {
+                        Date startFrameTime = sdf.parse(time.getFromTime());
+                        Date endFrameTime = sdf.parse(time.getToTime());
+                        if (startTime.compareTo(startFrameTime) >= 0 && endTime.compareTo(endFrameTime) <= 0) {
+                            flag = true;
+                        }
+                    }
+                    if (flag) {
+                        btReserve.setEnabled(true);
+                        btReserve.setBackgroundColor(Color.parseColor("#009632"));
+                    } else {
+                        btReserve.setEnabled(false);
+                        btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
+                    }
+                } else {
+                    btReserve.setEnabled(false);
+                    btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } else {
+            btReserve.setEnabled(false);
+            btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_field_time);
 
-        spinner = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         txtNotFound = (TextView) findViewById(R.id.text_no_free_time);
 
+        localhost = getResources().getString(R.string.local_host);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        addSpinner();
 
         Bundle b = getIntent().getExtras();
 
@@ -118,16 +174,12 @@ public class FieldTimeActivity extends AppCompatActivity {
         id = b.getInt("field_id");
         Log.d("receivedId", id + "");
 
-        final Button date = (Button) findViewById(R.id.date_picker);
+        date = (Button) findViewById(R.id.date_picker);
         SimpleDateFormat sdf = new SimpleDateFormat(displayFormat);
 
         long currentMillis = System.currentTimeMillis();
         String strCurrentDate = sdf.format(currentMillis);
         date.setText(strCurrentDate);
-
-        sdf = new SimpleDateFormat(serverFormat);
-
-        url = localhost + "/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + 1 + "&date=" + sdf.format(currentMillis);
 
         final Calendar dateSelected = Calendar.getInstance();
         final DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
@@ -148,12 +200,15 @@ public class FieldTimeActivity extends AppCompatActivity {
 
                 sdf = new SimpleDateFormat(serverFormat);
 
-                url = localhost + "/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + 1 + "&date=" + sdf.format(dateSelected.getTime());
+                url = localhost + "/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + (spinner.getSelectedItemPosition() + 1) + "&date=" + sdf.format(dateSelected.getTime());
 
-                clearData();
+                progressBar.setVisibility(View.VISIBLE);
 
-                spinner.setVisibility(View.VISIBLE);
-                txtNotFound.setVisibility(View.GONE);
+                if (!fieldTimeList.isEmpty()) {
+                    clearData();
+                } else {
+                    txtNotFound.setVisibility(View.GONE);
+                }
                 loadFieldTimes();
             }
 
@@ -180,7 +235,50 @@ public class FieldTimeActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("custom-message"));
 
-        loadFieldTimes();
+        LocalBroadcastManager.getInstance(this).registerReceiver(timeReceiver,
+                new IntentFilter("timepicker-message"));
+
+//        sdf = new SimpleDateFormat(serverFormat);
+//
+//        url = localhost + "/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + (spinner.getSelectedItemPosition() + 1) + "&date=" + sdf.format(currentMillis);
+//        loadFieldTimes();
+    }
+
+    public void addSpinner() {
+        spinner = (Spinner) findViewById(R.id.spinner);
+        List<String> list = new ArrayList<String>();
+        list.add("5 vs 5");
+        list.add("7 vs 7");
+        list.add("11 vs 11");
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, list);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long rowId) {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat(displayFormat);
+                    Date dateObj = sdf.parse(date.getText().toString());
+                    sdf = new SimpleDateFormat(serverFormat);
+                    url = localhost + "/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + (position + 1) + "&date=" + sdf.format(dateObj);
+                    progressBar.setVisibility(View.VISIBLE);
+                    if (!fieldTimeList.isEmpty()) {
+                        clearData();
+                    } else {
+                        txtNotFound.setVisibility(View.GONE);
+                    }
+                    loadFieldTimes();
+                } catch (ParseException e) {
+                    Log.d("PARSE_EXCEPTION", e.getMessage());
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     @Override
@@ -199,7 +297,6 @@ public class FieldTimeActivity extends AppCompatActivity {
         EditText from = (EditText) findViewById(R.id.text_from);
         EditText to = (EditText) findViewById(R.id.text_to);
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
-        Log.d("FROM", from.getText().toString());
         try {
             final Date date = new SimpleDateFormat("dd/MM/yyyy").parse(btDate.getText().toString());
             final Date fromTime = sdf.parse(from.getText().toString());
@@ -213,7 +310,7 @@ public class FieldTimeActivity extends AppCompatActivity {
             params.put("date", new SimpleDateFormat("dd-MM-yyyy").format(date));
             params.put("endTime", to.getText().toString());
             params.put("fieldOwnerId", id);
-            params.put("fieldTypeId", 1);
+            params.put("fieldTypeId", (spinner.getSelectedItemPosition() + 1));
             params.put("startTime", from.getText().toString());
             params.put("userId", b.getInt("user_id"));
             JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
@@ -226,6 +323,7 @@ public class FieldTimeActivity extends AppCompatActivity {
                                     intent.putExtra("field_id", id);
                                     intent.putExtra("field_name", name);
                                     intent.putExtra("field_address", address);
+                                    intent.putExtra("field_type_id", spinner.getSelectedItemPosition() + 1);
                                     intent.putExtra("image_url", imageUrl);
                                     intent.putExtra("date", date);
                                     intent.putExtra("time_from", fromTime);
@@ -321,7 +419,7 @@ public class FieldTimeActivity extends AppCompatActivity {
                 } else {
                     txtNotFound.setVisibility(View.VISIBLE);
                 }
-                spinner.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
             }
         }, new Response.ErrorListener() {
             @Override

@@ -40,7 +40,8 @@ import java.util.List;
 
 public class FieldSearchFragment extends Fragment {
 
-    String url = "http://172.20.10.3:8080/swp49x-ffrs/account?role=owner";
+    String url;
+    String localhost;
 
     RecyclerView recyclerView;
     RequestQueue queue;
@@ -59,6 +60,7 @@ public class FieldSearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        localhost = getResources().getString(R.string.local_host);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_field_search, container, false);
         EditText edit_text = (EditText) view.findViewById(R.id.edit_text);
@@ -92,6 +94,8 @@ public class FieldSearchFragment extends Fragment {
         adapter.setUserId(b.getInt("user_id"));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+
+        url = localhost + "/swp49x-ffrs/account?role=owner";
 
         //Getting Instance of Volley Request Queue
         queue = NetworkController.getInstance(getContext()).getRequestQueue();

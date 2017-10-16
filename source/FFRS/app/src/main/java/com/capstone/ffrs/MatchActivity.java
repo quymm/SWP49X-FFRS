@@ -45,6 +45,7 @@ public class MatchActivity extends AppCompatActivity {
     RequestQueue queue;
     List<Match> opponentList = new ArrayList<Match>();
     MatchAdapter adapter;
+    String localhost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class MatchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_match);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        localhost = getResources().getString(R.string.local_host);
         loadMatches();
     }
 
@@ -70,7 +71,7 @@ public class MatchActivity extends AppCompatActivity {
             Date date = sdf.parse(b.getString("field_date"));
             sdf = new SimpleDateFormat("dd-MM-yyyy");
             strDate = sdf.format(date);
-            url = "http://172.20.10.3:8080/swp49x-ffrs/match/matching-request";
+            url = localhost + "/swp49x-ffrs/match/matching-request";
             url += "?user-id=" + b.getInt("user_id");
             url += "&field-type-id=" + b.getInt("field_type_id");
             url += "&longitude=" + b.getDouble("longitude");

@@ -70,10 +70,12 @@ public class MapsActivity extends AppCompatActivity implements
     private Marker currentMarker;
     private GoogleApiClient mGoogleApiClient;
 
+    String localhost;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
+        localhost = getResources().getString(R.string.local_host);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -89,7 +91,7 @@ public class MapsActivity extends AppCompatActivity implements
 //        String directionApiPath = Helper.getUrl(String.valueOf(currentPosition.latitude), String.valueOf(currentPosition.longitude),
 //                String.valueOf(fieldLocation.latitude), String.valueOf(fieldLocation.longitude));
 
-        url = "http://172.20.10.3:8080/swp49x-ffrs/account/managed-field-owner?field-owner-id=" + id;
+        url = localhost +"/swp49x-ffrs/account/managed-field-owner?field-owner-id=" + id;
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
