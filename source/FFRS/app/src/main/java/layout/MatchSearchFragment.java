@@ -9,12 +9,16 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.capstone.ffrs.MatchMapActivity;
 import com.capstone.ffrs.R;
@@ -27,13 +31,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class MatchSearchFragment extends Fragment {
 
-    String displayFormat = "dd/MM/yyyy";
-    String localhost;
+    private String displayFormat = "dd/MM/yyyy";
+    private String localhost;
+    private Spinner spinner;
 
     public MatchSearchFragment() {
         // Required empty public constructor
@@ -94,10 +101,10 @@ public class MatchSearchFragment extends Fragment {
         });
 
         final EditText from = (EditText) view.findViewById(R.id.input_start_time);
-        final EditText to = (EditText) view.findViewById(R.id.input_end_time);
         from.setOnClickListener(new TimePickerListener(view.getContext(), from));
-        to.setOnClickListener(new TimePickerListener(view.getContext(), to));
 
+        final EditText to = (EditText) view.findViewById(R.id.input_end_time);
+        to.setOnClickListener(new TimePickerListener(view.getContext(), to));
 
         Button btLocation = (Button) view.findViewById(R.id.btChooseLocation);
         btLocation.setOnClickListener(new View.OnClickListener() {
@@ -105,16 +112,23 @@ public class MatchSearchFragment extends Fragment {
             public void onClick(View v) {
                 Bundle b = getActivity().getIntent().getExtras();
                 Intent intent = new Intent(v.getContext(), MatchMapActivity.class);
-                intent.putExtra("field_type_id", 1);
+                intent.putExtra("field_type_id", (spinner.getSelectedItemPosition() + 1));
                 intent.putExtra("field_date", date.getText().toString());
                 intent.putExtra("field_start_time", from.getText().toString());
-                //intent.putExtra("field_end_time", to.getText().toString());
-                intent.putExtra("user_id",b.getInt("user_id"));
+                intent.putExtra("field_end_time", to.getText().toString());
+                intent.putExtra("user_id", b.getInt("user_id"));
                 startActivity(intent);
             }
         });
-
+        addSpinner(view);
         return view;
+    }
+
+    public void addSpinner(View view) {
+        spinner = (Spinner) view.findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(getContext(), R.array.field_types, android.R.layout.simple_spinner_item);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
     }
 
 }

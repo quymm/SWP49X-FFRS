@@ -73,7 +73,7 @@ public class PayPalActivity extends AppCompatActivity {
         Intent intent = new Intent(this, PayPalService.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
         startService(intent);
-        thingToBuy = new PayPalPayment(new BigDecimal(b.getInt("price")/22000.0), "USD",
+        thingToBuy = new PayPalPayment(new BigDecimal(b.getInt("price") / 23000.0), "USD",
                 "Đặt sân FFRS", PayPalPayment.PAYMENT_INTENT_SALE);
         Intent paymentIntent = new Intent(PayPalActivity.this,
                 PaymentActivity.class);
@@ -113,6 +113,11 @@ public class PayPalActivity extends AppCompatActivity {
                                             Bundle b = getIntent().getExtras();
                                             Intent intent = new Intent(PayPalActivity.this, ReservationResultActivity.class);
                                             intent.putExtra("user_id", b.getInt("user_id"));
+                                            intent.putExtra("reserve_id", response.getInt("id"));
+                                            intent.putExtra("field_id", b.getInt("field_id"));
+                                            intent.putExtra("field_name", b.getString("field_name"));
+                                            intent.putExtra("field_address", b.getString("field_address"));
+                                            intent.putExtra("image_url", b.getString("image_url"));
                                             intent.putExtra("payment_result", "Succeed");
                                             startActivity(intent);
                                         } catch (Exception e) {
@@ -135,13 +140,25 @@ public class PayPalActivity extends AppCompatActivity {
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Bundle b = getIntent().getExtras();
                 Intent intent = new Intent(PayPalActivity.this, ReservationResultActivity.class);
+                intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
                 intent.putExtra("user_id", b.getInt("user_id"));
+                intent.putExtra("field_id", b.getInt("field_id"));
+                intent.putExtra("field_name", b.getString("field_name"));
+                intent.putExtra("field_address", b.getString("field_address"));
+                intent.putExtra("image_url", b.getString("image_url"));
+                intent.putExtra("price", b.getInt("price"));
                 intent.putExtra("payment_result", "Cancelled");
                 startActivity(intent);
             } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
                 Bundle b = getIntent().getExtras();
                 Intent intent = new Intent(PayPalActivity.this, ReservationResultActivity.class);
+                intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
                 intent.putExtra("user_id", b.getInt("user_id"));
+                intent.putExtra("field_id", b.getInt("field_id"));
+                intent.putExtra("field_name", b.getString("field_name"));
+                intent.putExtra("field_address", b.getString("field_address"));
+                intent.putExtra("image_url", b.getString("image_url"));
+                intent.putExtra("price", b.getInt("price"));
                 intent.putExtra("payment_result", "Invalid configuration");
                 startActivity(intent);
             }
