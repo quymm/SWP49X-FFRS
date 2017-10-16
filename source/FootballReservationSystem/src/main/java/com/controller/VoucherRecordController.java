@@ -2,6 +2,7 @@ package com.controller;
 
 
 import com.dto.InputVoucherRecordDTO;
+import com.dto.Wrapper;
 import com.entity.VoucherRecordEntity;
 import com.services.VoucherRecordServices;
 import java.util.List;
@@ -15,17 +16,17 @@ public class VoucherRecordController {
     @Autowired
     VoucherRecordServices voucherRecordServices;
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/voucher/managed-voucher-record", method = RequestMethod.POST)
     public ResponseEntity createNewVoucherRecord(@RequestBody InputVoucherRecordDTO inputVoucherRecordDTO) {
-        VoucherRecordEntity voucherRecordEntity = voucherRecordServices.createNewVoucherRecord(inputVoucherRecordDTO);
-        return new ResponseEntity(voucherRecordEntity, HttpStatus.CREATED);
+        Wrapper wrapper = new Wrapper(voucherRecordServices.createNewVoucherRecord(inputVoucherRecordDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+        return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/voucher/managed-voucher-record", method = RequestMethod.GET)
     public ResponseEntity findByUserId(@RequestParam("user-id") int userId) {
-        List<VoucherRecordEntity> voucherRecordEntityList = voucherRecordServices.findByUserId(userId);
-        return new ResponseEntity(voucherRecordEntityList, HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(voucherRecordServices.findByUserId(userId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 }

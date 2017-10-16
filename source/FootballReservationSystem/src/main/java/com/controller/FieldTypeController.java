@@ -1,6 +1,7 @@
 package com.controller;
 
 import com.dto.InputFieldTypeDTO;
+import com.dto.Wrapper;
 import com.entity.FieldTypeEntity;
 import com.services.FieldTypeServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,23 +17,24 @@ public class FieldTypeController {
     @Autowired
     FieldTypeServices fieldTypeServices;
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/field-type/managed-field-type", method = RequestMethod.POST)
     public ResponseEntity createNewFieldType(@RequestBody InputFieldTypeDTO inputFieldTypeDTO){
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.createNewFieldType(inputFieldTypeDTO);
-        return new ResponseEntity(fieldTypeEntity, HttpStatus.CREATED);
+        Wrapper wrapper = new Wrapper(fieldTypeServices.createNewFieldType(inputFieldTypeDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+        return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/field-type/managed-field-type", method = RequestMethod.GET)
     public ResponseEntity getFieldTypeById(@RequestParam("field-type-id") int fieldTypeId){
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(fieldTypeId);
-        return new ResponseEntity(fieldTypeEntity, HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(fieldTypeServices.findById(fieldTypeId), HttpStatus.OK.value(), HttpStatus.CREATED.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/field-type/managed-field-type", method = RequestMethod.DELETE)
     public ResponseEntity delteFieldType(@RequestParam("field-type-id") int fieldTypeId){
-        return new ResponseEntity(fieldTypeServices.deleteFieldType(fieldTypeId), HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(fieldTypeServices.deleteFieldType(fieldTypeId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 }
