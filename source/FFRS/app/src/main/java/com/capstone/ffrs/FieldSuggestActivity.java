@@ -47,6 +47,8 @@ import com.capstone.ffrs.adapter.FieldAdapter;
 import com.capstone.ffrs.adapter.SimpleFragmentPagerAdapter;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.Field;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

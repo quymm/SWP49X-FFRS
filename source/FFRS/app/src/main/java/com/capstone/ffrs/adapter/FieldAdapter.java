@@ -69,10 +69,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
 
     @Override
     public int getItemCount() {
-        // Code cope with situation, wait for official fix
-        if (mFilteredList.size() <= 10) {
-            return mFilteredList.size();
-        } else return 10;
+        return mFilteredList.size();
     }
 
     @Override
