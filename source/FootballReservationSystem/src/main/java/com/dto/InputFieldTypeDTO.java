@@ -8,15 +8,12 @@ public class InputFieldTypeDTO {
 
     private String numberPlayer;
 
-    private String description;
-
     public InputFieldTypeDTO() {
     }
 
-    public InputFieldTypeDTO(String name, String numberPlayer, String description) {
+    public InputFieldTypeDTO(String name, String numberPlayer) {
         this.name = name;
         this.numberPlayer = numberPlayer;
-        this.description = description;
     }
 
     public String getName() {
@@ -35,11 +32,4 @@ public class InputFieldTypeDTO {
         this.numberPlayer = numberPlayer;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

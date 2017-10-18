@@ -296,7 +296,7 @@ CREATE TABLE IF NOT EXISTS `capstone_project`.`tour_match` (
   INDEX `tour_match_ref_user2_idx` (`opponent_id` ASC),
   CONSTRAINT `tour_match_ref_time_slot`
     FOREIGN KEY (`time_slot_id`)
-    REFERENCES `capstone_project`.`time_slot` (`field_id`)
+    REFERENCES `capstone_project`.`time_slot` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `tour_match_ref_user1`
