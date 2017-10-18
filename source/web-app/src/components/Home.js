@@ -18,6 +18,11 @@ import Clock from './Clock';
 import TimePicker from 'rc-time-picker';
 import FreeTime from '../containts/FreeTime';
 import MatchByDate from '../containts/MatchByDate';
+import {
+  doLoginSuccessful,
+  accessDenied,
+} from '../redux/guest/guest-action-creators';
+
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -65,28 +70,63 @@ class Home extends Component {
   async componentDidMount() {
     const { id } = this.props.auth.user.data;
     console.log('user id: ', id);
-    try {
-      fetchGetMatchByFieldOwnerAndDay(
-        1,
-        this.state.dateSelected.format('DD-MM-YYYY'),
-        1,
-      ).then(data => {
-        this.props.GetMatchByFieldOwnerAndDay(data);
-      });
-      const data5vs5 = await fetchGetFreeTime(
-        1,
-        1,
-        this.state.dateSelected.format('DD-MM-YYYY'),
-      );
-      const data7vs7 = await fetchGetFreeTime(
-        1,
-        2,
-        this.state.dateSelected.format('DD-MM-YYYY'),
-      );
-      await this.props.getAllFreeTime5vs5(data5vs5);
-      await this.props.getAllFreeTime7vs7(data7vs7);
-    } catch (error) {
-      console.log('error: ', error);
+    debugger;
+    if (id === undefined) {
+      const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
+      if (authLocalStorage === null) {
+        this.props.accessDenied();
+        this.props.history.push('/login');
+      } else {
+        const idLocal = authLocalStorage.id;
+        await this.props.doLoginSuccessful(authLocalStorage);
+        try {
+          fetchGetMatchByFieldOwnerAndDay(
+            idLocal,
+            this.state.dateSelected.format('DD-MM-YYYY'),
+            1,
+          ).then(data => {
+            this.props.GetMatchByFieldOwnerAndDay(data);
+          });
+          const data5vs5 = await fetchGetFreeTime(
+            idLocal,
+            1,
+            this.state.dateSelected.format('DD-MM-YYYY'),
+          );
+          const data7vs7 = await fetchGetFreeTime(
+            idLocal,
+            2,
+            this.state.dateSelected.format('DD-MM-YYYY'),
+          );
+          await this.props.getAllFreeTime5vs5(data5vs5);
+          await this.props.getAllFreeTime7vs7(data7vs7);
+        } catch (error) {
+          console.log('error: ', error);
+        }
+      }
+    } else {
+      try {
+        fetchGetMatchByFieldOwnerAndDay(
+          id,
+          this.state.dateSelected.format('DD-MM-YYYY'),
+          1,
+        ).then(data => {
+          this.props.GetMatchByFieldOwnerAndDay(data);
+        });
+        const data5vs5 = await fetchGetFreeTime(
+          id,
+          1,
+          this.state.dateSelected.format('DD-MM-YYYY'),
+        );
+        const data7vs7 = await fetchGetFreeTime(
+          id,
+          2,
+          this.state.dateSelected.format('DD-MM-YYYY'),
+        );
+        await this.props.getAllFreeTime5vs5(data5vs5);
+        await this.props.getAllFreeTime7vs7(data7vs7);
+      } catch (error) {
+        console.log('error: ', error);
+      }
     }
   }
   async handelEndTimeInputChange(evt) {
@@ -113,7 +153,7 @@ class Home extends Component {
       const bookMatchRes = await fetchBookMatch(
         dateSelected.format('DD-MM-YYYY'),
         bookMatchEndTime,
-        1,        
+        1,
         bookMatchFieldType,
         bookMatchStartTime,
         bookMatchEndTime,
@@ -121,9 +161,8 @@ class Home extends Component {
       if (bookMatchRes.status === 200) {
         this.setState({ openedTab: 2 });
         debugger;
-      }
-      else{
-        this.setState({bookMatchMessage: 'Đặt sân thất bại'})
+      } else {
+        this.setState({ bookMatchMessage: 'Đặt sân thất bại' });
       }
     }
   }
@@ -133,19 +172,19 @@ class Home extends Component {
       dateSelected: date,
     });
     fetchGetMatchByFieldOwnerAndDay(
-      1,
+      id,
       this.state.dateSelected.format('DD-MM-YYYY'),
       1,
     ).then(data => {
       this.props.GetMatchByFieldOwnerAndDay(data);
     });
     const data5vs5 = await fetchGetFreeTime(
-      1,
+      id,
       1,
       this.state.dateSelected.format('DD-MM-YYYY'),
     );
     const data7vs7 = await fetchGetFreeTime(
-      1,
+      id,
       2,
       this.state.dateSelected.format('DD-MM-YYYY'),
     );
@@ -181,7 +220,9 @@ class Home extends Component {
               Từ
             </label>
             <div className="col-sm-9">
-              <p className="text-center text-danger">{bookMatchMessage? bookMatchMessage : null}</p>
+              <p className="text-center text-danger">
+                {bookMatchMessage ? bookMatchMessage : null}
+              </p>
               <div className="row">
                 <div className="col-sm-6">
                   <TimePicker
@@ -203,22 +244,6 @@ class Home extends Component {
                     showSecond={false}
                     onChange={this.handelEndTimeInputChange.bind(this)}
                   />
-                  {/* <select
-                    value={this.state.bookMatchDuration}
-                    onChange={this.handleInputChange.bind(this)}
-                    className="form-control"
-                    id="sel1"
-                    type="checkbox"
-                    name="bookMatchDuration"
-                  >
-                    <option value="60">60 phút</option>
-                    <option value="90">90 phút</option>
-                    <option value="120">120 phút</option>
-                    <option value="150">150 phút</option>
-                    <option value="180">180 phút</option>
-                    <option value="210">210 phút</option>
-                    <option value="240">240 phút</option>
-                  </select> */}
                 </div>
               </div>
             </div>
@@ -256,7 +281,10 @@ class Home extends Component {
       </form>
     );
     const renderFreeTime = (
-      <FreeTime freeTime5vs5={freeTime5vs5} freeTime7vs7={freeTime7vs7} />
+      <FreeTime
+        freeTime5vs5={freeTime5vs5.body}
+        freeTime7vs7={freeTime7vs7.body}
+      />
     );
     const renderMatch = <MatchByDate listMatch={listMatch} />;
     return (
@@ -279,7 +307,6 @@ class Home extends Component {
                       onChange={this.handleDateChange.bind(this)}
                       className="form-control"
                       todayButton={'Today'}
-                      
                     />
                   </div>
                 </form>
@@ -305,8 +332,7 @@ class Home extends Component {
               {buttonGroupTab.map(tab => (
                 <div className="col-lg-3" key={tab.id}>
                   <button
-                    className={`${tab.value ==
-                    this.state.openedTab
+                    className={`${tab.value == this.state.openedTab
                       ? 'btn btn-lg btn-primary btn-block'
                       : 'btn btn-lg btn-default btn-block'}`}
                     onClick={this.handleInputChange.bind(this)}
@@ -318,12 +344,6 @@ class Home extends Component {
                 </div>
               ))}
             </div>
-            {/* <div className="btn-group btn-group-justified">
-              <a className="btn btn-primary"><button>Các trận đang đá</button></a>
-              <a className="btn btn-primary active">Các trận trong ngày</a>
-              <a className="btn btn-primary">Thời gian rảnh</a>
-              <a className="btn btn-primary">Đặt sân</a>
-            </div> */}
           </div>
           <div className="col-lg-12">
             <div className="row">
@@ -353,4 +373,6 @@ export default connect(mapStateToProps, {
   GetMatchByFieldOwnerAndDay,
   getAllFreeTime5vs5,
   getAllFreeTime7vs7,
+  doLoginSuccessful,
+  accessDenied,
 })(Home);

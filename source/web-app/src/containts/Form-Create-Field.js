@@ -42,7 +42,7 @@ class FormCreateField extends Component {
       await fetchAddField(fieldName, fieldStyle, 1);
       await this.setState({errorMessage: undefined, fieldName: undefined});
       const data = await fetchGetAllField(1);
-      await this.props.getAllField(data);
+      await this.props.getAllField(data.body);
       await this.props.history.push('/app/field');
     }
   }

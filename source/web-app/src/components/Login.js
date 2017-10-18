@@ -32,6 +32,7 @@ class Login extends Component {
       if (loginRes.status === 200) {
         const dataLogin = loginRes.body;
         if (dataLogin !== null) {
+          localStorage.setItem("auth", JSON.stringify(dataLogin));
           await this.props.doLoginSuccessful(dataLogin);
           if (dataLogin.roleId.roleName === 'owner') {
             this.props.history.push('/app/index');

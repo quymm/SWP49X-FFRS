@@ -24,3 +24,8 @@ export function accessDenied(){
         type: 'ACCESS_DENIED',
     }
 }
+export function doLogout(){
+    return {
+        type: 'LOG_OUT',
+    }
+}

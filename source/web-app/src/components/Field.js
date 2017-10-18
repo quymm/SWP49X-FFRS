@@ -4,7 +4,7 @@ import { fetchGetAllField, fetchDeleteField } from '../apis/field-owner-apis';
 import { getAllField } from '../redux/field-owner/field-owner-action-creator';
 import FormCreateField from '../containts/Form-Create-Field';
 import { withRouter } from 'react-router-dom';
-import { accessDenied } from '../redux/guest/guest-action-creators';
+import { accessDenied, doLoginSuccessful } from '../redux/guest/guest-action-creators';
 class Field extends Component {
   constructor(props) {
     super(props);
@@ -20,44 +20,56 @@ class Field extends Component {
     //   // debugger
     //   this.props.accessDenied();
     //   this.props.history.push("/login");
-      
     // }
   }
   async componentDidMount() {
     const { id } = this.props.auth.user.data;
-    console.log(id);
-    const data = await fetchGetAllField(1);
-    await this.props.getAllField(data);
+    if (id === undefined) {
+      const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
+      const idLocal = authLocalStorage.id;
+      await this.props.doLoginSuccessful(authLocalStorage);
+      const data = await fetchGetAllField(idLocal);
+      debugger;
+      await this.props.getAllField(data.body);
+    } else {
+      console.log(id);
+      const data = await fetchGetAllField(id);
+      debugger;
+      await this.props.getAllField(data.body);
+    }
   }
 
   async deleteField(evt) {
     const fieldId = evt.target.value;
     await fetchDeleteField(fieldId);
     const data = await fetchGetAllField(1);
-    await this.props.getAllField(data);   
+    await this.props.getAllField(data.body);
   }
 
   render() {
     const { listField } = this.props;
     console.log(listField);
-    const renderField = listField.map(listField => {
-      return (
-        <tr key={listField.id}>
-          <td>{listField.name}</td>
-          <td>{listField.fieldTypeId.name}</td>
-          <td>
-            <button className="btn btn-info">Cập nhật</button>
-            <button
-              value={listField.id}
-              onClick={this.deleteField.bind(this)}
-              className="btn btn-danger"
-            >
-              Xoá
-            </button>
-          </td>
-        </tr>
-      );
-    });
+    const renderField =
+      listField.length > 0
+        ? listField.map(listField => {
+            return (
+              <tr key={listField.id}>
+                <td>{listField.name}</td>
+                <td>{listField.fieldTypeId.name}</td>
+                <td>
+                  <button className="btn btn-info">Cập nhật</button>
+                  <button
+                    value={listField.id}
+                    onClick={this.deleteField.bind(this)}
+                    className="btn btn-danger"
+                  >
+                    Xoá
+                  </button>
+                </td>
+              </tr>
+            );
+          })
+        : 'Hiện tại chưa có sân';
     const { isCreateShowed } = this.state;
     return (
       <div>
@@ -77,7 +89,7 @@ class Field extends Component {
                     <tr>
                       <th>Tên sân</th>
                       <th>Loại sân</th>
-                      <th></th>
+                      <th />
                     </tr>
                   </thead>
                   <tbody>
@@ -93,11 +105,13 @@ class Field extends Component {
   }
 }
 function mapStateToProps(state) {
-  console.log("state in field: ", state);
+  console.log('state in field: ', state);
   return {
     listField: state.listField.listField,
     auth: state.auth,
   };
 }
 
-export default withRouter(connect(mapStateToProps, { getAllField, accessDenied })(Field));
+export default withRouter(
+  connect(mapStateToProps, { getAllField, accessDenied, doLoginSuccessful })(Field),
+);

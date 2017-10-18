@@ -1,20 +1,26 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { doLogout } from '../redux/guest/guest-action-creators';
 class Header extends Component {
+
+    handleLogout(evt){
+        evt.preventDefault();
+        this.props.doLogout();
+        this.props.history.push('/login');
+    }
+
     render(){
         return(
             <nav className="navbar navbar-default navbar-static-top">
             <div className="navbar-header">
-                <button type="button" className="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span className="sr-only">Toggle navigation</span>
-                    <span className="icon-bar"></span>
-                    <span className="icon-bar"></span>
-                    <span className="icon-bar"></span>
-                </button>
-                <Link className="navbar-brand" to="/app/index">FOOTBALL</Link>
+                <a className="navbar-brand" to="/app/index">FOOTBALL</a>
+            </div>
+            <div className="nav navbar-top-links navbar-right">
+            <li><button onClick={this.handleLogout.bind(this)} className="btn btn-default"><i className="glyphicon glyphicon-log-out" /> Logout</button></li>
             </div>
             </nav>
         );
     }
 }
-export default Header;
+export default withRouter(connect(null, {doLogout})(Header));

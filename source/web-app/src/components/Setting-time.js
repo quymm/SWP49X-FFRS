@@ -75,7 +75,7 @@ class SettingTime extends Component {
     const { id } = this.props.auth.user.data;
     console.log(id);
     const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
-    this.props.getAllTimeEnableInWeek(data);
+    this.props.getAllTimeEnableInWeek(data.body);
     //);
   }
   configTimeDiable() {
@@ -143,8 +143,15 @@ class SettingTime extends Component {
   async handleInputChange(evt) {
     const target = evt.target;
     const value = target.value;
+    if (value === '5 vs 5') {
+      this.setState({fieldTypeId : 1})
+    }
+    else if (value === '7 vs 7') {
+      this.setState({fieldTypeId: 2})
+    }
     const name = target.name;
     await this.setState({ [name]: value });
+    console.log(this.state);
   }
   async handelTimeStartDayInputChange(evt) {
     await this.setState({ startDay: evt.format('HH:mm') });
@@ -184,7 +191,7 @@ class SettingTime extends Component {
       );
       await this.setState({ isShowUpdate: !isShowUpdate });
       const data = await fetchGetTimeEnableInWeek(1);
-      this.props.getAllTimeEnableInWeek(data);
+      this.props.getAllTimeEnableInWeek(data.body);
       this.props.history.push('/app/setting-time');
     }
     await this.setState({ isShowUpdate: !isShowUpdate });

@@ -109,7 +109,7 @@ export function fetchGetFreeTime(fieldownerid, fieldTypeId, argDate) {
       GET_FREE_TIME +
       '?field-owner-id=' +
       fieldownerid +
-      '&field-type-id= ' +
+      '&field-type-id=' +
       fieldTypeId +
       '&date=' +
       argDate,

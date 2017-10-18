@@ -48,12 +48,26 @@ export const guestReducer = (state = defaultState, action) => {
         role: 0,
         status: {
           ok: false,
-          erro: true,
-          message: 'Access Denied, Please Login',
+          error: true,
+          message: 'Truy cập bị từ chối',
         }
       }};
-      // case REHYDRATE:
-      // return { ...state, ...action.payload.user };
+      case 'LOG_OUT': 
+        localStorage.removeItem('auth');
+        return {
+          user: {
+            data: null,
+            role: 0,
+            status: {
+              ok: false,
+              error: true,
+              message: 'Đăng xuất thành công',
+            }
+          }
+          
+        }
+      case 'persist/REHYDRATE':
+      return { ...state, user: action.payload.auth.user };
     default:
       return state;
   }
