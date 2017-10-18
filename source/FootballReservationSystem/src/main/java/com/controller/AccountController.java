@@ -22,29 +22,29 @@ public class AccountController {
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-field-owner", method = RequestMethod.POST)
     public ResponseEntity createNewFieldOwner(@RequestBody InputFieldOwnerDTO inputFieldOwnerDTO) {
-        AccountEntity fieldOwnerEntity = accountServices.createNewFieldOwner(inputFieldOwnerDTO);
-        return new ResponseEntity(fieldOwnerEntity, HttpStatus.CREATED);
+        Wrapper wrapper = new Wrapper(accountServices.createNewFieldOwner(inputFieldOwnerDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+        return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-field-owner", method = RequestMethod.PUT)
     public ResponseEntity updateFieldOwner(@RequestBody InputFieldOwnerDTO inputFieldOwnerDTO, @RequestParam("field-owner-id") int fieldOwnerId) {
-        AccountEntity fieldOwnerEntity = accountServices.updateProfileFieldOwner(inputFieldOwnerDTO, fieldOwnerId);
-        return new ResponseEntity(fieldOwnerEntity, HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(accountServices.updateProfileFieldOwner(inputFieldOwnerDTO, fieldOwnerId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-user", method = RequestMethod.POST)
     public ResponseEntity createNewUser(@RequestBody InputUserDTO inputUserDTO){
-        AccountEntity userEntity = accountServices.createNewUser(inputUserDTO);
-        return new ResponseEntity(userEntity, HttpStatus.CREATED);
+        Wrapper wrapper = new Wrapper(accountServices.createNewUser(inputUserDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+        return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-field-owner", method = RequestMethod.GET)
     public ResponseEntity getFieldOwnerById(@RequestParam("field-owner-id") int fieldOwnerId){
-        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
-        return new ResponseEntity(accountEntity, HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityById(fieldOwnerId, "owner"), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
