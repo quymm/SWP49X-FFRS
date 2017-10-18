@@ -50,6 +50,7 @@ import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.TravelMode;
 
 import org.joda.time.DateTime;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -91,7 +92,7 @@ public class MapsActivity extends AppCompatActivity implements
 //        String directionApiPath = Helper.getUrl(String.valueOf(currentPosition.latitude), String.valueOf(currentPosition.longitude),
 //                String.valueOf(fieldLocation.latitude), String.valueOf(fieldLocation.longitude));
 
-        url = localhost +"/swp49x-ffrs/account/managed-field-owner?field-owner-id=" + id;
+        url = localhost + "/swp49x-ffrs/account/managed-field-owner?field-owner-id=" + id;
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -138,7 +139,7 @@ public class MapsActivity extends AppCompatActivity implements
 
                 if (currentMarker == null) {
                     currentPosition = new LatLng(arg0.getLatitude(), arg0.getLongitude());
-                    currentMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).title("My Location"));
+                    currentMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).title("Vị trí của tôi"));
                 }
 
 //                try {
@@ -166,12 +167,12 @@ public class MapsActivity extends AppCompatActivity implements
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if (response != null) {
+                        if (response != null && response.length() > 0) {
                             try {
                                 JSONObject profile = response.getJSONObject("profileId");
                                 // Add a marker in Sydney and move the camera
                                 LatLng fieldLocation = new LatLng(Double.parseDouble(profile.getString("latitude")), (Double.parseDouble(profile.getString("longitude"))));
-                                mMap.addMarker(new MarkerOptions().position(fieldLocation).title("Marker"));
+                                mMap.addMarker(new MarkerOptions().position(fieldLocation).title(profile.getString("name")));
                                 mMap.moveCamera(CameraUpdateFactory.zoomTo(15f));
                                 mMap.moveCamera(CameraUpdateFactory.newLatLng(fieldLocation));
                             } catch (Exception e) {
@@ -190,7 +191,7 @@ public class MapsActivity extends AppCompatActivity implements
         queue.add(postRequest);
     }
 
-    private void drawRouteOnMap(GoogleMap map, List<LatLng> positions){
+    private void drawRouteOnMap(GoogleMap map, List<LatLng> positions) {
         PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
         options.addAll(positions);
         Polyline polyline = map.addPolyline(options);
@@ -200,10 +201,11 @@ public class MapsActivity extends AppCompatActivity implements
                 .build();
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
+
     /**
      * Method to decode polyline points
      * Courtesy : http://jeffreysambells.com/2010/05/27/decoding-polylines-from-google-maps-direction-api-with-java
-     * */
+     */
     private List<LatLng> decodePoly(String encoded) {
         List<LatLng> poly = new ArrayList<>();
         int index = 0, len = encoded.length();

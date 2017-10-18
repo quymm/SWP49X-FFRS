@@ -51,7 +51,7 @@
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="#af0000"
+                android:background="#700000"
                 android:onClick="onClickCreate"
                 android:text="Tạo yêu cầu mới"
                 android:textColor="@android:color/white"

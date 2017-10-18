@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "574175920152",
+    "firebase_url": "https://ffrs-cfa03.firebaseio.com",
+    "project_id": "ffrs-cfa03",
+    "storage_bucket": "ffrs-cfa03.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:574175920152:android:ee0a3ac1d6e7c6aa",
+        "android_client_info": {
+          "package_name": "com.capstone.ffrs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "574175920152-m60l5bmfmhafbdraa5rmban3eid4uuv5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLGr24Q-Xy2iB22VbXFk_mlkMET86F9hU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
