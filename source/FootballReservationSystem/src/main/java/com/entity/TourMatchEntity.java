@@ -43,7 +43,7 @@ public class TourMatchEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
-    @JoinColumn(name = "time_slot_id", referencedColumnName = "field_id")
+    @JoinColumn(name = "time_slot_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private TimeSlotEntity timeSlotId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
