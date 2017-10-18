@@ -7,7 +7,10 @@ import {
 import { getAllTimeEnableInWeek } from '../redux/field-owner/field-owner-action-creator';
 import TimePicker from 'rc-time-picker';
 import 'rc-time-picker/assets/index.css';
-
+import {
+  doLoginSuccessful,
+  accessDenied,
+} from '../redux/guest/guest-action-creators';
 class SettingTime extends Component {
   constructor(props) {
     super(props);
@@ -72,82 +75,49 @@ class SettingTime extends Component {
   }
 
   async componentDidMount() {
-    const { id } = this.props.auth.user.data;
-    console.log(id);
-    const data = await fetchGetTimeEnableInWeek(1); //.then(data =>
-    this.props.getAllTimeEnableInWeek(data.body);
-    //);
+    const { id, roleId } = this.props.auth.user.data;
+    debugger;
+    if (id === undefined) {
+      const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
+      if (
+        authLocalStorage === null ||
+        authLocalStorage.roleId.roleName !== 'owner'
+      ) {
+        await this.props.accessDenied();
+        this.props.history.push('/login');
+      } else {
+        const idLocal = authLocalStorage.id;
+        await this.props.doLoginSuccessful(authLocalStorage);
+        const data = await fetchGetTimeEnableInWeek(idLocal);
+        this.props.getAllTimeEnableInWeek(data.body);
+      }
+    } else {
+      if (roleId.roleName !== 'owner') {
+        this.props.accessDenied();
+        this.props.history.push('/login');
+      } else {
+        const data = await fetchGetTimeEnableInWeek(id);
+        this.props.getAllTimeEnableInWeek(data.body);
+      }
+    }
   }
   configTimeDiable() {
-    return [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19,
-      20,
-      21,
-      22,
-      23,
-      24,
-      25,
-      26,
-      27,
-      28,
-      29,
-      31,
-      32,
-      33,
-      34,
-      35,
-      36,
-      37,
-      38,
-      39,
-      40,
-      41,
-      42,
-      43,
-      44,
-      45,
-      46,
-      47,
-      48,
-      49,
-      50,
-      51,
-      52,
-      53,
-      54,
-      55,
-      56,
-      57,
-      58,
-      59,
-    ];
+    let disableTime = [];
+    for (let i = 1; i < 30; i++) {
+      disableTime.push(i);
+    }
+    for (let i = 31; i < 60; i++) {
+      disableTime.push(i);
+    }
+    return disableTime;
   }
   async handleInputChange(evt) {
     const target = evt.target;
     const value = target.value;
     if (value === '5 vs 5') {
-      this.setState({fieldTypeId : 1})
-    }
-    else if (value === '7 vs 7') {
-      this.setState({fieldTypeId: 2})
+      this.setState({ fieldTypeId: 1 });
+    } else if (value === '7 vs 7') {
+      this.setState({ fieldTypeId: 2 });
     }
     const name = target.name;
     await this.setState({ [name]: value });
@@ -170,7 +140,7 @@ class SettingTime extends Component {
 
   async handleSubmitTimeInWeek(evt) {
     evt.preventDefault();
-    const {id} = this.props.auth.user.data
+    const { id } = this.props.auth.user.data;
     const {
       startDay,
       endDay,
@@ -326,6 +296,7 @@ class SettingTime extends Component {
                             onChange={this.handelTimeEndDayInputChange.bind(
                               this,
                             )}
+                            disabledMinutes={this.configTimeDiable.bind(this)}
                           />
                         </div>
                       </div>
@@ -359,6 +330,13 @@ class SettingTime extends Component {
                     <div className="col-sm-offset-3 col-sm-9">
                       <button className="btn btn-primary" type="submit">
                         Cập nhật
+                      </button>
+                      <button
+                        onClick={this.handelShowChange.bind(this)}
+                        className="btn btn-danger"
+                        type="submit"
+                      >
+                        Huỷ
                       </button>
                     </div>
                   </div>
@@ -464,6 +442,8 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { getAllTimeEnableInWeek })(
-  SettingTime,
-);
+export default connect(mapStateToProps, {
+  getAllTimeEnableInWeek,
+  doLoginSuccessful,
+  accessDenied,
+})(SettingTime);

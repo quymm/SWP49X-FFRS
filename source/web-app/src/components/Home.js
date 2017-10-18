@@ -73,7 +73,10 @@ class Home extends Component {
     debugger;
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
-      if (authLocalStorage === null) {
+      if (
+        authLocalStorage === null ||
+        authLocalStorage.roleId.roleName !== 'owner'
+      ) {
         this.props.accessDenied();
         this.props.history.push('/login');
       } else {

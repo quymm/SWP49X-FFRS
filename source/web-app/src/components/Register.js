@@ -94,8 +94,8 @@ class Register extends Component {
           phone,
         );
         debugger;
-        if (registerRes.status === 200) {
-          this.setState({ messageSuccess: true });
+        if (registerRes.status === 201) {
+          this.setState({ messageSuccess: true, message: '' });
         } 
         else if(registerRes.status === 400){
           this.setState({message: 'Tên đăng nhập đã tồn tại'})

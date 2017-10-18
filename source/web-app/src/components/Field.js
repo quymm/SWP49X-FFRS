@@ -4,7 +4,10 @@ import { fetchGetAllField, fetchDeleteField } from '../apis/field-owner-apis';
 import { getAllField } from '../redux/field-owner/field-owner-action-creator';
 import FormCreateField from '../containts/Form-Create-Field';
 import { withRouter } from 'react-router-dom';
-import { accessDenied, doLoginSuccessful } from '../redux/guest/guest-action-creators';
+import {
+  accessDenied,
+  doLoginSuccessful,
+} from '../redux/guest/guest-action-creators';
 class Field extends Component {
   constructor(props) {
     super(props);
@@ -13,29 +16,28 @@ class Field extends Component {
     };
   }
 
-  componentWillMount() {
-    // const { role } = this.props.auth.user
-    // console.log(role);
-    // if (role !== 'owner') {
-    //   // debugger
-    //   this.props.accessDenied();
-    //   this.props.history.push("/login");
-    // }
-  }
   async componentDidMount() {
-    const { id } = this.props.auth.user.data;
+    const { id, roleId } = this.props.auth.user.data;
+    debugger;
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
-      const idLocal = authLocalStorage.id;
-      await this.props.doLoginSuccessful(authLocalStorage);
-      const data = await fetchGetAllField(idLocal);
-      debugger;
-      await this.props.getAllField(data.body);
+      if (authLocalStorage === null || authLocalStorage.roleId.roleName !== 'owner') {
+        await this.props.accessDenied();
+        this.props.history.push('/login');
+      } else {
+        const idLocal = authLocalStorage.id;
+        await this.props.doLoginSuccessful(authLocalStorage);
+        const data = await fetchGetAllField(idLocal);
+        await this.props.getAllField(data.body);
+      }
     } else {
-      console.log(id);
-      const data = await fetchGetAllField(id);
-      debugger;
-      await this.props.getAllField(data.body);
+      if (roleId.roleName !== 'owner') {
+        this.props.accessDenied();
+        this.props.history.push('/login');
+      } else {
+        const data = await fetchGetAllField(id);
+        await this.props.getAllField(data.body);
+      }
     }
   }
 
@@ -113,5 +115,7 @@ function mapStateToProps(state) {
 }
 
 export default withRouter(
-  connect(mapStateToProps, { getAllField, accessDenied, doLoginSuccessful })(Field),
+  connect(mapStateToProps, { getAllField, accessDenied, doLoginSuccessful })(
+    Field,
+  ),
 );

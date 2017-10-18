@@ -4,7 +4,7 @@ const defaultState = {
   user: {
     data: {   
     },
-    role: 1,
+    role: undefined,
     // isFetched: false,
     status: {
       ok: false,
