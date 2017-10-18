@@ -50,4 +50,12 @@ public class DateTimeUtils {
         SimpleDateFormat format = new SimpleDateFormat("EE");
         return format.format(date);
     }
+
+    public static int timeConvert (Date time){
+        String[] s = time.toString().split(":", 3);
+//        String hour = s[0];
+//        String minute = s[1];
+        int hour = Integer.parseInt(s[0])*2 + (Integer.parseInt(s[1]) == 30 ? 1:0);
+        return hour;
+    }
 }

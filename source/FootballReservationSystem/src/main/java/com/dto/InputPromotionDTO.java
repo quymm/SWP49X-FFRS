@@ -16,8 +16,6 @@ public class InputPromotionDTO {
 
     private String freeServices;
 
-    private boolean status;
-
     private Integer fieldOwnerId;
 
     private Integer fieldTypeId;
@@ -82,14 +80,6 @@ public class InputPromotionDTO {
 
     public void setFreeServices(String freeServices) {
         this.freeServices = freeServices;
-    }
-
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
     }
 
     public Integer getFieldOwnerId() {
