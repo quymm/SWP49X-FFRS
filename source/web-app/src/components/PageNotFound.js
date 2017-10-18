@@ -13,9 +13,9 @@ class PageNotFound extends Component {
                 Xin lỗi, có lỗi vừa xảy ra, Yêu cầu trang không tìm thấy!
               </div>
               <div className="error-actions">
-                <Link to="/login" className="btn btn-primary btn-lg">
-                  <span className="glyphicon glyphicon-login" />
-                  Đăng nhập{' '}
+                <Link to="/login" className="btn btn-success btn-lg">
+                  <span className="glyphicon glyphicon-log-in" />
+                  {'  '}Đăng nhập{' '}
                 </Link>
               </div>
             </div>
