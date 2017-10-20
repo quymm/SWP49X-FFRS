@@ -10,4 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface FriendlyMatchRepository extends JpaRepository<FriendlyMatchEntity, Integer> {
     FriendlyMatchEntity findByTimeSlotIdAndStatus(TimeSlotEntity timeSlotEntity, boolean status);
+    FriendlyMatchEntity findByIdAndStatus(int id, boolean status);
 }

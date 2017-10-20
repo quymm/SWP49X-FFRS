@@ -2,7 +2,6 @@ package com.capstone.ffrs.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,7 +43,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(int userId){
         this.userId = userId;
     }
 
@@ -69,10 +68,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
 
     @Override
     public int getItemCount() {
-        // Code cope with situation, wait for official fix
-        if (mFilteredList.size() <= 10) {
-            return mFilteredList.size();
-        } else return 10;
+        return mFilteredList.size();
     }
 
     @Override
@@ -87,15 +83,15 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
                 if (charString.isEmpty()) {
                     mFilteredList = fieldList;
                 } else {
-                    charString = normalizeText(charString);
-
                     List<Field> filteredList = new ArrayList<>();
                     for (Field field : fieldList) {
 
                         // Vietnamese characters handling
                         String fieldName = field.getFieldName().toLowerCase();
                         try {
-                            fieldName = normalizeText(fieldName);
+                            String temp = Normalizer.normalize(fieldName, Normalizer.Form.NFD);
+                            Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+                            fieldName = pattern.matcher(temp).replaceAll("").replaceAll("đ", "d");
                         } catch (Exception e) {
                             Log.d("ERROR", e.getMessage());
                         }
@@ -117,19 +113,9 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
             protected void publishResults(CharSequence charSequence, FilterResults
                     filterResults) {
                 mFilteredList = (ArrayList<Field>) filterResults.values;
-                Intent intent = new Intent("search-message");
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                intent.putExtra("empty_list", mFilteredList.isEmpty());
                 notifyDataSetChanged();
             }
         };
-    }
-
-    public String normalizeText(String rawText) {
-        String temp = Normalizer.normalize(rawText, Normalizer.Form.NFD);
-        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-        rawText = pattern.matcher(temp).replaceAll("").replaceAll("đ", "d");
-        return rawText;
     }
 
 
@@ -162,7 +148,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
                         image_url = "http://bongda.phanmemvang.com.vn/wp-content/uploads/2015/03/lan2chaoluanganhgnhe-1-e1426212803227.jpg";
                     }
                     intent.putExtra("image_url", image_url);
-                    intent.putExtra("user_id", userId);
+                    intent.putExtra("user_id",userId);
                     context.startActivity(intent);
                 }
             });

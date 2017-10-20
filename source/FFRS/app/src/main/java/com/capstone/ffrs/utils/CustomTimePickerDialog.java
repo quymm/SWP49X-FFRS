@@ -3,9 +3,6 @@ package com.capstone.ffrs.utils;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.widget.NumberPicker;
 import android.widget.TimePicker;
 
@@ -18,16 +15,12 @@ public class CustomTimePickerDialog extends TimePickerDialog {
     private final static int TIME_PICKER_INTERVAL = 30;
     private TimePicker mTimePicker;
     private final OnTimeSetListener mTimeSetListener;
-    private int lastSavedHour = -1;
-    private int lastSavedMinute = -1;
 
     public CustomTimePickerDialog(Context context, OnTimeSetListener listener,
                                   int hourOfDay, int minute, boolean is24HourView) {
         super(context, TimePickerDialog.THEME_HOLO_LIGHT, null, hourOfDay,
                 minute / TIME_PICKER_INTERVAL, is24HourView);
         mTimeSetListener = listener;
-        lastSavedHour = hourOfDay;
-        lastSavedMinute = minute / TIME_PICKER_INTERVAL;
     }
 
     @Override
@@ -44,27 +37,12 @@ public class CustomTimePickerDialog extends TimePickerDialog {
                 if (mTimeSetListener != null) {
                     mTimeSetListener.onTimeSet(mTimePicker, mTimePicker.getCurrentHour(),
                             mTimePicker.getCurrentMinute() * TIME_PICKER_INTERVAL);
-                    Intent intent = new Intent("timepicker-message");
-                    LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
                 }
                 break;
             case BUTTON_NEGATIVE:
                 cancel();
                 break;
         }
-    }
-
-    @Override
-    public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-        // Fix on 30 minute intervals time picker
-        if (lastSavedHour != hourOfDay) {
-            if (lastSavedMinute != minute) {
-                view.setCurrentHour(lastSavedHour);
-            } else {
-                lastSavedHour = hourOfDay;
-            }
-        }
-        lastSavedMinute = minute;
     }
 
     @Override

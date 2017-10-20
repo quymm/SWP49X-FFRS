@@ -22,14 +22,22 @@ public class RatingOpponentController {
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
+<<<<<<< HEAD
+    @CrossOrigin(origins = "http://localhost:3000")
+=======
     @CrossOrigin
+>>>>>>> master
     @RequestMapping(value = "/swp49x-ffrs/rating/to-opponent-id", method = RequestMethod.GET)
     public ResponseEntity findByOpponentId(@RequestParam("opponent-id") int opponentId){
         Wrapper wrapper = new Wrapper(ratingOpponentServices.findByOpponentId(opponentId), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
+<<<<<<< HEAD
+    @CrossOrigin(origins = "http://localhost:3000")
+=======
     @CrossOrigin
+>>>>>>> master
     @RequestMapping(value = "/swp49x-ffrs/rating/user-opponent-tourmatch", method = RequestMethod.GET)
     public ResponseEntity findByUserIdAndOpponentIdAndTourMatchIdAndStatus(@RequestParam("user-id") int userId,
                                                                            @RequestParam("opponent-id") int opponentId,
@@ -38,7 +46,11 @@ public class RatingOpponentController {
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
+<<<<<<< HEAD
+    @CrossOrigin(origins = "http://localhost:3000")
+=======
     @CrossOrigin
+>>>>>>> master
     @RequestMapping(value = "/swp49x-ffrs/rating/create-new-rating", method = RequestMethod.POST)
     public ResponseEntity createNewRatingOpponent(@RequestBody InputRatingOpponentDTO inputRatingOpponentDTO){
         Wrapper wrapper = new Wrapper(ratingOpponentServices.createNewRatingOpponent(inputRatingOpponentDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());

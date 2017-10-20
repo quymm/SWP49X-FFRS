@@ -13,22 +13,13 @@
         android:layout_height="wrap_content"
         android:layout_margin="0dp">
 
-        <ImageView
+        <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/thumbnail"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_alignParentLeft="true"
             android:layout_marginBottom="10dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_profile" />
-
-        <!--<com.android.volley.toolbox.NetworkImageView-->
-        <!--android:id="@+id/thumbnail"-->
-        <!--android:layout_width="80dp"-->
-        <!--android:layout_height="80dp"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_marginBottom="10dp"-->
-        <!--android:scaleType="fitXY" />-->
+            android:scaleType="fitXY" />
 
         <RelativeLayout
             android:id="@+id/content_sector"
@@ -67,8 +58,8 @@
                 android:id="@+id/center_sector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/right_sector"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_toLeftOf="@id/right_sector">
 
                 <TextView
                     android:id="@+id/team_view"

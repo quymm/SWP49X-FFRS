@@ -16,14 +16,5 @@
     <string name="title_activity_maps">Bản đồ</string>
     <string name="title_activity_reservation_result">Ứng dụng đặt sân</string>
     <string name="title_activity_match_map">Bản đồ</string>
-    <string name="title_activity_match">Kết quả tìm kiếm đối thủ</string>
-    <string name="title_activity_pay_pal">PayPal</string>
-    <string name="local_host">http://192.168.1.109:8080</string>
-    <string-array name="field_types">
-        <item>5 vs 5</item>
-        <item>7 vs 7</item>
-        <item>11 vs 11</item>
-    </string-array>
-    <string name="title_activity_create_matching_request">Tạo yêu cầu mới</string>
-    <string name="title_activity_notification">Thông báo</string>
+    <string name="title_activity_match">Kết quả tìm kiềm đối thủ</string>
 </resources>

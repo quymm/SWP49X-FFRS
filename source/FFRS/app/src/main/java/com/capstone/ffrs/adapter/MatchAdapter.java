@@ -4,14 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.capstone.ffrs.R;
-import com.capstone.ffrs.entity.MatchRequest;
+import com.capstone.ffrs.entity.Match;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -22,12 +24,12 @@ import java.util.List;
 
 public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MyViewHolder> {
 
-    private List<MatchRequest> matchList;
+    private List<Match> matchList;
     private Context context;
     private LayoutInflater inflater;
     private int userId;
 
-    public MatchAdapter(Context context, List<MatchRequest> matchList) {
+    public MatchAdapter(Context context, List<Match> matchList) {
         this.matchList = matchList;
         this.context = context;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -46,7 +48,7 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(MatchAdapter.MyViewHolder holder, int position) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        MatchRequest item = matchList.get(position);
+        Match item = matchList.get(position);
 
         holder.teamName.setText(item.getTeamName());
         holder.time.setText(item.getStartTime() + " - " + item.getEndTime());

@@ -127,7 +127,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5sp"
-                        android:text="Ngày: 8/10/2017"
+                        android:text="Ngay: 8/10/2017"
                         android:textAlignment="textStart"
                         android:textColor="@android:color/black"
                         android:textSize="22sp"
@@ -150,17 +150,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5sp"
                         android:text="Đến: 12:00"
-                        android:textAlignment="textStart"
-                        android:textColor="@android:color/black"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/text_field_type"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5sp"
-                        android:text="Loại sân: 5 vs 5"
                         android:textAlignment="textStart"
                         android:textColor="@android:color/black"
                         android:textSize="22sp"

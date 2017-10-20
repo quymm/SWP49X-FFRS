@@ -1,27 +1,16 @@
 package layout;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
-import android.widget.SearchView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -51,32 +40,16 @@ import java.util.List;
 
 public class FieldSearchFragment extends Fragment {
 
-    private String url;
-    private String localhost;
+    String url = "http://172.20.10.3:8080/swp49x-ffrs/account?role=owner";
 
-    private RecyclerView recyclerView;
-    private RequestQueue queue;
-    private List<Field> fieldList = new ArrayList<Field>();
-    private FieldAdapter adapter;
-    private TextView txtNotFound;
-    private EditText edit_text;
+    RecyclerView recyclerView;
+    RequestQueue queue;
+    List<Field> fieldList = new ArrayList<Field>();
+    FieldAdapter adapter;
 
     public FieldSearchFragment() {
         // Required empty public constructor
     }
-
-    public BroadcastReceiver filterReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean flag = intent.getBooleanExtra("empty_list", false);
-            if (flag) {
-                txtNotFound.setText("Không có sân nào chứa từ '" + edit_text.getText().toString() + "'");
-                txtNotFound.setVisibility(View.VISIBLE);
-            } else {
-                txtNotFound.setVisibility(View.GONE);
-            }
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,50 +59,26 @@ public class FieldSearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        localhost = getResources().getString(R.string.local_host);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_field_search, container, false);
-
-        edit_text = (EditText) view.findViewById(R.id.edit_text);
-        edit_text.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-        edit_text.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        EditText edit_text = (EditText) view.findViewById(R.id.edit_text);
+        TextWatcher watcher = new TextWatcher() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE
-                        || (event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER))) {
-                    InputMethodManager inputManager = (InputMethodManager)
-                            getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                    inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-                            InputMethodManager.HIDE_NOT_ALWAYS);
-                    adapter.getFilter().filter(v.getText().toString());
-                    return true;
-                }
-                return false;
             }
-        });
 
-//        TextWatcher watcher = new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//
-//            }
-//        };
-//        edit_text.addTextChangedListener(watcher);
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.getFilter().filter(s);
+            }
 
-        txtNotFound = (TextView) view.findViewById(R.id.text_not_found);
-        LocalBroadcastManager.getInstance(view.getContext()).registerReceiver(filterReceiver,
-                new IntentFilter("search-message"));
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
+        edit_text.addTextChangedListener(watcher);
 
         loadFields(view);
         return view;
@@ -144,35 +93,29 @@ public class FieldSearchFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
-        url = localhost + "/swp49x-ffrs/account?role=owner";
-
         //Getting Instance of Volley Request Queue
         queue = NetworkController.getInstance(getContext()).getRequestQueue();
         //Volley's inbuilt class to make Json array request
         JsonArrayRequest newsReq = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                if (response != null && response.length() > 0) {
-                    for (int i = 0; i < response.length(); i++) {
-                        try {
-                            JSONObject obj = response.getJSONObject(i);
-                            JSONObject profile = obj.getJSONObject("profileId");
-                            Field field = new Field(profile.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
 
-                            // adding movie to movies array
-                            fieldList.add(field);
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        JSONObject obj = response.getJSONObject(i);
+                        JSONObject profile = obj.getJSONObject("profileId");
+                        Field field = new Field(profile.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
 
-                        } catch (Exception e) {
-                            Log.d("EXCEPTION", e.getMessage());
-                        } finally {
-                            //Notify adapter about data changes
-                            adapter.notifyItemChanged(i);
-                        }
+                        // adding movie to movies array
+                        fieldList.add(field);
+
+                    } catch (Exception e) {
+                        Log.d("EXCEPTION", e.getMessage());
+                    } finally {
+                        //Notify adapter about data changes
+                        adapter.notifyItemChanged(i);
                     }
-                } else {
-                    txtNotFound.setVisibility(View.VISIBLE);
                 }
-
             }
         }, new Response.ErrorListener() {
             @Override

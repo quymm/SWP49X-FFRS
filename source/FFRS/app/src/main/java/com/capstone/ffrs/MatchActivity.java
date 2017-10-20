@@ -1,6 +1,5 @@
 package com.capstone.ffrs;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,7 +16,6 @@ import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.ServerError;
@@ -25,15 +23,9 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.adapter.MatchAdapter;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.MatchRequest;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.capstone.ffrs.entity.Match;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,22 +36,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MatchActivity extends AppCompatActivity {
     String url;
 
     RecyclerView recyclerView;
     RequestQueue queue;
-    List<MatchRequest> opponentList = new ArrayList<MatchRequest>();
+    List<Match> opponentList = new ArrayList<Match>();
     MatchAdapter adapter;
-    String localhost;
-
-    private String displayDateFormat = "dd/MM/yyyy";
-    private String serverDateFormat = "dd-MM-yyyy";
-    private String timeFormat = "H:mm";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +52,7 @@ public class MatchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_match);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        localhost = getResources().getString(R.string.local_host);
+
         loadMatches();
     }
 
@@ -79,19 +64,20 @@ public class MatchActivity extends AppCompatActivity {
 
     public void loadMatches() {
         Bundle b = getIntent().getExtras();
-        SimpleDateFormat sdf = new SimpleDateFormat(displayDateFormat);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         String strDate;
         try {
             Date date = sdf.parse(b.getString("field_date"));
-            sdf = new SimpleDateFormat(serverDateFormat);
+            sdf = new SimpleDateFormat("dd-MM-yyyy");
             strDate = sdf.format(date);
-            url = localhost + "/swp49x-ffrs/match/matching-request";
+            url = "http://172.20.10.3:8080/swp49x-ffrs/match/matching-request";
             url += "?user-id=" + b.getInt("user_id");
             url += "&field-type-id=" + b.getInt("field_type_id");
             url += "&longitude=" + b.getDouble("longitude");
             url += "&latitude=" + b.getDouble("latitude");
             url += "&date=" + strDate;
             url += "&start-time=" + b.getString("field_start_time");
+            Log.d("URL", url);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -106,33 +92,29 @@ public class MatchActivity extends AppCompatActivity {
         //Getting Instance of Volley Request Queue
         queue = NetworkController.getInstance(this).getRequestQueue();
         //Volley's inbuilt class to make Json array request
-        JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+        JsonArrayRequest newsReq = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONArray body = response.getJSONArray("body");
-                    for (int i = 0; i < body.length(); i++) {
-                        try {
-                            JSONObject obj = body.getJSONObject(i);
-                            MatchRequest match = new MatchRequest();
-                            match.setId(obj.getInt("id"));
-                            match.setTeamName(obj.getJSONObject("userId").getJSONObject("profileId").getString("name"));
-                            match.setDate(obj.getString("date"));
-                            match.setStartTime(obj.getString("startTime"));
-                            match.setEndTime(obj.getString("endTime"));
-                            match.setRatingScore(obj.getJSONObject("userId").getJSONObject("profileId").getInt("ratingScore"));
-                            // adding movie to movies array
-                            opponentList.add(match);
+            public void onResponse(JSONArray response) {
 
-                        } catch (Exception e) {
-                            Log.d("EXCEPTION", e.getMessage());
-                        } finally {
-                            //Notify adapter about data changes
-                            adapter.notifyItemChanged(i);
-                        }
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        JSONObject obj = response.getJSONObject(i);
+                        Match match = new Match();
+                        match.setId(obj.getInt("id"));
+                        match.setTeamName(obj.getJSONObject("userId").getJSONObject("profileId").getString("name"));
+                        match.setDate(obj.getString("date"));
+                        match.setStartTime(obj.getString("startTime"));
+                        match.setEndTime(obj.getString("endTime"));
+                        match.setRatingScore(obj.getJSONObject("userId").getJSONObject("profileId").getInt("ratingScore"));
+                        // adding movie to movies array
+                        opponentList.add(match);
+
+                    } catch (Exception e) {
+                        Log.d("EXCEPTION", e.getMessage());
+                    } finally {
+                        //Notify adapter about data changes
+                        adapter.notifyItemChanged(i);
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
             }
         }, new Response.ErrorListener() {
@@ -152,10 +134,10 @@ public class MatchActivity extends AppCompatActivity {
             }
         }) {
             @Override
-            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
                 try {
                     String utf8String = new String(response.data, "UTF-8");
-                    return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
+                    return Response.success(new JSONArray(utf8String), HttpHeaderParser.parseCacheHeaders(response));
                 } catch (UnsupportedEncodingException e) {
                     // log error
                     return Response.error(new ParseError(e));
@@ -168,75 +150,5 @@ public class MatchActivity extends AppCompatActivity {
         };
         //Adding JsonArrayRequest to Request Queue
         queue.add(newsReq);
-    }
-
-    public void onClickCreate(View view) {
-        Bundle b = getIntent().getExtras();
-        url = localhost + "/swp49x-ffrs/match/matching-request";
-
-        queue = NetworkController.getInstance(this).getRequestQueue();
-
-        SimpleDateFormat sdf = new SimpleDateFormat(displayDateFormat);
-        try {
-            Date date = sdf.parse(b.getString("field_date"));
-            sdf = new SimpleDateFormat(serverDateFormat);
-            String strDate = sdf.format(date);
-
-            HashMap<String, Object> params = new HashMap<String, Object>();
-            params.put("date", strDate);
-            params.put("userId", b.getInt("user_id"));
-            params.put("startTime", b.getString("field_start_time"));
-            params.put("endTime", b.getString("field_end_time"));
-            params.put("fieldTypeId", b.getInt("field_type_id"));
-            params.put("latitude", b.getDouble("latitude"));
-            params.put("longitude", b.getDouble("longitude"));
-            JsonObjectRequest createRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Bundle b = getIntent().getExtras();
-                            Intent intent = new Intent(MatchActivity.this, CreateMatchingRequestActivity.class);
-                            intent.putExtra("user_id", b.getInt("user_id"));
-                            startActivity(intent);
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d("Error.Response", error.getMessage());
-                }
-            });
-            queue.add(createRequest);
-        } catch (ParseException e) {
-            Log.d("Parse_Exception", e.getMessage());
-        }
-    }
-
-    public void onClickSendRequest(View view) {
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference();
-//
-//        Bundle b = getIntent().getExtras();
-//        List<Integer> matchingRequestIdList = new ArrayList<>();
-//        for (MatchRequest opponent: opponentList){
-//            matchingRequestIdList.add(opponent.getId());
-//        }
-//        myRef.child("tourMatch").child(b.getInt("user_id")+"").setValue(matchingRequestIdList);
-//        myRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                String value = dataSnapshot.getValue(String.class);
-//                Toast.makeText(getApplicationContext(), "Value is: " + value, Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError error) {
-//                // Failed to read value
-//                Log.w("TAG", "Failed to read value.", error.toException());
-//            }
-//        });
-
-
     }
 }
