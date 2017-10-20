@@ -3,6 +3,10 @@ import moment from 'moment';
 // import { Link } from 'react-router-dom';
 export default props => {
   const { listMatch } = props;
+  console.log(listMatch);
+  if (listMatch === undefined) {
+    return <div className="loader"></div>;
+  }
   return (
     <div>
       {listMatch.length > 0
@@ -13,35 +17,43 @@ export default props => {
                   <div className="row">
                     <div className="col-lg-6">Sân</div>
                     <div className="col-lg-6 text-right">
-                      <i>{new Date(listMatch.date).toDateString()}</i>
+                      <i>
+                        {new Date(listMatch.timeSlotEntity.date).toDateString()}
+                      </i>
                     </div>
                   </div>
                 </div>
                 <div className="panel-body">
+                  <h4 className="text-center">
+                    <strong>{listMatch.user.profileId.name}</strong> vs{' '}
+                    <strong>{listMatch.opponent.profileId.name}</strong>
+                  </h4>
                   <div className="row">
-                    <div className="col-lg-4 text-center">
-                      <h4>thanhth</h4>
-                    </div>
-                    <div className="col-lg-4 text-center">
-                      <h3>
-                        {moment('10-10-2017 ' + listMatch.startTime).format(
-                          'HH:mm',
-                        )}
-                      </h3>
-                      <h4>
-                        {moment('10-10-2017 ' + listMatch.endTime).hour() * 60 +
-                          moment('10-10-2017 ' + listMatch.endTime).minute() -
-                          (moment('10-10-2017 ' + listMatch.startTime).hour() *
+                    <div className="col-lg-12">
+                      <h4 className="text-center">
+                        {moment(
+                          '10-10-2017 ' + listMatch.timeSlotEntity.startTime,
+                        ).format('HH:mm')}
+                      </h4>
+                      <h4 className="text-center">
+                        {moment(
+                          '10-10-2017 ' + listMatch.timeSlotEntity.endTime,
+                        ).hour() *
+                          60 +
+                          moment(
+                            '10-10-2017 ' + listMatch.timeSlotEntity.endTime,
+                          ).minute() -
+                          (moment(
+                            '10-10-2017 ' + listMatch.timeSlotEntity.startTime,
+                          ).hour() *
                             60 +
                             moment(
-                              '10-10-2017 ' + listMatch.startTime,
+                              '10-10-2017 ' +
+                                listMatch.timeSlotEntity.startTime,
                             ).minute())}{' '}
                         phút
                       </h4>
-                      <h4>{listMatch.fieldTypeId.name}</h4>
-                    </div>
-                    <div className="col-lg-4 text-center">
-                      <h4>quymm</h4>
+                      <h4 className="text-center">{listMatch.timeSlotEntity.fieldTypeId.name}</h4>
                     </div>
                   </div>
                 </div>

@@ -56,7 +56,7 @@ export const guestReducer = (state = defaultState, action) => {
         localStorage.removeItem('auth');
         return {
           user: {
-            data: null,
+            data: {id: undefined},
             role: 0,
             status: {
               ok: false,
@@ -66,8 +66,6 @@ export const guestReducer = (state = defaultState, action) => {
           }
           
         }
-      case 'persist/REHYDRATE':
-      return { ...state, user: action.payload.auth.user };
     default:
       return state;
   }

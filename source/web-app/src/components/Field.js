@@ -43,8 +43,9 @@ class Field extends Component {
 
   async deleteField(evt) {
     const fieldId = evt.target.value;
+    const {id} = this.props.auth.user.data;
     await fetchDeleteField(fieldId);
-    const data = await fetchGetAllField(1);
+    const data = await fetchGetAllField(id);
     await this.props.getAllField(data.body);
   }
 

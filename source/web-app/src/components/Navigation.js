@@ -9,7 +9,19 @@ export class Navigation extends Component {
             <li>
               <NavLink to="/app/index" activeClassName="active">
                 {' '}
-                <i className="glyphicon glyphicon-home" /> Trang chủ{' '}
+                <i className="glyphicon glyphicon-calendar" /> Trận trong ngày{' '}
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/app/index" activeClassName="active">
+                {' '}
+                <i className="glyphicon glyphicon-play" /> Trận đang đá{' '}
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/app/index" activeClassName="active">
+                {' '}
+                <i className="glyphicon glyphicon-time" /> Thời gian trống{' '}
               </NavLink>
             </li>
             <li>

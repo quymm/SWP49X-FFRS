@@ -55,10 +55,12 @@ class Register extends Component {
   }
 
   async handleSubmit(event) {
-    
     event.preventDefault();
-    const {avatarUrl} = this.state;
-    let avatarUrlAfter = avatarUrl.slice(avatarUrl.indexOf('fakepath') + 9, avatarUrl.length);
+    const { avatarUrl } = this.state;
+    let avatarUrlAfter = avatarUrl.slice(
+      avatarUrl.indexOf('fakepath') + 9,
+      avatarUrl.length,
+    );
     console.log(avatarUrlAfter);
     const {
       username,
@@ -81,7 +83,6 @@ class Register extends Component {
     ) {
       if (password === confirmPassword) {
         // try {
-        
         const registerRes = await fetchRegister(
           username,
           password,
@@ -96,11 +97,9 @@ class Register extends Component {
         debugger;
         if (registerRes.status === 201) {
           this.setState({ messageSuccess: true, message: '' });
-        } 
-        else if(registerRes.status === 400){
-          this.setState({message: 'Tên đăng nhập đã tồn tại'})
-        }
-        else {
+        } else if (registerRes.status === 400) {
+          this.setState({ message: 'Tên đăng nhập đã tồn tại' });
+        } else {
           this.setState({ message: 'Đăng kí không thành công' });
         }
       } else {
@@ -125,19 +124,6 @@ class Register extends Component {
               <div className="panel-body">
                 <form onSubmit={this.handleSubmit.bind(this)}>
                   <fieldset>
-                    <p className="text-center text-danger">
-                      <i>{message === null ? null : message}</i>
-                    </p>
-                    {messageSuccess ? (
-                      <p className="text-center text-success">
-                        <i>
-                          Đăng kí thành công. Nhấn vào đây để{' '}
-                          <Link to="/login">
-                            <strong>đăng nhập</strong>
-                          </Link>
-                        </i>
-                      </p>
-                    ) : null}
                     <div className="form-group">
                       <label htmlFor="exampleInputEmail1">Tên đăng nhập</label>
                       <input
@@ -214,6 +200,19 @@ class Register extends Component {
                         type="password"
                       />
                     </div>
+                    <p className="text-center text-danger">
+                      <i>{message === null ? null : message}</i>
+                    </p>
+                    {messageSuccess ? (
+                      <p className="text-center text-success">
+                        <i>
+                          Đăng kí thành công. Nhấn vào đây để{' '}
+                          <Link to="/login">
+                            <strong>đăng nhập</strong>
+                          </Link>
+                        </i>
+                      </p>
+                    ) : null}
                     <button
                       type="submit"
                       className="btn btn-lg btn-success btn-block"

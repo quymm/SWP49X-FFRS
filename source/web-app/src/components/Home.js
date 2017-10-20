@@ -28,8 +28,6 @@ class Home extends Component {
     super(props);
     this.state = {
       dateSelected: moment(),
-      currentTime: new Date().toLocaleTimeString([], { hour12: false }),
-      currentShowPage: '',
       openedTab: 2,
       bookMatchStartTime: undefined,
       bookMatchEndTime: 60,
@@ -58,11 +56,21 @@ class Home extends Component {
         },
       ],
     };
-    this.timer = setInterval(() => {
-      this.setState({
-        currentTime: new Date().toLocaleTimeString([], { hour12: false }),
-      });
-    }, 1000);
+    // this.timer = setInterval(() => {
+    //   this.setState({
+    //     currentTime: new Date().toLocaleTimeString([], { hour12: false }),
+    //   });
+    // }, 1000);
+  }
+  configTimeDiable() {
+    let disableTime = [];
+    for (let i = 1; i < 30; i++) {
+      disableTime.push(i);
+    }
+    for (let i = 31; i < 60; i++) {
+      disableTime.push(i);
+    }
+    return disableTime;
   }
   componentWillUnmount() {
     clearInterval(this.timer);
@@ -141,6 +149,7 @@ class Home extends Component {
   }
 
   async handleSubmitBookMatch(evt) {
+    const { id } = this.props.auth.user.data;
     evt.preventDefault();
     const {
       bookMatchMessagem,
@@ -156,12 +165,12 @@ class Home extends Component {
       const bookMatchRes = await fetchBookMatch(
         dateSelected.format('DD-MM-YYYY'),
         bookMatchEndTime,
-        1,
+        id,
         bookMatchFieldType,
         bookMatchStartTime,
         bookMatchEndTime,
       );
-      if (bookMatchRes.status === 200) {
+      if (bookMatchRes.status === 200 && bookMatchRes.body.length > 0) {
         this.setState({ openedTab: 2 });
         debugger;
       } else {
@@ -206,8 +215,7 @@ class Home extends Component {
 
   render() {
     const myStyle = { padding: 20 };
-    const { listMatch, freeTime5vs5, freeTime7vs7 } = this.props;
-    const { openedTab, buttonGroupTab, bookMatchMessage } = this.state;
+    const { listMatch } = this.props;
     console.log(this.props);
     const renerBookMatch = (
       <form
@@ -216,7 +224,6 @@ class Home extends Component {
       >
         <div>
           <p>
-            {this.state.bookMatchMessage ? this.state.bookMatchMessage : null}
           </p>
           <div className="form-group">
             <label htmlFor="inputEmail3" className="col-sm-3 control-label">
@@ -224,13 +231,14 @@ class Home extends Component {
             </label>
             <div className="col-sm-9">
               <p className="text-center text-danger">
-                {bookMatchMessage ? bookMatchMessage : null}
+                
               </p>
               <div className="row">
                 <div className="col-sm-6">
                   <TimePicker
                     showSecond={false}
                     onChange={this.handelTimeStartDayInputChange.bind(this)}
+                    disabledMinutes={this.configTimeDiable.bind(this)}
                   />
                 </div>
               </div>
@@ -246,6 +254,7 @@ class Home extends Component {
                   <TimePicker
                     showSecond={false}
                     onChange={this.handelEndTimeInputChange.bind(this)}
+                    disabledMinutes={this.configTimeDiable.bind(this)}
                   />
                 </div>
               </div>
@@ -283,25 +292,19 @@ class Home extends Component {
         </div>
       </form>
     );
-    const renderFreeTime = (
-      <FreeTime
-        freeTime5vs5={freeTime5vs5.body}
-        freeTime7vs7={freeTime7vs7.body}
-      />
-    );
-    const renderMatch = <MatchByDate listMatch={listMatch} />;
+    console.log(listMatch);
+    const renderMatch = listMatch;
+    // if (renderMatch === undefined) {
+    //   return <div className="loader"></div>
+    // }
     return (
       <div id="page-wrapper">
         <div className="container-fluid">
           <div className="row">
-            <div className="col-lg-3">
-              <h2 className="page-header">Trang chủ</h2>
+            <div className="col-sm-3">
+              <h2 className="page-header">Trận trong ngày</h2>
             </div>
-            <div className="col-lg-3">
-              <Clock time={this.state.currentTime} />
-            </div>
-
-            <div className="col-lg-3">
+            <div className="col-sm-3">
               <div className="page-header">
                 <form className="navbar-form navbar-left">
                   <div className="form-group">
@@ -316,7 +319,7 @@ class Home extends Component {
               </div>
             </div>
 
-            <div className="col-lg-3">
+            <div className="col-sm-3">
               <div className="page-header">
                 <form className="navbar-form navbar-left">
                   <div className="form-group">
@@ -330,32 +333,30 @@ class Home extends Component {
               </div>
             </div>
           </div>
-          <div className="col-lg-12">
-            <div className="row" style={myStyle}>
-              {buttonGroupTab.map(tab => (
-                <div className="col-lg-3" key={tab.id}>
-                  <button
-                    className={`${tab.value == this.state.openedTab
-                      ? 'btn btn-lg btn-primary btn-block'
-                      : 'btn btn-lg btn-default btn-block'}`}
-                    onClick={this.handleInputChange.bind(this)}
-                    name="openedTab"
-                    value={tab.value}
-                  >
-                    {tab.text}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="col-lg-12">
+          <div className="col-sm-12">
             <div className="row">
-              {openedTab === 1
-                ? 'tab cac tran dang da'
-                : openedTab === 2
-                  ? renderMatch
-                  : openedTab === 3 ? renderFreeTime : renerBookMatch}
-              {}
+            <div className="col-sm-10 col-sm-offset-1">
+            <div className="panel panel-success">
+                <div className="row">
+                    <div className="col-sm-3">
+                        <h4 className="text-center match">
+                            <strong>Real Madrid</strong>
+                        </h4>
+                    </div>
+                    <div className="col-sm-6">                    
+                        <p className="text-center">Thu hai, 20/10/2017</p>
+                        <h3 className="text-center text-primary"><strong>9:00</strong> </h3>
+                        <p className="text-center">180 phut</p>
+                        <p className="text-center">5 vs 5</p>
+                    </div>
+                    <div className="col-sm-3">
+                        <h4 className="text-center match">
+                            <strong>Arsenal</strong>
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
             </div>
           </div>
         </div>
@@ -366,8 +367,6 @@ class Home extends Component {
 function mapStateToProps(state) {
   return {
     listMatch: state.listMatch.listMatch,
-    freeTime5vs5: state.freeTime.freeTime5vs5,
-    freeTime7vs7: state.freeTime.freeTime7vs7,
     auth: state.auth,
   };
 }

@@ -7,6 +7,8 @@ import SettingTime from '../components/Setting-time';
 import Home from '../components/Home';
 import FormCreateField from '../containts/Form-Create-Field';
 import { Route, Switch } from 'react-router-dom';
+import FreeTime from '../components/FreeTime';
+// import PageNotFound from '../components/PageNotFound';
 
 const Roster = ({ match }) => (
   <div>
@@ -18,6 +20,7 @@ const Roster = ({ match }) => (
       <Route path={`${match.url}/field`} component={Field} />
       <Route path={`${match.url}/player`} component={ProfilePlayer} />
       <Route path={`${match.url}/setting-time`} component={SettingTime} />
+      <Route path={`${match.url}/free-time`} component={FreeTime} />
     </Switch>
   </div>
 );
