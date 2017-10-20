@@ -3,11 +3,13 @@ import fieldReducer  from './field-reducer';
 import matchReducer from './match-reducer';
 import TimeReducer from './time-reducer';
 import guestReducer from '../../guest/guest-reducers';
+import freeTimeReducer from './free-time-reducer';
 const reducer = combineReducers({
     listField: fieldReducer,
     listMatch: matchReducer,
     timeEnable: TimeReducer,
-    auth: guestReducer
+    auth: guestReducer,
+    freeTime: freeTimeReducer,
 });
 
 export default reducer;

@@ -1,124 +1,240 @@
 import React, { Component } from 'react';
-import { fetchRegister } from '../apis/guest-apis';
-
+import {
+  fetchRegister,
+  fechGetAddressByLocationGoogleMap,
+} from '../apis/guest-apis';
+import { Link } from 'react-router-dom';
 class Register extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            username: '',
-            password: '',
-            address: '',
-            avatarUrl: '',
-            creditCard: '',
-            latitude: '',
-            longitute: '',
-            name: '',
-            phone: ''
-        }
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: undefined,
+      password: undefined,
+      confirmPassword: undefined,
+      address: undefined,
+      avatarUrl: '',
+      creditCard: undefined,
+      latitude: undefined,
+      longitude: undefined,
+      name: undefined,
+      phone: undefined,
+      message: undefined,
+      messageSuccess: false,
+    };
+  }
 
-    handleChangeUsername(event) {
-        this.setState({ username: event.target.value });
-    }
+  async componentDidMount() {
+    // navigator.geolocated.getCurrentPosition(s => console.log(s), e => console.log(e));
+    // console.log(navigator.geolocation.getCurrentPosition(e => console.log(e)));
+    navigator.geolocation.getCurrentPosition(async location => {
+      const address = await fechGetAddressByLocationGoogleMap(
+        location.coords.latitude,
+        location.coords.longitude,
+      );
 
-    handleChangePassword(event) {
-        this.setState({ password: event.target.value });
-    }
+      await this.setState({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        address: address,
+      });
+      console.log(this.state);
+    });
+  }
 
-    handleChangeAddress(event) {
-        this.setState({ address: event.target.value });
-    }
+  async handleInputChange(evt) {
+    const target = evt.target;
+    const value = target.value;
+    const name = target.name;
+    await this.setState({ [name]: value });
+    console.log(this.state);
+  }
 
-    handleChangeAvatarUrl(event) {
-        this.setState({ avatarUrl: event.target.value });
-    }
+  async handelSetLocation(evt) {
+    await this.setState({ address: evt.target.value });
+    console.log(this.state);
+  }
 
-    handleChangeCreditCard(event) {
-        this.setState({ creditCard: event.target.value });
-    }
-
-    handleChangeLatitude(event) {
-        this.setState({ latitude: event.target.value });
-    }
-
-    handleChangeLongitute(event) {
-        this.setState({ longitute: event.target.value });
-    }
-
-    handleChangeName(event) {
-        this.setState({ name: event.target.value });
-    }
-
-    handleChangePhone(event) {
-        this.setState({ phone: event.target.value });
-    }
-
-    // handleSubmit(event) {
-    //     alert('A name was submitted: ' + this.state.username + this.state.password);
-    //     event.preventDefault();
-    // }
-
-    handleSubmit(event) {
-        event.preventDefault();
-        const { username, password, address, avatarUrl, creditCard, latitude, longitute, name, phone } = this.state;
-        fetchRegister(username, password, address, avatarUrl, creditCard, latitude, longitute, name, phone);
-        // .then(
-        //   fetchGetAllField(1).then(data => getAllField(data)),
-        // );
-    }
-
-
-    render() {
-        return (
-            <div className="container" >
-                <div className="row">
-                    <div className="col-md-4 col-md-offset-4">
-                        <div className="login-panel panel panel-default">
-                            <div className="panel-heading">
-                                <h3 className="panel-title">Please Sign Up</h3>
-                            </div>
-                            <div className="panel-body">
-                                <form onSubmit={this.handleSubmit.bind(this)}>
-                                    <fieldset>
-                                        <div className="form-group">
-                                            <input value={this.state.username} onChange={this.handleChangeUsername.bind(this)} className="form-control" placeholder="Username" name="username" type="text" />
-                                        </div>
-                                        <div className="form-group">
-                                            <input value={this.state.password} onChange={this.handleChangePassword.bind(this)} className="form-control" placeholder="Password" name="password" type="password" />
-                                        </div>
-                                        <div className="form-group">
-                                            <input value={this.state.address} onChange={this.handleChangeAddress.bind(this)} className="form-control" placeholder="Address" name="address" type="text" />
-                                        </div>
-                                        <div className="form-group">
-                                            <input value={this.state.avatarUrl} onChange={this.handleChangeAvatarUrl.bind(this)} className="form-control" placeholder="AvatarUrl" name="avatarUrl" type="text" />
-                                        </div>
-                                        <div className="form-group">
-                                            <input value={this.state.creditCard} onChange={this.handleChangeCreditCard.bind(this)} className="form-control" placeholder="CreditCard" name="creditCard" type="text" />
-                                        </div>                            
-                                        <div className="form-group">
-                                            <input value={this.state.latitude} onChange={this.handleChangeLatitude.bind(this)} className="form-control" placeholder="Latitude" name="latitude" type="text" />
-                                        </div>
-                                        <div className="form-group">
-                                            <input value={this.state.longitute} onChange={this.handleChangeLongitute.bind(this)} className="form-control" placeholder="Longitute" name="longitute" type="text" />
-                                        </div>
-                                        <div className="form-group">
-                                            <input value={this.state.name} onChange={this.handleChangeName.bind(this)} className="form-control" placeholder="Name" name="name" type="text" />
-                                        </div>
-                                        <div className="form-group">
-                                            <input value={this.state.phone} onChange={this.handleChangePhone.bind(this)} className="form-control" placeholder="Phone" name="phone" type="text" />
-                                        </div>
-                                        <button type="submit" className="btn btn-lg btn-success btn-block">
-                                            Sign up
-                                        </button>
-                                    </fieldset>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div >
+  async handleSubmit(event) {
+    
+    event.preventDefault();
+    const {avatarUrl} = this.state;
+    let avatarUrlAfter = avatarUrl.slice(avatarUrl.indexOf('fakepath') + 9, avatarUrl.length);
+    console.log(avatarUrlAfter);
+    const {
+      username,
+      password,
+      address,
+      creditCard,
+      latitude,
+      longitude,
+      name,
+      phone,
+      message,
+      confirmPassword,
+    } = this.state;
+    if (
+      username !== undefined &&
+      password !== undefined &&
+      address !== undefined &&
+      confirmPassword !== undefined &&
+      avatarUrl !== ''
+    ) {
+      if (password === confirmPassword) {
+        // try {
+        
+        const registerRes = await fetchRegister(
+          username,
+          password,
+          address,
+          avatarUrlAfter,
+          '123456',
+          latitude,
+          longitude,
+          name,
+          phone,
         );
+        debugger;
+        if (registerRes.status === 200) {
+          this.setState({ messageSuccess: true });
+        } 
+        else if(registerRes.status === 400){
+          this.setState({message: 'Tên đăng nhập đã tồn tại'})
+        }
+        else {
+          this.setState({ message: 'Đăng kí không thành công' });
+        }
+      } else {
+        this.setState({ message: 'Mật khẩu không giống nhau' });
+      }
+    } else {
+      this.setState({ message: 'Vui lòng điền đủ các trường' });
     }
+  }
+
+  render() {
+    console.log(this.state);
+    const { message, address, messageSuccess } = this.state;
+    return (
+      <div className="container">
+        <div className="row">
+          <div className="col-md-4 col-md-offset-4">
+            <div className="login-panel panel panel-default">
+              <div className="panel-heading">
+                <h3 className="panel-title">Đăng kí</h3>
+              </div>
+              <div className="panel-body">
+                <form onSubmit={this.handleSubmit.bind(this)}>
+                  <fieldset>
+                    <p className="text-center text-danger">
+                      <i>{message === null ? null : message}</i>
+                    </p>
+                    {messageSuccess ? (
+                      <p className="text-center text-success">
+                        <i>
+                          Đăng kí thành công. Nhấn vào đây để{' '}
+                          <Link to="/login">
+                            <strong>đăng nhập</strong>
+                          </Link>
+                        </i>
+                      </p>
+                    ) : null}
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Tên đăng nhập</label>
+                      <input
+                        value={this.state.username}
+                        onChange={this.handleInputChange.bind(this)}
+                        className="form-control"
+                        name="username"
+                        type="text"
+                        id="exampleInputPassword1"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Tên sân</label>
+                      <input
+                        value={this.state.name}
+                        onChange={this.handleInputChange.bind(this)}
+                        className="form-control"
+                        name="name"
+                        type="text"
+                        id="exampleInputPassword1"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">
+                        <i>Chúng tôi sẽ lấy vị trí của bạn làm địa chỉ</i>
+                      </label>
+                      <input
+                        value={address ? address : 'Đang lấy địa chỉ'}
+                        onChange={this.handelSetLocation.bind(this)}
+                        className="form-control"
+                        name="address"
+                        type="text"
+                        readOnly
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Số điện thoại</label>
+                      <input
+                        value={this.state.phone}
+                        onChange={this.handleInputChange.bind(this)}
+                        className="form-control"
+                        name="phone"
+                        type="text"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Hình ảnh</label>
+                      <input
+                        value={this.state.avatarUrl}
+                        onChange={this.handleInputChange.bind(this)}
+                        name="avatarUrl"
+                        type="file"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Mật khẩu</label>
+                      <input
+                        value={this.state.password}
+                        onChange={this.handleInputChange.bind(this)}
+                        className="form-control"
+                        name="password"
+                        type="password"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">
+                        Xác nhận mật khẩu
+                      </label>
+                      <input
+                        value={this.state.confirmPassword}
+                        onChange={this.handleInputChange.bind(this)}
+                        className="form-control"
+                        name="confirmPassword"
+                        type="password"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="btn btn-lg btn-success btn-block"
+                    >
+                      Đăng kí
+                    </button>
+                  </fieldset>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 
+// export default geolocated({
+//   positionOptions: {
+//     enableHighAccuracy: true,
+//   },
+//   userDecisionTimeout: null,
+// })(Register);
 export default Register;

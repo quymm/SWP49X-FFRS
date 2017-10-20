@@ -150,21 +150,9 @@ public class MatchServices {
             }
         }
 
-        //  sắp xếp khoảng cách theo thứ tự tăng dần
-        if (!fieldOwnerListAndDistance.isEmpty())
-            if (fieldOwnerListAndDistance.size() > 1) {
-                {
-                    for (int i = 0; i < fieldOwnerListAndDistance.size(); i++) {
-                        for (int j = fieldOwnerListAndDistance.size() - 1; j > 0; j--) {
-                            if (fieldOwnerListAndDistance.get(j).getDistance() < fieldOwnerListAndDistance.get(j - 1).getDistance()) {
-                                FieldOwnerAndDistance temp = fieldOwnerListAndDistance.get(j);
-                                fieldOwnerListAndDistance.set(j, fieldOwnerListAndDistance.get(j - 1));
-                                fieldOwnerListAndDistance.set(j - 1, temp);
-                            }
-                        }
-                    }
-                }
-            }
+        // sắp xếp khoảng cách theo thứ tự tăng dần
+        arrangeFieldOwnerByDistance(fieldOwnerListAndDistance);
+
         for (FieldOwnerAndDistance fieldOwnerAndDistance : fieldOwnerListAndDistance) {
             inputReservationDTO.setFieldOwnerId(fieldOwnerAndDistance.getFieldOwner().getId());
             TimeSlotEntity timeSlotEntity = timeSlotServices.reserveTimeSlot(inputReservationDTO);
@@ -187,6 +175,27 @@ public class MatchServices {
         tourMatchEntity.setCompleteStatus(false);
         tourMatchEntity.setStatus(true);
         return tourMatchRepository.save(tourMatchEntity);
+    }
+
+    public List<FieldOwnerAndDistance> arrangeFieldOwnerByDistance(List<FieldOwnerAndDistance> inputList) {
+        if (!inputList.isEmpty()) {
+            if (inputList.size() > 1) {
+                {
+                    for (int i = 0; i < inputList.size(); i++) {
+                        for (int j = inputList.size() - 1; j > 0; j--) {
+                            if (inputList.get(j).getDistance() < inputList.get(j - 1).getDistance()) {
+                                FieldOwnerAndDistance temp = inputList.get(j);
+                                inputList.set(j, inputList.get(j - 1));
+                                inputList.set(j - 1, temp);
+                            }
+                        }
+                    }
+                }
+                return inputList;
+            }
+            return inputList;
+        }
+        return inputList;
     }
 
 

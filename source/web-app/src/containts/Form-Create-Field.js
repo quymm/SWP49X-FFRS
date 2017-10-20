@@ -35,19 +35,15 @@ class FormCreateField extends Component {
     const { id } = this.props.auth.user.data;
     const { fieldName, fieldStyle } = this.state;
     if (fieldName === null || fieldName === undefined) {
-      this.setState({ errorMessage: 'Fieldname can not be blank!' });
+      this.setState({ errorMessage: 'Tên sân không thể bỏ trống!' });
     }
     if (fieldName !== null && fieldName !== undefined) {
       // debugger;
       await fetchAddField(fieldName, fieldStyle, 1);
-      this.setState({errorMessage: undefined, fieldName: undefined});
-      this.fieldNameInput === '';
-      // .then(fetchGetAllField(1))
-      // .then(data => this.props.getAllField());
-      const data = await fetchGetAllField(id);
+      await this.setState({errorMessage: undefined, fieldName: undefined});
+      const data = await fetchGetAllField(1);
       await this.props.getAllField(data);
-      console.log('form', this.props);
-      this.props.history.push('/app/field');
+      await this.props.history.push('/app/field');
     }
   }
 
@@ -60,12 +56,12 @@ class FormCreateField extends Component {
           className="form-horizontal"
         >
         {errorMessage === undefined ?  null :  (<div className="alert alert-danger">
-            <strong>Danger!</strong> {errorMessage}
+            <strong>Lỗi!</strong> {errorMessage}
           </div>)  }
           
           <div className="form-group">
             <label htmlFor="inputEmail3" className="col-sm-3 control-label">
-              Field Name
+              Tên sân
             </label>
             <div className="col-sm-9">
               <div className="row">
@@ -74,10 +70,8 @@ class FormCreateField extends Component {
                     type="text"
                     className="form-control"
                     id="inputPassword3"
-                    placeholder="Field name"
                     value={this.state.fieldName}
                     onChange={this.handelInputChange.bind(this)}
-                    ref = {el => this.fieldNameInput = el}
                   />
                 </div>
               </div>
@@ -86,7 +80,7 @@ class FormCreateField extends Component {
 
           <div className="form-group">
             <label htmlFor="sel1" className="col-sm-3 control-label">
-              Field Type
+              Loại sân
             </label>
             <div className="col-sm-2">
               <select
@@ -103,7 +97,7 @@ class FormCreateField extends Component {
           <div className="form-group">
             <div className="col-sm-offset-3 col-sm-9">
               <button type="submit" className="btn btn-primary">
-                Create
+                Tạo sân
               </button>
             </div>
           </div>

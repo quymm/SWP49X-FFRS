@@ -1,6 +1,7 @@
 package com.controller;
 
 import com.dto.InputVoucherDTO;
+import com.dto.Wrapper;
 import com.entity.VoucherEntity;
 import com.services.VoucherServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,24 +16,24 @@ public class VoucherController {
     @Autowired
     VoucherServices voucherServices;
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/voucher/managed-voucher", method = RequestMethod.POST)
     public ResponseEntity createNewVoucher(@RequestBody InputVoucherDTO inputVoucherDTO) {
-        VoucherEntity voucherEntity = voucherServices.createNewVoucher(inputVoucherDTO);
-        return new ResponseEntity(voucherEntity, HttpStatus.CREATED);
+        Wrapper wrapper = new Wrapper(voucherServices.createNewVoucher(inputVoucherDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+        return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/voucher/managed-voucher", method = RequestMethod.PUT)
     public ResponseEntity updateVoucher(@RequestBody InputVoucherDTO inputVoucherDTO, @RequestParam("voucher-id") int voucherId) {
-        VoucherEntity voucherEntity = voucherServices.updateVoucher(inputVoucherDTO, voucherId);
-        return new ResponseEntity(voucherEntity, HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(voucherServices.updateVoucher(inputVoucherDTO, voucherId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/voucher/managed-voucher-delete", method = RequestMethod.PUT)
     public ResponseEntity disableVoucher(@RequestParam("voucher-id") int voucherId) {
-        VoucherEntity voucherEntity = voucherServices.disableVoucher(voucherId);
-        return new ResponseEntity(voucherEntity, HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(voucherServices.disableVoucher(voucherId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 }

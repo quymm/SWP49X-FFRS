@@ -4,16 +4,16 @@ package com.capstone.ffrs.entity;
  * Created by HuanPMSE61860 on 10/11/2017.
  */
 
-public class Match {
+public class MatchRequest {
     private int id, ratingScore;
     private String date, startTime, endTime;
     private String teamName;
 
-    public Match() {
+    public MatchRequest() {
 
     }
 
-    public Match(int id, int ratingScore, String date, String startTime, String endTime, String teamName) {
+    public MatchRequest(int id, int ratingScore, String date, String startTime, String endTime, String teamName) {
         this.id = id;
         this.ratingScore = ratingScore;
         this.date = date;

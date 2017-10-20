@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.dto.Wrapper;
 import com.services.RoleServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,34 +15,39 @@ public class RoleController {
     @Autowired
     RoleServices roleServices;
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/role/managed-role", method = RequestMethod.POST)
     public ResponseEntity createRole(@RequestParam("role-name") String roleName){
-        return new ResponseEntity(roleServices.createRole(roleName), HttpStatus.CREATED);
+        Wrapper wrapper = new Wrapper(roleServices.createRole(roleName), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+        return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/role/role-name", method = RequestMethod.GET)
     public ResponseEntity getRoleByRoleName(@RequestParam("role-name") String roleName){
-        return new ResponseEntity(roleServices.findByRoleName(roleName), HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(roleServices.findByRoleName(roleName), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/role/managed-role", method = RequestMethod.GET)
     public ResponseEntity getRoleById(@RequestParam("role-id") int roleId){
-        return new ResponseEntity(roleServices.findById(roleId), HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(roleServices.findById(roleId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/role/all-role", method = RequestMethod.GET)
     public ResponseEntity findAllRole(){
-        return new ResponseEntity(roleServices.findAllRole(), HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(roleServices.findAllRole(), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/role/managed-role", method = RequestMethod.DELETE)
     public ResponseEntity deleteRole(@RequestParam("role-id") int roleId){
-        return new ResponseEntity(roleServices.deleteRole(roleId), HttpStatus.OK);
+        Wrapper wrapper = new Wrapper(roleServices.deleteRole(roleId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
 
