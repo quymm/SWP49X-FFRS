@@ -19,7 +19,7 @@ export class Navigation extends Component {
               </NavLink>
             </li>
             <li>
-              <NavLink to="/app/index" activeClassName="active">
+              <NavLink to="/app/free-time" activeClassName="active">
                 {' '}
                 <i className="glyphicon glyphicon-time" /> Thời gian trống{' '}
               </NavLink>

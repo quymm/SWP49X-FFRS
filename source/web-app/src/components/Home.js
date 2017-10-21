@@ -56,11 +56,6 @@ class Home extends Component {
         },
       ],
     };
-    // this.timer = setInterval(() => {
-    //   this.setState({
-    //     currentTime: new Date().toLocaleTimeString([], { hour12: false }),
-    //   });
-    // }, 1000);
   }
   configTimeDiable() {
     let disableTime = [];
@@ -78,7 +73,6 @@ class Home extends Component {
   async componentDidMount() {
     const { id } = this.props.auth.user.data;
     console.log('user id: ', id);
-    debugger;
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
       if (
@@ -172,7 +166,6 @@ class Home extends Component {
       );
       if (bookMatchRes.status === 200 && bookMatchRes.body.length > 0) {
         this.setState({ openedTab: 2 });
-        debugger;
       } else {
         this.setState({ bookMatchMessage: 'Đặt sân thất bại' });
       }
@@ -292,16 +285,11 @@ class Home extends Component {
         </div>
       </form>
     );
-    console.log(listMatch);
-    const renderMatch = listMatch;
-    // if (renderMatch === undefined) {
-    //   return <div className="loader"></div>
-    // }
     return (
       <div id="page-wrapper">
         <div className="container-fluid">
           <div className="row">
-            <div className="col-sm-3">
+            <div className="col-sm-6">
               <h2 className="page-header">Trận trong ngày</h2>
             </div>
             <div className="col-sm-3">
@@ -335,28 +323,7 @@ class Home extends Component {
           </div>
           <div className="col-sm-12">
             <div className="row">
-            <div className="col-sm-10 col-sm-offset-1">
-            <div className="panel panel-success">
-                <div className="row">
-                    <div className="col-sm-3">
-                        <h4 className="text-center match">
-                            <strong>Real Madrid</strong>
-                        </h4>
-                    </div>
-                    <div className="col-sm-6">                    
-                        <p className="text-center">Thu hai, 20/10/2017</p>
-                        <h3 className="text-center text-primary"><strong>9:00</strong> </h3>
-                        <p className="text-center">180 phut</p>
-                        <p className="text-center">5 vs 5</p>
-                    </div>
-                    <div className="col-sm-3">
-                        <h4 className="text-center match">
-                            <strong>Arsenal</strong>
-                        </h4>
-                    </div>
-                </div>
-            </div>
-        </div>
+              <MatchByDate listMatch={listMatch} />
             </div>
           </div>
         </div>

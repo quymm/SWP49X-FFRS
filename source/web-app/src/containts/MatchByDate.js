@@ -5,37 +5,30 @@ export default props => {
   const { listMatch } = props;
   console.log(listMatch);
   if (listMatch === undefined) {
-    return <div className="loader"></div>;
+    return <div className="loader" />;
   }
   return (
     <div>
       {listMatch.length > 0
         ? listMatch.map(listMatch => (
-            <div key={listMatch.id} className="col-lg-4">
+            <div key={listMatch.id} className="col-sm-10 col-sm-offset-1">
               <div className="panel panel-green">
-                <div className="panel-heading">
-                  <div className="row">
-                    <div className="col-lg-6">Sân</div>
-                    <div className="col-lg-6 text-right">
-                      <i>
-                        {new Date(listMatch.timeSlotEntity.date).toDateString()}
-                      </i>
-                    </div>
-                  </div>
-                </div>
                 <div className="panel-body">
-                  <h4 className="text-center">
-                    <strong>{listMatch.user.profileId.name}</strong> vs{' '}
-                    <strong>{listMatch.opponent.profileId.name}</strong>
-                  </h4>
                   <div className="row">
-                    <div className="col-lg-12">
-                      <h4 className="text-center">
-                        {moment(
-                          '10-10-2017 ' + listMatch.timeSlotEntity.startTime,
-                        ).format('HH:mm')}
+                    <div className="col-sm-3">
+                      <h4 className="text-center match">
+                        <strong>{listMatch.user.profileId.name}</strong>
                       </h4>
-                      <h4 className="text-center">
+                    </div>
+                    <div className="col-sm-6">
+                      <h3 className="text-center text-primary">
+                        <strong>
+                          {moment(
+                            '10-10-2017 ' + listMatch.timeSlotEntity.startTime,
+                          ).format('HH:mm')}
+                        </strong>{' '}
+                      </h3>
+                      <p className="text-center">
                         {moment(
                           '10-10-2017 ' + listMatch.timeSlotEntity.endTime,
                         ).hour() *
@@ -52,20 +45,18 @@ export default props => {
                                 listMatch.timeSlotEntity.startTime,
                             ).minute())}{' '}
                         phút
+                      </p>
+                      <p className="text-center">
+                        {listMatch.timeSlotEntity.fieldTypeId.name}
+                      </p>
+                    </div>
+                    <div className="col-sm-3">
+                      <h4 className="text-center match">
+                        <strong>{listMatch.opponent.profileId.name}</strong>
                       </h4>
-                      <h4 className="text-center">{listMatch.timeSlotEntity.fieldTypeId.name}</h4>
                     </div>
                   </div>
                 </div>
-                <a href="#">
-                  <div className="panel-footer">
-                    <span className="pull-left">Cập nhật sân</span>
-                    <span className="pull-right">
-                      <i className="fa fa-arrow-circle-right" />
-                    </span>
-                    <div className="clearfix" />
-                  </div>
-                </a>
               </div>
             </div>
           ))
