@@ -15,9 +15,9 @@ import java.util.List;
  * Created by MinhQuy on 9/23/2017.
  */
 public interface TimeSlotRepository extends JpaRepository<TimeSlotEntity, Integer> {
-    List<TimeSlotEntity> findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(AccountEntity accountEntity,
-                                                                                          FieldTypeEntity fieldTypeEntity,
-                                                                                          Date targetDate, boolean reservateStatus, boolean status);
+    List<TimeSlotEntity> findByFieldOwnerIdAndReserveStatusAndDateAndStatus(AccountEntity accountEntity, boolean reservationStatus,
+                                                                                          Date targetDate, boolean status);
+
     Integer countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(AccountEntity accountEntity, FieldTypeEntity fieldTypeEntity,
                                                               Date targetDate, boolean status);
 
@@ -27,5 +27,10 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlotEntity, Intege
                                            @Param("status") boolean status);
 
     TimeSlotEntity findByIdAndStatus(int id, boolean status);
+
+    List<TimeSlotEntity> findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(AccountEntity fieldOwnerEntity,
+                                                                                                          FieldTypeEntity fieldTypeEntity,
+                                                                                                          Date targetDate, boolean reservationStatus,
+                                                                                                          boolean status);
 
 }

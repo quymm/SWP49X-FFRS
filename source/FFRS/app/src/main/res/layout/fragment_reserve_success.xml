@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:text="Bạn đã thanh toán thành công!"
+            android:text="Bạn đã thanh toán thành công!\nNhấn OK để tiếp tục"
             android:textAlignment="center"
             android:textSize="20dp" />
 
@@ -41,18 +41,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:background="#009632"
-            android:text="Trở về màn hình chính"
+            android:text="OK"
             android:textColor="@android:color/white"
             android:textSize="18dp" />
 
-        <Button
-            android:id="@+id/btRedo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#009632"
-            android:text="Đặt tiếp sân này"
-            android:textColor="@android:color/white"
-            android:textSize="18dp" />
     </LinearLayout>
 
 </FrameLayout>

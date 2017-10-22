@@ -4,8 +4,8 @@
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardCornerRadius="2dp"
-    card_view:cardElevation="3dp"
+    card_view:cardCornerRadius="3dp"
+    card_view:cardElevation="2dp"
     card_view:cardUseCompatPadding="true">
 
     <LinearLayout
@@ -13,10 +13,18 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:indeterminateTint="#009632"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/thumbnail"
             android:layout_width="match_parent"
-            android:layout_height="190dp"
+            android:layout_height="160dp"
             android:layout_alignParentLeft="true"
             android:layout_marginBottom="10dp"
             android:scaleType="fitXY" />
@@ -28,7 +36,7 @@
             android:layout_margin="7dp"
             android:text="Field Name"
             android:textColor="@color/primaryText"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <TextView
@@ -40,6 +48,7 @@
             android:layout_marginRight="7dp"
             android:text="This is Field address"
             android:textColor="@color/secondaryText"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
     </LinearLayout>
+
 </android.support.v7.widget.CardView>

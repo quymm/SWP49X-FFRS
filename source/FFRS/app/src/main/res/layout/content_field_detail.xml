@@ -37,9 +37,9 @@
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:background="#197a35"
+                android:onClick="onClickReserve"
                 android:text="Thanh toán"
                 android:textColor="@android:color/white"
-                android:onClick="onClickReserve"
                 android:textSize="18sp" />
 
             <Button
@@ -66,11 +66,11 @@
                 android:layout_height="fill_parent"
                 android:orientation="vertical">
 
-                <com.android.volley.toolbox.NetworkImageView
-                    android:id="@+id/field_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="180dp"
-                    android:scaleType="fitXY" />
+                <!--<com.android.volley.toolbox.NetworkImageView-->
+                <!--android:id="@+id/field_image"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="180dp"-->
+                <!--android:scaleType="fitXY" />-->
 
                 <LinearLayout
                     android:id="@+id/detail_layout"
@@ -90,8 +90,8 @@
                             android:layout_height="40dp"
                             android:layout_alignParentEnd="true"
                             android:background="#009632"
-                            app:srcCompat="@drawable/ic_location"
-                            android:onClick="onClickShowMap"/>
+                            android:onClick="onClickShowMap"
+                            app:srcCompat="@drawable/ic_location" />
 
 
                         <LinearLayout
@@ -121,70 +121,175 @@
 
                     </RelativeLayout>
 
-                    <TextView
-                        android:id="@+id/text_date"
+                    <TableLayout
+                        android:id="@+id/table_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="5sp"
-                        android:text="Ngày: 8/10/2017"
-                        android:textAlignment="textStart"
-                        android:textColor="@android:color/black"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
+                        android:layout_alignParentTop="true"
+                        android:layout_marginBottom="10dp">
 
-                    <TextView
-                        android:id="@+id/text_from"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5sp"
-                        android:text="Từ: 10:00"
-                        android:textAlignment="textStart"
-                        android:textColor="@android:color/black"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
 
-                    <TextView
-                        android:id="@+id/text_to"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5sp"
-                        android:text="Đến: 12:00"
-                        android:textAlignment="textStart"
-                        android:textColor="@android:color/black"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/text_title_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5sp"
+                                android:layout_weight="1"
+                                android:text="Ngày:"
+                                android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp" />
 
-                    <TextView
-                        android:id="@+id/text_field_type"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5sp"
-                        android:text="Loại sân: 5 vs 5"
-                        android:textAlignment="textStart"
-                        android:textColor="@android:color/black"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/text_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5sp"
+                                android:layout_weight="1"
+                                android:text="8/10/2017"
+                                android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp" />
+                        </TableRow>
 
-                    <TextView
-                        android:id="@+id/text_duration"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5sp"
-                        android:text="Thời gian chơi: 2 tiếng"
-                        android:textAlignment="textStart"
-                        android:textColor="@android:color/black"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
 
-                    <TextView
-                        android:id="@+id/text_total_price"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Giá: 240,000 đồng"
-                        android:textAlignment="textStart"
-                        android:textColor="@android:color/black"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/text_title_from"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5sp"
+                                android:layout_weight="1"
+                                android:text="Từ:"
+                                android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp" />
+
+                            <TextView
+                                android:id="@+id/text_from"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5sp"
+                                android:layout_weight="1"
+                                android:text="10:00"
+                                android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp" />
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:id="@+id/text_title_to"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5sp"
+                                android:layout_weight="1"
+                                android:text="Đến:"
+                                android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp" />
+
+                            <TextView
+                                android:id="@+id/text_to"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5sp"
+                                android:layout_weight="1"
+                                android:text="12:00"
+                                android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp" />
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:id="@+id/text_title_field_type"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5sp"
+                                android:layout_weight="1"
+                                android:text="Loại sân:"
+                                android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp" />
+
+                            <TextView
+                                android:id="@+id/text_field_type"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5sp"
+                                android:layout_weight="1"
+                                android:text="5 vs 5"
+                                android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp" />
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:id="@+id/text_title_duration"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5sp"
+                                android:layout_weight="1"
+                                android:text="Thời gian chơi:"
+                                android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp" />
+
+                            <TextView
+                                android:id="@+id/text_duration"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5sp"
+                                android:layout_weight="1"
+                                android:text="2 tiếng"
+                                android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp" />
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:id="@+id/text_title_total_price"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Tổng giá:"
+                                android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp" />
+
+                            <TextView
+                                android:id="@+id/text_total_price"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="240,000 đồng"
+                                android:textAlignment="textStart"
+                                android:textColor="#ff1400"
+                                android:textSize="22sp"
+                                android:textStyle="bold"/>
+                        </TableRow>
+                    </TableLayout>
+
 
                     <!--<LinearLayout-->
                     <!--android:layout_width="match_parent"-->

@@ -4,16 +4,21 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -44,6 +49,7 @@ import com.capstone.ffrs.R;
 import com.capstone.ffrs.adapter.FieldAdapter;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.Field;
+import com.capstone.ffrs.utils.GPSLocationListener;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -52,8 +58,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FieldSearchFragment extends Fragment {
 
@@ -67,7 +76,23 @@ public class FieldSearchFragment extends Fragment {
     private TextView txtNotFound;
     private EditText edit_text;
 
-    private LatLng currentPosition = null;
+    private Location currentLocation;
+
+    private boolean searchMode = false;
+
+    public BroadcastReceiver locationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            currentLocation = new Location("dummy");
+            currentLocation.setLatitude(intent.getDoubleExtra("latitude", -1));
+            currentLocation.setLongitude(intent.getDoubleExtra("longitude", -1));
+
+            if (getView() != null && currentLocation.getLatitude() != -1 && currentLocation.getLongitude() != -1
+                    && !searchMode) {
+                loadFields(getView());
+            }
+        }
+    };
 
     public FieldSearchFragment() {
         // Required empty public constructor
@@ -110,10 +135,12 @@ public class FieldSearchFragment extends Fragment {
 
                     inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
+                    txtNotFound.setVisibility(View.GONE);
                     if (!v.getText().toString().isEmpty()) {
+                        searchMode = true;
                         searchFieldByName(view, v.getText().toString());
-                    }
-                    else {
+                    } else {
+                        searchMode = false;
                         loadFields(view);
                     }
 //                    adapter.getFilter().filter(v.getText().toString());
@@ -123,75 +150,28 @@ public class FieldSearchFragment extends Fragment {
             }
         });
 
-        // Acquire a reference to the system Location Manager
-        LocationManager locationManager = (LocationManager) this.getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-        // Define a listener that responds to location updates
-        LocationListener locationListener = new LocationListener() {
-
-            public void onLocationChanged(Location location) {
-                if (currentPosition == null) {
-                    Log.d("LOCATION", location.getLatitude() + ";" + location.getLongitude());
-                    currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-                    loadFields(view);
-                }
-            }
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            public void onProviderEnabled(String provider) {
-            }
-
-            public void onProviderDisabled(String provider) {
-            }
-        };
-
-        boolean isGPSEnabled = false;
-        boolean isNetworkEnabled = false;
-
-        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-        if (!isGPSEnabled && !isNetworkEnabled) {
-
-        } else {
-
-            if (isNetworkEnabled) {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 3, locationListener);
-            }
-
-            if (isGPSEnabled) {
-                if (currentPosition == null) {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 3, locationListener);
-                }
-            }
-        }
-
-//        TextWatcher watcher = new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//
-//            }
-//        };
-//        edit_text.addTextChangedListener(watcher);
-
         txtNotFound = (TextView) view.findViewById(R.id.text_not_found);
-        LocalBroadcastManager.getInstance(view.getContext()).registerReceiver(filterReceiver,
-                new IntentFilter("search-message"));
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(locationReceiver,
+                new IntentFilter("location-message"));
+
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(filterReceiver,
+                new IntentFilter("search-message"));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(locationReceiver);
+
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(filterReceiver);
     }
 
     public void clearData() {
@@ -203,16 +183,15 @@ public class FieldSearchFragment extends Fragment {
         if (!fieldList.isEmpty()) {
             clearData();
         }
-        Bundle b = getActivity().getIntent().getExtras();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
         //Initialize RecyclerView
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         adapter = new FieldAdapter(this.getContext(), fieldList);
-        adapter.setUserId(b.getInt("user_id"));
+        adapter.setUserId(sharedPreferences.getInt("user_id", -1));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
-
-        url = localhost + "/swp49x-ffrs/account/top-10-field-owner?longitude=%f&latitude=%f";
-        url = String.format(url, currentPosition.longitude, currentPosition.latitude);
+        url = localhost + "/swp49x-ffrs/account/top-10-field-owner?longitude=" + currentLocation.getLongitude() + "&latitude=" + currentLocation.getLatitude();
+//        url = String.format(url, currentPosition.longitude, currentPosition.latitude);
 
         //Getting Instance of Volley Request Queue
         queue = NetworkController.getInstance(getContext()).getRequestQueue();
@@ -221,26 +200,32 @@ public class FieldSearchFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONArray body = response.getJSONArray("body");
-                    if (body != null && body.length() > 0) {
-                        for (int i = 0; i < body.length(); i++) {
-                            try {
-                                JSONObject obj = body.getJSONObject(i);
-                                JSONObject profile = obj.getJSONObject("profileId");
-                                Field field = new Field(profile.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
+                    if (response != null) {
+                        JSONArray body = response.getJSONArray("body");
+                        if (body != null && body.length() > 0) {
+                            for (int i = 0; i < body.length(); i++) {
+                                try {
+                                    JSONObject obj = body.getJSONObject(i);
+                                    JSONObject profile = obj.getJSONObject("profileId");
+                                    Field field = new Field(profile.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
 
-                                // adding movie to movies array
-                                fieldList.add(field);
+                                    // adding movie to movies array
+                                    fieldList.add(field);
 
-                            } catch (Exception e) {
-                                Log.d("EXCEPTION", e.getMessage());
-                            } finally {
-                                //Notify adapter about data changes
-                                adapter.notifyItemChanged(i);
+                                } catch (Exception e) {
+                                    Log.d("EXCEPTION", e.getMessage());
+                                } finally {
+                                    //Notify adapter about data changes
+                                    adapter.notifyItemChanged(i);
+                                }
                             }
+                            LinearLayout progressLayout = (LinearLayout) getActivity().findViewById(R.id.progress_layout);
+                            progressLayout.setVisibility(View.GONE);
+                            RelativeLayout fieldLayout = (RelativeLayout) getActivity().findViewById(R.id.fields_layout);
+                            fieldLayout.setVisibility(View.VISIBLE);
+                        } else {
+                            txtNotFound.setVisibility(View.VISIBLE);
                         }
-                    } else {
-                        txtNotFound.setVisibility(View.VISIBLE);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -294,7 +279,12 @@ public class FieldSearchFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         url = localhost + "/swp49x-ffrs/account/name?name=%s&role=%s";
-        url = String.format(url, searchValue, "owner");
+        try {
+            url = String.format(url, URLEncoder.encode(searchValue, "utf-8"), "owner");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        Log.d("URL", url);
 
         //Getting Instance of Volley Request Queue
         queue = NetworkController.getInstance(getContext()).getRequestQueue();
@@ -303,26 +293,30 @@ public class FieldSearchFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONArray body = response.getJSONArray("body");
-                    if (body != null && body.length() > 0) {
-                        for (int i = 0; i < body.length(); i++) {
-                            try {
-                                JSONObject obj = body.getJSONObject(i);
-                                JSONObject profile = obj.getJSONObject("profileId");
-                                Field field = new Field(profile.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
+                    if (response != null) {
+                        JSONArray body = response.getJSONArray("body");
+                        if (body != null && body.length() > 0) {
+                            txtNotFound.setVisibility(View.GONE);
+                            for (int i = 0; i < body.length(); i++) {
+                                try {
+                                    JSONObject obj = body.getJSONObject(i);
+                                    JSONObject profile = obj.getJSONObject("profileId");
+                                    Field field = new Field(profile.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
 
-                                // adding movie to movies array
-                                fieldList.add(field);
+                                    // adding movie to movies array
+                                    fieldList.add(field);
 
-                            } catch (Exception e) {
-                                Log.d("EXCEPTION", e.getMessage());
-                            } finally {
-                                //Notify adapter about data changes
-                                adapter.notifyItemChanged(i);
+                                } catch (Exception e) {
+                                    Log.d("EXCEPTION", e.getMessage());
+                                } finally {
+                                    //Notify adapter about data changes
+                                    adapter.notifyItemChanged(i);
+                                }
                             }
+                        } else {
+                            txtNotFound.setText("Không tìm thấy sân phù hợp");
+                            txtNotFound.setVisibility(View.VISIBLE);
                         }
-                    } else {
-                        txtNotFound.setVisibility(View.VISIBLE);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -344,6 +338,13 @@ public class FieldSearchFragment extends Fragment {
                 }
             }
         }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                return headers;
+            }
+
             @Override
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
                 try {

@@ -231,6 +231,7 @@ CREATE TABLE IF NOT EXISTS `capstone_project`.`matching_request` (
   `field_type_id` INT NOT NULL,
   `longitude` VARCHAR(45) NOT NULL,
   `latitude` VARCHAR(45) NOT NULL,
+  `address` VARCHAR(500) NOT NULL,
   `date` DATE NOT NULL,
   `start_time` TIME NOT NULL,
   `end_time` TIME NOT NULL,

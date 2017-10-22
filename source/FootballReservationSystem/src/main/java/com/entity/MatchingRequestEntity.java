@@ -42,6 +42,9 @@ public class MatchingRequestEntity implements Serializable {
     @Column(name = "latitude")
     private String latitude;
     @Basic(optional = false)
+    @Column(name = "address")
+    private String address;
+    @Basic(optional = false)
     @Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
@@ -107,6 +110,14 @@ public class MatchingRequestEntity implements Serializable {
 
     public void setLatitude(String latitude) {
         this.latitude = latitude;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public Date getDate() {
