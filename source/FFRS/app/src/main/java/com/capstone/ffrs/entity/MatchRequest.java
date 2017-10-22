@@ -5,7 +5,7 @@ package com.capstone.ffrs.entity;
  */
 
 public class MatchRequest {
-    private int id, ratingScore;
+    private int id, ratingScore, userId;
     private String date, startTime, endTime;
     private String teamName;
 
@@ -13,8 +13,9 @@ public class MatchRequest {
 
     }
 
-    public MatchRequest(int id, int ratingScore, String date, String startTime, String endTime, String teamName) {
+    public MatchRequest(int id, int userId, int ratingScore, String date, String startTime, String endTime, String teamName) {
         this.id = id;
+        this.userId = userId;
         this.ratingScore = ratingScore;
         this.date = date;
         this.startTime = startTime;
@@ -28,6 +29,14 @@ public class MatchRequest {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public int getRatingScore() {

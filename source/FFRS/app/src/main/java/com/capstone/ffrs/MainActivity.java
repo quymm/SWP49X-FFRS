@@ -1,6 +1,8 @@
 package com.capstone.ffrs;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -127,10 +129,20 @@ public class MainActivity extends Activity {
                 // sees the explanation, try again to request the permission.
 
                 //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
 
+                AlertDialog alertDialog = new AlertDialog.Builder(this).setTitle("Yêu cầu quyền vị trí").
+                        setMessage("Ứng dụng cần quyền sử dụng vị trí của thiết bị để có thể hoạt động đầy đủ. Vui lòng bật quyền để tiếp tục sử dụng ứng dụng.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(MainActivity.this,
+                                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                        }).create();
+                alertDialog.setCancelable(false);
+                alertDialog.show();
 
             } else {
                 // No explanation needed, we can request the permission.

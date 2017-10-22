@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `capstone_project`.`profile` (
   `phone` VARCHAR(20) NOT NULL,
   `longitude` VARCHAR(45) NULL,
   `latitude` VARCHAR(45) NULL,
-  `creadit_card` VARCHAR(20) NOT NULL,
+  `creadit_card` VARCHAR(20) NULL,
   `avatar_url` VARCHAR(500) NULL,
   `rating_score` INT NULL,
   `bonus_point` INT NULL,

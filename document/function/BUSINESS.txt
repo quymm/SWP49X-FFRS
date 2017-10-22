@@ -1,0 +1,54 @@
+﻿		Một số vấn đề về xử lý logic trong project (Football Reservation System)
+1.	Khởi tạo Database: Chạy lần lượt từng phần query tạo dữ liệu trong file database/CreateData.sql. Lưu ý: chạy từng phần theo comment, vì có dữ liệu tạo trước, dữ liệu tạo sau tham chiếu đến cái tạo trước, chạy 1 lần dễ sai. Chạy lần lượt từ trên xuống dưới, vì ko có thời gian viết query luôn luôn đúng, nếu chạy sai thứ tự account sẽ trỏ sai profile.
+
+2.	Dữ liệu cần thiết cho chủ sân: Chủ sân phải tạo sân, phải set thời gian hoạt động (time-enable) thì người dùng mới có thể đặt sân.
+- Time enable là thời gian hoạt động của sân do chủ sân quy định, nó cũng chính là mức giá mà chủ sân đưa ra để áp dụng cho việc tính phí. Time enable sẽ được set cho 1 tuần 7 ngày quy định theo thứ trong tuần. Nên đặt time enable là các khoảng thời gian liên tiếp nhau để timeslot không bị vụn. Dùng 3 ký tự đầu của tiếng Anh để nhập dữ liệu cho dayInWeek, vd thứ 3 là 'Tue', thứ 4 là 'Wed'.
+Vd: Chủ sân có id = 1, cài đặt time enable cho loại sân có id = 7 (sân 5 vs 5). Thứ 3 từ 7-10h giá 200k, từ 10-15h giá 150k và từ 15h-22h giá 300k
+Dữ liệu đầu vào của hàm set time enable sẽ là:
+[
+  {
+    "dayInWeek": "Tue",
+    "endTime": "10:00",
+    "fieldOwnerId": 1,
+    "fieldTypeId": 1,
+    "price": "200",
+    "startTime": "07:00"
+  },
+  {
+    "dayInWeek": "Tue",
+    "endTime": "15:00",
+    "fieldOwnerId": 1,
+    "fieldTypeId": 1,
+    "price": "150",
+    "startTime": "10:00"
+  },
+  {
+    "dayInWeek": "Tue",
+    "endTime": "22:00",
+    "fieldOwnerId": 1,
+    "fieldTypeId": 1,
+    "price": "300",
+    "startTime": "15:00"
+  }
+]
+
+3.	Khởi tạo time-slot: Sau khi đã đặt sân và set thời gian hoạt động, có thể kiểm tra sân đã hợp lệ để đặt chưa thì dùng hàm Get Free Time (/swp49x-ffrs/match/free-time, GET) với @RequestParam là field-owner-id, field-type-id, date. Lúc này hệ thống sẽ đọc dữ liệu từ time-enable, nếu chủ sân có 2 sân loại 5 vs 5 và time enable liên tiếp nhau từ 7-22h như vd ở trên thì sẽ tạo thành 2 time-slot với trạng thái đặt sân là false (reservation_status = false). 
+Nếu chủ sân ko có sân và ko có thời gian hoạt động cho cái ngày hôm đó trong tuần thì get Free Time sẽ ra null.
+Nếu không chạy hàm Get Free Time thì khi chạy Reserve Time Slot (/swp49x-ffrs/match/reserve-time-slot, POST) vẫn được vì lúc này hệ thống sẽ tự kiểm tra nếu ngày hôm đó chưa tạo time-slot nó sẽ tự tạo ra time-slot theo nguyên tắc như trên.
+
+4.	Đặt sân: Phân biệt 3 hàm Reserve Time Slot (/swp49x-ffrs/match/reserve-time-slot, POST), Reserve Friendly Match (/swp49x-ffrs/match/friendly-match, POST) và Reserve Tour Match (/swp49x-ffrs/match/tour-match, POST). 
+-- Reserve Time Slot để set bận cho 1 khoảng thời gian khi có người đặt (set reservation_status = true), phải làm như vậy để trong quá trình đợi người chơi thanh toán, người dùng khác ko thể đặt tiếp vào khung giờ này. Nếu người dùng đã đặt, tức chạy reserve time slot rồi mà cancel ko payment thì time slot sẽ được set trạng thái trở lại false trường reservation_status. Sau đó nó sẽ được nối lại với các time-slot khác nếu liên tiếp nhau. Phần này server sẽ tự xử lý.
+-- Reserve Friendly Match là khi sau khi đã chạy Reserve Time Slot rồi, có id của time slot được tạo ra nó sẽ được set vào friendly match, vì friendly match cần phải biết time-slot nào.
+-- Reserve Tour Match cũng tương tự như Reserve Friendly Match nhưng vì nó có matching đối thủ nên nó sẽ yêu cầu nhập 2 user-id, tức là ai đá với ai.
+
+5.	Set field-id for time-slot: TimeSlot có trường field_id nhưng lúc đặt sân sẽ để null vì mục đích tối ưu cho việc sắp xếp thời gian (không set sân cho người dùng lúc  người dùng đặt sân), sân sẽ được biết khi người chơi đến sân và hỏi chủ sân, chủ sân sẽ set sân cho người chơi. Sử dụng hàm getFreeField (/swp49x-ffrs/match/free-field, GET) để lấy được danh sách các sân đang rảnh tại thời điểm mong muốn. Ví dụ có người chơi hỏi 8h này có đặt sân giờ đá sân nào, thì chủ sân sẽ nhập các trường field_type_id, date, time để lấy các sân đang rảnh vào thời gian đó, set vào cho người chơi. Lúc này time slot mới có field id.
+
+6.	Tiêu chí load sân lên app android khi đăng nhập: Khi mới login vào app, ở activity tìm sân trên sẽ mặc định load lên 10 sân với vị trí gần nhất, lấy theo GPS của điện thoại so với vị trí của các sân dựa theo đường đi thực tế gọi từ google api.
+
+7.	TourMatch và Matching Request: Khi người dùng nhập thời gian, loại sân và vị trí hiện tại (mặc định lấy theo GPS), hệ thống sẽ tìm những request đặt sân nào có bán kính là 5km theo đường đi thực tế, điểm ranking (điểm đánh giá trình độ của người chơi) dao động với độ lệch là 100 điểm, thời gian dao động với độ lệch là 30 phút.  Người dùng có thể accept một lần nhiều request matching được suggest ra, bấm chọn và gửi đến người gửi request lúc đầu, nếu người gửi request lúc đầu nào phản hồi nhanh hơn, thì trận đấu sẽ được matching với người đó. Phần này sẽ được xử lý bằng firebase real time database.
+	Sau khi cả 2 bên đồng ý, hệ thống sẽ tìm trung điểm của khoảng cách của 2 người chơi, từ đó tìm sân nào cách trung điểm đường đi đó với bán kính là 8km (đang mặc định như vậy). Hệ thống sẽ tự đặt sân và yêu cầu người dùng payment, cả 2 người dùng cùng thanh toán, mỗi bên nửa giá tiền sân. Lưu ý: sân được hệ thống suggest và người dùng ko được chọn sân. Dữ liệu đặt sân sẽ theo người gửi request. Vd: người A gửi request muốn đá 5h30, người B nhập thông tin là muốn đá 5h, nhưng vẫn được suggest ra người A (vì dao động thời gian 30 phút vẫn được suggest). Nếu người B bấm gửi yêu cầu xác nhận đến người A nghĩa là người B đã đồng ý đá 5h30 cũng được nên dữ liệu đặt sân sẽ theo người A. Đó là quyền ưu tiên đối với người gửi request trước.
+
+8. 	Ranking và bonus point: Sau trận đấu người chơi được đánh giá về đối thủ và báo kết quả là ai thắng, nếu kết quả cả 2 bên báo về giống nhau (tức là nếu A đá với B, A báo là A thua và B báo là B thắng, như vậy kết quả này là đúng) thì cả 2 sẽ được cộng 5 điểm bonus point, điểm này sẽ được dùng để đổi voucher sau này. Với kết quả có được người chơi thua sẽ bị trừ điểm ranking, người chơi thắng sẽ được cộng nhằm phân cấp trình độ ra. Người chơi còn đánh giá thêm về thái độ, với mức đánh giá 5 sao, điểm này cũng sẽ được tính và trừ vào điểm ranking! Nếu kết quả từ người A và người B gửi về ko đúng thì trận đấu sẽ xem như hòa, ko ai được cộng và ko ai bị trừ.
+
+
+
