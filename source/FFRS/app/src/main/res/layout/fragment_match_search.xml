@@ -25,12 +25,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
                     android:text="Loại sân:" />
 
                 <Spinner
                     android:id="@+id/spinner"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp" />
+                    android:layout_height="40dp"
+                    android:layout_weight="1" />
 
             </TableRow>
 
@@ -42,12 +44,14 @@
                     android:id="@+id/text_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="Ngày chơi: " />
 
                 <EditText
                     android:id="@+id/input_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:ems="10"
                     android:focusable="false"
                     android:hint="Ngày"
@@ -63,12 +67,14 @@
                     android:id="@+id/text_start_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Thời gian bắt đầu: " />
+                    android:layout_weight="1"
+                    android:text="Bắt đầu: " />
 
                 <EditText
                     android:id="@+id/input_start_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:ems="10"
                     android:focusable="false"
                     android:hint="Thời gian bắt đầu"
@@ -84,12 +90,14 @@
                     android:id="@+id/text_end_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Thời gian kết thúc: " />
+                    android:layout_weight="1"
+                    android:text="Kết thúc: " />
 
                 <EditText
                     android:id="@+id/input_end_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:ems="10"
                     android:focusable="false"
                     android:hint="Thời gian kết thúc"
@@ -97,16 +105,38 @@
 
             </TableRow>
 
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/text_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Địa chỉ: " />
+
+                <EditText
+                    android:id="@+id/input_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="Địa chỉ (Tùy chọn)"
+                    android:inputType="text" />
+
+            </TableRow>
+
         </TableLayout>
 
         <Button
-            android:id="@+id/btChooseLocation"
+            android:id="@+id/btFindRequest"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"
             android:layout_below="@id/table_layout"
             android:background="#009632"
-            android:text="Chọn vị trí tìm kiếm"
+            android:text="Tìm đối thủ"
             android:textColor="@android:color/white"
             android:textSize="18dp">
 

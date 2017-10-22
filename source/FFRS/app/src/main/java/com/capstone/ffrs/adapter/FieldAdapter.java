@@ -2,6 +2,7 @@ package com.capstone.ffrs.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,9 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.capstone.ffrs.FieldSuggestActivity;
 import com.capstone.ffrs.FieldTimeActivity;
@@ -56,14 +60,43 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, int position) {
         Field field = mFilteredList.get(position);
 
         holder.itemView.setTag(R.id.card_view, field.getId());
         holder.title.setText(field.getFieldName());
         holder.content.setText(field.getAddress());
-        holder.setImageURL(field.getImgURL());
-        holder.imageview.setImageUrl(field.getImgURL(), NetworkController.getInstance(context).getImageLoader());
+        holder.progressBar.setVisibility(View.VISIBLE);
+        String url = field.getImgURL();
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            url = "http://" + url;
+        }
+        holder.setImageURL(url);
+        holder.imageview.setVisibility(View.GONE);
+        holder.imageview.setDefaultImageResId(R.mipmap.placeholder);
+        holder.imageview.setErrorImageResId(R.mipmap.placeholder);
+        ImageLoader imageLoader = NetworkController.getInstance(context).getImageLoader();
+        imageLoader.get(url, new ImageLoader.ImageListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                holder.progressBar.setVisibility(View.GONE);
+                holder.imageview.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                if (response.getBitmap() != null) {
+                    holder.progressBar.setVisibility(View.GONE);
+                    holder.imageview.setImageBitmap(response.getBitmap());
+                    holder.imageview.setVisibility(View.VISIBLE);
+                } else {
+                    holder.progressBar.setVisibility(View.GONE);
+                    holder.imageview.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        holder.imageview.setImageUrl(url, imageLoader);
 
     }
 
@@ -134,6 +167,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
 
         private TextView content, title;
         private NetworkImageView imageview;
+        private ProgressBar progressBar;
         private String image_url;
 
         public void setImageURL(String url) {
@@ -146,6 +180,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
             content = (TextView) itemView.findViewById(R.id.content_view);
             // Volley's NetworkImageView which will load Image from URL
             imageview = (NetworkImageView) itemView.findViewById(R.id.thumbnail);
+            progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -155,10 +190,10 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
                     intent.putExtra("field_id", id);
                     intent.putExtra("field_name", title.getText());
                     intent.putExtra("field_address", content.getText());
-                    if (image_url.isEmpty()) {
-                        image_url = "http://bongda.phanmemvang.com.vn/wp-content/uploads/2015/03/lan2chaoluanganhgnhe-1-e1426212803227.jpg";
-                    }
-                    intent.putExtra("image_url", image_url);
+//                    if (image_url.isEmpty()) {
+//                        image_url = "http://bongda.phanmemvang.com.vn/wp-content/uploads/2015/03/lan2chaoluanganhgnhe-1-e1426212803227.jpg";
+//                    }
+//                    intent.putExtra("image_url", image_url);
                     intent.putExtra("user_id", userId);
                     context.startActivity(intent);
                 }

@@ -101,9 +101,16 @@ public class PayPalActivity extends AppCompatActivity {
 
                     localhost = getResources().getString(R.string.local_host);
                     Bundle b = getIntent().getExtras();
+                    boolean tourMatchMode = b.getBoolean("tour_match_mode");
+                    String url = "";
+                    if (!tourMatchMode) {
+                        url = localhost + "/swp49x-ffrs/match/friendly-match?time-slot-id=" + b.getInt("time_slot_id") + "&user-id=" + b.getInt("user_id");
+                    } else {
+                        url = localhost + "/swp49x-ffrs/match/tour-match?time-slot-id=" + b.getInt("time_slot_id") + "&user-id=" + b.getInt("user_id") + "&opponent-id=" + b.getInt("opponent_id");
+                    }
 
                     queue = NetworkController.getInstance(this).getRequestQueue();
-                    String url = localhost + "/swp49x-ffrs/match/friendly-match?time-slot-id=" + b.getInt("time_slot_id") + "&user-id=" + b.getInt("user_id");
+
                     JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, null,
                             new Response.Listener<JSONObject>() {
                                 @Override

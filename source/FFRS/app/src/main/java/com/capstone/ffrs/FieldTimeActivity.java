@@ -44,6 +44,7 @@ import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.FieldTime;
 import com.capstone.ffrs.utils.TimePickerListener;
 
+import org.joda.time.LocalDateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,13 +82,13 @@ public class FieldTimeActivity extends AppCompatActivity {
     private TextView txtNotFound;
     private Spinner spinner;
     private Button date;
+    private TimePickerListener startTimeListener, endTimeListener;
 
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String fromTime = intent.getStringExtra("from");
             String toTime = intent.getStringExtra("to");
-            price = intent.getIntExtra("price", 0);
             EditText from = (EditText) findViewById(R.id.text_from);
             EditText to = (EditText) findViewById(R.id.text_to);
             from.setText(fromTime);
@@ -103,9 +104,49 @@ public class FieldTimeActivity extends AppCompatActivity {
         }
     };
 
+    private void validateTime(EditText from, EditText to) {
+        boolean flag = false;
+        if (!from.getText().toString().isEmpty()) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+                Date startTime = sdf.parse(from.getText().toString());
+
+                if (endTimeListener == null) {
+                    endTimeListener = new TimePickerListener(FieldTimeActivity.this, to);
+                    to.setOnClickListener(endTimeListener);
+                }
+
+                for (FieldTime fieldTime : fieldTimeList) {
+                    Date fromFrame = sdf.parse(fieldTime.getFromTime());
+                    Date toFrame = sdf.parse(fieldTime.getToTime());
+
+                    if (fromFrame.compareTo(startTime) <= 0 && toFrame.compareTo(startTime) > 0) {
+                        LocalDateTime time = new LocalDateTime(startTime);
+                        if (time.getMinuteOfHour() == 30) {
+                            time = time.plusMinutes(30);
+                            startTime = time.toDate();
+                        }
+                        endTimeListener.setMinTime(startTime);
+                        endTimeListener.setMaxTime(toFrame);
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if (!flag) {
+                    endTimeListener = null;
+                    to.setOnClickListener(null);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void toggleButton() {
         EditText from = (EditText) findViewById(R.id.text_from);
         EditText to = (EditText) findViewById(R.id.text_to);
+        validateTime(from, to);
         Button btReserve = (Button) findViewById(R.id.btReserve);
         if (!from.getText().toString().isEmpty() && !to.getText().toString().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
@@ -127,10 +168,12 @@ public class FieldTimeActivity extends AppCompatActivity {
                     } else {
                         btReserve.setEnabled(false);
                         btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
+                        to.setText("");
                     }
                 } else {
                     btReserve.setEnabled(false);
                     btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
+                    to.setText("");
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -138,6 +181,7 @@ public class FieldTimeActivity extends AppCompatActivity {
         } else {
             btReserve.setEnabled(false);
             btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
+            to.setText("");
         }
     }
 
@@ -167,9 +211,9 @@ public class FieldTimeActivity extends AppCompatActivity {
         TextView txtAddress = (TextView) findViewById(R.id.field_address);
         txtAddress.setText(address);
 
-        imageUrl = b.getString("image_url");
-        NetworkImageView imageView = (NetworkImageView) findViewById(R.id.field_image);
-        imageView.setImageUrl(imageUrl, NetworkController.getInstance(this.getBaseContext()).getImageLoader());
+//        imageUrl = b.getString("image_url");
+        //  NetworkImageView imageView = (NetworkImageView) findViewById(R.id.field_image);
+//        imageView.setImageUrl(imageUrl, NetworkController.getInstance(this.getBaseContext()).getImageLoader());
 
         id = b.getInt("field_id");
         Log.d("receivedId", id + "");
@@ -210,6 +254,7 @@ public class FieldTimeActivity extends AppCompatActivity {
                     txtNotFound.setVisibility(View.GONE);
                 }
                 loadFieldTimes();
+                toggleButton();
             }
 
         };
@@ -219,7 +264,7 @@ public class FieldTimeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                DatePickerDialog dialog = new DatePickerDialog(FieldTimeActivity.this, datePickerListener, dateSelected
+                DatePickerDialog dialog = new DatePickerDialog(FieldTimeActivity.this, R.style.DatepickerCalendarTheme, datePickerListener, dateSelected
                         .get(Calendar.YEAR), dateSelected.get(Calendar.MONTH),
                         dateSelected.get(Calendar.DAY_OF_MONTH));
                 dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
@@ -228,20 +273,31 @@ public class FieldTimeActivity extends AppCompatActivity {
         });
 
         final EditText from = (EditText) findViewById(R.id.text_from);
-        final EditText to = (EditText) findViewById(R.id.text_to);
-        from.setOnClickListener(new TimePickerListener(this, from));
-        to.setOnClickListener(new TimePickerListener(this, to));
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-                new IntentFilter("custom-message"));
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(timeReceiver,
-                new IntentFilter("timepicker-message"));
+        startTimeListener = new TimePickerListener(this, from);
+        from.setOnClickListener(startTimeListener);
 
 //        sdf = new SimpleDateFormat(serverFormat);
 //
 //        url = localhost + "/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + (spinner.getSelectedItemPosition() + 1) + "&date=" + sdf.format(currentMillis);
 //        loadFieldTimes();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("custom-message"));
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(timeReceiver,
+                new IntentFilter("timepicker-message"));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(timeReceiver);
     }
 
     public void addSpinner() {
@@ -321,13 +377,13 @@ public class FieldTimeActivity extends AppCompatActivity {
                                         intent.putExtra("field_name", name);
                                         intent.putExtra("field_address", address);
                                         intent.putExtra("field_type_id", spinner.getSelectedItemPosition() + 1);
-                                        intent.putExtra("image_url", imageUrl);
                                         intent.putExtra("date", date);
                                         intent.putExtra("time_from", fromTime);
                                         intent.putExtra("time_to", toTime);
                                         intent.putExtra("price", body.getInt("price"));
                                         intent.putExtra("user_id", b.getInt("user_id"));
                                         intent.putExtra("time_slot_id", body.getInt("id"));
+                                        intent.putExtra("tour_match_mode", false);
                                         startActivity(intent);
                                     } catch (Exception e) {
                                         Log.d("EXCEPTION", e.getMessage());
@@ -418,11 +474,27 @@ public class FieldTimeActivity extends AppCompatActivity {
                                 adapter.notifyItemChanged(i);
                             }
                         }
+                        if (!fieldTimeList.isEmpty()) {
+                            Date endFrame = sdf.parse(fieldTimeList.get(fieldTimeList.size() - 1).getToTime());
+                            LocalDateTime time = new LocalDateTime(endFrame);
+                            if (time.getMinuteOfHour() == 0) {
+                                time = time.minusMinutes(30);
+                                endFrame = time.toDate();
+                            }
+                            startTimeListener.setMinTime(sdf.parse(fieldTimeList.get(0).getFromTime()));
+                            startTimeListener.setMaxTime(endFrame);
+                        }
                     } else {
                         txtNotFound.setVisibility(View.VISIBLE);
+                        final EditText from = (EditText) findViewById(R.id.text_from);
+                        final EditText to = (EditText) findViewById(R.id.text_to);
+                        from.setOnClickListener(null);
+                        to.setOnClickListener(null);
                     }
                     progressBar.setVisibility(View.GONE);
                 } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
