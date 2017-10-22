@@ -4,20 +4,24 @@ import {
   doLoginSuccessful,
   accessDenied,
 } from '../redux/guest/guest-action-creators';
+import { fetchGetFreeTime, fetchBookMatch } from '../apis/field-owner-apis';
 import {
-  fetchGetMatchByFieldOwnerAndDay,
-  fetchGetFreeTime,
-  fetchBookMatch,
-} from '../apis/field-owner-apis';
-import {
-  GetMatchByFieldOwnerAndDay,
   getAllFreeTime5vs5,
   getAllFreeTime7vs7,
 } from '../redux/field-owner/field-owner-action-creator';
+import TimePicker from 'rc-time-picker';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Modal } from 'react-bootstrap';
+import 'notyf/dist/notyf.min.css';
+var Notyf = require('notyf');
+// Create an instance of Notyf
+var notyf = new Notyf({
+  delay: 4000,
+  // alertIcon: 'fa fa-exclamation-circle',
+  // confirmIcon: 'fa fa-check-circle',
+});
 
 class FreeTime extends Component {
   constructor(props) {
@@ -38,6 +42,16 @@ class FreeTime extends Component {
       hours.push({ value: i, text: i, id: i });
     }
     return hours;
+  }
+  configTimeDiable() {
+    let disableTime = [];
+    for (let i = 1; i < 30; i++) {
+      disableTime.push(i);
+    }
+    for (let i = 31; i < 60; i++) {
+      disableTime.push(i);
+    }
+    return disableTime;
   }
 
   async componentDidMount() {
@@ -122,6 +136,34 @@ class FreeTime extends Component {
     );
     await this.props.getAllFreeTime5vs5(data5vs5.body);
     await this.props.getAllFreeTime7vs7(data7vs7.body);
+  }
+
+  async handelEndTimeInputChange(evt) {
+    await this.setState({ endTime: evt.format('HH:mm') });
+  }
+
+  async handelTimeStartDayInputChange(evt) {
+    await this.setState({ endTime: evt.format('HH:mm') });
+  }
+
+  async handelBookMatchSubmit(evt) {
+    evt.preventDefault();
+    const { id } = this.props.auth.user.data;
+    const bookMatchRes = await fetchBookMatch(
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      this.state.endTime,
+      id,
+      this.state.fieldTypeSelected,
+      this.state.startTime,
+    );
+    if (bookMatchRes.status === 201 && bookMatchRes.body !== null) {
+      this.setState({isShowBookMatch: false})
+      notyf.confirm('Đặt sân thành công!');
+    }
+    else{
+      this.setState({isShowBookMatch: false})
+      notyf.alert('Đặt sân thất bại!');
+    }
   }
 
   render() {
@@ -244,31 +286,26 @@ class FreeTime extends Component {
           </Modal.Header>
           <Modal.Body>
             <form className="form-horizontal">
+            /* onSubmit={this.handleSubmitBookMatch.bind(this)} */
               <div>
-                <p />
                 <div className="form-group">
-                  <label htmlFor="sel2" className="col-sm-3 control-label">
+                  <label
+                    htmlFor="inputEmail3"
+                    className="col-sm-3 control-label"
+                  >
                     Từ
                   </label>
                   <div className="col-sm-9">
-                    {/* <div className="row"> */}
-                    <div className="col-sm-2">
-                      <select
-                        /* value={this.state.bookMatchFieldType} */
-                        /* onChange={this.handleInputChange.bind(this)} */
-                        className="form-control"
-                        id="sel2"
-                        name="bookMatchFieldType"
-                        type="checkbox"
-                      >
-                        {hours.map(hours => (
-                          <option key={hours.id} value={hours.value}>
-                            {hours.text}
-                          </option>
-                        ))}
-                      </select>
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <TimePicker
+                          showSecond={false}
+                          onChange={this.handelTimeStartDayInputChange.bind(
+                            this,
+                          )}
+                        />
+                      </div>
                     </div>
-                    {/* </div> */}
                   </div>
                 </div>
                 <div className="form-group">
@@ -280,7 +317,12 @@ class FreeTime extends Component {
                   </label>
                   <div className="col-sm-9">
                     <div className="row">
-                      <div className="col-sm-10" />
+                      <div className="col-sm-6">
+                        <TimePicker
+                          showSecond={false}
+                          onChange={this.handelEndTimeInputChange.bind(this)}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

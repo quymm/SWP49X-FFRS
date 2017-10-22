@@ -141,14 +141,6 @@ class Home extends Component {
     this.setState({ isShowUpdateField: false });
   }
 
-  async handelEndTimeInputChange(evt) {
-    await this.setState({ bookMatchEndTime: evt.format('HH:mm') });
-  }
-
-  async handelTimeStartDayInputChange(evt) {
-    await this.setState({ bookMatchStartTime: evt.format('HH:mm') });
-  }
-
   async handleSubmitBookMatch(evt) {
     const { id } = this.props.auth.user.data;
     evt.preventDefault();
