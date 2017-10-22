@@ -29,6 +29,7 @@ import org.w3c.dom.Text;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class FieldDetailActivity extends AppCompatActivity
@@ -59,36 +60,36 @@ public class FieldDetailActivity extends AppCompatActivity
         TextView txtAddress = (TextView) findViewById(R.id.field_address);
         txtAddress.setText(address);
 
-        imageUrl = b.getString("image_url");
-        NetworkImageView imageView = (NetworkImageView) findViewById(R.id.field_image);
-        imageView.setImageUrl(imageUrl, NetworkController.getInstance(this.getBaseContext()).getImageLoader());
+//        imageUrl = b.getString("image_url");
+//        NetworkImageView imageView = (NetworkImageView) findViewById(R.id.field_image);
+//        imageView.setImageUrl(imageUrl, NetworkController.getInstance(this.getBaseContext()).getImageLoader());
 
         date = (Date) b.getSerializable("date");
 
         from = (Date) b.getSerializable("time_from");
         to = (Date) b.getSerializable("time_to");
-        SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("H:mm", Locale.US);
 
         id = b.getInt("field_id");
         fieldTypeId = b.getInt("field_type_id");
 
         totalPrice = b.getInt("price");
 
-        long hours = Integer.valueOf(Double.valueOf(Math.abs(to.getTime() - from.getTime()) / 36e5).intValue());
-        long minutes = Integer.valueOf(Double.valueOf((Math.abs(to.getTime() - from.getTime()) / (60 * 1000)) % 60).intValue());
+        int hours = Double.valueOf(Math.abs(to.getTime() - from.getTime()) / 36e5).intValue();
+        int minutes = Double.valueOf((Math.abs(to.getTime() - from.getTime()) / (60 * 1000)) % 60).intValue();
 
-        String duration = "Thời lượng chơi: " + (hours != 0 ? hours + " tiếng " : "") + (minutes != 0 ? minutes + " phút" : "");
+        String duration = (hours != 0 ? hours + " tiếng " : "") + (minutes != 0 ? minutes + " phút" : "");
 
         TextView txtDate = (TextView) findViewById(R.id.text_date);
-        txtDate.setText("Ngày: " + new SimpleDateFormat("dd/MM/yyyy").format(date));
+        txtDate.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(date));
         TextView txtFrom = (TextView) findViewById(R.id.text_from);
-        txtFrom.setText("Từ: " + sdf.format(from));
+        txtFrom.setText(sdf.format(from));
         TextView txtTo = (TextView) findViewById(R.id.text_to);
-        txtTo.setText("Đến: " + sdf.format(to));
+        txtTo.setText(sdf.format(to));
         TextView txtDuration = (TextView) findViewById(R.id.text_duration);
         txtDuration.setText(duration);
 
-        String strFieldType = "Loại sân: ";
+        String strFieldType = "";
         switch (fieldTypeId) {
             case 1:
                 strFieldType += "5 vs 5";
@@ -107,7 +108,7 @@ public class FieldDetailActivity extends AppCompatActivity
         txtFieldType.setText(strFieldType);
 
         TextView txtPrice = (TextView) findViewById(R.id.text_total_price);
-        txtPrice.setText("Tổng giá: " + (totalPrice / 1000) + "K đồng");
+        txtPrice.setText((totalPrice / 1000) + "K đồng");
     }
 
     @Override
@@ -161,6 +162,10 @@ public class FieldDetailActivity extends AppCompatActivity
         intent.putExtra("field_address", address);
         intent.putExtra("image_url", imageUrl);
         intent.putExtra("price", totalPrice);
+        intent.putExtra("tour_match_mode", b.getBoolean("tour_match_mode"));
+        if (b.containsKey("opponent_id")) {
+            intent.putExtra("opponent_id", b.getInt("opponent_id"));
+        }
         startActivity(intent);
     }
 }

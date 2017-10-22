@@ -23,9 +23,9 @@ public class NetworkController {
         // Load Images from Network in Separate Thread
         mImageLoader = new ImageLoader(mRequestQueue,
                 new ImageLoader.ImageCache() {
-                    //Create ImageCache of max size 10MB
+                    //Create ImageCache of max size 20MB
                     private final LruCache<String, Bitmap>
-                            cache = new LruCache<String, Bitmap>(10);
+                            cache = new LruCache<String, Bitmap>(20);
 
                     @Override
                     public Bitmap getBitmap(String url) {
