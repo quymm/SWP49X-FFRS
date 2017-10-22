@@ -9,6 +9,7 @@ import './resource/css/myStyle.css';
 // import './resource/css/main-style.css';
 // import './resource/css/style.css';
 // import './resource/css/font-awesome.css';
+import 'react-s-alert/dist/s-alert-default.css';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 registerServiceWorker();

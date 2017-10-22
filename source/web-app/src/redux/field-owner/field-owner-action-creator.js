@@ -46,3 +46,10 @@ export function getAllFreeTime7vs7(data){
         payloads: data
      }
 }
+
+export function getAllFreeField(data){
+    return { 
+        type: 'GET_ALL_FREE_FIELD',
+        payloads: data
+     }
+}

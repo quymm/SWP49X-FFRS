@@ -8,10 +8,8 @@ import Roster from './Roster';
 import PageNotFound from '../components/PageNotFound';
 //import Store from '../redux/store';
 // import { BASE_URL, LOGIN } from '../apis/base-URL'
-
 class App extends Component {
   render() {
-    
     return (
       <Provider store={fieldOwnerStore}>
         <div>
@@ -20,7 +18,7 @@ class App extends Component {
               <Route path="/login" component={Login} />
               <Route path="/register" component={Register} />
               <Route path="/app" component={Roster} />
-              <Route component={PageNotFound}/>
+              <Route component={PageNotFound} />
             </Switch>
           </Router>
         </div>

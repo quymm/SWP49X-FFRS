@@ -13,12 +13,6 @@ export class Navigation extends Component {
               </NavLink>
             </li>
             <li>
-              <NavLink to="/app/index" activeClassName="active">
-                {' '}
-                <i className="glyphicon glyphicon-play" /> Trận đang đá{' '}
-              </NavLink>
-            </li>
-            <li>
               <NavLink to="/app/free-time" activeClassName="active">
                 {' '}
                 <i className="glyphicon glyphicon-time" /> Thời gian trống{' '}

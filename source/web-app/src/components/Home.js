@@ -2,60 +2,47 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
   fetchGetMatchByFieldOwnerAndDay,
-  fetchGetFreeTime,
   fetchBookMatch,
+  fetchGetFreeFieldByTime,
+  fetchSetFieldToMatch,
 } from '../apis/field-owner-apis';
 import {
   GetMatchByFieldOwnerAndDay,
-  getAllFreeTime5vs5,
-  getAllFreeTime7vs7,
+  getAllFreeField,
 } from '../redux/field-owner/field-owner-action-creator';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Link } from 'react-router-dom';
-import Clock from './Clock';
 import TimePicker from 'rc-time-picker';
-import FreeTime from '../containts/FreeTime';
 import MatchByDate from '../containts/MatchByDate';
 import {
   doLoginSuccessful,
   accessDenied,
 } from '../redux/guest/guest-action-creators';
-
+import { Modal } from 'react-bootstrap';
+import 'notyf/dist/notyf.min.css';
+var Notyf = require('notyf');
+// Create an instance of Notyf
+var notyf = new Notyf({
+  delay: 4000,
+  // alertIcon: 'fa fa-exclamation-circle',
+  // confirmIcon: 'fa fa-check-circle',
+});
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
       dateSelected: moment(),
-      openedTab: 2,
       bookMatchStartTime: undefined,
       bookMatchEndTime: 60,
       bookMatchMessage: undefined,
       bookMatchFieldType: 1,
-      buttonGroupTab: [
-        {
-          id: 1,
-          text: 'Các trân đang đá',
-          value: 1,
-        },
-        {
-          id: 2,
-          text: 'Các trân trong ngày',
-          value: 2,
-        },
-        {
-          id: 3,
-          text: 'Thời gian rảnh',
-          value: 3,
-        },
-        {
-          id: 4,
-          text: 'Đặt sân',
-          value: 4,
-        },
-      ],
+      isShowUpdateField: false,
+      fieldSelected: undefined,
+      timeSlotSelected: undefined,
     };
+    this.handleShowModalField = this.handleShowModalField.bind(this);
   }
   configTimeDiable() {
     let disableTime = [];
@@ -66,9 +53,6 @@ class Home extends Component {
       disableTime.push(i);
     }
     return disableTime;
-  }
-  componentWillUnmount() {
-    clearInterval(this.timer);
   }
   async componentDidMount() {
     const { id } = this.props.auth.user.data;
@@ -85,55 +69,78 @@ class Home extends Component {
         const idLocal = authLocalStorage.id;
         await this.props.doLoginSuccessful(authLocalStorage);
         try {
-          fetchGetMatchByFieldOwnerAndDay(
+          const match = await fetchGetMatchByFieldOwnerAndDay(
             idLocal,
             this.state.dateSelected.format('DD-MM-YYYY'),
             1,
-          ).then(data => {
-            this.props.GetMatchByFieldOwnerAndDay(data);
-          });
-          const data5vs5 = await fetchGetFreeTime(
-            idLocal,
-            1,
-            this.state.dateSelected.format('DD-MM-YYYY'),
           );
-          const data7vs7 = await fetchGetFreeTime(
-            idLocal,
-            2,
-            this.state.dateSelected.format('DD-MM-YYYY'),
-          );
-          await this.props.getAllFreeTime5vs5(data5vs5);
-          await this.props.getAllFreeTime7vs7(data7vs7);
+          await this.props.GetMatchByFieldOwnerAndDay(match.body);
         } catch (error) {
           console.log('error: ', error);
         }
       }
     } else {
       try {
-        fetchGetMatchByFieldOwnerAndDay(
+        const match = await fetchGetMatchByFieldOwnerAndDay(
           id,
           this.state.dateSelected.format('DD-MM-YYYY'),
           1,
-        ).then(data => {
-          this.props.GetMatchByFieldOwnerAndDay(data);
-        });
-        const data5vs5 = await fetchGetFreeTime(
-          id,
-          1,
-          this.state.dateSelected.format('DD-MM-YYYY'),
         );
-        const data7vs7 = await fetchGetFreeTime(
-          id,
-          2,
-          this.state.dateSelected.format('DD-MM-YYYY'),
-        );
-        await this.props.getAllFreeTime5vs5(data5vs5);
-        await this.props.getAllFreeTime7vs7(data7vs7);
+        await this.props.GetMatchByFieldOwnerAndDay(match.body);
       } catch (error) {
         console.log('error: ', error);
       }
     }
   }
+
+  async handelSetFieldSubmit(evt) {
+    evt.preventDefault();
+    const { timeSlotSelected, fieldSelected } = this.state;
+    const { id } = this.props.auth.user.data;
+    const setFieldRes = await fetchSetFieldToMatch(
+      timeSlotSelected,
+      fieldSelected,
+    );
+    if (setFieldRes.status === 200) {
+      this.setState({ isShowUpdateField: false });
+      const match = await fetchGetMatchByFieldOwnerAndDay(
+        id,
+        this.state.dateSelected.format('DD-MM-YYYY'),
+        1,
+      );
+      await this.props.GetMatchByFieldOwnerAndDay(match.body);
+      notyf.confirm('Cập nhật sân thành công!');
+    }
+  }
+
+  async handleShowModalField(match) {
+    //evt.preventDefault();
+    const { id } = this.props.auth.user.data;
+    //  const match = JSON.parse(evt.target.value);
+    console.log(typeof match);
+    // debugger
+    const fieldTypeId = parseInt(match.timeSlotEntity.fieldTypeId.id);
+    const time = match.timeSlotEntity.startTime;
+    const freeField = await fetchGetFreeFieldByTime(
+      id,
+      fieldTypeId,
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      time,
+    );
+    await this.props.getAllFreeField(freeField.body);
+    if (freeField.body.length > 0) {
+      this.setState({
+        fieldSelected: freeField.body[0].id,
+        timeSlotSelected: match.timeSlotEntity.id,
+      });
+    }
+    this.setState({ isShowUpdateField: true });
+  }
+  handleHideModalField(evt) {
+    evt.preventDefault();
+    this.setState({ isShowUpdateField: false });
+  }
+
   async handelEndTimeInputChange(evt) {
     await this.setState({ bookMatchEndTime: evt.format('HH:mm') });
   }
@@ -176,25 +183,12 @@ class Home extends Component {
     await this.setState({
       dateSelected: date,
     });
-    fetchGetMatchByFieldOwnerAndDay(
+    const match = await fetchGetMatchByFieldOwnerAndDay(
       id,
       this.state.dateSelected.format('DD-MM-YYYY'),
       1,
-    ).then(data => {
-      this.props.GetMatchByFieldOwnerAndDay(data);
-    });
-    const data5vs5 = await fetchGetFreeTime(
-      id,
-      1,
-      this.state.dateSelected.format('DD-MM-YYYY'),
     );
-    const data7vs7 = await fetchGetFreeTime(
-      id,
-      2,
-      this.state.dateSelected.format('DD-MM-YYYY'),
-    );
-    await this.props.getAllFreeTime5vs5(data5vs5);
-    await this.props.getAllFreeTime7vs7(data7vs7);
+    await this.props.GetMatchByFieldOwnerAndDay(match.body);
   }
 
   async handleInputChange(evt) {
@@ -208,83 +202,10 @@ class Home extends Component {
 
   render() {
     const myStyle = { padding: 20 };
-    const { listMatch } = this.props;
+    const { listMatch, freeField } = this.props;
+    const { isShowUpdateField } = this.state;
     console.log(this.props);
-    const renerBookMatch = (
-      <form
-        className="form-horizontal"
-        onSubmit={this.handleSubmitBookMatch.bind(this)}
-      >
-        <div>
-          <p>
-          </p>
-          <div className="form-group">
-            <label htmlFor="inputEmail3" className="col-sm-3 control-label">
-              Từ
-            </label>
-            <div className="col-sm-9">
-              <p className="text-center text-danger">
-                
-              </p>
-              <div className="row">
-                <div className="col-sm-6">
-                  <TimePicker
-                    showSecond={false}
-                    onChange={this.handelTimeStartDayInputChange.bind(this)}
-                    disabledMinutes={this.configTimeDiable.bind(this)}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="form-group">
-            <label htmlFor="inputEmail3" className="col-sm-3 control-label">
-              Thời gian
-            </label>
-            <div className="col-sm-9">
-              <div className="row">
-                <div className="col-sm-6">
-                  <TimePicker
-                    showSecond={false}
-                    onChange={this.handelEndTimeInputChange.bind(this)}
-                    disabledMinutes={this.configTimeDiable.bind(this)}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="form-group">
-            <label htmlFor="sel1" className="col-sm-3 control-label">
-              Loại sân
-            </label>
-            <div className="col-sm-2">
-              <select
-                value={this.state.bookMatchFieldType}
-                onChange={this.handleInputChange.bind(this)}
-                className="form-control"
-                id="sel1"
-                name="bookMatchFieldType"
-                type="checkbox"
-              >
-                <option value="1">5 vs 5</option>
-                <option value="2">7 vs 7</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div className="form-group">
-          <div className="col-sm-offset-3 col-sm-9">
-            <button
-              className="btn btn-primary"
-              type="submit"
-              name="isShowUpdate"
-            >
-              Đặt sân
-            </button>
-          </div>
-        </div>
-      </form>
-    );
+    console.log('state: ', this.state);
     return (
       <div id="page-wrapper">
         <div className="container-fluid">
@@ -323,7 +244,161 @@ class Home extends Component {
           </div>
           <div className="col-sm-12">
             <div className="row">
-              <MatchByDate listMatch={listMatch} />
+              {listMatch.length > 0
+                ? listMatch.map(listMatch => (
+                    <div key={listMatch.timeSlotEntity.id} className="col-sm-6">
+                      <div className="panel panel-green">
+                        <div className="panel-body">
+                          <div className="row">
+                            <div className="col-sm-3">
+                              <h4 className="text-center match">
+                                <strong>{listMatch.user.profileId.name}</strong>
+                              </h4>
+                            </div>
+                            <div className="col-sm-6">
+                              <h3 className="text-center text-primary">
+                                <strong>
+                                  {moment(
+                                    '10-10-2017 ' +
+                                      listMatch.timeSlotEntity.startTime,
+                                  ).format('HH:mm')}
+                                </strong>{' '}
+                              </h3>
+                              <p className="text-center">
+                                <strong>
+                                  {moment(
+                                    '10-10-2017 ' +
+                                      listMatch.timeSlotEntity.endTime,
+                                  ).hour() *
+                                    60 +
+                                    moment(
+                                      '10-10-2017 ' +
+                                        listMatch.timeSlotEntity.endTime,
+                                    ).minute() -
+                                    (moment(
+                                      '10-10-2017 ' +
+                                        listMatch.timeSlotEntity.startTime,
+                                    ).hour() *
+                                      60 +
+                                      moment(
+                                        '10-10-2017 ' +
+                                          listMatch.timeSlotEntity.startTime,
+                                      ).minute())}{' '}
+                                  phút
+                                </strong>
+                              </p>
+                              <p className="text-center">
+                                <strong>
+                                  {listMatch.timeSlotEntity.fieldTypeId.name}
+                                </strong>
+                              </p>
+                              <p className="text-center">
+                                <strong>
+                                  {listMatch.timeSlotEntity.fieldId
+                                    ? 'Sân: ' + listMatch.timeSlotEntity.fieldId.name
+                                    : 'Chưa xếp sân'}
+                                </strong>
+                              </p>
+                              <p className="text-center">
+                                <button
+                                  onClick={() =>
+                                    this.handleShowModalField(listMatch)}
+                                  className="btn btn-md btn-primary"
+                                >
+                                  Cập nhật sân
+                                </button>
+                                <Modal
+                                  /* {...this.props} */
+                                  show={this.state.isShowUpdateField}
+                                  onHide={this.hideModal}
+                                  dialogClassName="custom-modal"
+                                >
+                                <Modal.Header>
+                                <Modal.Title>Thiết lập sân</Modal.Title>
+                                </Modal.Header>
+                                  <Modal.Body>
+                                    {freeField.length > 0 ? (
+                                      <form
+                                        className="form-horizontal"
+                                        onSubmit={this.handelSetFieldSubmit.bind(
+                                          this,
+                                        )}
+                                      >
+                                        <div className="form-group">
+                                          <label
+                                            htmlFor="inputEmail3"
+                                            className="col-sm-3 control-label"
+                                          >
+                                            Tên sân
+                                          </label>
+                                          <div className="col-sm-9">
+                                            <div className="row">
+                                              <div className="col-sm-6">
+                                                <select
+                                                  value={
+                                                    this.state.fieldSelected
+                                                  }
+                                                  onChange={this.handleInputChange.bind(
+                                                    this,
+                                                  )}
+                                                  className="form-control"
+                                                  id="sel1"
+                                                  name="fieldSelected"
+                                                  type="checkbox"
+                                                >
+                                                  {freeField.map(freeField => (
+                                                    <option
+                                                      key={freeField.id}
+                                                      value={freeField.id}
+                                                    >
+                                                      {freeField.name}
+                                                    </option>
+                                                  ))}
+                                                </select>
+                                                </div>
+                                                <div className="col-sm-3">
+                                                <button
+                                              type="submit"
+                                              className="btn btn-primary"
+                                            >
+                                              Cập nhật sân
+                                            </button>
+                                                </div>
+                                              </div>
+                                            
+                                          </div>
+                                        </div>
+                                      </form>
+                                    ) : (
+                                      <h3>Không có sân trống</h3>
+                                    )}
+                                  </Modal.Body>
+                                  <Modal.Footer>
+                                    <button
+                                      onClick={this.handleHideModalField.bind(
+                                        this,
+                                      )}
+                                      className="btn btn-danger"
+                                    >
+                                      Huỷ
+                                    </button>
+                                  </Modal.Footer>
+                                </Modal>
+                              </p>
+                            </div>
+                            <div className="col-sm-3">
+                              <h4 className="text-center match">
+                                <strong>
+                                  {listMatch.opponent.profileId.name}
+                                </strong>
+                              </h4>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                : null}
             </div>
           </div>
         </div>
@@ -335,13 +410,13 @@ function mapStateToProps(state) {
   return {
     listMatch: state.listMatch.listMatch,
     auth: state.auth,
+    freeField: state.freeField.freeField,
   };
 }
 
 export default connect(mapStateToProps, {
   GetMatchByFieldOwnerAndDay,
-  getAllFreeTime5vs5,
-  getAllFreeTime7vs7,
+  getAllFreeField,
   doLoginSuccessful,
   accessDenied,
 })(Home);

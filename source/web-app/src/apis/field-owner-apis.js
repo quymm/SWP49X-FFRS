@@ -10,7 +10,8 @@ import {
   UPDATE_TIME_ENABLE_IN_WEEK,
   GET_FREE_TIME,
   BOOK_MATCH,
-  FREE_FIELD,
+  GET_FREE_FIELD,
+  SET_FIELD
 } from './base-URL';
 
 export function fetchGetMatchByFieldOwnerAndDay(
@@ -139,7 +140,7 @@ export function fetchBookMatch(
 export function fetchGetFreeFieldByTime(fieldownerid, fieldTypeId, date, time) {
   return fetch(
     BASE_URL +
-      FREE_FIELD +
+      GET_FREE_FIELD +
       '?field-owner-id=' +
       fieldownerid +
       '&field-type-id=' +
@@ -149,5 +150,13 @@ export function fetchGetFreeFieldByTime(fieldownerid, fieldTypeId, date, time) {
       '&time=' +
       time,
   ).then(res => res.json());
+}
+
+export function fetchSetFieldToMatch(
+  timeSlotId, fieldId
+) {
+  return fetch(BASE_URL + SET_FIELD + '?time-slot-id=' + timeSlotId  + '&field-id=' + fieldId , {
+    method: 'PUT'
+  }).then(res => res.json());
 }
 //

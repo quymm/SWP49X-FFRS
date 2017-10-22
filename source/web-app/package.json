@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "notyf": "^2.0.1",
     "rc-time-picker": "^2.4.1",
     "react": "^15.6.1",
+    "react-bootstrap": "^0.31.3",
     "react-datepicker": "^0.55.0",
     "react-dom": "^15.6.1",
     "react-router-dom": "^4.2.2",

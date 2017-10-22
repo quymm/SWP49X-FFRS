@@ -11,7 +11,7 @@ export default props => {
     <div>
       {listMatch.length > 0
         ? listMatch.map(listMatch => (
-            <div key={listMatch.id} className="col-sm-10 col-sm-offset-1">
+            <div key={listMatch.timeSlotEntity.id} className="col-sm-6">
               <div className="panel panel-green">
                 <div className="panel-body">
                   <div className="row">
@@ -29,26 +29,32 @@ export default props => {
                         </strong>{' '}
                       </h3>
                       <p className="text-center">
-                        {moment(
-                          '10-10-2017 ' + listMatch.timeSlotEntity.endTime,
-                        ).hour() *
-                          60 +
-                          moment(
+                        <strong>
+                          {moment(
                             '10-10-2017 ' + listMatch.timeSlotEntity.endTime,
-                          ).minute() -
-                          (moment(
-                            '10-10-2017 ' + listMatch.timeSlotEntity.startTime,
                           ).hour() *
                             60 +
                             moment(
+                              '10-10-2017 ' + listMatch.timeSlotEntity.endTime,
+                            ).minute() -
+                            (moment(
                               '10-10-2017 ' +
                                 listMatch.timeSlotEntity.startTime,
-                            ).minute())}{' '}
-                        phút
+                            ).hour() *
+                              60 +
+                              moment(
+                                '10-10-2017 ' +
+                                  listMatch.timeSlotEntity.startTime,
+                              ).minute())}{' '}
+                          phút
+                        </strong>
                       </p>
                       <p className="text-center">
-                        {listMatch.timeSlotEntity.fieldTypeId.name}
+                        <strong>
+                          {listMatch.timeSlotEntity.fieldTypeId.name}
+                        </strong>
                       </p>
+                      <p className="text-center"><button className="btn btn-xs btn-primary">Cập nhật sân</button></p>          
                     </div>
                     <div className="col-sm-3">
                       <h4 className="text-center match">
