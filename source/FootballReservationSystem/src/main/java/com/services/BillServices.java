@@ -50,13 +50,16 @@ public class BillServices {
             price = timeSlotEntity.getPrice();
         }
         VoucherEntity voucherEntity = voucherRepository.findByIdAndStatus(inputBillDTO.getVoucherId(), true);
-        billEntity.setVoucherId(voucherEntity);
-        Date dateCharge = DateTimeUtils.convertFromStringToDateTime(inputBillDTO.getDateCharge());
-        billEntity.setDateCharge(dateCharge);
+        if (voucherEntity != null) {
+            billEntity.setVoucherId(voucherEntity);
+            Date dateCharge = DateTimeUtils.convertFromStringToDateTime(inputBillDTO.getDateCharge());
+            billEntity.setDateCharge(dateCharge);
 
-        //tinh gia cho Bill
-        Float voucherValue = voucherEntity.getVoucherValue();
-        price = price - voucherValue;
+            //tinh gia cho Bill neu co voucher
+            Float voucherValue = voucherEntity.getVoucherValue();
+            price = price - voucherValue;
+        }
+
         billEntity.setPrice(price);
 
         billEntity.setStatus(true);
