@@ -6,6 +6,8 @@ import com.repository.FieldTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.EntityTransaction;
 import java.util.List;
 
 /**
@@ -22,11 +24,15 @@ public class FieldTypeServices {
     }
 
     public FieldTypeEntity findById(int fieldTypeId){
-        return fieldTypeRepository.findByIdAndStatus(fieldTypeId, true);
+        FieldTypeEntity fieldTypeEntity = fieldTypeRepository.findByIdAndStatus(fieldTypeId, true);
+        if (fieldTypeEntity == null) {
+            throw new EntityNotFoundException(String.format("Not found Field Type have id = %s", fieldTypeId));
+        }
+        return fieldTypeEntity;
     }
 
     public FieldTypeEntity deleteFieldType(int fieldTypeId){
-        FieldTypeEntity fieldTypeEntity = fieldTypeRepository.findByIdAndStatus(fieldTypeId, true);
+        FieldTypeEntity fieldTypeEntity = findById(fieldTypeId);
         fieldTypeEntity.setStatus(false);
         return fieldTypeRepository.save(fieldTypeEntity);
     }

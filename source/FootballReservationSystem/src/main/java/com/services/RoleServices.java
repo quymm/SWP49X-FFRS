@@ -5,6 +5,7 @@ import com.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -26,15 +27,19 @@ public class RoleServices {
     }
 
     public RoleEntity findByRoleName(String roleName) {
-        if (roleName != null) {
-            RoleEntity roleEntity = roleRepository.findByRoleNameAndStatus(roleName, true);
-            return roleEntity;
+        RoleEntity roleEntity = roleRepository.findByRoleNameAndStatus(roleName, true);
+        if(roleEntity == null){
+            throw new EntityNotFoundException(String.format("Not found role have role name: %s", roleName));
         }
-        return null;
+        return roleEntity;
     }
 
     public RoleEntity findById(int id) {
-        return roleRepository.findByIdAndStatus(id, true);
+        RoleEntity roleEntity = roleRepository.findByIdAndStatus(id, true);
+        if(roleEntity == null){
+            throw new EntityNotFoundException(String.format("Not found role have id = %s", id));
+        }
+        return roleEntity;
     }
 
     public List<RoleEntity> findAllRole() {
