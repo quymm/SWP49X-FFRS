@@ -36,22 +36,27 @@ public class TimeSlotServices {
     @Autowired
     MatchServices matchServices;
 
-    public List<MatchReturnDTO> findUpcomingReservationByDate(String dateString, int fieldOwnerId, int fieldTypeId) {
+    public List<MatchReturnDTO> findUpcomingReservationByDate(String dateString, int fieldOwnerId) {
         Date targetDate = DateTimeUtils.convertFromStringToDate(dateString);
-        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(fieldTypeId);
-        List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(accountEntity, fieldTypeEntity, targetDate, true, true);
+        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndReserveStatusAndDateAndStatus(fieldOwner, true, targetDate, true);
         List<MatchReturnDTO> matchReturnDTOList = new ArrayList<>();
 
         if (!timeSlotEntityList.isEmpty()) {
-            for (TimeSlotEntity timeSlotEntity : timeSlotEntityList){
+            for (TimeSlotEntity timeSlotEntity : timeSlotEntityList) {
                 FriendlyMatchEntity friendlyMatchEntity = matchServices.findFriendlyMatchByTimeSlot(timeSlotEntity.getId());
-                if (friendlyMatchEntity == null) {
-                    TourMatchEntity tourMatchEntity = matchServices.findTourMatchByTimeSlot(timeSlotEntity.getId());
+                TourMatchEntity tourMatchEntity = matchServices.findTourMatchByTimeSlot(timeSlotEntity.getId());
+                if (friendlyMatchEntity != null) {
+                    // time slot là friendly match
+                    MatchReturnDTO matchReturnDTO = new MatchReturnDTO(friendlyMatchEntity.getUserId(), friendlyMatchEntity.getUserId(), timeSlotEntity);
+                    matchReturnDTOList.add(matchReturnDTO);
+                } else if (tourMatchEntity != null) {
+                    // time slot là tour match
                     MatchReturnDTO matchReturnDTO = new MatchReturnDTO(tourMatchEntity.getUserId(), tourMatchEntity.getOpponentId(), timeSlotEntity);
                     matchReturnDTOList.add(matchReturnDTO);
-                } else{
-                    MatchReturnDTO matchReturnDTO = new MatchReturnDTO(friendlyMatchEntity.getUserId(), friendlyMatchEntity.getUserId(), timeSlotEntity);
+                } else {
+                    // time slot do chủ sân tự đặt sân
+                    MatchReturnDTO matchReturnDTO = new MatchReturnDTO(fieldOwner, fieldOwner, timeSlotEntity);
                     matchReturnDTOList.add(matchReturnDTO);
                 }
             }
@@ -174,7 +179,10 @@ public class TimeSlotServices {
         AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, "owner");
         FieldTypeEntity fieldType = fieldTypeServices.findById(fieldTypeId);
         Date targetDate = DateTimeUtils.convertFromStringToDate(dateString);
+
+        // kiểm tra trong database đã đổ time-slot rảnh cho ngày mới chưa
         if (timeSlotRepository.countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(fieldOwner, fieldType, targetDate, true) == 0) {
+            // nếu chưa có thì tạo mới time-slot
             List<TimeSlotEntity> timeSlotEntityList = createTimeSlotForDate(targetDate, fieldOwner, fieldType);
             List<TimeSlotEntity> returnTimeSlotEntityList = new ArrayList<>();
             if (!timeSlotEntityList.isEmpty()) {
@@ -182,15 +190,19 @@ public class TimeSlotServices {
             }
             return returnTimeSlotEntityList;
         } else {
+            // lấy list thời gian rảnh theo chủ sân, loại sân, ngày và sắp xếp theo thứ tự tăng dần của startTime
             List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(fieldOwner,
                     fieldType, targetDate, false, true);
             List<TimeSlotEntity> savedTimeSlotEntityList = new ArrayList<>();
             while (timeSlotEntityList.size() != 0) {
                 TimeSlotEntity savedTimeSlotEntity = timeSlotEntityList.get(0);
+                // nếu list chỉ có 1 phần tử thì trả về phần tử đó
                 if (timeSlotEntityList.size() == 1) {
                     savedTimeSlotEntityList.add(savedTimeSlotEntity);
                     break;
                 }
+                // chạy for từ timeslot thứ 2, nếu có găp timeslot nào startTime bằng nhưng endTime sau endTime của timeslot hiện tại
+                // thì lấy timeslot đó
                 for (int i = 1; i < timeSlotEntityList.size(); i++) {
                     if (timeSlotEntityList.get(i).getStartTime().equals(savedTimeSlotEntity.getStartTime())
                             && timeSlotEntityList.get(i).getEndTime().after(savedTimeSlotEntity.getEndTime())) {
@@ -198,6 +210,8 @@ public class TimeSlotServices {
                     }
                 }
                 savedTimeSlotEntityList.add(savedTimeSlotEntity);
+
+                // xóa những timeslot có startTime trước endTime của timeslot đã được đưa vào list trả về (savedTimeSlotEntity)
                 List<TimeSlotEntity> deleteList = new ArrayList<>();
                 for (TimeSlotEntity timeSlotEntity : timeSlotEntityList) {
                     if (timeSlotEntity.getStartTime().before(savedTimeSlotEntity.getEndTime())) {
@@ -270,14 +284,22 @@ public class TimeSlotServices {
     }
 
     public TimeSlotEntity findById(int timeSlotId) {
-        return timeSlotRepository.findByIdAndStatus(timeSlotId, true);
+        TimeSlotEntity timeSlotEntity = timeSlotRepository.findByIdAndStatus(timeSlotId, true);
+        if (timeSlotEntity == null) {
+            throw new EntityNotFoundException(String.format("Not found Time Slot have id = %s", timeSlotId));
+        }
+        return timeSlotEntity;
     }
 
     public TimeSlotEntity setFieldForTimeSlot(int timeSlotId, int fieldId) {
         TimeSlotEntity timeSlotEntity = findById(timeSlotId);
-        FieldEntity fieldEntity = fieldServices.findFieldEntityById(fieldId);
-        timeSlotEntity.setFieldId(fieldEntity);
-        return timeSlotRepository.save(timeSlotEntity);
+        if (timeSlotEntity.getReserveStatus()) {
+            FieldEntity fieldEntity = fieldServices.findFieldEntityById(fieldId);
+            timeSlotEntity.setFieldId(fieldEntity);
+            return timeSlotRepository.save(timeSlotEntity);
+        } else {
+            throw new IllegalArgumentException(String.format("Time Slot have id = %s is free time slot, not yet reservation!", timeSlotId));
+        }
     }
 
 }

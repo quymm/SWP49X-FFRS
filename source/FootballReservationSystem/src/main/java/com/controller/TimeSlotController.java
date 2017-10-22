@@ -40,9 +40,8 @@ public class TimeSlotController {
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/match-upcoming", method = RequestMethod.GET)
-    public ResponseEntity getMatchUpComing(@RequestParam("field-owner-id") int fieldOwnerId, @RequestParam("field-type-id") int fieldTypeId,
-                                           @RequestParam("date") String date){
-        Wrapper wrapper = new Wrapper(timeSlotServices.findUpcomingReservationByDate(date, fieldOwnerId, fieldTypeId), HttpStatus.OK.value(), HttpStatus.OK.name());
+    public ResponseEntity getMatchUpComing(@RequestParam("field-owner-id") int fieldOwnerId, @RequestParam("date") String date){
+        Wrapper wrapper = new Wrapper(timeSlotServices.findUpcomingReservationByDate(date, fieldOwnerId), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
@@ -78,16 +77,17 @@ public class TimeSlotController {
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/matching-request", method = RequestMethod.GET)
     public ResponseEntity suggestOpponent(@RequestParam("user-id") int userId, @RequestParam("field-type-id") int fieldTypeId,
-                                          @RequestParam("longitude") String longitude, @RequestParam("latitude") String latitude,
+                                          @RequestParam("address") String address, @RequestParam("deviation-time") int deviationTime, @RequestParam("deviation-distance") int deviationDistance,
                                           @RequestParam("date") String date, @RequestParam("start-time") String startTime){
-        Wrapper wrapper = new Wrapper(matchServices.suggestOpponent(userId, fieldTypeId, longitude, latitude, date, startTime), HttpStatus.OK.value(), HttpStatus.OK.name());
+        Wrapper wrapper = new Wrapper(matchServices.suggestOpponent(userId, fieldTypeId, address, date, startTime, deviationTime, deviationDistance), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/choose-field", method = RequestMethod.POST)
-    public ResponseEntity chooseSuitableField(@RequestBody InputMatchingRequestDTO inputMatchingRequestDTO, @RequestParam("matching-request-id") int matchingRequestId){
-        Wrapper wrapper = new Wrapper(matchServices.chooseSuitableField(inputMatchingRequestDTO, matchingRequestId), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+    public ResponseEntity chooseSuitableField(@RequestBody InputMatchingRequestDTO inputMatchingRequestDTO, @RequestParam("matching-request-id") int matchingRequestId,
+                                              @RequestParam("deviation-distance") int deviationDistance){
+        Wrapper wrapper = new Wrapper(matchServices.chooseSuitableField(inputMatchingRequestDTO, matchingRequestId, deviationDistance), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
