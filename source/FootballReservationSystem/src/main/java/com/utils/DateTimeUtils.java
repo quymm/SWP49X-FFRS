@@ -55,4 +55,20 @@ public class DateTimeUtils {
         SimpleDateFormat format = new SimpleDateFormat("EE");
         return format.format(date);
     }
+
+    public static int timeToIntInTimeSlot(Date time){
+        String sTime = formatTime(time);
+        String[] parts = sTime.split(":");
+        Integer hh = Integer.parseInt(parts[0]);
+        Integer mm = Integer.parseInt(parts[1]);
+        return hh*2 + (mm==30?1:0);
+    }
+
+    public static Date intToTimeInTimeSlot(int iTime){
+        int hh = iTime/2;
+        int mm = iTime%2;
+        String shh = hh<10?"0"+Integer.toString(hh):Integer.toString(hh);
+        String smm = mm==1?"30":"00";
+        return convertFromStringToTime(shh+":"+smm);
+    }
 }
