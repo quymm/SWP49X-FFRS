@@ -287,7 +287,8 @@ class Home extends Component {
                               <p className="text-center">
                                 <strong>
                                   {listMatch.timeSlotEntity.fieldId
-                                    ? 'Sân: ' + listMatch.timeSlotEntity.fieldId.name
+                                    ? 'Sân: ' +
+                                      listMatch.timeSlotEntity.fieldId.name
                                     : 'Chưa xếp sân'}
                                 </strong>
                               </p>
@@ -300,14 +301,13 @@ class Home extends Component {
                                   Cập nhật sân
                                 </button>
                                 <Modal
-                                  /* {...this.props} */
                                   show={this.state.isShowUpdateField}
                                   onHide={this.hideModal}
                                   dialogClassName="custom-modal"
                                 >
-                                <Modal.Header>
-                                <Modal.Title>Thiết lập sân</Modal.Title>
-                                </Modal.Header>
+                                  <Modal.Header>
+                                    <Modal.Title>Thiết lập sân</Modal.Title>
+                                  </Modal.Header>
                                   <Modal.Body>
                                     {freeField.length > 0 ? (
                                       <form
@@ -347,17 +347,16 @@ class Home extends Component {
                                                     </option>
                                                   ))}
                                                 </select>
-                                                </div>
-                                                <div className="col-sm-3">
-                                                <button
-                                              type="submit"
-                                              className="btn btn-primary"
-                                            >
-                                              Cập nhật sân
-                                            </button>
-                                                </div>
                                               </div>
-                                            
+                                              <div className="col-sm-3">
+                                                <button
+                                                  type="submit"
+                                                  className="btn btn-primary"
+                                                >
+                                                  Cập nhật sân
+                                                </button>
+                                              </div>
+                                            </div>
                                           </div>
                                         </div>
                                       </form>

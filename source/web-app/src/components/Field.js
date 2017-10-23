@@ -18,7 +18,7 @@ class Field extends Component {
 
   async componentDidMount() {
     const { id, roleId } = this.props.auth.user.data;
-    debugger;
+    
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
       if (authLocalStorage === null || authLocalStorage.roleId.roleName !== 'owner') {
@@ -59,8 +59,7 @@ class Field extends Component {
               <tr key={listField.id}>
                 <td>{listField.name}</td>
                 <td>{listField.fieldTypeId.name}</td>
-                <td>
-                  <button className="btn btn-info">Cập nhật</button>
+                <td>               
                   <button
                     value={listField.id}
                     onClick={this.deleteField.bind(this)}

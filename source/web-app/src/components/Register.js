@@ -116,7 +116,7 @@ class Register extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col-md-4 col-md-offset-4">
+          <div className="col-md-6 col-md-offset-3">
             <div className="login-panel panel panel-default">
               <div className="panel-heading">
                 <h3 className="panel-title">Đăng kí</h3>

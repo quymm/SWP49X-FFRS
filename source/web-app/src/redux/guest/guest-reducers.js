@@ -33,7 +33,7 @@ export const guestReducer = (state = defaultState, action) => {
     case 'LOGIN_ERROR':
       return {
         user: {
-          data: null,
+          data: {id: undefined},
           role: 1,
           status: {
             ok: false,
@@ -44,7 +44,7 @@ export const guestReducer = (state = defaultState, action) => {
       };
     case 'ACCESS_DENIED':
       return {user: {
-        data: null,
+        data: {id : undefined},
         role: 0,
         status: {
           ok: false,
