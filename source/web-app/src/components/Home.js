@@ -196,8 +196,11 @@ class Home extends Component {
     const myStyle = { padding: 20 };
     const { listMatch, freeField } = this.props;
     const { isShowUpdateField } = this.state;
-    console.log(this.props);
-    console.log('state: ', this.state);
+    const listMatchAfterFileter = listMatch.filter(
+      data =>
+        moment('10-10-2017 ' + data.timeSlotEntity.endTime).hours() < moment().hours(),  
+    );
+    console.log(listMatchAfterFileter);
     return (
       <div id="page-wrapper">
         <div className="container-fluid">
@@ -300,81 +303,6 @@ class Home extends Component {
                                 >
                                   Cập nhật sân
                                 </button>
-                                <Modal
-                                  show={this.state.isShowUpdateField}
-                                  onHide={this.hideModal}
-                                  dialogClassName="custom-modal"
-                                >
-                                  <Modal.Header>
-                                    <Modal.Title>Thiết lập sân</Modal.Title>
-                                  </Modal.Header>
-                                  <Modal.Body>
-                                    {freeField.length > 0 ? (
-                                      <form
-                                        className="form-horizontal"
-                                        onSubmit={this.handelSetFieldSubmit.bind(
-                                          this,
-                                        )}
-                                      >
-                                        <div className="form-group">
-                                          <label
-                                            htmlFor="inputEmail3"
-                                            className="col-sm-3 control-label"
-                                          >
-                                            Tên sân
-                                          </label>
-                                          <div className="col-sm-9">
-                                            <div className="row">
-                                              <div className="col-sm-6">
-                                                <select
-                                                  value={
-                                                    this.state.fieldSelected
-                                                  }
-                                                  onChange={this.handleInputChange.bind(
-                                                    this,
-                                                  )}
-                                                  className="form-control"
-                                                  id="sel1"
-                                                  name="fieldSelected"
-                                                  type="checkbox"
-                                                >
-                                                  {freeField.map(freeField => (
-                                                    <option
-                                                      key={freeField.id}
-                                                      value={freeField.id}
-                                                    >
-                                                      {freeField.name}
-                                                    </option>
-                                                  ))}
-                                                </select>
-                                              </div>
-                                              <div className="col-sm-3">
-                                                <button
-                                                  type="submit"
-                                                  className="btn btn-primary"
-                                                >
-                                                  Cập nhật sân
-                                                </button>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </form>
-                                    ) : (
-                                      <h3>Không có sân trống</h3>
-                                    )}
-                                  </Modal.Body>
-                                  <Modal.Footer>
-                                    <button
-                                      onClick={this.handleHideModalField.bind(
-                                        this,
-                                      )}
-                                      className="btn btn-danger"
-                                    >
-                                      Huỷ
-                                    </button>
-                                  </Modal.Footer>
-                                </Modal>
                               </p>
                             </div>
                             <div className="col-sm-3">
@@ -393,6 +321,68 @@ class Home extends Component {
             </div>
           </div>
         </div>
+        <Modal
+          /* {...this.props} */
+          show={this.state.isShowUpdateField}
+          onHide={this.hideModal}
+          dialogClassName="custom-modal"
+        >
+          <Modal.Header>
+            <Modal.Title>Thiết lập sân</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {freeField.length > 0 ? (
+              <form
+                className="form-horizontal"
+                onSubmit={this.handelSetFieldSubmit.bind(this)}
+              >
+                <div className="form-group">
+                  <label
+                    htmlFor="inputEmail3"
+                    className="col-sm-3 control-label"
+                  >
+                    Tên sân
+                  </label>
+                  <div className="col-sm-9">
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <select
+                          value={this.state.fieldSelected}
+                          onChange={this.handleInputChange.bind(this)}
+                          className="form-control"
+                          id="sel1"
+                          name="fieldSelected"
+                          type="checkbox"
+                        >
+                          {freeField.map(freeField => (
+                            <option key={freeField.id} value={freeField.id}>
+                              {freeField.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-sm-3">
+                        <button type="submit" className="btn btn-primary">
+                          Cập nhật sân
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            ) : (
+              <h3>Không có sân trống</h3>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              onClick={this.handleHideModalField.bind(this)}
+              className="btn btn-danger"
+            >
+              Huỷ
+            </button>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }

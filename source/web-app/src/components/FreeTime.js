@@ -121,7 +121,7 @@ class FreeTime extends Component {
 
   handleHideModalBookMatch(evt) {
     evt.preventDefault();
-    this.setState({ isShowBookMatch: false });
+    this.setState({ isShowBookMatch: false, messageBookMatch: undefined });
   }
 
   async handleDateChange(date) {
@@ -145,10 +145,12 @@ class FreeTime extends Component {
 
   async handelEndTimeInputChange(evt) {
     await this.setState({ endTime: evt });
+    console.log(this.state)
   }
 
   async handelTimeStartDayInputChange(evt) {
     await this.setState({ startTime: evt });
+    console.log(this.state)
   }
 
   async handelBookMatchSubmit(evt) {
@@ -161,11 +163,16 @@ class FreeTime extends Component {
       timeLowerLimit,
       timeUpperLimit,
     } = this.state;
+    debugger;
+    console.log(
+      endTime.hours() >= startTime.hours(),
+      endTime.minutes() - startTime.minutes() >= 30,
+    );
     if (
-      endTime.hours() >= startTime.hours() &&
-      endTime.minutes() - startTime.minutes() >= 30 &&
-      startTime >= timeLowerLimit &&
-      endTime <= timeUpperLimit
+      endTime.hours() >= startTime.hours() 
+      // endTime.minutes() - startTime.minutes() >= 30
+      // startTime >= timeLowerLimit &&
+      // endTime <= timeUpperLimit
     ) {
       const bookMatchRes = await fetchBookMatch(
         this.state.dateSelected.format('DD-MM-YYYY'),
