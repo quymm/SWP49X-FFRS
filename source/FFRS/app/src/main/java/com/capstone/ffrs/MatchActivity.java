@@ -1,5 +1,6 @@
 package com.capstone.ffrs;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -26,6 +27,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.capstone.ffrs.adapter.MatchAdapter;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.MatchRequest;
@@ -45,6 +48,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -85,13 +89,15 @@ public class MatchActivity extends AppCompatActivity {
             Date date = sdf.parse(b.getString("field_date"));
             sdf = new SimpleDateFormat(serverDateFormat);
             strDate = sdf.format(date);
-            url = localhost + "/swp49x-ffrs/match/matching-request";
+            url = localhost + "/swp49x-ffrs/match/suggest-opponent";
             url += "?user-id=" + b.getInt("user_id");
             url += "&field-type-id=" + b.getInt("field_type_id");
             url += "&longitude=" + b.getDouble("longitude");
             url += "&latitude=" + b.getDouble("latitude");
+            url += "&deviation-time=120&deviation-distance=5";
             url += "&date=" + strDate;
             url += "&start-time=" + b.getString("field_start_time");
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -184,6 +190,7 @@ public class MatchActivity extends AppCompatActivity {
             String strDate = sdf.format(date);
 
             HashMap<String, Object> params = new HashMap<String, Object>();
+            params.put("address", "ssss");
             params.put("date", strDate);
             params.put("userId", b.getInt("user_id"));
             params.put("startTime", b.getString("field_start_time"));
@@ -221,99 +228,135 @@ public class MatchActivity extends AppCompatActivity {
 
             sdf = new SimpleDateFormat(serverDateFormat);
             final String strDate = sdf.format(date);
+//
+//            String url = localhost + "/swp49x-ffrs/match/choose-field?matching-request-id=" + opponentList.get(0).getId();
+//
+//            queue = NetworkController.getInstance(this).getRequestQueue();
+//            Map<String, Object> params = new HashMap<>();
+//            params.put("date", strDate);
+//            params.put("userId", b.getInt("user_id"));
+//            params.put("startTime", b.getString("field_start_time"));
+//            params.put("endTime", b.getString("field_end_time"));
+//            params.put("fieldTypeId", b.getInt("field_type_id"));
+//            params.put("latitude", b.getDouble("latitude"));
+//            params.put("longitude", b.getDouble("longitude"));
+//            JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
+//                    new Response.Listener<JSONObject>() {
+//                        @Override
+//                        public void onResponse(JSONObject response) {
+//                            try {
+//                                JSONObject body = response.getJSONObject("body");
+//                                if (body != null && body.length() > 0) {
+//                                    try {
+//                                        final Date fromTime = new Date(body.getLong("startTime"));
+//                                        final Date toTime = new Date(body.getLong("endTime"));
+//                                        Intent intent = new Intent(MatchActivity.this, FieldDetailActivity.class);
+//                                        intent.putExtra("field_id", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getInt("id"));
+//                                        intent.putExtra("field_name", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("name"));
+//                                        intent.putExtra("field_address", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("address"));
+//                                        intent.putExtra("field_type_id", body.getJSONObject("fieldTypeId").getInt("id"));
+//                                        intent.putExtra("image_url", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("avatarUrl"));
+//                                        intent.putExtra("date", date);
+//                                        intent.putExtra("time_from", fromTime);
+//                                        intent.putExtra("time_to", toTime);
+//                                        intent.putExtra("price", (body.getInt("price") / 2));
+//                                        intent.putExtra("user_id", b.getInt("user_id"));
+//                                        intent.putExtra("time_slot_id", body.getInt("id"));
+//                                        intent.putExtra("tour_match_mode", true);
+//                                        intent.putExtra("opponent_id", opponentList.get(0).getUserId());
+//                                        startActivity(intent);
+//                                    } catch (Exception e) {
+//                                        Log.d("EXCEPTION", e.getMessage());
+//                                    }
+//                                } else {
+//                                    Toast.makeText(MatchActivity.this, "Không thể đặt sân!", Toast.LENGTH_SHORT).show();
+//                                }
+//                            } catch (JSONException e) {
+//                                Log.d("ParseException", e.getMessage());
+//                            }
+//                        }
+//                    },
+//                    new Response.ErrorListener() {
+//                        @Override
+//                        public void onErrorResponse(VolleyError error) {
+//                            Log.d("Error.Response", error.toString());
+//                        }
+//                    }) {
+//
+//                @Override
+//                public Map<String, String> getHeaders() throws AuthFailureError {
+//                    HashMap<String, String> headers = new HashMap<String, String>();
+//                    headers.put("Content-Type", "application/json; charset=utf-8");
+//                    return headers;
+//                }
+//            };
+//            queue.add(postRequest);
 
-            sdf = new SimpleDateFormat(timeFormat);
+            // Firebase
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference();
 
-            String url = localhost + "/swp49x-ffrs/match/choose-field?matching-request-id=" + opponentList.get(0).getId();
+            Integer userId = b.getInt("user_id");
+            for (MatchRequest opponent : opponentList) {
+                myRef.child("request").child(opponent.getId() + "").child(userId.toString()).setValue(0);
+                myRef.child("response").child(userId.toString()).child(opponent.getId() + "").setValue(0);
+            }
 
-            queue = NetworkController.getInstance(this).getRequestQueue();
-            Map<String, Object> params = new HashMap<>();
-            params.put("date", strDate);
-            params.put("userId", b.getInt("user_id"));
-            params.put("startTime", b.getString("field_start_time"));
-            params.put("endTime", b.getString("field_end_time"));
-            params.put("fieldTypeId", b.getInt("field_type_id"));
-            params.put("latitude", b.getDouble("latitude"));
-            params.put("longitude", b.getDouble("longitude"));
-            JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-                                JSONObject body = response.getJSONObject("body");
-                                if (body != null && body.length() > 0) {
-                                    try {
-                                        final Date fromTime = new Date(body.getLong("startTime"));
-                                        final Date toTime = new Date(body.getLong("endTime"));
-                                        Intent intent = new Intent(MatchActivity.this, FieldDetailActivity.class);
-                                        intent.putExtra("field_id", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getInt("id"));
-                                        intent.putExtra("field_name", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("name"));
-                                        intent.putExtra("field_address", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("address"));
-                                        intent.putExtra("field_type_id", body.getJSONObject("fieldTypeId").getInt("id"));
-                                        intent.putExtra("image_url", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("avatarUrl"));
-                                        intent.putExtra("date", date);
-                                        intent.putExtra("time_from", fromTime);
-                                        intent.putExtra("time_to", toTime);
-                                        intent.putExtra("price", (body.getInt("price") / 2));
-                                        intent.putExtra("user_id", b.getInt("user_id"));
-                                        intent.putExtra("time_slot_id", body.getInt("id"));
-                                        intent.putExtra("tour_match_mode", true);
-                                        intent.putExtra("opponent_id", opponentList.get(0).getUserId());
-                                        startActivity(intent);
-                                    } catch (Exception e) {
-                                        Log.d("EXCEPTION", e.getMessage());
-                                    }
-                                } else {
-                                    Toast.makeText(MatchActivity.this, "Không thể đặt sân!", Toast.LENGTH_SHORT).show();
-                                }
-                            } catch (JSONException e) {
-                                Log.d("ParseException", e.getMessage());
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.d("Error.Response", error.toString());
-                        }
-                    }) {
+//            sendPushToSingleInstance(this, null);
+//            myRef.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    // This method is called once with the initial value and again
+//                    // whenever data at this location is updated.
+//                    String value = dataSnapshot.getValue(String.class);
+//                    Toast.makeText(getApplicationContext(), "Value is: " + value, Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError error) {
+//                    // Failed to read value
+//                    Log.w("TAG", "Failed to read value.", error.toException());
+//                }
+//            });
 
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<String, String>();
-                    headers.put("Content-Type", "application/json; charset=utf-8");
-                    return headers;
-                }
-            };
-            queue.add(postRequest);
         } catch (ParseException e) {
             Log.d("LOG", e.getMessage());
         }
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference();
-//
-//        Bundle b = getIntent().getExtras();
-//        List<Integer> matchingRequestIdList = new ArrayList<>();
-//        for (MatchRequest opponent: opponentList){
-//            matchingRequestIdList.add(opponent.getId());
-//        }
-//        myRef.child("tourMatch").child(b.getInt("user_id")+"").setValue(matchingRequestIdList);
-//        myRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                String value = dataSnapshot.getValue(String.class);
-//                Toast.makeText(getApplicationContext(), "Value is: " + value, Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError error) {
-//                // Failed to read value
-//                Log.w("TAG", "Failed to read value.", error.toException());
-//            }
-//        });
-
-
     }
+
+//    public static void sendPushToSingleInstance(final Context activity, final HashMap dataValue /*your data from the activity*/) {
+//
+//
+//        final String url = "https://fcm.googleapis.com/fcm/send";
+//        StringRequest myReq = new StringRequest(Request.Method.POST, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        Toast.makeText(activity, "Bingo Success", Toast.LENGTH_SHORT).show();
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(activity, "Oops error", Toast.LENGTH_SHORT).show();
+//                    }
+//                }) {
+//
+//            ;
+//
+//            public String getBodyContentType() {
+//                return "application/json; charset=utf-8";
+//            }
+//
+//            @Override
+//            public Map<String, String> getHeaders() throws AuthFailureError {
+//                HashMap<String, String> headers = new HashMap<String, String>();
+//                headers.put("Authorization", "key=AIzaSyAzwlX8JKSRYcTiqOapjvif-k6yKYDulkY");
+//                return headers;
+//            }
+//
+//        };
+//
+//        Volley.newRequestQueue(activity).add(myReq);
+//    }
 }

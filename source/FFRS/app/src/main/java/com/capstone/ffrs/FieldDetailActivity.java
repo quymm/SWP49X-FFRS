@@ -108,7 +108,7 @@ public class FieldDetailActivity extends AppCompatActivity
         txtFieldType.setText(strFieldType);
 
         TextView txtPrice = (TextView) findViewById(R.id.text_total_price);
-        txtPrice.setText((totalPrice / 1000) + "K đồng");
+        txtPrice.setText(totalPrice + "K đồng");
     }
 
     @Override

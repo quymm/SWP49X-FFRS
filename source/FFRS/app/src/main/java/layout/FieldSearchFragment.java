@@ -80,6 +80,8 @@ public class FieldSearchFragment extends Fragment {
 
     private boolean searchMode = false;
 
+    private SharedPreferences sharedPreferences;
+
     public BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -120,6 +122,7 @@ public class FieldSearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         localhost = getResources().getString(R.string.local_host);
+
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_field_search, container, false);
 
@@ -183,7 +186,11 @@ public class FieldSearchFragment extends Fragment {
         if (!fieldList.isEmpty()) {
             clearData();
         }
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
+
+        if (sharedPreferences == null) {
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
+        }
+
         //Initialize RecyclerView
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         adapter = new FieldAdapter(this.getContext(), fieldList);
@@ -274,7 +281,7 @@ public class FieldSearchFragment extends Fragment {
         //Initialize RecyclerView
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         adapter = new FieldAdapter(this.getContext(), fieldList);
-        adapter.setUserId(b.getInt("user_id"));
+        adapter.setUserId(sharedPreferences.getInt("user_id", -1));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
@@ -301,7 +308,7 @@ public class FieldSearchFragment extends Fragment {
                                 try {
                                     JSONObject obj = body.getJSONObject(i);
                                     JSONObject profile = obj.getJSONObject("profileId");
-                                    Field field = new Field(profile.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
+                                    Field field = new Field(obj.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
 
                                     // adding movie to movies array
                                     fieldList.add(field);

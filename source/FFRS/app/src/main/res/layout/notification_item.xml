@@ -13,15 +13,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="0dp">
 
-        <ImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentLeft="true"
-            android:layout_marginBottom="10dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_profile" />
-
         <!--<com.android.volley.toolbox.NetworkImageView-->
             <!--android:id="@+id/thumbnail"-->
             <!--android:layout_width="80dp"-->
@@ -37,24 +28,24 @@
 
             android:layout_toRightOf="@id/thumbnail">
 
-            <LinearLayout
-                android:id="@+id/right_sector"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:gravity="center"
-                android:orientation="vertical">
+            <!--<LinearLayout-->
+                <!--android:id="@+id/right_sector"-->
+                <!--android:layout_width="50dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:gravity="center"-->
+                <!--android:orientation="vertical">-->
 
-                <TextView
-                    android:id="@+id/rating_score"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Reservation status"
-                    android:textAlignment="center"
-                    android:textColor="@color/secondaryText"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                <!--<TextView-->
+                    <!--android:id="@+id/rating_score"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="Reservation status"-->
+                    <!--android:textAlignment="center"-->
+                    <!--android:textColor="@color/secondaryText"-->
+                    <!--android:textSize="16sp"-->
+                    <!--android:textStyle="bold" />-->
+            <!--</LinearLayout>-->
 
             <LinearLayout
                 android:id="@+id/center_sector"
@@ -64,11 +55,11 @@
                 android:layout_toLeftOf="@id/right_sector">
 
                 <TextView
-                    android:id="@+id/team_view"
+                    android:id="@+id/notification_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="7dp"
-                    android:text="Team Name"
+                    android:text="Notification text"
                     android:textColor="@color/primaryText"
                     android:textSize="24sp"
                     android:textStyle="bold" />
@@ -80,7 +71,7 @@
                     android:layout_marginBottom="7dp"
                     android:layout_marginLeft="7dp"
                     android:layout_marginRight="7dp"
-                    android:text="Start time - end time"
+                    android:text="Start time - End time"
                     android:textColor="@color/secondaryText"
                     android:textSize="16sp" />
 

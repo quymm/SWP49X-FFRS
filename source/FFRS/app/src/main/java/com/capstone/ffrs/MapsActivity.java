@@ -187,7 +187,6 @@ public class MapsActivity extends AppCompatActivity implements
         currentPosition = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         currentMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).title("Vị trí của tôi").icon(BitmapDescriptorFactory
                 .defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-        currentMarker.showInfoWindow();
         // If location is get then change interval to 1 minutes
         if (UPDATE_INTERVAL_IN_MILLISECONDS == 1 * 1000) {
             UPDATE_INTERVAL_IN_MILLISECONDS = 60 * 1000;

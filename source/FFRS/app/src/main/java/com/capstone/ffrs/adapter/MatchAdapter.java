@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.entity.MatchRequest;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -45,15 +46,26 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(MatchAdapter.MyViewHolder holder, int position) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        MatchRequest item = matchList.get(position);
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            MatchRequest item = matchList.get(position);
 
-        holder.teamName.setText(item.getTeamName());
-        holder.time.setText(item.getStartTime() + " - " + item.getEndTime());
+            holder.teamName.setText(item.getTeamName());
 
-        holder.date.setText(sdf.format(new Date(Long.parseLong(item.getDate()))));
+            holder.date.setText(sdf.format(new Date(Long.parseLong(item.getDate()))));
 
-        holder.ratingScore.setText(item.getRatingScore() + "");
+            sdf = new SimpleDateFormat("HH:mm:ss");
+
+            Date startTime = sdf.parse(item.getStartTime());
+            Date endTime = sdf.parse(item.getEndTime());
+
+            sdf = new SimpleDateFormat("H:mm");
+            holder.time.setText(sdf.format(startTime) + " - " + sdf.format(endTime));
+
+            holder.ratingScore.setText(item.getRatingScore() + "");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -71,16 +83,6 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MyViewHolder
             time = (TextView) itemView.findViewById(R.id.time_view);
             date = (TextView) itemView.findViewById(R.id.date_view);
             ratingScore = (TextView) itemView.findViewById(R.id.rating_score);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent("custom-message");
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                    String[] hours = time.getText().toString().split(" - ");
-                    intent.putExtra("from", hours[0]);
-                    intent.putExtra("to", hours[1]);
-                }
-            });
         }
     }
 }

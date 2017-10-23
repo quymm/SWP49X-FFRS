@@ -32,10 +32,9 @@ import java.util.regex.Pattern;
 /**
  * Created by AndroidNovice on 6/5/2016.
  */
-public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder> implements Filterable {
+public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder> {
 
     private List<Field> fieldList;
-    private List<Field> mFilteredList;
     private Context context;
     private LayoutInflater inflater;
     private int userId;
@@ -44,7 +43,6 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
 
         this.context = context;
         this.fieldList = fieldList;
-        this.mFilteredList = fieldList;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -61,7 +59,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
-        Field field = mFilteredList.get(position);
+        Field field = fieldList.get(position);
 
         holder.itemView.setTag(R.id.card_view, field.getId());
         holder.title.setText(field.getFieldName());
@@ -102,65 +100,65 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
 
     @Override
     public int getItemCount() {
-        return mFilteredList.size();
+        return fieldList.size();
     }
 
-    @Override
-    public Filter getFilter() {
-
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence charSequence) {
-
-                String charString = charSequence.toString();
-
-                if (charString.isEmpty()) {
-                    mFilteredList = fieldList;
-                } else {
-                    charString = normalizeText(charString);
-
-                    List<Field> filteredList = new ArrayList<>();
-                    for (Field field : fieldList) {
-
-                        // Vietnamese characters handling
-                        String fieldName = field.getFieldName().toLowerCase();
-                        try {
-                            fieldName = normalizeText(fieldName);
-                        } catch (Exception e) {
-                            Log.d("ERROR", e.getMessage());
-                        }
-
-                        // Search like processing
-                        if (fieldName.contains(charString)) {
-                            filteredList.add(field);
-                        }
-
-                        mFilteredList = filteredList;
-                    }
-                }
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = mFilteredList;
-                return filterResults;
-            }
-
-            @Override
-            protected void publishResults(CharSequence charSequence, FilterResults
-                    filterResults) {
-                mFilteredList = (ArrayList<Field>) filterResults.values;
-                Intent intent = new Intent("search-message");
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                intent.putExtra("empty_list", mFilteredList.isEmpty());
-                notifyDataSetChanged();
-            }
-        };
-    }
-
-    public String normalizeText(String rawText) {
-        String temp = Normalizer.normalize(rawText, Normalizer.Form.NFD);
-        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-        rawText = pattern.matcher(temp).replaceAll("").replaceAll("đ", "d");
-        return rawText;
-    }
+//    @Override
+//    public Filter getFilter() {
+//
+//        return new Filter() {
+//            @Override
+//            protected FilterResults performFiltering(CharSequence charSequence) {
+//
+//                String charString = charSequence.toString();
+//
+//                if (charString.isEmpty()) {
+//                    fieldList = fieldList;
+//                } else {
+//                    charString = normalizeText(charString);
+//
+//                    List<Field> filteredList = new ArrayList<>();
+//                    for (Field field : fieldList) {
+//
+//                        // Vietnamese characters handling
+//                        String fieldName = field.getFieldName().toLowerCase();
+//                        try {
+//                            fieldName = normalizeText(fieldName);
+//                        } catch (Exception e) {
+//                            Log.d("ERROR", e.getMessage());
+//                        }
+//
+//                        // Search like processing
+//                        if (fieldName.contains(charString)) {
+//                            filteredList.add(field);
+//                        }
+//
+//                        fieldList = filteredList;
+//                    }
+//                }
+//                FilterResults filterResults = new FilterResults();
+//                filterResults.values = fieldList;
+//                return filterResults;
+//            }
+//
+//            @Override
+//            protected void publishResults(CharSequence charSequence, FilterResults
+//                    filterResults) {
+//                fieldList = (ArrayList<Field>) filterResults.values;
+//                Intent intent = new Intent("search-message");
+//                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+//                intent.putExtra("empty_list", fieldList.isEmpty());
+//                notifyDataSetChanged();
+//            }
+//        };
+//    }
+//
+//    public String normalizeText(String rawText) {
+//        String temp = Normalizer.normalize(rawText, Normalizer.Form.NFD);
+//        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+//        rawText = pattern.matcher(temp).replaceAll("").replaceAll("đ", "d");
+//        return rawText;
+//    }
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

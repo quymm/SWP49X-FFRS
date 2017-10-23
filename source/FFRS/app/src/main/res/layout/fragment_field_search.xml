@@ -24,7 +24,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Đang tìm sân"
+            android:text="Đang tìm sân gần bạn"
             android:textAlignment="center"
             android:textSize="24dp" />
     </LinearLayout>

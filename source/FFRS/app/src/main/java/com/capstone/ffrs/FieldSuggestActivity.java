@@ -17,10 +17,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.capstone.ffrs.adapter.SimpleFragmentPagerAdapter;
+import com.capstone.ffrs.service.FirebaseNotificationServices;
 import com.capstone.ffrs.utils.GPSLocationListener;
+
+import org.w3c.dom.Text;
 
 
 public class FieldSuggestActivity extends AppCompatActivity
@@ -66,6 +72,9 @@ public class FieldSuggestActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        Intent intent = new Intent(this, FirebaseNotificationServices.class);
+        startService(intent);
+
         // Find the view pager that will allow the user to swipe between fragments
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 
@@ -78,6 +87,14 @@ public class FieldSuggestActivity extends AppCompatActivity
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
+
+        Bundle b = getIntent().getExtras();
+        View headerLayout = navigationView.getHeaderView(0);
+        TextView txtTeamName = (TextView) headerLayout.findViewById(R.id.text_name);
+        txtTeamName.setText(b.getString("name"));
+
+        TextView txtPoints = (TextView) headerLayout.findViewById(R.id.text_points);
+        txtPoints.setText("Điểm đổi thưởng: " + b.getInt("points"));
 
         gpsLocationListener = new GPSLocationListener(this);
     }

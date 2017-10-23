@@ -125,7 +125,8 @@ public class LoginActivity extends AppCompatActivity {
                 editor.putString("password", body.getString("password"));
                 editor.commit();
             }
-            intent.putExtra("user_id", body.getInt("id"));
+            intent.putExtra("name", body.getJSONObject("profileId").getString("name"));
+            intent.putExtra("points", body.getJSONObject("profileId").getInt("bonusPoint"));
         } catch (JSONException e) {
             Log.d("EXCEPTION", e.getMessage());
         }

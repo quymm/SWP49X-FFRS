@@ -73,7 +73,7 @@ public class PayPalActivity extends AppCompatActivity {
         Intent intent = new Intent(this, PayPalService.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
         startService(intent);
-        thingToBuy = new PayPalPayment(new BigDecimal(b.getInt("price") / 23000.0), "USD",
+        thingToBuy = new PayPalPayment(new BigDecimal(b.getInt("price") / 23 * 1.0), "USD",
                 "Đặt sân FFRS", PayPalPayment.PAYMENT_INTENT_SALE);
         Intent paymentIntent = new Intent(PayPalActivity.this,
                 PaymentActivity.class);
@@ -102,11 +102,11 @@ public class PayPalActivity extends AppCompatActivity {
                     localhost = getResources().getString(R.string.local_host);
                     Bundle b = getIntent().getExtras();
                     boolean tourMatchMode = b.getBoolean("tour_match_mode");
-                    String url = "";
+                    String url;
                     if (!tourMatchMode) {
-                        url = localhost + "/swp49x-ffrs/match/friendly-match?time-slot-id=" + b.getInt("time_slot_id") + "&user-id=" + b.getInt("user_id");
+                        url = localhost + "/swp49x-ffrs/match/friendly-match?time-slot-id=" + b.getInt("time_slot_id") + "&user-id=" + b.getInt("user_id") + "&voucher-id=0";
                     } else {
-                        url = localhost + "/swp49x-ffrs/match/tour-match?time-slot-id=" + b.getInt("time_slot_id") + "&user-id=" + b.getInt("user_id") + "&opponent-id=" + b.getInt("opponent_id");
+                        url = localhost + "/swp49x-ffrs/match/tour-match?time-slot-id=" + b.getInt("time_slot_id") + "&user-id=" + b.getInt("user_id") + "&opponent-id=" + b.getInt("opponent_id") + "&voucher-id=0";
                     }
 
                     queue = NetworkController.getInstance(this).getRequestQueue();

@@ -21,11 +21,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.capstone.ffrs.service.FirebaseNotificationServices;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.okhttp.internal.http.HttpMethod;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +43,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         } else {
@@ -75,6 +76,7 @@ public class MainActivity extends Activity {
                             if (body != null && body.length() > 0) {
                                 changeActivity(body);
                             } else {
+                                clearSharedPreferences();
                                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
@@ -87,7 +89,14 @@ public class MainActivity extends Activity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("Error.Response", error.toString());
+                        if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
+                            clearSharedPreferences();
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        } else {
+                            Log.d("Error.Response", error.toString());
+                        }
                     }
                 }) {
         };
@@ -105,7 +114,8 @@ public class MainActivity extends Activity {
                 editor.putString("password", body.getString("password"));
                 editor.commit();
             }
-            intent.putExtra("user_id", body.getInt("id"));
+            intent.putExtra("name", body.getJSONObject("profileId").getString("name"));
+            intent.putExtra("points", body.getJSONObject("profileId").getInt("bonusPoint"));
         } catch (JSONException e) {
             Log.d("EXCEPTION", e.getMessage());
         }
@@ -187,4 +197,10 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void clearSharedPreferences() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        editor.commit();
+    }
 }
