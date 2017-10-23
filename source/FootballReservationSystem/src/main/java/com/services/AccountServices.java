@@ -150,7 +150,6 @@ public class AccountServices {
                 CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(fieldOwner.getProfileId().getLongitude()),
                         NumberUtils.parseFromStringToDouble(fieldOwner.getProfileId().getLatitude()));
                 double distance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
-                int distance = MapUtils.calculateDistanceBetweenTwoPointWithAddress(location, fieldOwner.getProfileId().getAddress(), "driving");
                 FieldOwnerAndDistance fieldOwnerAndDistance = new FieldOwnerAndDistance(fieldOwner, distance);
                 fieldOwnerAndDistanceList.add(fieldOwnerAndDistance);
             }
