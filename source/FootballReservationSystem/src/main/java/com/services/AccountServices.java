@@ -139,9 +139,7 @@ public class AccountServices {
     public List<AccountEntity> findMax10FieldOwnerNearByPosition(String longitudeStr, String latitudeStr){
         double longitude = NumberUtils.parseFromStringToDouble(longitudeStr);
         double latitude = NumberUtils.parseFromStringToDouble(latitudeStr);
-        CordinationPoint cordinationPoint = new CordinationPoint(longitude, latitude);
-
-        String location = MapUtils.getAddressFromCordinationPoint(cordinationPoint);
+        CordinationPoint cordinationPointA = new CordinationPoint(longitude, latitude);
 
         List<AccountEntity> fieldOwnerList = findAccountByRole("owner");
         List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
@@ -149,6 +147,9 @@ public class AccountServices {
 
         if(!fieldOwnerList.isEmpty() && fieldOwnerList.size() > 1){
             for (AccountEntity fieldOwner : fieldOwnerList) {
+                CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(fieldOwner.getProfileId().getLongitude()),
+                        NumberUtils.parseFromStringToDouble(fieldOwner.getProfileId().getLatitude()));
+                double distance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
                 int distance = MapUtils.calculateDistanceBetweenTwoPointWithAddress(location, fieldOwner.getProfileId().getAddress(), "driving");
                 FieldOwnerAndDistance fieldOwnerAndDistance = new FieldOwnerAndDistance(fieldOwner, distance);
                 fieldOwnerAndDistanceList.add(fieldOwnerAndDistance);
