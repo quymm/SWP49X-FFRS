@@ -143,8 +143,10 @@ public class TimeSlotServices {
                     timeSlotRepository.delete(timeSlotEntity);
                     timeSlotRepository.save(timeSlotEntity1);
                     timeSlotRepository.save(timeSlotEntity3);
-                    return timeSlotRepository.save(timeSlotEntity2);
-                } else if (timeSlotEntity.getStartTime().before(startTime) && timeSlotEntity.getEndTime().equals(startTime)) {
+                    TimeSlotEntity savedTimeSlotEntity = timeSlotRepository.save(timeSlotEntity2);
+                    mergeTimeSlotInList(savedTimeSlotEntity.getFieldOwnerId(), savedTimeSlotEntity.getFieldTypeId(), savedTimeSlotEntity.getDate());
+                    return savedTimeSlotEntity;
+                } else if (timeSlotEntity.getStartTime().before(startTime) && timeSlotEntity.getEndTime().equals(endTime)) {
                     // khoảng thời gian trước giờ đặt
                     TimeSlotEntity timeSlotEntity1 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
                             timeSlotEntity.getStartTime(), startTime, Float.valueOf(0), false, true);
@@ -153,7 +155,9 @@ public class TimeSlotServices {
                             startTime, endTime, price, true, true);
                     timeSlotRepository.delete(timeSlotEntity);
                     timeSlotRepository.save(timeSlotEntity1);
-                    return timeSlotRepository.save(timeSlotEntity2);
+                    TimeSlotEntity savedTimeSlotEntity = timeSlotRepository.save(timeSlotEntity2);
+                    mergeTimeSlotInList(savedTimeSlotEntity.getFieldOwnerId(), savedTimeSlotEntity.getFieldTypeId(), savedTimeSlotEntity.getDate());
+                    return savedTimeSlotEntity;
                 } else if (timeSlotEntity.getStartTime().equals(startTime) && timeSlotEntity.getEndTime().after(endTime)) {
                     // khoảng thời gian đặt
                     TimeSlotEntity timeSlotEntity1 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
@@ -163,7 +167,9 @@ public class TimeSlotServices {
                             endTime, timeSlotEntity.getEndTime(), Float.valueOf(0), false, true);
                     timeSlotRepository.delete(timeSlotEntity);
                     timeSlotRepository.save(timeSlotEntity2);
-                    return timeSlotRepository.save(timeSlotEntity1);
+                    TimeSlotEntity savedTimeSlotEntity = timeSlotRepository.save(timeSlotEntity1);
+                    mergeTimeSlotInList(savedTimeSlotEntity.getFieldOwnerId(), savedTimeSlotEntity.getFieldTypeId(), savedTimeSlotEntity.getDate());
+                    return savedTimeSlotEntity;
                 } else {
                     // khoảng thời gian đặt bằng chính timeslot
                     timeSlotEntity.setReserveStatus(true);
@@ -300,6 +306,105 @@ public class TimeSlotServices {
         } else {
             throw new IllegalArgumentException(String.format("Time Slot have id = %s is free time slot, not yet reservation!", timeSlotId));
         }
+    }
+
+    public void deleteTimeSlotInList(List<TimeSlotEntity> listTimeSlotEntity) {
+        for (TimeSlotEntity tSlotEntity : listTimeSlotEntity) {
+            timeSlotRepository.delete(tSlotEntity);
+        }
+    }
+
+    public boolean cancelReservationTimeSlot(int timeSlotId) {
+        TimeSlotEntity timeSlotEntity = findById(timeSlotId);
+        if (!timeSlotEntity.getReserveStatus()) {
+            throw new IllegalArgumentException(String.format("Time Slot have id = %s is free time, cannot cancel!", timeSlotId));
+        }
+        timeSlotEntity.setReserveStatus(false);
+        TimeSlotEntity updatedTimeSlot = timeSlotRepository.save(timeSlotEntity);
+        mergeTimeSlotInList(updatedTimeSlot.getFieldOwnerId(), updatedTimeSlot.getFieldTypeId(), updatedTimeSlot.getDate());
+        return true;
+    }
+
+    public boolean mergeTimeSlotInList(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity, Date date) {
+        List<TimeSlotEntity> listTimeSlotEntity = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(fieldOwner, fieldTypeEntity, date, false, true);
+
+        int[] timeSlotArray = new int[48];
+
+        //khoi tao cho quy thoi gian
+        for (int i = 0; i < 48; i++) {
+            timeSlotArray[i] = 0;
+        }
+
+        //cap nhat quy thoi gian trong nhung time slot cua listTImeSlotEntity
+        int t = 0;//tong thoi gian trong quy thoi gian
+        for (TimeSlotEntity tSlotEntity : listTimeSlotEntity) {
+            int s = DateTimeUtils.timeToIntInTimeSlot(tSlotEntity.getStartTime());
+            int e = DateTimeUtils.timeToIntInTimeSlot(tSlotEntity.getEndTime());
+            for (int i = s; i < e; i++) {
+                timeSlotArray[i]++;
+                t++;
+            }
+        }
+        TimeSlotEntity firstTimeSlotEntity = listTimeSlotEntity.get(0);
+
+        //xep quy thoi gian lai thanh nhung timeslot moi
+        while (t > 0) {
+//                TimeSlotEntity timeSlotEntity =
+            //tao 1 time slot moi
+            //khoi tao starttime s endtime e cho slot moi
+            int s = -1;
+            int e = s;
+            //
+            int i = 0;
+            while (timeSlotArray[i] == 0) {
+                i++;
+            }
+            s = i;
+            while ((i + 1 < 48) && (timeSlotArray[i + 1] > 0)) {
+                i++;
+            }
+            e = i;
+
+            Date startTime = DateTimeUtils.intToTimeInTimeSlot(s);
+            Date endtTime = DateTimeUtils.intToTimeInTimeSlot(e + 1);
+            //kiem tra coi co thang timeslot nay trong list ko
+            int check = -1;
+            for (TimeSlotEntity tSlotEntity : listTimeSlotEntity) {
+                if (tSlotEntity.getStartTime().equals(startTime) && tSlotEntity.getEndTime().equals(endtTime)) {
+                    check = listTimeSlotEntity.indexOf(tSlotEntity);
+                }
+            }
+            if (check == -1) { // ko co thang timeslot co starttime endtime nay, phai tao moi
+                //tao time slot entity moi voi start time end time la s va e vua tim dc
+                TimeSlotEntity newTimeSlotEntity = new TimeSlotEntity();
+                newTimeSlotEntity.setDate(firstTimeSlotEntity.getDate());
+                newTimeSlotEntity.setFieldId(firstTimeSlotEntity.getFieldId());
+                newTimeSlotEntity.setFieldOwnerId(firstTimeSlotEntity.getFieldOwnerId());
+                newTimeSlotEntity.setFieldTypeId(firstTimeSlotEntity.getFieldTypeId());
+                newTimeSlotEntity.setReserveStatus(false);
+                newTimeSlotEntity.setStatus(true);
+                newTimeSlotEntity.setPrice(0);
+                newTimeSlotEntity.setStartTime(startTime);
+                newTimeSlotEntity.setEndTime(endtTime);
+                timeSlotRepository.save(newTimeSlotEntity);
+                for (int j = s; j <= e; j++) {
+                    timeSlotArray[j]--;
+                    t--;
+                }
+            } else {//co thang timeslot nay ko bi thay doi, remove khoi list, ko xet no nua
+                listTimeSlotEntity.remove(check);
+                for (int j = s; j <= e; j++) {
+                    timeSlotArray[j]--;
+                    t--;
+                }
+            }
+            //tru di trong t khoang thoi gian vua tao moi timeslot
+
+        }
+        if (listTimeSlotEntity != null) {
+            deleteTimeSlotInList(listTimeSlotEntity);
+        }
+        return true;
     }
 
 }

@@ -1,39 +1,24 @@
 package com.dto;
 
+import com.entity.FriendlyMatchEntity;
+import com.entity.TourMatchEntity;
+import com.entity.VoucherEntity;
+
 import java.util.Date;
 
 public class InputBillDTO {
-    private String dateCharge;
-    private Integer userId;
     private Integer friendlyMatchId;
-    private Integer voucherId;
     private Integer tourMatchId;
+    private Integer voucherId;
+    private boolean opponentPayment;
 
     public InputBillDTO() {
     }
 
-    public InputBillDTO(String dateCharge, Integer userId, Integer friendlyMatchId, Integer voucherId, Integer tourMatchId) {
-        this.dateCharge = dateCharge;
-        this.userId = userId;
+    public InputBillDTO(Integer friendlyMatchId, Integer tourMatchId, Integer voucherId) {
         this.friendlyMatchId = friendlyMatchId;
-        this.voucherId = voucherId;
         this.tourMatchId = tourMatchId;
-    }
-
-    public String getDateCharge() {
-        return dateCharge;
-    }
-
-    public void setDateCharge(String dateCharge) {
-        this.dateCharge = dateCharge;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+        this.voucherId = voucherId;
     }
 
     public Integer getFriendlyMatchId() {
@@ -44,6 +29,14 @@ public class InputBillDTO {
         this.friendlyMatchId = friendlyMatchId;
     }
 
+    public Integer getTourMatchId() {
+        return tourMatchId;
+    }
+
+    public void setTourMatchId(Integer tourMatchId) {
+        this.tourMatchId = tourMatchId;
+    }
+
     public Integer getVoucherId() {
         return voucherId;
     }
@@ -52,11 +45,11 @@ public class InputBillDTO {
         this.voucherId = voucherId;
     }
 
-    public Integer getTourMatchId() {
-        return tourMatchId;
+    public boolean isOpponentPayment() {
+        return opponentPayment;
     }
 
-    public void setTourMatchId(Integer tourMatchId) {
-        this.tourMatchId = tourMatchId;
+    public void setOpponentPayment(boolean opponentPayment) {
+        this.opponentPayment = opponentPayment;
     }
 }

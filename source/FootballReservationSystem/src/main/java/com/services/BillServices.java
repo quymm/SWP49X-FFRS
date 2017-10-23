@@ -21,49 +21,50 @@ public class BillServices {
     AccountServices accountServices;
 
     @Autowired
-    FriendlyMatchRepository friendlyMatchRepository;
+    VoucherServices voucherServices;
 
     @Autowired
-    TourMatchRepository tourMatchRepository;
-
-    @Autowired
-    VoucherRepository voucherRepository;
+    MatchServices matchServices;
 
 
-    public BillEntity createBill(InputBillDTO inputBillDTO){
+    public BillEntity createBill(InputBillDTO inputBillDTO) {
         BillEntity billEntity = new BillEntity();
-
-        AccountEntity accountEntity = accountServices.findAccountEntityById(inputBillDTO.getUserId(), "user");
-        billEntity.setUserId(accountEntity);
+        billEntity.setDateCharge(new Date());
 
         Float price = new Float(0.0);
-        if (inputBillDTO.getFriendlyMatchId()!= null){
-            FriendlyMatchEntity friendlyMatchEntity = friendlyMatchRepository.findByIdAndStatus(inputBillDTO.getFriendlyMatchId(), true);
+        if (inputBillDTO.getFriendlyMatchId() != null && inputBillDTO.getFriendlyMatchId() != 0) {
+            FriendlyMatchEntity friendlyMatchEntity = matchServices.findFriendlyMatchEntityById(inputBillDTO.getFriendlyMatchId());
             billEntity.setFriendlyMatchId(friendlyMatchEntity);
+            billEntity.setUserId(friendlyMatchEntity.getUserId());
             TimeSlotEntity timeSlotEntity = friendlyMatchEntity.getTimeSlotId();
             price = timeSlotEntity.getPrice();
-        }
-        if (inputBillDTO.getTourMatchId()!= null){
-            TourMatchEntity tourMatchEntity = tourMatchRepository.findByIdAndStatus(inputBillDTO.getTourMatchId(), true);
+        } else {
+            TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(inputBillDTO.getTourMatchId());
             billEntity.setTourMatchId(tourMatchEntity);
             TimeSlotEntity timeSlotEntity = tourMatchEntity.getTimeSlotId();
-            price = timeSlotEntity.getPrice();
+            price = timeSlotEntity.getPrice() / 2;
+            if (!inputBillDTO.isOpponentPayment()) {
+                billEntity.setUserId(tourMatchEntity.getUserId());
+            } else {
+                billEntity.setUserId(tourMatchEntity.getOpponentId());
+            }
         }
-        VoucherEntity voucherEntity = voucherRepository.findByIdAndStatus(inputBillDTO.getVoucherId(), true);
-        if (voucherEntity != null) {
-            billEntity.setVoucherId(voucherEntity);
-            Date dateCharge = DateTimeUtils.convertFromStringToDateTime(inputBillDTO.getDateCharge());
-            billEntity.setDateCharge(dateCharge);
+        if (inputBillDTO.getVoucherId() != null && inputBillDTO.getVoucherId() != 0) {
+            VoucherEntity voucherEntity = voucherServices.findVoucherEntityById(inputBillDTO.getVoucherId());
+            if (voucherEntity != null) {
+                billEntity.setVoucherId(voucherEntity);
 
-            //tinh gia cho Bill neu co voucher
-            Float voucherValue = voucherEntity.getVoucherValue();
-            price = price - voucherValue;
+                //tinh gia cho Bill neu co voucher
+                Float voucherValue = voucherEntity.getVoucherValue();
+                price = price - voucherValue;
+            }
+
         }
-
         billEntity.setPrice(price);
 
         billEntity.setStatus(true);
-
         return billRepository.save(billEntity);
     }
+
+
 }

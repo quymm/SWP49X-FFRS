@@ -15,7 +15,8 @@ public class RatingOpponentServices {
     AccountServices accountServices;
 
     @Autowired
-    TourMatchServices tourMatchServices;
+    MatchServices matchServices;
+
 
     @Autowired
     RatingOpponentRepository ratingOpponentRepository;
@@ -30,14 +31,14 @@ public class RatingOpponentServices {
         return ratingOpponentRepository.findByOpponentIdAndStatus(accountEntity, true);
     }
     public List<RatingOpponentEntity> findBytourMatchId(int tourMatchId){
-        TourMatchEntity tourMatchEntity = tourMatchServices.findTourMatchEntityById(tourMatchId);
+        TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(tourMatchId);
         return ratingOpponentRepository.findByTourMatchIdAndStatus(tourMatchEntity, true);
     }
 
     public  RatingOpponentEntity findByUserIdAndOpponentIdAndTourMatchIdAndStatus(int userId, int opponentId, int tourMatchId, boolean status){
         AccountEntity userAccountEntity = accountServices.findAccountEntityById(userId, "user");
         AccountEntity opponentAccountEntity = accountServices.findAccountEntityById(opponentId, "user");
-        TourMatchEntity tourMatchEntity = tourMatchServices.findTourMatchEntityById(tourMatchId);
+        TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(tourMatchId);
         return ratingOpponentRepository.findByUserIdAndOpponentIdAndTourMatchIdAndStatus(userAccountEntity, opponentAccountEntity, tourMatchEntity,true);
     }
 
@@ -45,7 +46,7 @@ public class RatingOpponentServices {
         RatingOpponentEntity ratingOpponentEntity = new RatingOpponentEntity();
         AccountEntity userAccountEntity = accountServices.findAccountEntityById(inputRatingOpponentDTO.getUserId(), "user");
         AccountEntity opponentAccountEntity = accountServices.findAccountEntityById(inputRatingOpponentDTO.getOpponentId(), "user");
-        TourMatchEntity tourMatchEntity = tourMatchServices.findTourMatchEntityById(inputRatingOpponentDTO.getTourMatchId());
+        TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(inputRatingOpponentDTO.getTourMatchId());
         ratingOpponentEntity.setUserId(userAccountEntity);
         ratingOpponentEntity.setOpponentId(opponentAccountEntity);
         ratingOpponentEntity.setTourMatchId(tourMatchEntity);
