@@ -88,11 +88,8 @@ public class MatchServices {
         matchingRequestEntity.setDate(date);
         matchingRequestEntity.setStartTime(startTime);
         matchingRequestEntity.setEndTime(endTime);
-        if (inputMatchingRequestDTO.getAddress() != null) {
-            CordinationPoint cordinationPoint = MapUtils.getLongitudeAndLatitudeFromAddress(inputMatchingRequestDTO.getAddress());
-            matchingRequestEntity.setLongitude(cordinationPoint.getLongitude() + "");
-            matchingRequestEntity.setLatitude(cordinationPoint.getLatitude() + "");
-        }
+        matchingRequestEntity.setLongitude(inputMatchingRequestDTO.getLongitude());
+        matchingRequestEntity.setLatitude(inputMatchingRequestDTO.getLatitude());
         matchingRequestEntity.setStatus(true);
         return matchingRequestRepository.save(matchingRequestEntity);
     }

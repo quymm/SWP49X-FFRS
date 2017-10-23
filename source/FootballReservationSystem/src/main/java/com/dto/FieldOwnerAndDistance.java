@@ -8,9 +8,9 @@ import com.entity.AccountEntity;
 public class FieldOwnerAndDistance {
     AccountEntity fieldOwner;
 
-    Integer distance;
+    double distance;
 
-    public FieldOwnerAndDistance(AccountEntity fieldOwner, Integer distance) {
+    public FieldOwnerAndDistance(AccountEntity fieldOwner, double distance) {
         this.fieldOwner = fieldOwner;
         this.distance = distance;
     }
@@ -26,11 +26,11 @@ public class FieldOwnerAndDistance {
         this.fieldOwner = fieldOwner;
     }
 
-    public Integer getDistance() {
+    public double getDistance() {
         return distance;
     }
 
-    public void setDistance(Integer distance) {
+    public void setDistance(double distance) {
         this.distance = distance;
     }
 
