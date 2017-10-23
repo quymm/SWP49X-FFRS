@@ -143,7 +143,7 @@ class FreeTime extends Component {
   }
 
   async handelTimeStartDayInputChange(evt) {
-    await this.setState({ endTime: evt.format('HH:mm') });
+    await this.setState({ startTime: evt.format('HH:mm') });
   }
 
   async handelBookMatchSubmit(evt) {
@@ -157,11 +157,10 @@ class FreeTime extends Component {
       this.state.startTime,
     );
     if (bookMatchRes.status === 201 && bookMatchRes.body !== null) {
-      this.setState({isShowBookMatch: false})
+      this.setState({ isShowBookMatch: false });
       notyf.confirm('Đặt sân thành công!');
-    }
-    else{
-      this.setState({isShowBookMatch: false})
+    } else {
+      this.setState({ isShowBookMatch: false });
       notyf.alert('Đặt sân thất bại!');
     }
   }
@@ -285,8 +284,10 @@ class FreeTime extends Component {
             <Modal.Title>Đặt sân</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <form className="form-horizontal">
-            /* onSubmit={this.handleSubmitBookMatch.bind(this)} */
+            <form
+              className="form-horizontal"
+              onSubmit={this.handelBookMatchSubmit.bind(this)}
+            >
               <div>
                 <div className="form-group">
                   <label
