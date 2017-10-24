@@ -15,7 +15,8 @@ public class Notification {
 
     private String teamName;
     private Date startTime, endTime, date;
-    private int userId, requestId;
+    private int userId, requestId, fieldTypeId;
+    private double latitude, longitude;
 
     public Notification() {
     }
@@ -66,5 +67,29 @@ public class Notification {
 
     public void setRequestId(int requestId) {
         this.requestId = requestId;
+    }
+
+    public int getFieldTypeId() {
+        return fieldTypeId;
+    }
+
+    public void setFieldTypeId(int fieldTypeId) {
+        this.fieldTypeId = fieldTypeId;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

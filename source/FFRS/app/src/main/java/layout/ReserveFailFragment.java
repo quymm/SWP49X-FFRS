@@ -11,13 +11,22 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.FieldSuggestActivity;
 import com.capstone.ffrs.PayPalActivity;
 import com.capstone.ffrs.R;
+import com.capstone.ffrs.controller.NetworkController;
+
+import org.json.JSONObject;
 
 public class ReserveFailFragment extends Fragment {
 
     private Button btHome, btRetry;
+    private String localhost;
 
     public ReserveFailFragment() {
         // Required empty public constructor
@@ -27,6 +36,7 @@ public class ReserveFailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        localhost = getResources().getString(R.string.local_host);
     }
 
     @Override
@@ -38,12 +48,30 @@ public class ReserveFailFragment extends Fragment {
         btHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle b = getActivity().getIntent().getExtras();
+                final Bundle b = getActivity().getIntent().getExtras();
+                int timeSlotId = b.getInt("time_slot_id");
+                String url = localhost + "/swp49x-ffrs/match/cancel-reservation?time-slot-id=" + timeSlotId;
+                RequestQueue queue = NetworkController.getInstance(getActivity()).getRequestQueue();
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Intent intent = new Intent(getContext(), FieldSuggestActivity.class);
+                        intent.putExtra("user_id", b.getInt("user_id"));
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Intent intent = new Intent(getContext(), FieldSuggestActivity.class);
+                        intent.putExtra("user_id", b.getInt("user_id"));
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
+                });
+                queue.add(request);
 
-                Intent intent = new Intent(getContext(), FieldSuggestActivity.class);
-                intent.putExtra("user_id", b.getInt("user_id"));
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+
             }
         });
         btRetry = (Button) view.findViewById(R.id.btRetry);

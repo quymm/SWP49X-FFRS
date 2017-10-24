@@ -128,7 +128,11 @@ public class FieldSuggestActivity extends AppCompatActivity
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear();
             editor.commit();
-            Intent intent = new Intent(this, LoginActivity.class);
+
+            Intent intent = new Intent(this, FirebaseNotificationServices.class);
+            stopService(intent);
+
+            intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }

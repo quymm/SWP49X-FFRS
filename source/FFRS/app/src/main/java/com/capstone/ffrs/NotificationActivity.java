@@ -3,14 +3,11 @@ package com.capstone.ffrs;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -26,16 +23,15 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.capstone.ffrs.adapter.MatchAdapter;
 import com.capstone.ffrs.adapter.NotificationAdapter;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.DataSnapshotEntrySet;
+import com.capstone.ffrs.entity.FirebaseUserInfo;
 import com.capstone.ffrs.entity.Notification;
+import com.capstone.ffrs.utils.GPSLocationListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
@@ -54,7 +50,7 @@ public class NotificationActivity extends AppCompatActivity {
     private ValueEventListener listener;
     private List<Notification> notificationList = new ArrayList<>();
     private SharedPreferences sharedPreferences;
-    private String localhost, url;
+    private String localhost;
 
     private RecyclerView recyclerView;
     private RequestQueue queue;
@@ -66,6 +62,7 @@ public class NotificationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_notification);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final int userId = sharedPreferences.getInt("user_id", -1);
 
         localhost = getResources().getString(R.string.local_host);
 
@@ -75,7 +72,7 @@ public class NotificationActivity extends AppCompatActivity {
         //Initialize RecyclerView
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         adapter = new NotificationAdapter(this, notificationList);
-        adapter.setUserId(sharedPreferences.getInt("user_id", -1));
+        adapter.setUserId(userId);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -86,34 +83,18 @@ public class NotificationActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> iterable = dataSnapshot.getChildren();
                 notificationList.clear();
-                for (DataSnapshot snapshot : iterable) {
+                for (final DataSnapshot snapshot : iterable) {
                     queue = NetworkController.getInstance(NotificationActivity.this).getRequestQueue();
-                    url = localhost + "/swp49x-ffrs/match/matching-request?matching-request-id=" + snapshot.getKey();
+                    String url = localhost + "/swp49x-ffrs/match/matching-request?matching-request-id=" + snapshot.getKey();
                     JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
                                 JSONObject body = response.getJSONObject("body");
                                 if (body != null) {
-                                    int userId = body.getJSONObject("userId").getInt("id");
-                                    if (userId == sharedPreferences.getInt("user_id", -1)) {
-                                        try {
-                                            Notification notification = new Notification();
-                                            notification.setRequestId(body.getInt("id"));
-                                            notification.setUserId(userId);
-
-                                            notification.setDate(new Date(body.getLong("date")));
-                                            notification.setStartTime(new SimpleDateFormat("HH:mm:ss").parse(body.getString("startTime")));
-                                            notification.setEndTime(new SimpleDateFormat("HH:mm:ss").parse(body.getString("endTime")));
-
-                                            notification.setTeamName(body.getJSONObject("userId").getJSONObject("profileId").getString("name"));
-                                            notificationList.add(notification);
-                                        } catch (ParseException e) {
-                                            e.printStackTrace();
-                                        } finally {
-                                            //Notify adapter about data changes
-                                            adapter.notifyItemChanged(notificationList.size());
-                                        }
+                                    Iterable<DataSnapshot> list = snapshot.getChildren();
+                                    for (DataSnapshot snapshot : list) {
+                                        getTeamNameByUserId(snapshot, body);
                                     }
                                 }
                             } catch (JSONException e) {
@@ -161,7 +142,7 @@ public class NotificationActivity extends AppCompatActivity {
                 Log.w("TAG", "Failed to read value.", error.toException());
             }
         };
-        myRef.child("request").addValueEventListener(listener);
+        myRef.child("request").child(userId + "").addValueEventListener(listener);
     }
 
     @Override
@@ -174,5 +155,73 @@ public class NotificationActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    public void getTeamNameByUserId(DataSnapshot snapshot, JSONObject body) {
+        final Notification notification = new Notification();
+        try {
+            int opponentId = Integer.parseInt(snapshot.getKey());
+            notification.setRequestId(body.getInt("id"));
+            notification.setUserId(opponentId);
+            notification.setDate(new Date(body.getLong("date")));
+            notification.setStartTime(new SimpleDateFormat("HH:mm:ss").parse(body.getString("startTime")));
+            notification.setEndTime(new SimpleDateFormat("HH:mm:ss").parse(body.getString("endTime")));
+            FirebaseUserInfo info = snapshot.getValue(FirebaseUserInfo.class);
+            notification.setLatitude(info.getLatitude());
+            notification.setLongitude(info.getLongitude());
+
+            String url = localhost + "/swp49x-ffrs/account/managed-user?user-id=" + opponentId;
+            queue = NetworkController.getInstance(NotificationActivity.this).getRequestQueue();
+            JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        JSONObject body = response.getJSONObject("body");
+                        if (body != null) {
+                            notification.setTeamName(body.getJSONObject("profileId").getString("name"));
+                            notificationList.add(notification);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } finally {
+                        //Notify adapter about data changes
+                        adapter.notifyItemChanged(notificationList.size());
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                        Toast.makeText(getApplicationContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof AuthFailureError) {
+                        Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof ServerError) {
+                        Toast.makeText(getApplicationContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof NetworkError) {
+                        Toast.makeText(getApplicationContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof ParseError) {
+                        Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }) {
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                    try {
+                        String utf8String = new String(response.data, "UTF-8");
+                        return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
+                    } catch (UnsupportedEncodingException e) {
+                        // log error
+                        return Response.error(new ParseError(e));
+                    } catch (JSONException e) {
+                        // log error
+                        return Response.error(new ParseError(e));
+                    }
+                }
+
+            };
+            queue.add(newsReq);
+        } catch (JSONException | ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

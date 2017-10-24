@@ -23,6 +23,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.capstone.ffrs.controller.NetworkController;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
@@ -113,7 +114,22 @@ public class FieldDetailActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        Bundle b = getIntent().getExtras();
+        int timeSlotId = b.getInt("time_slot_id");
+        String url = localhost + "/swp49x-ffrs/match/cancel-reservation?time-slot-id=" + timeSlotId;
+        RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                finish();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                finish();
+            }
+        });
+        queue.add(request);
     }
 
     @Override
@@ -143,7 +159,7 @@ public class FieldDetailActivity extends AppCompatActivity
     }
 
     public void onClickGoBackToTime(View view) {
-        finish();
+        onBackPressed();
     }
 
     public void onClickShowMap(View view) {
@@ -162,10 +178,16 @@ public class FieldDetailActivity extends AppCompatActivity
         intent.putExtra("field_address", address);
         intent.putExtra("image_url", imageUrl);
         intent.putExtra("price", totalPrice);
-        intent.putExtra("tour_match_mode", b.getBoolean("tour_match_mode"));
-        if (b.containsKey("opponent_id")) {
-            intent.putExtra("opponent_id", b.getInt("opponent_id"));
+
+        boolean tourMatchMode = b.getBoolean("tour_match_mode");
+        if (tourMatchMode) {
+            intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
+            intent.putExtra("tour_match_mode", tourMatchMode);
+            if (b.containsKey("opponent_id")) {
+                intent.putExtra("opponent_id", b.getInt("opponent_id"));
+            }
         }
+
         startActivity(intent);
     }
 }

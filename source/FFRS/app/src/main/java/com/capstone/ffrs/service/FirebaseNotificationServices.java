@@ -99,29 +99,23 @@ public class FirebaseNotificationServices extends Service {
 //                    }
 //                });
 //
-        myRef.child("request").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!firstCreated) {
-                    if (userId != -1) {
-                        // Find matching requests by ID
-                        // Notification if matching requests has same userId
-
-                        // Notification to device
+        if (userId != -1) {
+            myRef.child("request").child(userId + "").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!firstCreated) {
                         showNotification(context);
+                    } else {
+                        firstCreated = false;
                     }
-                } else {
-                    firstCreated = false;
                 }
 
-            }
+                @Override
+                public void onCancelled(DatabaseError error) {
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-
-            }
-        });
-
+                }
+            });
+        }
     }
 
     @Override
