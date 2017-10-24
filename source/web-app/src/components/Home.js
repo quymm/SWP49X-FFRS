@@ -224,7 +224,7 @@ class Home extends Component {
     console.log(listMatchAfterFileter);
     return (
       <div id="page-wrapper">
-        {/* /* <button onClick={this.handleclickFirebase.bind(this)}>Click me</button> */}
+         <button onClick={this.handleclickFirebase.bind(this)}>Click me</button>
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-6">

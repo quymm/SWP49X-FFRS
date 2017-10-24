@@ -7,10 +7,10 @@ Initialize the Firebase app in the service worker by passing in the messagingSen
 firebase.initializeApp({
   'messagingSenderId': '463224964825'
 })
-//https://www.npmjs.com/package/firebase cai di
+//https://www.npmjs.com/package/firebase
 
 export function showNotify() {
-  // Initialize Firebase copy cai nay =)) install nha tu tu, hoi trua t lam, co 1 cai thu vien 
+  // Initialize Firebase 
   var config = {
     apiKey: 'AIzaSyANgWbUJhcrssu7KONJDKlO1AgU2medFYA',
     authDomain: 'capstoneproject-8740a.firebaseapp.com',
@@ -31,11 +31,11 @@ export function showNotify() {
     .then(function() {
       console.log('permission granted!');
       navigator.serviceWorker
-        .register('../../firebase-messaging-sw.js')
+        .register('../firebase-messaging-sw.js')
         .then(function(registration) {
           //set firebase use created serviceworker above
           firebase.messaging().useServiceWorker(registration);
-
+        
           var notification = new Notification('What next?', {
             icon:
               'https://d2gg9evh47fn9z.cloudfront.net/thumb_COLOURBOX6155992.jpg',
@@ -47,8 +47,6 @@ export function showNotify() {
             console.log('clicked');
           };
         });
-      ///////////////////////////////////////////////// gio import function nay, click nut nao do goi xem
-
       return message.getToken();
     })
     .then(function(token) {
