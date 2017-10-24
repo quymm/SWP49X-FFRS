@@ -14,9 +14,11 @@ public class BillController {
     BillServices billServices;
 
     @CrossOrigin
-    @RequestMapping(value = "/swp49x-ffrs/bill/create-bill", method = RequestMethod.POST)
-    public ResponseEntity createNewFieldOwner(@RequestBody InputBillDTO inputBillDTO) {
+    @RequestMapping(value = "/swp49x-ffrs/bill/managed-bill", method = RequestMethod.POST)
+    public ResponseEntity createNewBill(@RequestBody InputBillDTO inputBillDTO) {
         Wrapper wrapper = new Wrapper(billServices.createBill(inputBillDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
+
+
 }

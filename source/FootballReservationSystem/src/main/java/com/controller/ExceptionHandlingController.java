@@ -27,4 +27,10 @@ public class ExceptionHandlingController extends ResponseEntityExceptionHandler 
         Wrapper wrapper = new Wrapper(null, 400, ex.getMessage());
         return new ResponseEntity<Wrapper>(wrapper, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    protected ResponseEntity<Wrapper> handleIllegalArgumentException(IllegalArgumentException ex){
+        Wrapper wrapper = new Wrapper(null, 400, ex.getMessage());
+        return new ResponseEntity<Wrapper>(wrapper, HttpStatus.BAD_REQUEST);
+    }
 }
