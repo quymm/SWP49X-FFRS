@@ -72,7 +72,9 @@ class FormCreateField extends Component {
   render() {
     const { errorMessage } = this.state;
     return (
-      <div className="col-lg-12">
+      <div className="col-sm-8 col-sm-offset-2">
+        <div className="panel panel-default">
+          <div className="panel-body">
         <form
           onSubmit={this.handleShowConfirm.bind(this)}
           className="form-horizontal"
@@ -149,6 +151,8 @@ class FormCreateField extends Component {
             </button>
           </Modal.Footer>
         </Modal>
+      </div>
+      </div>
       </div>
     );
   }

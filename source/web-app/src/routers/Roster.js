@@ -11,7 +11,7 @@ import FreeTime from '../components/FreeTime';
 // import PageNotFound from '../components/PageNotFound';
 
 const Roster = ({ match }) => (
-  <div>
+  <div id="wrapper">
     <Header />
     <Navigation />
     <Switch>

@@ -13,29 +13,25 @@ class Header extends Component {
   render() {
     const myStyle = { marginBottom: 0 };
     return (
-      <nav className="navbar navbar-default navbar-static-top" style={myStyle}>
+      <nav className="navbar navbar-default navbar-fixed-top" id="navbar">
         <div className="navbar-header">
+        <button type="button" className="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span className="sr-only">Toggle navigation</span>
+                    <span className="icon-bar"></span>
+                    <span className="icon-bar"></span>
+                    <span className="icon-bar"></span>
+                </button>
           <a className="navbar-brand" to="/app/index">
-            FOOTBALL
+            <span className="text-primary"><strong>BÓNG ĐÁ</strong></span>
           </a>
         </div>
-        <div className="nav navbar-top-links navbar-right">
+        <ul className="nav navbar-top-links navbar-right">
           <li>
-            <Dropdown id="dropdown-custom-1">
+            <Dropdown id="dropdown-toggle">
               <Dropdown.Toggle>
-                <Glyphicon glyph="bullhorn" />' '
-                <Badge bsClass="badges">
-                  <span>1</span>
-                </Badge>
+              <span className="top-label label label-danger">3</span><i className="fa fa-envelope fa-3x"></i>
               </Dropdown.Toggle>
               <Dropdown.Menu className="super-colors">
-                {/* <MenuItem eventKey="1">Action</MenuItem>
-                <MenuItem eventKey="2">Another action</MenuItem>
-                <MenuItem eventKey="3" active>
-                  Active Item
-                </MenuItem>
-                <MenuItem divider />
-                <MenuItem eventKey="4">Separated link</MenuItem> */}
                 <div className="list-group">
                   <li>
                     <a href="#" className="list-group-item">
@@ -59,10 +55,10 @@ class Header extends Component {
               </Dropdown.Menu>
             </Dropdown>
           </li>
-          <li>
+          <li className="dropdown">
             <Dropdown id="dropdown-custom-1">
               <Dropdown.Toggle>
-                <Glyphicon glyph="user" />
+              <i className="fa fa-user fa-3x"></i>
               </Dropdown.Toggle>
               <Dropdown.Menu className="super-colors">
                 <MenuItem>Cập nhật</MenuItem>
@@ -74,7 +70,7 @@ class Header extends Component {
               </Dropdown.Menu>
             </Dropdown>
           </li>
-        </div>
+        </ul>
       </nav>
     );
   }

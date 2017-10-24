@@ -76,7 +76,6 @@ class SettingTime extends Component {
 
   async componentDidMount() {
     const { id, roleId } = this.props.auth.user.data;
-    debugger;
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
       if (
@@ -342,6 +341,8 @@ class SettingTime extends Component {
                   </div>
                 </form>
               ) : (
+                <div className="panel panel-default">
+                  <div className="panel-body">
                 <form className="form-horizontal">
                   {dayAfterFilter.map(affterConvertArr => (
                     <div key={affterConvertArr.id}>
@@ -427,6 +428,8 @@ class SettingTime extends Component {
                     </div>
                   ))}
                 </form>
+                </div>
+                </div>
               )}
             </div>
           </div>

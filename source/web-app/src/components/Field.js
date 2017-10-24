@@ -78,13 +78,14 @@ class Field extends Component {
         <div id="page-wrapper">
           <div className="container-fluid">
             <div className="row">
-              <div className="col-lg-4">
+              <div className="col-md-4">
                 <h2 className="page-header">Quản lý sân</h2>
               </div>
             </div>
             {isCreateShowed ? <FormCreateField /> : null}
-
-            <div className="col-lg-8 col-lg-offset-2">
+            <div className="col-md-8 col-md-offset-2">
+              <div className="panel panel-dafault">
+                <div className="panel-body">
               <div className="table-responsive">
                 <table className="table table-striped">
                   <thead>
@@ -95,10 +96,12 @@ class Field extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {listField == null ? 'There is no field' : renderField}
+                    {listField == null ? '<td>Chưa có sân</td>' : renderField}
                   </tbody>
                 </table>
               </div>
+            </div>
+            </div>
             </div>
           </div>
         </div>

@@ -67,23 +67,27 @@ class Login extends Component {
                       <i>{message === null ? null : message}</i>
                     </p>
                     <div className="form-group">
+                    <label htmlFor="exampleInputEmail1">Tên đăng nhập</label>
                       <input
                         value={this.state.username}
                         onChange={this.handleUsernameChange.bind(this)}
                         className="form-control"
-                        placeholder="Tên đăng nhập"
+                        
                         name="username"
                         type="text"
+                        id="exampleInputEmail1"
                       />
                     </div>
                     <div className="form-group">
+                    <label htmlFor="exampleInputEmail1">Mật khẩu</label>
                       <input
                         onChange={this.handlePasswordChange.bind(this)}
                         className="form-control"
-                        placeholder="Mật khẩu"
+                        
                         name="password"
                         type="password"
                         value={this.state.password}
+                        id="exampleInputEmail1"
                       />
                     </div>
                     <div className="checkbox">

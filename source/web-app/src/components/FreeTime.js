@@ -56,6 +56,20 @@ class FreeTime extends Component {
     }
     return disableTime;
   }
+  
+  configHoursDisable(){
+    const {timeLowerLimit, timeUpperLimit} = this.state;
+    const lower = moment('10-10-2017 ' + timeLowerLimit).hours();
+    const upper = moment('10-10-2017 ' + timeUpperLimit).hours();
+    const hours =  [];
+    for (let i = 0; i < lower; i++) {
+      hours.push(i);
+    }
+    for (let i = upper + 1; i < 24 ; i++) {
+      hours.push(i);
+    }
+    return hours;
+  }
 
   async componentDidMount() {
     const { id } = this.props.auth.user.data;
@@ -113,6 +127,8 @@ class FreeTime extends Component {
     await this.setState({
       isShowBookMatch: true,
       fieldTypeSelected: freetime.fieldTypeId.id,
+      startTime: moment('10-10-2017 ' + freetime.startTime),
+      endTime: moment('10-10-2017 ' + freetime.endTime),
       timeLowerLimit: freetime.startTime,
       timeUpperLimit: freetime.endTime,
     });
@@ -145,12 +161,12 @@ class FreeTime extends Component {
 
   async handelEndTimeInputChange(evt) {
     await this.setState({ endTime: evt });
-    console.log(this.state)
+    console.log(this.state);
   }
 
   async handelTimeStartDayInputChange(evt) {
     await this.setState({ startTime: evt });
-    console.log(this.state)
+    console.log(this.state);
   }
 
   async handelBookMatchSubmit(evt) {
@@ -163,13 +179,13 @@ class FreeTime extends Component {
       timeLowerLimit,
       timeUpperLimit,
     } = this.state;
-    debugger;
-    console.log(
-      endTime.hours() >= startTime.hours(),
-      endTime.minutes() - startTime.minutes() >= 30,
-    );
+    // debugger;
+    // console.log(
+    //   endTime.hours() >= startTime.hours(),
+    //   endTime.minutes() - startTime.minutes() >= 30,
+    // );
     if (
-      endTime.hours() >= startTime.hours() 
+      endTime.hours() > startTime.hours()
       // endTime.minutes() - startTime.minutes() >= 30
       // startTime >= timeLowerLimit &&
       // endTime <= timeUpperLimit
@@ -210,6 +226,7 @@ class FreeTime extends Component {
     const { freeTime5vs5, freeTime7vs7 } = this.props;
     const { dateSelected } = this.state;
     const hours = this.hoursToPick();
+    // console.log(moment('20-10-2017 '+this.state.timeLowerLimit));
     return (
       <div id="page-wrapper">
         <div className="container-fluid">
@@ -236,7 +253,7 @@ class FreeTime extends Component {
           <div className="col-lg-12">
             <div className="row" style={myStyle}>
               <div className="col-lg-6">
-                <div className="panel panel-green">
+                <div className="panel panel-success">
                   <div className="panel-heading">
                     {' '}
                     <h4 className="text-center">Loại sân 5 người</h4>
@@ -274,7 +291,7 @@ class FreeTime extends Component {
                 </div>
               </div>
               <div className="col-lg-6">
-                <div className="panel panel-green">
+                <div className="panel panel-success">
                   <div className="panel-heading">
                     {' '}
                     <h4 className="text-center">Loại sân 7 người</h4>
@@ -349,6 +366,11 @@ class FreeTime extends Component {
                           onChange={this.handelTimeStartDayInputChange.bind(
                             this,
                           )}
+                          defaultValue={moment(
+                            '10-10-2017 ' + this.state.timeLowerLimit,
+                          )}
+                          disabledMinutes={this.configTimeDiable.bind(this)}
+                          disabledHours={this.configHoursDisable.bind(this)}
                         />
                       </div>
                     </div>
@@ -359,7 +381,7 @@ class FreeTime extends Component {
                     htmlFor="inputEmail3"
                     className="col-sm-3 control-label"
                   >
-                    Thời gian
+                    Đến
                   </label>
                   <div className="col-sm-9">
                     <div className="row">
@@ -367,6 +389,11 @@ class FreeTime extends Component {
                         <TimePicker
                           showSecond={false}
                           onChange={this.handelEndTimeInputChange.bind(this)}
+                          defaultValue={moment(
+                            '10-10-2017 ' + this.state.timeUpperLimit,
+                          )}
+                          disabledMinutes={this.configTimeDiable.bind(this)}
+                          disabledHours={this.configHoursDisable.bind(this)}
                         />
                       </div>
                     </div>
