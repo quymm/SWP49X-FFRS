@@ -8,7 +8,7 @@ import {
 } from '../apis/field-owner-apis';
 import {
   GetMatchByFieldOwnerAndDay,
-  getAllFreeField,
+  getAllFreeField
 } from '../redux/field-owner/field-owner-action-creator';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
@@ -21,14 +21,10 @@ import {
   accessDenied,
 } from '../redux/guest/guest-action-creators';
 import { Modal } from 'react-bootstrap';
-import { showNotify } from '../services/fcm';
 import 'notyf/dist/notyf.min.css';
 var Notyf = require('notyf');
-// Create an instance of Notyf
 var notyf = new Notyf({
   delay: 4000,
-  // alertIcon: 'fa fa-exclamation-circle',
-  // confirmIcon: 'fa fa-check-circle',
 });
 class Home extends Component {
   constructor(props) {
@@ -43,13 +39,9 @@ class Home extends Component {
       fieldSelected: undefined,
       timeSlotSelected: undefined,
       filterName: 'ans',
+      messages: {},
     };
     this.handleShowModalField = this.handleShowModalField.bind(this);
-  }
-
-  handleclickFirebase(evt) {
-    evt.preventDefault();
-    showNotify();
   }
 
   configTimeDiable() {
@@ -64,7 +56,6 @@ class Home extends Component {
   }
   async componentDidMount() {
     const { id } = this.props.auth.user.data;
-    console.log('user id: ', id);
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
       if (
@@ -124,9 +115,7 @@ class Home extends Component {
   async handleShowModalField(match) {
     //evt.preventDefault();
     const { id } = this.props.auth.user.data;
-    //  const match = JSON.parse(evt.target.value);
     console.log(typeof match);
-    // debugger
     const fieldTypeId = parseInt(match.timeSlotEntity.fieldTypeId.id);
     const time = match.timeSlotEntity.startTime;
     const freeField = await fetchGetFreeFieldByTime(
@@ -203,28 +192,11 @@ class Home extends Component {
   render() {
     const myStyle = { padding: 20 };
     const { listMatch, freeField } = this.props;
-    const { isShowUpdateField, filterName } = this.state;
+    const { isShowUpdateField, filterName, messages } = this.state;
+    console.log(messages);
     console.log(this.props);
-    // const listMatchAfterFileter = listMatch.filter(
-    //   data =>
-    //     moment('10-10-2017 ' + data.timeSlotEntity.endTime).hours() < moment().hours(),
-    // );
-    const listMatchAfterFileter = listMatch;
-    if (filterName !== undefined && filterName !== '', filterName !== null) {
-      const listMatchAfterFileter = listMatch.filter(
-        data =>
-          data.opponent.profileId.name
-            .toLocaleUpperCase()
-            .indexOf(filterName.toLocaleUpperCase()) > -1,
-      );
-      console.log(listMatchAfterFileter);
-    }
-    console.log("Sân Bóng Đá Bình An".toLocaleUpperCase()
-    .indexOf(filterName.toLocaleUpperCase()));
-    console.log(listMatchAfterFileter);
     return (
       <div id="page-wrapper">
-         <button onClick={this.handleclickFirebase.bind(this)}>Click me</button>
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-6">
@@ -414,6 +386,7 @@ function mapStateToProps(state) {
     listMatch: state.listMatch.listMatch,
     auth: state.auth,
     freeField: state.freeField.freeField,
+    notify: state.notify,
   };
 }
 

@@ -49,6 +49,7 @@ class FormCreateField extends Component {
     await this.props.getAllField(data.body);
     await this.props.history.push('/app/field');
     this.setState({ isShowConfirm: false });
+    this.inputEl.value = '';
     notyf.confirm('Thêm sân thành công!');
   }
 
@@ -98,6 +99,7 @@ class FormCreateField extends Component {
                     id="inputPassword3"
                     value={this.state.fieldName}
                     onChange={this.handelInputChange.bind(this)}
+                    ref={ el => this.inputEl = el }
                   />
                 </div>
               </div>
