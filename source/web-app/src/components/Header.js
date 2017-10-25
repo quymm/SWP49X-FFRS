@@ -15,7 +15,7 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      messages: {},
+      messages: [],
       status: false,
       count: 0,
     };
@@ -25,13 +25,14 @@ class Header extends Component {
     /* Create reference to messages in Firebase Database */
     let messagesRef = fire
       .database()
-      .ref('17')
+      .ref('18/friendlyMatch')
       .orderByKey()
       .limitToLast(100);
     messagesRef.on('value', snapshot => {
       /* Update React state when message is added at Firebase Database */
       let message = { text: snapshot.val(), id: snapshot.key };
-      this.setState({ messages: message, status: true });
+      console.log('firebase: ', message);
+      this.setState({ messages: this.state.messages.push(message), status: true });
     });
   }
   handleLogout(evt) {
@@ -40,13 +41,18 @@ class Header extends Component {
     this.props.history.push('/login');
   }
 
-  handelClickNotify(evt){
+  handelClickNotify(evt) {
     evt.preventDefault();
-    this.setState({count: 0});
+    this.setState({ count: 0 });
   }
 
-  handelClickDetailMatch(match){
+  handelClickDetailMatch(match) {
     console.log(match);
+    const newPostKey = fire
+      .database()
+      .ref('18/friendlyMatch')
+      .push({ friendlyMatchId: 10, status: true, time: '10-10-2017 10:00:00' })
+    console.log(newPostKey);
   }
 
   render() {
@@ -55,15 +61,19 @@ class Header extends Component {
     if (!status) {
       return <div className="loader" />;
     }
+    console.log( messages);
     const notify = messages.text.friendlyMatch.map((messages, index) => {
       const { count } = this.state;
-      messages.status ? (notyf.confirm('Có người mới đăt sân'), this.setState({count: count + 1})) : null;
+      messages.status
+        ? (notyf.confirm('Có người mới đăt sân'),
+          this.setState({ count: count + 1 }))
+        : null;
       fire
         .database()
-        .ref(`17/friendlyMatch/${index}/status`)
+        .ref(`18/friendlyMatch/${index}/status`)
         .set(false);
     });
-    console.log(messages);
+    
     return (
       <nav className="navbar navbar-default navbar-fixed-top" id="navbar">
         <div className="navbar-header">
@@ -80,23 +90,27 @@ class Header extends Component {
           </button>
           <a className="navbar-brand" to="/app/index">
             <span className="text-primary">
-              <strong>BÓNG ĐÁ</strong>
+              <img src={require('../resource/images/ffrs.png')} />
             </span>
           </a>
         </div>
         <ul className="nav navbar-top-links navbar-right">
           <li>
-            <Dropdown id="dropdown-toggle" className="btn-primary-outline" onClick={this.handelClickNotify.bind(this)}>
+            <Dropdown
+              id="dropdown-toggle"
+              className="btn-primary-outline"
+              onClick={this.handelClickNotify.bind(this)}
+            >
               <Dropdown.Toggle>
                 <span className="top-label label label-danger">
-                  {this.state.count? this.state.count : null}
+                  {this.state.count ? this.state.count : null}
                 </span>
                 <i className="fa fa-envelope fa-3x" />
               </Dropdown.Toggle>
               <Dropdown.Menu className="dropdown-menu dropdown-messages">
                 {messages.text.friendlyMatch.map((messages, index) => (
                   <li key={index}>
-                    <a onClick={()=>this.handelClickDetailMatch(messages)}>
+                    <a onClick={() => this.handelClickDetailMatch(messages)}>
                       <div>
                         <strong>
                           <span className=" label label-info">
@@ -107,9 +121,7 @@ class Header extends Component {
                           <em>{messages.time}</em>
                         </span>
                       </div>
-                      <div>
-                        Bạn vừa có người đặt sân, xem chi tiết
-                      </div>
+                      <div>Bạn vừa có người đặt sân, xem chi tiết</div>
                     </a>
                   </li>
                 ))}
