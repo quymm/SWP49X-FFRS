@@ -7,14 +7,17 @@ export class Navigation extends Component {
     evt.preventDefault();
     this.setState({})
   }
-
+  componentWillMount() {
+    const { username } = this.props.auth.user.data
+    if (username === undefined) {
+      return <div className="loader"></div>
+    }
+  }
   render() {
-    // const { fieldOwner } = this.props;
-    // console.log(this.props);
-    // if (fieldOwner.user.data.profileId === undefined) {
-    //   return <div className="loader">loading</div>
-    // }
-    console.log(this.props);
+    const { username } = this.props.auth.user.data
+    if (username === undefined) {
+      return <div className="loader"></div>
+    }
     return (
       <div
         className="sidebar"
@@ -24,7 +27,7 @@ export class Navigation extends Component {
         <div className="sidebar-wrapper">
           <div className="logo">
             <a href="http://www.creative-tim.com" className="simple-text">
-              Creative Tim
+              {username}
             </a>
           </div>
 
@@ -58,8 +61,8 @@ export class Navigation extends Component {
 
 function mapPropsToState(state) {
   return {
-    fieldOwner: state.auth,
+    auth: state.auth,
   };
 }
 
-export default Navigation;
+export default connect(mapPropsToState)(Navigation);

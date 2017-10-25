@@ -12,20 +12,18 @@ import FreeTime from '../components/FreeTime';
 
 const Roster = ({ match }) => (
   <div>
-  <Header />
-  <div className="wrapper">
-    
-    <Navigation />
-    
-    <Switch>
-      <Route  path={`${match.url}/create-field`} component={FormCreateField} />
-      <Route exact path={`${match.url}/index`} component={Home} />
-      <Route path={`${match.url}/field`} component={Field} />
-      <Route path={`${match.url}/player`} component={ProfilePlayer} />
-      <Route path={`${match.url}/setting-time`} component={SettingTime} />
-      <Route path={`${match.url}/free-time`} component={FreeTime} />
-    </Switch>
-  </div>
+    <Header />
+    <div className="wrapper">
+      <Navigation />
+      <Switch>
+        <Route path={`${match.url}/create-field`} component={FormCreateField} />
+        <Route exact path={`${match.url}/index`} component={Home} />
+        <Route path={`${match.url}/field`} component={Field} />
+        <Route path={`${match.url}/player`} component={ProfilePlayer} />
+        <Route path={`${match.url}/setting-time`} component={SettingTime} />
+        <Route path={`${match.url}/free-time`} component={FreeTime} />
+      </Switch>
+    </div>
   </div>
 );
 

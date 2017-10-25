@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { doLogout } from '../redux/guest/guest-action-creators';
 import { Dropdown, Glyphicon, MenuItem, Badge } from 'react-bootstrap';
 import fire from '../services/firebase';
+import { Modal } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 var Notyf = require('notyf');
@@ -18,22 +19,54 @@ class Header extends Component {
       messages: [],
       status: false,
       count: 0,
+      isShowUpdateField: false,
     };
     this.handelClickDetailMatch = this.handelClickDetailMatch.bind(this);
   }
   componentWillMount() {
-    console.log(this.props);
-    /* Create reference to messages in Firebase Database */
-    let messagesRef = fire
-      .database()
-      .ref('fieldOwner/')
-      .orderByKey()
-      .limitToLast(100);
-    messagesRef.on('value', snapshot => {
-      /* Update React state when message is added at Firebase Database */
-      let message = { text: snapshot.val(), id: snapshot.key };
-      this.setState({ messages: message, status: true });
-    });
+    const { id } = this.props.auth.user.data;
+    if (id === undefined) {
+      const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
+      const idLocal = authLocalStorage.id;
+      /* Create reference to messages in Firebase Database */
+      let messagesRef = fire
+        .database()
+        .ref(`fieldOwner/${idLocal}/friendlyMatch`)
+        .limitToLast(100);
+      messagesRef.on('child_added', snapshot => {
+        let message = { text: snapshot.val(), id: snapshot.key };
+        !message.text.isRead
+          ? (notyf.confirm('Có người mới đặt sân'),
+            this.setState({ count: this.state.count + 1 }))
+          : null;
+        console.log('firebase inside: ', `fieldOwner/${idLocal}/friendlyMatch/${message.id}/isRead`);
+        
+        fire.database().ref(`fieldOwner/${idLocal}/friendlyMatch/${message.id}/isRead`).set(1)
+        this.setState({
+          messages: [message].concat(this.state.messages),
+          status: true,
+        });
+      });
+    } else {
+      /* Create reference to messages in Firebase Database */
+      let messagesRef = fire
+        .database()
+        .ref(`fieldOwner/${id}/friendlyMatch`)
+        .limitToLast(100);
+      messagesRef.on('child_added', snapshot => {
+        let message = { text: snapshot.val(), id: snapshot.key };
+        !message.text.isRead
+          ? (notyf.confirm('Có người mới đặt sân'),
+            this.setState({ count: this.state.count + 1 }))
+          : null;
+        console.log('firebase inside: ', message);
+        fire.database().ref(`fieldOwner/${id}/friendlyMatch/${message.id}/isRead`).set(1)
+        this.setState({
+          messages: [message].concat(this.state.messages),
+          status: true,
+        });
+      });
+    }
   }
   handleLogout(evt) {
     evt.preventDefault();
@@ -47,33 +80,28 @@ class Header extends Component {
   }
 
   handelClickDetailMatch(match) {
-    console.log(match);
-    const newPostKey = fire
-      .database()
-      .ref('18/friendlyMatch')
-      .push({ friendlyMatchId: 10, status: true, time: '10-10-2017 10:00:00' });
-    console.log(newPostKey);
+    // console.log(match);
+    // const newPostKey = fire
+    //   .database()
+    //   .ref('17/friendlyMatch')
+    //   .push({ friendlyMatchId: 10, status: true, time: '10-10-2017 10:00:00' });
+    // console.log(newPostKey);
+    this.setState({isShowUpdateField: true})
+  }
+  handleHideModalField(evt){
+    evt.preventDefault();
+    this.setState({isShowUpdateField: false});
   }
 
   render() {
     const myStyle = { marginBottom: 0 };
     const { messages, status } = this.state;
+    const { id } = this.props.auth.user.data;
+    // console.log(id);
     if (!status) {
       return <div className="loader" />;
     }
-    console.log(messages);
-    const notify = messages.text.friendlyMatch.map((messages, index) => {
-      const { count } = this.state;
-      messages.status
-        ? (notyf.confirm('Có người mới đăt sân'),
-          this.setState({ count: count + 1 }))
-        : null;
-      fire
-        .database()
-        .ref(`17/friendlyMatch/${index}/status`)
-        .set(false);
-    });
-
+    console.log('firebase: ', messages);
     return (
       <nav className="navbar navbar-default" id="navbar">
         <div className="navbar-header">
@@ -101,15 +129,16 @@ class Header extends Component {
               onClick={this.handelClickNotify.bind(this)}
             >
               <Dropdown.Toggle>
-                {/* <span className="notification hidden-sm hidden-xs">
-                  {this.state.count ? this.state.count : null}
-                </span> */}
-                <span className="notification hidden-sm hidden-xs">5</span>
+                {this.state.count ? (
+                  <span className="notification hidden-sm hidden-xs">
+                    {this.state.count}
+                  </span>
+                ) : null}
                 <i className="fa fa-globe" />
               </Dropdown.Toggle>
               <Dropdown.Menu className="dropdown-menu dropdown-messages">
-                {messages.text.friendlyMatch.map((messages, index) => (
-                  <li key={index}>
+                {messages.map(messages => (
+                  <li key={messages.id}>
                     <a onClick={() => this.handelClickDetailMatch(messages)}>
                       <div>
                         <strong>
@@ -118,7 +147,7 @@ class Header extends Component {
                           </span>
                         </strong>
                         <span className="pull-right text-muted">
-                          <em>{messages.time}</em>
+                          <em>{messages.text.time}</em>
                         </span>
                       </div>
                       <div>Bạn vừa có người đặt sân, xem chi tiết</div>
@@ -144,6 +173,27 @@ class Header extends Component {
             </Dropdown>
           </li>
         </ul>
+        <Modal
+                  /* {...this.props} */
+                  show={this.state.isShowUpdateField}
+                  onHide={this.hideModal}
+                  dialogClassName="custom-modal"
+                >
+                  <Modal.Header>
+                    <Modal.Title>Thiết lập sân</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    dwadd
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <button
+                      onClick={this.handleHideModalField.bind(this)}
+                      className="btn btn-danger"
+                    >
+                      Huỷ
+                    </button>
+                  </Modal.Footer>
+                </Modal>
       </nav>
     );
   }
