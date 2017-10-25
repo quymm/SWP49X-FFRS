@@ -16,4 +16,6 @@ public interface RatingOpponentRepository extends JpaRepository<RatingOpponentEn
     List<RatingOpponentEntity> findByTourMatchIdAndStatus(TourMatchEntity tourMatchEntity, boolean status);
 
     RatingOpponentEntity findByUserIdAndOpponentIdAndTourMatchIdAndStatus(AccountEntity userAccountEntity, AccountEntity opponentAccountEntity, TourMatchEntity tourMatchEntity, boolean status);
+
+    RatingOpponentEntity findByIdAndStatus(int id, boolean status);
 }
