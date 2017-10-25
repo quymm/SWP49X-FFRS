@@ -68,8 +68,6 @@ public class TimeSlotServices {
         // kiem tra ngay do la thu may trong tuan
         String dayInWeek = DateTimeUtils.returnDayInWeek(date);
 
-        List<AccountEntity> fieldOwnerList = accountServices.findAccountByRole("owner");
-        List<FieldTypeEntity> fieldTypeEntityList = fieldTypeServices.findAllFieldType();
         List<TimeSlotEntity> savedTimeSlotEntityList = new ArrayList<>();
 
         // kiểm tra nếu được tạo rồi thì ko tạo nữa
@@ -405,6 +403,31 @@ public class TimeSlotServices {
             deleteTimeSlotInList(listTimeSlotEntity);
         }
         return true;
+    }
+
+    public List<TimeSlotEntity> addTimeSlotWhenCreateNewField(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity){
+        Date targetDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
+        List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findTimeWhenAddNewField(targetDate, true, fieldOwner, fieldTypeEntity);
+        List<TimeSlotEntity> savedTimeSlotEntityList = new ArrayList<>();
+        if(!timeSlotEntityList.isEmpty())
+            for (TimeSlotEntity timeSlot : timeSlotEntityList) {
+                String dayInWeek = DateTimeUtils.returnDayInWeek(timeSlot.getDate());
+                List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDate(fieldOwner, fieldTypeEntity, dayInWeek);
+                if(!timeEnableEntityList.isEmpty()){
+
+                    TimeSlotEntity timeSlotEntity = new TimeSlotEntity();
+
+                    timeSlotEntity.setFieldOwnerId(fieldOwner);
+                    timeSlotEntity.setFieldTypeId(fieldTypeEntity);
+                    timeSlotEntity.setDate(timeSlot.getDate());
+                    timeSlotEntity.setStartTime(timeEnableEntityList.get(0).getStartTime());
+                    timeSlotEntity.setEndTime(timeEnableEntityList.get(timeEnableEntityList.size() -1).getEndTime());
+                    timeSlotEntity.setReserveStatus(false);
+                    timeSlotEntity.setStatus(true);
+                    savedTimeSlotEntityList.add(timeSlotRepository.save(timeSlotEntity));
+                }
+            }
+        return timeSlotEntityList;
     }
 
 }

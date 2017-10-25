@@ -24,6 +24,9 @@ public class FieldServices {
     @Autowired
     FieldTypeServices fieldTypeServices;
 
+    @Autowired
+    TimeSlotServices timeSlotServices;
+
     public FieldEntity createNewField(InputFieldDTO inputFieldDTO) {
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(inputFieldDTO.getFieldTypeId());
         AccountEntity accountEntity = accountServices.findAccountEntityById(inputFieldDTO.getFieldOwnerId(), "owner");
@@ -37,6 +40,9 @@ public class FieldServices {
             fieldEntity.setFieldTypeId(fieldTypeEntity);
             fieldEntity.setStatus(true);
         }
+        FieldEntity savedFieldEntity = fieldRepository.save(fieldEntity);
+        timeSlotServices.addTimeSlotWhenCreateNewField(savedFieldEntity.getFieldOwnerId(), savedFieldEntity.getFieldTypeId());
+
         return fieldRepository.save(fieldEntity);
     }
 
