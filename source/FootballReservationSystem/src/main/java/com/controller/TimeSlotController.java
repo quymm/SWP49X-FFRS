@@ -68,6 +68,13 @@ public class TimeSlotController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/match/friendly-match", method = RequestMethod.GET)
+    public ResponseEntity findFriendlyMatchById(@RequestParam("friendly-match-id") int friendlyMatchId){
+        Wrapper wrapper = new Wrapper(matchServices.findFriendlyMatchEntityById(friendlyMatchId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/matching-request", method = RequestMethod.POST)
     public ResponseEntity createNewMatchingRequest(@RequestBody InputMatchingRequestDTO inputMatchingRequestDTO) {
         Wrapper wrapper = new Wrapper(matchServices.createNewMatchingRequest(inputMatchingRequestDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
@@ -101,6 +108,13 @@ public class TimeSlotController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/match/tour-match", method = RequestMethod.GET)
+    public ResponseEntity findTourMatchById(@RequestParam("tour-match-id") int tourMatchId){
+        Wrapper wrapper = new Wrapper(matchServices.findTourMatchEntityById(tourMatchId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/matching-request", method = RequestMethod.GET)
     public ResponseEntity findMatchingRequestById(@RequestParam("matching-request-id") int matchingRequestId) {
         Wrapper wrapper = new Wrapper(matchServices.findMatchingRequestEntityById(matchingRequestId), HttpStatus.OK.value(), HttpStatus.OK.name());
@@ -113,7 +127,4 @@ public class TimeSlotController {
         Wrapper wrapper = new Wrapper(timeSlotServices.cancelReservationTimeSlot(timeSlotId), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
-
-
-
 }
