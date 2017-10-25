@@ -33,15 +33,21 @@ class Header extends Component {
         .database()
         .ref(`fieldOwner/${idLocal}/friendlyMatch`)
         .limitToLast(100);
+      console.log(messagesRef);
       messagesRef.on('child_added', snapshot => {
         let message = { text: snapshot.val(), id: snapshot.key };
         !message.text.isRead
           ? (notyf.confirm('Có người mới đặt sân'),
             this.setState({ count: this.state.count + 1 }))
           : null;
-        console.log('firebase inside: ', `fieldOwner/${idLocal}/friendlyMatch/${message.id}/isRead`);
-        
-        fire.database().ref(`fieldOwner/${idLocal}/friendlyMatch/${message.id}/isRead`).set(1)
+        console.log(
+          'firebase inside: ',
+          `fieldOwner/${idLocal}/friendlyMatch/${message.id}/isRead`,
+        );
+        fire
+          .database()
+          .ref(`fieldOwner/${idLocal}/friendlyMatch/${message.id}/isRead`)
+          .set(1);
         this.setState({
           messages: [message].concat(this.state.messages),
           status: true,
@@ -60,7 +66,10 @@ class Header extends Component {
             this.setState({ count: this.state.count + 1 }))
           : null;
         console.log('firebase inside: ', message);
-        fire.database().ref(`fieldOwner/${id}/friendlyMatch/${message.id}/isRead`).set(1)
+        fire
+          .database()
+          .ref(`fieldOwner/${id}/friendlyMatch/${message.id}/isRead`)
+          .set(1);
         this.setState({
           messages: [message].concat(this.state.messages),
           status: true,
@@ -86,11 +95,11 @@ class Header extends Component {
     //   .ref('17/friendlyMatch')
     //   .push({ friendlyMatchId: 10, status: true, time: '10-10-2017 10:00:00' });
     // console.log(newPostKey);
-    this.setState({isShowUpdateField: true})
+    this.setState({ isShowUpdateField: true });
   }
-  handleHideModalField(evt){
+  handleHideModalField(evt) {
     evt.preventDefault();
-    this.setState({isShowUpdateField: false});
+    this.setState({ isShowUpdateField: false });
   }
 
   render() {
@@ -98,9 +107,9 @@ class Header extends Component {
     const { messages, status } = this.state;
     const { id } = this.props.auth.user.data;
     // console.log(id);
-    if (!status) {
-      return <div className="loader" />;
-    }
+    // if (!status) {
+    //   return <div className="loader" />;
+    // }
     console.log('firebase: ', messages);
     return (
       <nav className="navbar navbar-default" id="navbar">
@@ -137,23 +146,27 @@ class Header extends Component {
                 <i className="fa fa-globe" />
               </Dropdown.Toggle>
               <Dropdown.Menu className="dropdown-menu dropdown-messages">
-                {messages.map(messages => (
-                  <li key={messages.id}>
-                    <a onClick={() => this.handelClickDetailMatch(messages)}>
-                      <div>
-                        <strong>
-                          <span className=" label label-info">
-                            Người dùng tự đặt
-                          </span>
-                        </strong>
-                        <span className="pull-right text-muted">
-                          <em>{messages.text.time}</em>
-                        </span>
-                      </div>
-                      <div>Bạn vừa có người đặt sân, xem chi tiết</div>
-                    </a>
-                  </li>
-                ))}
+                {messages.length > 0
+                  ? messages.map(messages => (
+                      <li key={messages.id}>
+                        <a
+                          onClick={() => this.handelClickDetailMatch(messages)}
+                        >
+                          <div>
+                            <strong>
+                              <span className=" label label-info">
+                                Người dùng tự đặt
+                              </span>
+                            </strong>
+                            <span className="pull-right text-muted">
+                              <em>{messages.text.time}</em>
+                            </span>
+                          </div>
+                          <div>Bạn vừa có người đặt sân, xem chi tiết</div>
+                        </a>
+                      </li>
+                    ))
+                  : null}
               </Dropdown.Menu>
             </Dropdown>
           </li>
@@ -174,26 +187,24 @@ class Header extends Component {
           </li>
         </ul>
         <Modal
-                  /* {...this.props} */
-                  show={this.state.isShowUpdateField}
-                  onHide={this.hideModal}
-                  dialogClassName="custom-modal"
-                >
-                  <Modal.Header>
-                    <Modal.Title>Thiết lập sân</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    dwadd
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <button
-                      onClick={this.handleHideModalField.bind(this)}
-                      className="btn btn-danger"
-                    >
-                      Huỷ
-                    </button>
-                  </Modal.Footer>
-                </Modal>
+          /* {...this.props} */
+          show={this.state.isShowUpdateField}
+          onHide={this.hideModal}
+          dialogClassName="custom-modal"
+        >
+          <Modal.Header>
+            <Modal.Title>Thiết lập sân</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>dwadd</Modal.Body>
+          <Modal.Footer>
+            <button
+              onClick={this.handleHideModalField.bind(this)}
+              className="btn btn-danger"
+            >
+              Huỷ
+            </button>
+          </Modal.Footer>
+        </Modal>
       </nav>
     );
   }
