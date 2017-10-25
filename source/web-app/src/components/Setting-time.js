@@ -185,167 +185,75 @@ class SettingTime extends Component {
       );
 
     if (!dayAfterFilter) {
-      return <div className="loader"></div>;
+      return <div className="loader" />;
     }
     const { buttonGroupDayInWeek, buttonGroupFieldType } = this.state;
     // console.log(dayAfterFilter);
     return (
-      <div id="page-wrapper">
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-4">
-              <h2 className="page-header">Thiết lập giờ</h2>
-            </div>
-          </div>
-          <div className="col-lg-12">
+      <div className="main-panel">
+        <div className="content">
+          <div className="container-fluid">
             <div className="row">
-              <div className="col-lg-6 col-lg-offset-3">
+              <div className="col-lg-12">
                 <div className="row">
-                  {buttonGroupFieldType.map(fieldType => (
-                    <div className="col-lg-6" key={fieldType.id}>
-                      <button
-                        className={`${fieldType.value == this.state.fieldType
-                          ? 'btn btn-primary btn-lg btn-block'
-                          : 'btn btn-default btn-lg btn-block'}`}
-                        name="fieldType"
-                        value={fieldType.value}
-                        onClick={this.handleInputChange.bind(this)}
-                      >
-                        {fieldType.text}
-                      </button>
+                  <div className="col-lg-6 col-lg-offset-3">
+                    <div className="row">
+                      {buttonGroupFieldType.map(fieldType => (
+                        <div className="col-lg-6" key={fieldType.id}>
+                          <button
+                            className={`${fieldType.value ==
+                            this.state.fieldType
+                              ? 'btn btn-primary btn-lg btn-block'
+                              : 'btn btn-default btn-lg btn-block'}`}
+                            name="fieldType"
+                            value={fieldType.value}
+                            onClick={this.handleInputChange.bind(this)}
+                          >
+                            {fieldType.text}
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-              <div className="col=sm-4">
-                <button
-                  className="btn btn-info"
-                  name="isShowUpdate"
-                  onClick={this.handelShowChange.bind(this)}
-                >
-                  Thêm mới khung giờ
-                </button>
-              </div>
-            </div>
-          </div>
-          <h4>Thứ trong tuần</h4>
-          <div className="row">
-            <div className="col-lg-2">
-              <div className="list-group">
-                {buttonGroupDayInWeek.map(day => (
-                  <div key={day.id}>
+                  </div>
+                  <div className="col=sm-4">
                     <button
-                      type="button"
-                      className={`list-group-item ${day.value ==
-                      this.state.daySelected
-                        ? 'active'
-                        : ''}`}
-                      value={day.value}
-                      name="daySelected"
-                      onClick={this.handleInputChange.bind(this)}
+                      className="btn btn-info"
+                      name="isShowUpdate"
+                      onClick={this.handelShowChange.bind(this)}
                     >
-                      {day.text}
+                      Thêm mới khung giờ
                     </button>
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
-            <div className="col-lg-10">
-              {isShowUpdate ? (
-                <form
-                  className="form-horizontal"
-                  onSubmit={this.handleSubmitTimeInWeek.bind(this)}
-                >
-                  <div className="form-group">
-                    <label
-                      htmlFor="inputEmail3"
-                      className="col-sm-3 control-label"
-                    >
-                      Từ
-                    </label>
-                    <div className="col-sm-9">
-                      <div className="row">
-                        <div className="col-sm-6">
-                          <TimePicker
-                            showSecond={false}
-                            name="startDay"
-                            onChange={this.handelTimeStartDayInputChange.bind(
-                              this,
-                            )}
-                            disabledMinutes={this.configTimeDiable.bind(this)}
-                          />
-                        </div>
+              <h4>Thứ trong tuần</h4>
+              <div className="row">
+                <div className="col-lg-2">
+                  <div className="list-group">
+                    {buttonGroupDayInWeek.map(day => (
+                      <div key={day.id}>
+                        <button
+                          type="button"
+                          className={`list-group-item ${day.value ==
+                          this.state.daySelected
+                            ? 'active'
+                            : ''}`}
+                          value={day.value}
+                          name="daySelected"
+                          onClick={this.handleInputChange.bind(this)}
+                        >
+                          {day.text}
+                        </button>
                       </div>
-                    </div>
+                    ))}
                   </div>
-
-                  <div className="form-group">
-                    <label
-                      htmlFor="inputEmail3"
-                      className="col-sm-3 control-label"
+                </div>
+                <div className="col-lg-10">
+                  {isShowUpdate ? (
+                    <form
+                      className="form-horizontal"
+                      onSubmit={this.handleSubmitTimeInWeek.bind(this)}
                     >
-                      Đến
-                    </label>
-                    <div className="col-sm-9">
-                      <div className="row">
-                        <div className="col-sm-6">
-                          <TimePicker
-                            showSecond={false}
-                            name="endDay"
-                            onChange={this.handelTimeEndDayInputChange.bind(
-                              this,
-                            )}
-                            disabledMinutes={this.configTimeDiable.bind(this)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="form-group">
-                    <label
-                      htmlFor="inputEmail3"
-                      className="col-sm-3 control-label"
-                    >
-                      Giá
-                    </label>
-                    <div className="col-sm-9">
-                      <div className="row">
-                        <div className="col-sm-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="inputPassword3"
-                            placeholder="Giá"
-                            name="price"
-                            value={this.state.price}
-                            onChange={this.handleInputChange.bind(this)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <div className="col-sm-offset-3 col-sm-9">
-                      <button className="btn btn-primary" type="submit">
-                        Cập nhật
-                      </button>
-                      <button
-                        onClick={this.handelShowChange.bind(this)}
-                        className="btn btn-danger"
-                        type="submit"
-                      >
-                        Huỷ
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              ) : (
-                <div className="panel panel-default">
-                  <div className="panel-body">
-                <form className="form-horizontal">
-                  {dayAfterFilter.map(affterConvertArr => (
-                    <div key={affterConvertArr.id}>
                       <div className="form-group">
                         <label
                           htmlFor="inputEmail3"
@@ -356,13 +264,15 @@ class SettingTime extends Component {
                         <div className="col-sm-9">
                           <div className="row">
                             <div className="col-sm-6">
-                              <input
-                                type="text"
-                                className="form-control"
-                                id="inputPassword3"
-                                placeholder="Start time"
-                                value={affterConvertArr.startTime}
-                                readOnly
+                              <TimePicker
+                                showSecond={false}
+                                name="startDay"
+                                onChange={this.handelTimeStartDayInputChange.bind(
+                                  this,
+                                )}
+                                disabledMinutes={this.configTimeDiable.bind(
+                                  this,
+                                )}
                               />
                             </div>
                           </div>
@@ -379,13 +289,15 @@ class SettingTime extends Component {
                         <div className="col-sm-9">
                           <div className="row">
                             <div className="col-sm-6">
-                              <input
-                                type="text"
-                                className="form-control"
-                                id="inputPassword3"
-                                placeholder="End time"
-                                value={affterConvertArr.endTime}
-                                readOnly
+                              <TimePicker
+                                showSecond={false}
+                                name="endDay"
+                                onChange={this.handelTimeEndDayInputChange.bind(
+                                  this,
+                                )}
+                                disabledMinutes={this.configTimeDiable.bind(
+                                  this,
+                                )}
                               />
                             </div>
                           </div>
@@ -405,32 +317,126 @@ class SettingTime extends Component {
                                 type="text"
                                 className="form-control"
                                 id="inputPassword3"
-                                placeholder="End time"
-                                value={affterConvertArr.price}
-                                readOnly
+                                placeholder="Giá"
+                                name="price"
+                                value={this.state.price}
+                                onChange={this.handleInputChange.bind(this)}
                               />
                             </div>
                           </div>
                         </div>
                       </div>
+
                       <div className="form-group">
                         <div className="col-sm-offset-3 col-sm-9">
-                          <button
-                            className="btn btn-primary"
-                            name="isShowUpdate"
-                            onClick={this.handelShowChange.bind(this)}
-                          >
+                          <button className="btn btn-primary" type="submit">
                             Cập nhật
                           </button>
-                          <button className="btn btn-danger">Xoá</button>
+                          <button
+                            onClick={this.handelShowChange.bind(this)}
+                            className="btn btn-danger"
+                            type="submit"
+                          >
+                            Huỷ
+                          </button>
                         </div>
                       </div>
+                    </form>
+                  ) : (
+                    <div className="panel panel-default">
+                      <div className="panel-body">
+                        <form className="form-horizontal">
+                          {dayAfterFilter.map(affterConvertArr => (
+                            <div key={affterConvertArr.id}>
+                              <div className="form-group">
+                                <label
+                                  htmlFor="inputEmail3"
+                                  className="col-sm-3 control-label"
+                                >
+                                  Từ
+                                </label>
+                                <div className="col-sm-9">
+                                  <div className="row">
+                                    <div className="col-sm-6">
+                                      <input
+                                        type="text"
+                                        className="form-control"
+                                        id="inputPassword3"
+                                        placeholder="Start time"
+                                        value={affterConvertArr.startTime}
+                                        readOnly
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="form-group">
+                                <label
+                                  htmlFor="inputEmail3"
+                                  className="col-sm-3 control-label"
+                                >
+                                  Đến
+                                </label>
+                                <div className="col-sm-9">
+                                  <div className="row">
+                                    <div className="col-sm-6">
+                                      <input
+                                        type="text"
+                                        className="form-control"
+                                        id="inputPassword3"
+                                        placeholder="End time"
+                                        value={affterConvertArr.endTime}
+                                        readOnly
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="form-group">
+                                <label
+                                  htmlFor="inputEmail3"
+                                  className="col-sm-3 control-label"
+                                >
+                                  Giá
+                                </label>
+                                <div className="col-sm-9">
+                                  <div className="row">
+                                    <div className="col-sm-6">
+                                      <input
+                                        type="text"
+                                        className="form-control"
+                                        id="inputPassword3"
+                                        placeholder="End time"
+                                        value={affterConvertArr.price}
+                                        readOnly
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="form-group">
+                                <div className="col-sm-offset-3 col-sm-9">
+                                  <button
+                                    className="btn btn-primary"
+                                    name="isShowUpdate"
+                                    onClick={this.handelShowChange.bind(this)}
+                                  >
+                                    Cập nhật
+                                  </button>
+                                  <button className="btn btn-danger">
+                                    Xoá
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </form>
+                      </div>
                     </div>
-                  ))}
-                </form>
+                  )}
                 </div>
-                </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

@@ -228,9 +228,10 @@ class FreeTime extends Component {
     const hours = this.hoursToPick();
     // console.log(moment('20-10-2017 '+this.state.timeLowerLimit));
     return (
-      <div id="page-wrapper">
-        <div className="container-fluid">
-          <div className="row">
+      <div className="main-panel">
+        <div className="content">
+          <div className="container-fluid">
+            <div className="row">
             <div className="col-lg-9">
               <h2 className="page-header">Thời gian trống</h2>
             </div>
@@ -422,6 +423,7 @@ class FreeTime extends Component {
             </button>
           </Modal.Footer>
         </Modal>
+      </div>
       </div>
     );
   }

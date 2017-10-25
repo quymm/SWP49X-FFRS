@@ -75,7 +75,8 @@ class Field extends Component {
     const { isCreateShowed } = this.state;
     return (
       <div>
-        <div id="page-wrapper">
+        <div className="main-panel">
+        <div className="content">
           <div className="container-fluid">
             <div className="row">
               <div className="col-md-4">
@@ -105,6 +106,7 @@ class Field extends Component {
             </div>
           </div>
         </div>
+      </div>
       </div>
     );
   }

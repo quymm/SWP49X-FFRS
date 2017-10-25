@@ -2,46 +2,50 @@ import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 export class Navigation extends Component {
+
+  handleSelectd(evt){
+    evt.preventDefault();
+    this.setState({})
+  }
+
   render() {
     // const { fieldOwner } = this.props;
     // console.log(this.props);
     // if (fieldOwner.user.data.profileId === undefined) {
     //   return <div className="loader">loading</div>
     // }
+    console.log(this.props);
     return (
-      <div className="navbar-default navbar-static-side" role="navigation">
-        <div className="sidebar-collapse">
-          <ul className="nav" id="side-menu">
-            {/* <li>
-              <div className="user-section">
-                <div className="user-info">
-                  <div>
-                    {fieldOwner.user.data.profileId.name? fieldOwner.user.data.profileId.name : null}
-                  </div>
-                  <div className="user-text-online" />
-                </div>
-              </div>
-            </li> */}
+      <div
+        className="sidebar"
+        data-color="green"
+        data-image={require('../resource/images/sidebar-5.jpg')}
+      >
+        <div className="sidebar-wrapper">
+          <div className="logo">
+            <a href="http://www.creative-tim.com" className="simple-text">
+              Creative Tim
+            </a>
+          </div>
+
+          <ul className="nav">
             <li>
-              <NavLink to="/app/index" activeClassName="selected">
-                
+              <NavLink to="/app/index" activeClassName="active">
                 <i className="glyphicon glyphicon-calendar" /> Trận trong ngày
               </NavLink>
             </li>
             <li>
-              <NavLink to="/app/free-time" activeClassName="selected">
-                
+              <NavLink to="/app/free-time" activeClassName="active">
                 <i className="glyphicon glyphicon-time" /> Thời gian trống
               </NavLink>
             </li>
             <li>
-              <NavLink to="/app/field" activeClassName="selected">
+              <NavLink to="/app/field" activeClassName="active">
                 <i className="glyphicon glyphicon-list-alt" /> Quản lý sân
               </NavLink>
             </li>
             <li>
-              <NavLink to="/app/setting-time" activeClassName="selected">
-               
+              <NavLink to="/app/setting-time" activeClassName="active">
                 <i className="glyphicon glyphicon-time" /> Thiết lập giờ
               </NavLink>
             </li>
@@ -52,10 +56,10 @@ export class Navigation extends Component {
   }
 }
 
-function mapPropsToState(state){
+function mapPropsToState(state) {
   return {
-    fieldOwner: state.auth
-  }
+    fieldOwner: state.auth,
+  };
 }
 
 export default Navigation;

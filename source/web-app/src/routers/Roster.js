@@ -11,9 +11,12 @@ import FreeTime from '../components/FreeTime';
 // import PageNotFound from '../components/PageNotFound';
 
 const Roster = ({ match }) => (
-  <div id="wrapper">
-    <Header />
+  <div>
+  <Header />
+  <div className="wrapper">
+    
     <Navigation />
+    
     <Switch>
       <Route  path={`${match.url}/create-field`} component={FormCreateField} />
       <Route exact path={`${match.url}/index`} component={Home} />
@@ -22,6 +25,7 @@ const Roster = ({ match }) => (
       <Route path={`${match.url}/setting-time`} component={SettingTime} />
       <Route path={`${match.url}/free-time`} component={FreeTime} />
     </Switch>
+  </div>
   </div>
 );
 
