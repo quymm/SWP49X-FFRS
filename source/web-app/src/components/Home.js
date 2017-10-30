@@ -21,11 +21,7 @@ import {
   accessDenied,
 } from '../redux/guest/guest-action-creators';
 import { Modal } from 'react-bootstrap';
-import 'notyf/dist/notyf.min.css';
-var Notyf = require('notyf');
-var notyf = new Notyf({
-  delay: 4000,
-});
+import { toast } from 'react-toastify';
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -108,7 +104,7 @@ class Home extends Component {
         1,
       );
       await this.props.GetMatchByFieldOwnerAndDay(match.body);
-      notyf.confirm('Cập nhật sân thành công!');
+      toast.success('Cập nhật sân thành công!');
     }
   }
 
@@ -196,63 +192,68 @@ class Home extends Component {
     console.log(messages);
     console.log(this.props);
     return (
-      <div>
-        <div className="main-panel">
-          <div className="content">
-            <div className="container-fluid">
+      <div className="main-panel">
+        <div className="content">
+          <div className="container-fluid">
+            <div className="row">
               <div className="row">
-                <div className="row">
-            <div className="col-md-6">
-              <h2 className="page-header">Trận trong ngày</h2>
-            </div>
-            <div className="col-md-3">
-              <div className="page-header">
-                <form className="navbar-form navbar-left">
-                  <div className="form-group">
-                    <DatePicker
-                      selected={this.state.dateSelected}
-                      onChange={this.handleDateChange.bind(this)}
-                      className="form-control"
-                      todayButton={'Today'}
-                    />
+                <div className="col-md-4">
+                  <h2 className="page-header">Trận trong ngày</h2>
+                </div>
+                <div className="col-sm-4">
+                  <div className="page-header">
+                    <h4>{this.state.dateSelected.format("dddd, Do MMMM YYYY")}</h4>
                   </div>
-                </form>
-              </div>
-            </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="page-header">
+                    <form>
+                      <div className="form-group">
+                        <DatePicker
+                          selected={this.state.dateSelected}
+                          onChange={this.handleDateChange.bind(this)}
+                          className="form-control"
+                          todayButton={'Today'}
+                        />
+                      </div>
+                    </form>
+                  </div>
+                </div>
 
-            <div className="col-sm-3">
-              <div className="page-header">
-                <form className="navbar-form navbar-left">
-                  <div className="form-group">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search"
-                    />
+                {/* <div className="col-sm-3">
+                  <div className="page-header">
+                    <form>
+                      <div className="form-group">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Tìm kiếm theo tên"
+                        />
+                      </div>
+                    </form>
                   </div>
-                </form>
+                </div> */}
               </div>
-            </div>
-          </div>
-                <div className="col-md-12">
-                  <div className="row">
-                    {listMatch.length > 0
-                      ? listMatch.map(listMatch => (
-                          <div
-                            key={listMatch.timeSlotEntity.id}
-                            className="col-sm-6"
-                          >
-                            <div className="panel panel-default">
-                              <div className="panel-body">
-                                <div className="row">
-                                  <div className="col-md-3">
-                                    <h4 className="text-center match">
-                                      <strong>
-                                        {listMatch.user.profileId.name}
-                                      </strong>
-                                    </h4>
-                                  </div>
-                                  <div className="col-md-6">
+              <div className="col-md-12">
+                <div className="row">
+                  {listMatch.length > 0
+                    ? listMatch.map(listMatch => (
+                        <div
+                          key={listMatch.timeSlotEntity.id}
+                          className="col-sm-6"
+                        >
+                          <div className="panel panel-default">
+                            <div className="panel-body">
+                              <div className="row">
+                                <div className="col-md-3">
+                                  <h4 className="text-center">
+                                    <strong>
+                                      {listMatch.user.profileId.name}
+                                    </strong>
+                                  </h4>
+                                </div>
+                                <div className="col-md-6">
+                                  <div className="alert alert-success">
                                     <h3 className="text-center text-primary">
                                       <strong>
                                         {moment(
@@ -313,91 +314,88 @@ class Home extends Component {
                                       </button>
                                     </p>
                                   </div>
-                                  <div className="col-md-3">
-                                    <h4 className="text-center match">
-                                      <strong>
-                                        {listMatch.opponent.profileId.name}
-                                      </strong>
-                                    </h4>
-                                  </div>
+                                </div>
+                                <div className="col-md-3">
+                                  <h4 className="text-center ">
+                                    <strong>
+                                      {listMatch.opponent.profileId.name}
+                                    </strong>
+                                  </h4>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        ))
-                      : null}
-                  </div>
+                        </div>
+                      ))
+                    : null}
                 </div>
+              </div>
 
-                <Modal
-                  /* {...this.props} */
-                  show={this.state.isShowUpdateField}
-                  onHide={this.hideModal}
-                  dialogClassName="custom-modal"
-                >
-                  <Modal.Header>
-                    <Modal.Title>Thiết lập sân</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    {freeField.length > 0 ? (
-                      <form
-                        className="form-horizontal"
-                        onSubmit={this.handelSetFieldSubmit.bind(this)}
-                      >
-                        <div className="form-group">
-                          <label
-                            htmlFor="inputEmail3"
-                            className="col-md-3 control-label"
-                          >
-                            Tên sân
-                          </label>
-                          <div className="col-md-9">
-                            <div className="row">
-                              <div className="col-md-6">
-                                <select
-                                  value={this.state.fieldSelected}
-                                  onChange={this.handleInputChange.bind(this)}
-                                  className="form-control"
-                                  id="sel1"
-                                  name="fieldSelected"
-                                  type="checkbox"
-                                >
-                                  {freeField.map(freeField => (
-                                    <option
-                                      key={freeField.id}
-                                      value={freeField.id}
-                                    >
-                                      {freeField.name}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                              <div className="col-md-3">
-                                <button
-                                  type="submit"
-                                  className="btn btn-primary"
-                                >
-                                  Cập nhật sân
-                                </button>
-                              </div>
+              <Modal
+                /* {...this.props} */
+                show={this.state.isShowUpdateField}
+                onHide={this.hideModal}
+                dialogClassName="custom-modal"
+              >
+                <Modal.Header>
+                  <Modal.Title>Thiết lập sân</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  {freeField.length > 0 ? (
+                    <form
+                      className="form-horizontal"
+                      onSubmit={this.handelSetFieldSubmit.bind(this)}
+                    >
+                      <div className="form-group">
+                        <label
+                          htmlFor="inputEmail3"
+                          className="col-md-3 control-label"
+                        >
+                          Tên sân
+                        </label>
+                        <div className="col-md-9">
+                          <div className="row">
+                            <div className="col-md-6">
+                              <select
+                                value={this.state.fieldSelected}
+                                onChange={this.handleInputChange.bind(this)}
+                                className="form-control"
+                                id="sel1"
+                                name="fieldSelected"
+                                type="checkbox"
+                              >
+                                {freeField.map(freeField => (
+                                  <option
+                                    key={freeField.id}
+                                    value={freeField.id}
+                                  >
+                                    {freeField.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="col-md-3">
+                              <button type="submit" className="btn btn-primary">
+                                Cập nhật sân
+                              </button>
                             </div>
                           </div>
                         </div>
-                      </form>
-                    ) : (
-                      <h3>Không có sân trống</h3>
-                    )}
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <button
-                      onClick={this.handleHideModalField.bind(this)}
-                      className="btn btn-danger"
-                    >
-                      Huỷ
-                    </button>
-                  </Modal.Footer>
-                </Modal>
-              </div>
+                      </div>
+                    </form>
+                  ) : (
+                    <h3>Không có sân trống</h3>
+                  )}
+                </Modal.Body>
+                <Modal.Footer>
+                  <button
+                    onClick={this.handleHideModalField.bind(this)}
+                    className="btn btn-danger"
+                  >
+                    Huỷ
+                  </button>
+                </Modal.Footer>
+              </Modal>
             </div>
           </div>
         </div>

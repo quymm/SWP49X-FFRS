@@ -11,7 +11,9 @@ import {
   GET_FREE_TIME,
   BOOK_MATCH,
   GET_FREE_FIELD,
-  SET_FIELD
+  SET_FIELD,
+  GET_FRIENDLY_MATCH,
+  GET_TOUR_MATCH,
 } from './base-URL';
 
 export function fetchGetMatchByFieldOwnerAndDay(
@@ -152,11 +154,30 @@ export function fetchGetFreeFieldByTime(fieldownerid, fieldTypeId, date, time) {
   ).then(res => res.json());
 }
 
-export function fetchSetFieldToMatch(
-  timeSlotId, fieldId
-) {
-  return fetch(BASE_URL + SET_FIELD + '?time-slot-id=' + timeSlotId  + '&field-id=' + fieldId , {
-    method: 'PUT'
-  }).then(res => res.json());
+export function fetchSetFieldToMatch(timeSlotId, fieldId) {
+  return fetch(
+    BASE_URL +
+      SET_FIELD +
+      '?time-slot-id=' +
+      timeSlotId +
+      '&field-id=' +
+      fieldId,
+    {
+      method: 'PUT',
+    },
+  ).then(res => res.json());
 }
+
+export function fetchGetFriendlyMatch(matchId) {
+  return fetch(
+    BASE_URL + GET_FRIENDLY_MATCH + '?friendly-match-id=' + matchId,
+  ).then(res => res.json());
+}
+
+export function fetchGetTourMatch(matchId) {
+  return fetch(
+    BASE_URL + GET_TOUR_MATCH + '?tour-match-id=' + matchId,
+  ).then(res => res.json());
+}
+
 //

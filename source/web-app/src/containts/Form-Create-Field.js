@@ -7,10 +7,11 @@ import {
 import { fetchAddField, fetchGetAllField } from '../apis/field-owner-apis';
 import { withRouter } from 'react-router-dom';
 import { Modal } from 'react-bootstrap';
-var Notyf = require('notyf');
+import {toast } from 'react-toastify';
+var Notyf = require('notyf');//component ten notyf a, uhm de t xem da, css thoi dung ko?
 // Create an instance of Notyf
 var notyf = new Notyf({
-  delay: 4000,
+  delay: 2000000,
   // alertIcon: 'fa fa-exclamation-circle',
   // confirmIcon: 'fa fa-check-circle',
 });
@@ -50,7 +51,7 @@ class FormCreateField extends Component {
     await this.props.history.push('/app/field');
     this.setState({ isShowConfirm: false });
     this.inputEl.value = '';
-    notyf.confirm('Thêm sân thành công!');
+    toast.success('Thêm sân thành công!');
   }
 
   async handleHideConfirm(evt) {
@@ -109,7 +110,7 @@ class FormCreateField extends Component {
             <label htmlFor="sel1" className="col-sm-3 control-label">
               Loại sân
             </label>
-            <div className="col-sm-2">
+            <div className="col-sm-3">
               <select
                 value={this.state.fieldStyle}
                 onChange={this.handleSelectChange.bind(this)}

@@ -6,7 +6,7 @@ import {
   doLoginSuccessful,
   doLoginError,
 } from '../redux/guest/guest-action-creators';
-
+import LoginBackGround from '../resource/images/login.jpg';
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -32,7 +32,7 @@ class Login extends Component {
       if (loginRes.status === 200) {
         const dataLogin = loginRes.body;
         if (dataLogin !== null) {
-          localStorage.setItem("auth", JSON.stringify(dataLogin));
+          localStorage.setItem('auth', JSON.stringify(dataLogin));
           await this.props.doLoginSuccessful(dataLogin);
           if (dataLogin.roleId.roleName === 'owner') {
             this.props.history.push('/app/index');
@@ -53,10 +53,10 @@ class Login extends Component {
     const { message } = this.props.auth.user.status;
     console.log(this.props);
     return (
-      <div className="container">
+      <div className="container-fluid backGroundLogin">
         <div className="row">
-          <div className="col-md-4 col-md-offset-4">
-            <div className="login-panel panel panel-default">
+          <div className="col-md-4 col-md-offset-4 login-padding">
+            <div className="login-panel panel panel-default opacityLogin">
               <div className="panel-heading">
                 <h3 className="panel-title">Đăng nhập</h3>
               </div>
@@ -67,23 +67,21 @@ class Login extends Component {
                       <i>{message === null ? null : message}</i>
                     </p>
                     <div className="form-group">
-                    <label htmlFor="exampleInputEmail1">Tên đăng nhập</label>
+                      <label htmlFor="exampleInputEmail1">Tên đăng nhập</label>
                       <input
                         value={this.state.username}
                         onChange={this.handleUsernameChange.bind(this)}
                         className="form-control"
-                        
                         name="username"
                         type="text"
                         id="exampleInputEmail1"
                       />
                     </div>
                     <div className="form-group">
-                    <label htmlFor="exampleInputEmail1">Mật khẩu</label>
+                      <label htmlFor="exampleInputEmail1">Mật khẩu</label>
                       <input
                         onChange={this.handlePasswordChange.bind(this)}
                         className="form-control"
-                        
                         name="password"
                         type="password"
                         value={this.state.password}

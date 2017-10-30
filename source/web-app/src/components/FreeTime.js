@@ -15,14 +15,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Modal } from 'react-bootstrap';
 import 'notyf/dist/notyf.min.css';
-var Notyf = require('notyf');
-// Create an instance of Notyf
-var notyf = new Notyf({
-  delay: 4000,
-  // alertIcon: 'fa fa-exclamation-circle',
-  // confirmIcon: 'fa fa-check-circle',
-});
-
+import { toast } from 'react-toastify';
 class FreeTime extends Component {
   constructor(props) {
     super(props);
@@ -199,7 +192,7 @@ class FreeTime extends Component {
       );
       if (bookMatchRes.status === 201 && bookMatchRes.body !== null) {
         this.setState({ isShowBookMatch: false });
-        notyf.confirm('Đặt sân thành công!');
+        toast.success('Đặt sân thành công!');
         const data5vs5 = await fetchGetFreeTime(
           id,
           1,
@@ -214,7 +207,7 @@ class FreeTime extends Component {
         await this.props.getAllFreeTime7vs7(data7vs7.body);
       } else {
         this.setState({ isShowBookMatch: false });
-        notyf.alert('Đặt sân thất bại!');
+        toast.error('Đặt sân thất bại!');
       }
     } else {
       this.setState({ messageBookMatch: 'Thời gian không hợp lệ' });
@@ -232,12 +225,17 @@ class FreeTime extends Component {
         <div className="content">
           <div className="container-fluid">
             <div className="row">
-            <div className="col-lg-9">
+            <div className="col-sm-4">
               <h2 className="page-header">Thời gian trống</h2>
             </div>
-            <div className="col-lg-3">
+            <div className="col-sm-4">
               <div className="page-header">
-                <form className="navbar-form navbar-left">
+            <h4>{this.state.dateSelected.format("dddd, Do MMMM YYYY")}</h4>
+              </div>
+            </div>
+            <div className="col-sm-4">
+              <div className="page-header">
+                <form>
                   <div className="form-group">
                     <DatePicker
                       selected={this.state.dateSelected}
@@ -275,6 +273,7 @@ class FreeTime extends Component {
                             </h4>
                           </div>
                           <div>
+                            <h4>
                             <button
                               onClick={() =>
                                 this.handelShowModalBookMatch(freeTime)}
@@ -282,6 +281,7 @@ class FreeTime extends Component {
                             >
                               Đặt sân
                             </button>
+                            </h4>
                           </div>
                         </div>
                       ))

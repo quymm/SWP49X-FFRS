@@ -74,7 +74,6 @@ class Field extends Component {
         : 'Hiện tại chưa có sân';
     const { isCreateShowed } = this.state;
     return (
-      <div>
         <div className="main-panel">
         <div className="content">
           <div className="container-fluid">
@@ -106,7 +105,6 @@ class Field extends Component {
             </div>
           </div>
         </div>
-      </div>
       </div>
     );
   }

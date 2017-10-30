@@ -17,3 +17,5 @@ export const GET_FREE_TIME = '/match/free-time';
 export const BOOK_MATCH = '/match/reserve-time-slot';
 export const GET_FREE_FIELD = '/match/free-field';
 export const SET_FIELD = '/match/set-field';
+export const GET_FRIENDLY_MATCH = '/match/friendly-match';
+export const GET_TOUR_MATCH = '/match/tour-match';

@@ -194,6 +194,11 @@ class SettingTime extends Component {
         <div className="content">
           <div className="container-fluid">
             <div className="row">
+              <div className="col-md-4">
+                <h2 className="page-header">Quản lý sân</h2>
+              </div>
+            </div>
+            <div className="row">
               <div className="col-lg-12">
                 <div className="row">
                   <div className="col-lg-6 col-lg-offset-3">
