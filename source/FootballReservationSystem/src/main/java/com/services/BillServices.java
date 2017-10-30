@@ -10,7 +10,9 @@ import com.utils.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class BillServices {
@@ -37,11 +39,13 @@ public class BillServices {
             billEntity.setFriendlyMatchId(friendlyMatchEntity);
             billEntity.setUserId(friendlyMatchEntity.getUserId());
             TimeSlotEntity timeSlotEntity = friendlyMatchEntity.getTimeSlotId();
+            billEntity.setFieldOwnerId(timeSlotEntity.getFieldOwnerId());
             price = timeSlotEntity.getPrice();
         } else {
             TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(inputBillDTO.getTourMatchId());
             billEntity.setTourMatchId(tourMatchEntity);
             TimeSlotEntity timeSlotEntity = tourMatchEntity.getTimeSlotId();
+            billEntity.setFieldOwnerId(timeSlotEntity.getFieldOwnerId());
             price = timeSlotEntity.getPrice() / 2;
             if (!inputBillDTO.isOpponentPayment()) {
                 billEntity.setUserId(tourMatchEntity.getUserId());
@@ -64,6 +68,30 @@ public class BillServices {
 
         billEntity.setStatus(true);
         return billRepository.save(billEntity);
+    }
+
+    public BillEntity findById(int billId){
+        BillEntity billEntity = billRepository.findByIdAndStatus(billId, true);
+        if(billEntity == null){
+            throw new EntityNotFoundException(String.format("Not found Bill Entity have id = %s", billId));
+        }
+        return billEntity;
+    }
+
+    public List<BillEntity> findByUserIdIn7Date(int userId){
+        AccountEntity user = accountServices.findAccountEntityById(userId, "user");
+        Date now = new Date();
+        Date targetDate = new Date(now.getTime() - 7*24*60*60*1000); //7 day
+        List<BillEntity> billEntityList = billRepository.findBillWithUserIdAndDateCharge(user, true, targetDate);
+        return billEntityList;
+    }
+
+    public List<BillEntity> findByFieldOwnerIdIn7Date(int fieldOwnerId){
+        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        Date now = new Date();
+        Date targetDate = new Date(now.getTime() - 7*24*60*60*1000);
+        List<BillEntity> billEntityList = billRepository.findBillWithFieldOwnerIdAndDateCharge(fieldOwner, targetDate, true);
+        return billEntityList;
     }
 
 

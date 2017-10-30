@@ -256,5 +256,11 @@ public class MatchServices {
         return friendlyMatchEntity;
     }
 
+    public List<MatchingRequestEntity> findMatchingRequestByUserId(int userId){
+        AccountEntity user = accountServices.findAccountEntityById(userId, "user");
+        List<MatchingRequestEntity> matchingRequestEntityList = matchingRequestRepository.findByUserIdAndStatus(user, true);
+        return matchingRequestEntityList;
+    }
+
 
 }
