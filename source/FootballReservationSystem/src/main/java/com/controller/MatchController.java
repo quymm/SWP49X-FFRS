@@ -73,4 +73,11 @@ public class MatchController {
         Wrapper wrapper = new Wrapper(matchServices.findMatchingRequestEntityById(matchingRequestId), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
+
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/match/user-history", method = RequestMethod.GET)
+    public ResponseEntity findMatchingRequestByUserId(@RequestParam("user-id") int userId){
+        Wrapper wrapper = new Wrapper(matchServices.findMatchingRequestByUserId(userId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
 }

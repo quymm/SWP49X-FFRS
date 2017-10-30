@@ -21,4 +21,6 @@ public interface MatchingRequestRepository extends JpaRepository<MatchingRequest
                                                            @Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     MatchingRequestEntity findByIdAndStatus(int id, boolean status);
+
+    List<MatchingRequestEntity> findByUserIdAndStatus(AccountEntity userId, boolean status);
 }
