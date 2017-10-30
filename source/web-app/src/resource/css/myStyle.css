@@ -98,7 +98,7 @@
 
 .backGroundLogin {
   /* The image used */
-  background-image: url('../images/login.jpg');
+  background-image: url('../images/Untitled-1-1.jpg');
 
   /* Full height */
   height: 100%;
@@ -110,7 +110,7 @@
 }
 
 .login-padding {
-  padding-bottom: 25%;
+  padding-bottom: 20%;
   padding-top: 10%;
 }
 .opacityLogin {
@@ -118,4 +118,17 @@
 }
 .activeLink {
   background-color: green;
+}
+.padding-top-bot-none {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.margin-bot-none {
+  margin-bottom: 0;
+}
+.friendlyMatch {
+  background-color: #d4e8b1;
+}
+.tourMatch {
+  background-color: #07b7bf;
 }

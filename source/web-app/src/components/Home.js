@@ -202,7 +202,9 @@ class Home extends Component {
                 </div>
                 <div className="col-sm-4">
                   <div className="page-header">
-                    <h4>{this.state.dateSelected.format("dddd, Do MMMM YYYY")}</h4>
+                    <h4>
+                      {this.state.dateSelected.format('dddd, Do MMMM YYYY')}
+                    </h4>
                   </div>
                 </div>
                 <div className="col-md-4">
@@ -243,7 +245,7 @@ class Home extends Component {
                           className="col-sm-6"
                         >
                           <div className="panel panel-default">
-                            <div className="panel-body">
+                            <div className="panel-body padding-top-bot-none">
                               <div className="row">
                                 <div className="col-md-3">
                                   <h4 className="text-center">
@@ -253,7 +255,13 @@ class Home extends Component {
                                   </h4>
                                 </div>
                                 <div className="col-md-6">
-                                  <div className="alert alert-success">
+                                  <div
+                                    className={`alert ${!listMatch.user
+                                      .profileId.name ===
+                                    listMatch.opponent.profileId.name
+                                      ? 'tourMatch'
+                                      : 'friendlyMatch'} margin-bot-none`}
+                                  >
                                     <h3 className="text-center text-primary">
                                       <strong>
                                         {moment(
@@ -308,7 +316,7 @@ class Home extends Component {
                                       <button
                                         onClick={() =>
                                           this.handleShowModalField(listMatch)}
-                                        className="btn btn-md btn-primary"
+                                        className="btn btn-md btn-danger"
                                       >
                                         Cập nhật sân
                                       </button>

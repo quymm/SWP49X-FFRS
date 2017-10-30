@@ -201,11 +201,11 @@ class Header extends Component {
                           <div>
                             <strong>
                               {message.tourMatch ? (
-                                <span className=" label label-danger">
+                                <span className=" label label-info">
                                   Hệ thống chọn sân
                                 </span>
                               ) : (
-                                <span className=" label label-info">
+                                <span className=" label label-success">
                                   Người dùng đặt
                                 </span>
                               )}

@@ -6,7 +6,6 @@ import {
   doLoginSuccessful,
   doLoginError,
 } from '../redux/guest/guest-action-creators';
-import LoginBackGround from '../resource/images/login.jpg';
 class Login extends Component {
   constructor(props) {
     super(props);
