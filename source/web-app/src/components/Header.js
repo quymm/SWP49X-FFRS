@@ -26,13 +26,12 @@ class Header extends Component {
       menuOpened: false,
     };
     this.handelClickDetailMatch = this.handelClickDetailMatch.bind(this);
-    
   }
 
-  handleMenu(evt){
+  handleMenu(evt) {
     evt.preventDefault();
-    const {menuOpened} = this.state; // no bi gi vay a/hok co gi
-    this.setState({menuOpened: !menuOpened});
+    const { menuOpened } = this.state; // no bi gi vay a/hok co gi
+    this.setState({ menuOpened: !menuOpened });
     // document.getElementsByTagName('html')[0].className =!menuOpened?'nav-open':'';
   }
   componentWillMount() {
@@ -169,9 +168,15 @@ class Header extends Component {
       );
       messages.reverse();
     }
-    console.log(messages);
+    console.log(this.state.match);
     return (
-      <nav className={`navbar navbar-default ${this.state.menuOpened? 'open':''}`} id="navbar" style={myStyle}>
+      <nav
+        className={`navbar navbar-default ${this.state.menuOpened
+          ? 'open'
+          : ''}`}
+        id="navbar"
+        style={myStyle}
+      >
         <div className="navbar-header">
           <button
             type="button"
@@ -204,8 +209,11 @@ class Header extends Component {
               </Dropdown.Toggle>
               <Dropdown.Menu className="dropdown-menu dropdown-messages">
                 {messages.length > 0
-                  ? messages.map(message => (
-                      <li style={message.text.isRead ? null : styleNotRead}>
+                  ? messages.map((message, index) => (
+                      <li
+                        key={index}
+                        style={message.text.isRead ? null : styleNotRead}
+                      >
                         <a onClick={() => this.handelClickDetailMatch(message)}>
                           <div>
                             <strong>
@@ -301,7 +309,12 @@ class Header extends Component {
                   </strong>
                 </p>
                 <p className="text-center">
-                  <strong>{this.state.match.userId.profileId.name}</strong>
+                  <strong>
+                    {this.state.match.opponentId
+                      ? `${this.state.match.userId.profileId.name}, ${this
+                          .state.match.opponentId.profileId.name}`
+                      : this.state.match.userId.profileId.name}
+                  </strong>
                 </p>
               </div>
             ) : null}

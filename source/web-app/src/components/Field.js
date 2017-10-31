@@ -54,9 +54,10 @@ class Field extends Component {
     console.log(listField);
     const renderField =
       listField.length > 0
-        ? listField.map(listField => {
+        ? listField.map((listField,index) => {
             return (
               <tr key={listField.id}>
+                <td>{index + 1}</td>
                 <td>{listField.name}</td>
                 <td>{listField.fieldTypeId.name}</td>
                 <td>               
@@ -90,6 +91,7 @@ class Field extends Component {
                 <table className="table table-striped">
                   <thead>
                     <tr>
+                      <th>#</th>
                       <th>Tên sân</th>
                       <th>Loại sân</th>
                       <th />

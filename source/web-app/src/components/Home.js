@@ -189,7 +189,6 @@ class Home extends Component {
     const myStyle = { padding: 20 };
     const { listMatch, freeField } = this.props;
     const { isShowUpdateField, filterName, messages } = this.state;
-    console.log(messages);
     console.log(this.props);
     return (
       <div className="main-panel">
@@ -257,8 +256,7 @@ class Home extends Component {
                                 <div className="col-md-6">
                                   <div
                                     className={`alert ${!listMatch.user
-                                      .profileId.name ===
-                                    listMatch.opponent.profileId.name
+                                      .username === listMatch.opponent.username
                                       ? 'tourMatch'
                                       : 'friendlyMatch'} margin-bot-none`}
                                   >

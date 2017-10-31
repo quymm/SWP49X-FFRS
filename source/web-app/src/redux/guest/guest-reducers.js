@@ -61,7 +61,7 @@ export const guestReducer = (state = defaultState, action) => {
             status: {
               ok: false,
               error: true,
-              message: 'Đăng xuất thành công',
+              message: undefined,
             }
           }
           
