@@ -23,10 +23,18 @@ class Header extends Component {
       count: 0,
       isShowUpdateField: false,
       match: undefined,
+      menuOpened: false,
     };
     this.handelClickDetailMatch = this.handelClickDetailMatch.bind(this);
+    
   }
 
+  handleMenu(evt){
+    evt.preventDefault();
+    const {menuOpened} = this.state; // no bi gi vay a/hok co gi
+    this.setState({menuOpened: !menuOpened});
+    // document.getElementsByTagName('html')[0].className =!menuOpened?'nav-open':'';
+  }
   componentWillMount() {
     const { id } = this.props.auth.user.data;
     if (id === undefined) {
@@ -163,13 +171,14 @@ class Header extends Component {
     }
     console.log(messages);
     return (
-      <nav className="navbar navbar-default" id="navbar" style={myStyle}>
+      <nav className={`navbar navbar-default ${this.state.menuOpened? 'open':''}`} id="navbar" style={myStyle}>
         <div className="navbar-header">
           <button
             type="button"
             className="navbar-toggle"
             data-toggle="collapse"
             data-target=".sidebar-collapse"
+            onClick={this.handleMenu.bind(this)} // dc roi do a
           >
             <span className="sr-only">Toggle navigation</span>
             <span className="icon-bar" />

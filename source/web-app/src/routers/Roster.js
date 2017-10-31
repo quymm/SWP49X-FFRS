@@ -8,6 +8,7 @@ import Home from '../components/Home';
 import FormCreateField from '../containts/Form-Create-Field';
 import { Route, Switch } from 'react-router-dom';
 import FreeTime from '../components/FreeTime';
+import Overcome from '../components/Overcome';
 import { ToastContainer, toast } from 'react-toastify';
 
 // import PageNotFound from '../components/PageNotFound';
@@ -33,6 +34,7 @@ const Roster = ({ match }) => (
         <Route path={`${match.url}/player`} component={ProfilePlayer} />
         <Route path={`${match.url}/setting-time`} component={SettingTime} />
         <Route path={`${match.url}/free-time`} component={FreeTime} />
+        <Route path={`${match.url}/overcome`} component={Overcome} />
       </Switch>
     </div>
   </div>

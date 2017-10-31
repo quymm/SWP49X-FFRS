@@ -132,3 +132,21 @@
 .tourMatch {
   background-color: #07b7bf;
 }
+@media (min-width: 768px){
+  
+}
+@media (max-width: 991px){
+  .navbar.open + .wrapper .sidebar{
+    display: block;
+    left: auto;
+    right: 0;
+  }
+  .navbar .navbar-right {
+    position: absolute;
+    right: 90px;
+    top: 0;
+  }  
+  .navbar .navbar-nav > li {
+    float: left;
+  }
+}

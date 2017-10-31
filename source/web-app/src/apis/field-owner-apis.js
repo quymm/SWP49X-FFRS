@@ -14,6 +14,7 @@ import {
   SET_FIELD,
   GET_FRIENDLY_MATCH,
   GET_TOUR_MATCH,
+  GET_OVERCONE,
 } from './base-URL';
 
 export function fetchGetMatchByFieldOwnerAndDay(
@@ -180,4 +181,9 @@ export function fetchGetTourMatch(matchId) {
   ).then(res => res.json());
 }
 
+export function fetchGetOvercome(fieldownerid) {
+  return fetch(
+    BASE_URL + GET_OVERCONE + '?field-owner-id=' + fieldownerid,
+  ).then(res => res.json());
+}
 //
