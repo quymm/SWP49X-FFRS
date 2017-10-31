@@ -314,7 +314,7 @@ class Home extends Component {
                                       <button
                                         onClick={() =>
                                           this.handleShowModalField(listMatch)}
-                                        className="btn btn-md btn-danger"
+                                        className="btn btn-md btn-primary"
                                       >
                                         Cập nhật sân
                                       </button>

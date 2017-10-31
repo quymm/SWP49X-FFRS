@@ -150,3 +150,13 @@
     float: left;
   }
 }
+.form-group.required .control-label:after {
+  content:"*";
+  color:red;
+}
+.loginHeader {
+  margin: 0;
+}
+.color-owner {
+  background-color: #2e4603;
+}

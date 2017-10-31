@@ -27,26 +27,28 @@ export class Navigation extends Component {
         style={backGround}
       >
         <div className="sidebar-wrapper">
-          <div className="logo">
+          <div className="logo color-owner">
             <a href="#" className="simple-text">
-              {username}
+              <i className="glyphicon glyphicon-user" /> {username}
             </a>
           </div>
-
           <ul className="nav">
             <li>
               <NavLink to="/app/index" activeClassName="active">
-                <i className="glyphicon glyphicon-calendar" /> <strong>Trận trong ngày</strong>
+                <i className="glyphicon glyphicon-calendar" />{' '}
+                <strong>Trận trong ngày</strong>
               </NavLink>
             </li>
             <li>
               <NavLink to="/app/free-time" activeClassName="active">
-                <i className="glyphicon glyphicon-time" /> <strong>Thời gian trống</strong>
+                <i className="glyphicon glyphicon-time" />{' '}
+                <strong>Thời gian trống</strong>
               </NavLink>
             </li>
             <li>
               <NavLink to="/app/field" activeClassName="active">
-                <i className="glyphicon glyphicon-list-alt" /> <strong>Quản lý sân</strong>
+                <i className="glyphicon glyphicon-list-alt" />{' '}
+                <strong>Quản lý sân</strong>
               </NavLink>
             </li>
             <li>

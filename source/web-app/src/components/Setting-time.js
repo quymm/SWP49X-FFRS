@@ -11,6 +11,7 @@ import {
   doLoginSuccessful,
   accessDenied,
 } from '../redux/guest/guest-action-creators';
+import { Tabs, Tab, Modal } from 'react-bootstrap';
 class SettingTime extends Component {
   constructor(props) {
     super(props);
@@ -21,6 +22,7 @@ class SettingTime extends Component {
       startDay: null,
       endDay: null,
       price: undefined,
+      isShowAddTime: false,
       isShowUpdate: false,
       buttonGroupDayInWeek: [
         {
@@ -63,14 +65,15 @@ class SettingTime extends Component {
         {
           id: 1,
           value: '5 vs 5',
-          text: 'Loại sân 5 người',
+          text: 'Sân 5 người',
         },
         {
           id: 2,
           value: '7 vs 7',
-          text: 'Loại sân 7 người',
+          text: 'Sân 7 người',
         },
       ],
+      key: 1,
     };
   }
 
@@ -110,6 +113,10 @@ class SettingTime extends Component {
     }
     return disableTime;
   }
+  handelHideModal(evt){
+    evt.preventDefault();
+    this.setState({isShowAddTime: false})
+  }
   async handleInputChange(evt) {
     const target = evt.target;
     const value = target.value;
@@ -131,10 +138,9 @@ class SettingTime extends Component {
     console.log(this.state);
   }
 
-  handelShowChange(evt) {
+  handelShowModal(evt) {
     evt.preventDefault();
-    const { isShowUpdate } = this.state;
-    this.setState({ isShowUpdate: !isShowUpdate });
+    this.setState({ isShowAddTime: true });
   }
 
   async handleSubmitTimeInWeek(evt) {
@@ -195,256 +201,109 @@ class SettingTime extends Component {
           <div className="container-fluid">
             <div className="row">
               <div className="col-md-4">
-                <h2 className="page-header">Quản lý sân</h2>
+                <h2 className="page-header">Thiết lập giờ</h2>
               </div>
             </div>
-            <div className="row">
-              <div className="col-lg-12">
-                <div className="row">
-                  <div className="col-lg-6 col-lg-offset-3">
-                    <div className="row">
-                      {buttonGroupFieldType.map(fieldType => (
-                        <div className="col-lg-6" key={fieldType.id}>
-                          <button
-                            className={`${fieldType.value ==
-                            this.state.fieldType
-                              ? 'btn btn-primary btn-lg btn-block'
-                              : 'btn btn-default btn-lg btn-block'}`}
-                            name="fieldType"
-                            value={fieldType.value}
-                            onClick={this.handleInputChange.bind(this)}
-                          >
-                            {fieldType.text}
-                          </button>
-                        </div>
-                      ))}
+          </div>
+          <div className="col-md-10 col-md-offset-1">
+            <div className="panel panel-dafault">
+              <div className="panel panel-heading">
+              <div className="row">
+                  <div className="col-sm-8">
+                    <div className="col-sm-6">
+                      <select
+                        className="form-control"
+                        id="sel1"
+                        value={this.state.daySelected}
+                        onChange={this.handleInputChange.bind(this)}
+                        name="daySelected"
+                      >
+                        {this.state.buttonGroupDayInWeek.map(day => (
+                          <option key={day.id} value={day.value}>
+                            {day.text}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="col-sm-6">
+                      <select
+                        className="form-control"
+                        id="sel1"
+                        value={this.state.fieldType}
+                        onChange={this.handleInputChange.bind(this)}
+                        name="fieldType"
+                      >
+                        {this.state.buttonGroupFieldType.map(field => (
+                          <option key={field.id} value={field.value}>
+                            {field.text}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
-                  <div className="col=sm-4">
+                  <div className="col-sm-4">
                     <button
-                      className="btn btn-info"
+                      className="btn btn-warning"
                       name="isShowUpdate"
-                      onClick={this.handelShowChange.bind(this)}
+                      onClick={this.handelShowModal.bind(this)}
                     >
-                      Thêm mới khung giờ
+                      <i className="glyphicon glyphicon-plus" /> Thêm mới khung
+                      giờ
                     </button>
                   </div>
                 </div>
               </div>
-              <h4>Thứ trong tuần</h4>
-              <div className="row">
-                <div className="col-lg-2">
-                  <div className="list-group">
-                    {buttonGroupDayInWeek.map(day => (
-                      <div key={day.id}>
-                        <button
-                          type="button"
-                          className={`list-group-item ${day.value ==
-                          this.state.daySelected
-                            ? 'active'
-                            : ''}`}
-                          value={day.value}
-                          name="daySelected"
-                          onClick={this.handleInputChange.bind(this)}
-                        >
-                          {day.text}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="col-lg-10">
-                  {isShowUpdate ? (
-                    <form
-                      className="form-horizontal"
-                      onSubmit={this.handleSubmitTimeInWeek.bind(this)}
-                    >
-                      <div className="form-group">
-                        <label
-                          htmlFor="inputEmail3"
-                          className="col-sm-3 control-label"
-                        >
-                          Từ
-                        </label>
-                        <div className="col-sm-9">
-                          <div className="row">
-                            <div className="col-sm-6">
-                              <TimePicker
-                                showSecond={false}
-                                name="startDay"
-                                onChange={this.handelTimeStartDayInputChange.bind(
-                                  this,
-                                )}
-                                disabledMinutes={this.configTimeDiable.bind(
-                                  this,
-                                )}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="form-group">
-                        <label
-                          htmlFor="inputEmail3"
-                          className="col-sm-3 control-label"
-                        >
-                          Đến
-                        </label>
-                        <div className="col-sm-9">
-                          <div className="row">
-                            <div className="col-sm-6">
-                              <TimePicker
-                                showSecond={false}
-                                name="endDay"
-                                onChange={this.handelTimeEndDayInputChange.bind(
-                                  this,
-                                )}
-                                disabledMinutes={this.configTimeDiable.bind(
-                                  this,
-                                )}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label
-                          htmlFor="inputEmail3"
-                          className="col-sm-3 control-label"
-                        >
-                          Giá
-                        </label>
-                        <div className="col-sm-9">
-                          <div className="row">
-                            <div className="col-sm-6">
-                              <input
-                                type="text"
-                                className="form-control"
-                                id="inputPassword3"
-                                placeholder="Giá"
-                                name="price"
-                                value={this.state.price}
-                                onChange={this.handleInputChange.bind(this)}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="form-group">
-                        <div className="col-sm-offset-3 col-sm-9">
-                          <button className="btn btn-primary" type="submit">
-                            Cập nhật
-                          </button>
-                          <button
-                            onClick={this.handelShowChange.bind(this)}
-                            className="btn btn-danger"
-                            type="submit"
-                          >
-                            Huỷ
-                          </button>
-                        </div>
-                      </div>
-                    </form>
-                  ) : (
-                    <div className="panel panel-default">
-                      <div className="panel-body">
-                        <form className="form-horizontal">
-                          {dayAfterFilter.map(affterConvertArr => (
-                            <div key={affterConvertArr.id}>
-                              <div className="form-group">
-                                <label
-                                  htmlFor="inputEmail3"
-                                  className="col-sm-3 control-label"
-                                >
-                                  Từ
-                                </label>
-                                <div className="col-sm-9">
-                                  <div className="row">
-                                    <div className="col-sm-6">
-                                      <input
-                                        type="text"
-                                        className="form-control"
-                                        id="inputPassword3"
-                                        placeholder="Start time"
-                                        value={affterConvertArr.startTime}
-                                        readOnly
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="form-group">
-                                <label
-                                  htmlFor="inputEmail3"
-                                  className="col-sm-3 control-label"
-                                >
-                                  Đến
-                                </label>
-                                <div className="col-sm-9">
-                                  <div className="row">
-                                    <div className="col-sm-6">
-                                      <input
-                                        type="text"
-                                        className="form-control"
-                                        id="inputPassword3"
-                                        placeholder="End time"
-                                        value={affterConvertArr.endTime}
-                                        readOnly
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="form-group">
-                                <label
-                                  htmlFor="inputEmail3"
-                                  className="col-sm-3 control-label"
-                                >
-                                  Giá
-                                </label>
-                                <div className="col-sm-9">
-                                  <div className="row">
-                                    <div className="col-sm-6">
-                                      <input
-                                        type="text"
-                                        className="form-control"
-                                        id="inputPassword3"
-                                        placeholder="End time"
-                                        value={affterConvertArr.price}
-                                        readOnly
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="form-group">
-                                <div className="col-sm-offset-3 col-sm-9">
-                                  <button
-                                    className="btn btn-primary"
-                                    name="isShowUpdate"
-                                    onClick={this.handelShowChange.bind(this)}
-                                  >
-                                    Cập nhật
-                                  </button>
-                                  <button className="btn btn-danger">
-                                    Xoá
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </form>
-                      </div>
-                    </div>
-                  )}
+              <div className="panel-body">
+                
+                <div className="table-responsive">
+                  <table className="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Từ</th>
+                        <th>Đến</th>
+                        <th>Nghìn đồng/giờ</th>
+                        <th />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dayAfterFilter.map((data, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{data.startTime}</td>
+                          <td>{data.endTime}</td>
+                          <td>{data.price}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <Modal
+          /* {...this.props} */
+          show={this.state.isShowAddTime}
+          onHide={this.hideModal}
+          dialogClassName="custom-modal"
+        >
+          <Modal.Header>
+            <Modal.Title>Thêm mới khung giờ</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            aaa
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              onClick={this.handelHideModal.bind(this)}
+              className="btn btn-danger"
+            >
+              Đóng
+            </button>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }

@@ -55,18 +55,16 @@ class Login extends Component {
       <div className="container-fluid backGroundLogin">
         <div className="row">
           <div className="col-md-4 col-md-offset-4 login-padding">
-            <div className="login-panel panel panel-default opacityLogin">
-              <div className="panel-heading">
-                <h3 className="panel-title">Đăng nhập</h3>
-              </div>
+            <div className="login-panel panel panel-default">
               <div className="panel-body">
+              <h4 className="text-center loginHeader"><strong>Đăng nhập</strong></h4>
                 <form onSubmit={this.handleLogin.bind(this)}>
                   <fieldset>
                     <p className="text-center text-danger">
                       <i>{message === null ? null : message}</i>
                     </p>
                     <div className="form-group">
-                      <label htmlFor="exampleInputEmail1">Tên đăng nhập</label>
+                      <label htmlFor="exampleInputEmail1">Tên đăng nhập <span></span></label>
                       <input
                         value={this.state.username}
                         onChange={this.handleUsernameChange.bind(this)}
