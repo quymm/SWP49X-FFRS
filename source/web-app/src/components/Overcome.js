@@ -55,7 +55,7 @@ class OverCome extends Component {
             <tr key={index}>
               <td>{index + 1}</td>
               <td>{overcome.userId.profileId.name}</td>
-              <td>{overcome.price} k</td>
+              <td>{overcome.price} nghìn đồng</td>
               <td>
                 {moment(overcome.dateCharge).format(
                   'DD [tháng] MM YYYY | HH:mm',

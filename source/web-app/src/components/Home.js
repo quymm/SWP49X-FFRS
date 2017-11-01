@@ -214,7 +214,7 @@ class Home extends Component {
                           selected={this.state.dateSelected}
                           onChange={this.handleDateChange.bind(this)}
                           className="form-control"
-                          todayButton={'Today'}
+                          todayButton={'Hôm nay'}
                         />
                       </div>
                     </form>

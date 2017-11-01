@@ -30,7 +30,7 @@ class Header extends Component {
 
   handleMenu(evt) {
     evt.preventDefault();
-    const { menuOpened } = this.state; // no bi gi vay a/hok co gi
+    const { menuOpened } = this.state; 
     this.setState({ menuOpened: !menuOpened });
     // document.getElementsByTagName('html')[0].className =!menuOpened?'nav-open':'';
   }

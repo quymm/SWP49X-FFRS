@@ -241,7 +241,7 @@ class FreeTime extends Component {
                       selected={this.state.dateSelected}
                       onChange={this.handleDateChange.bind(this)}
                       className="form-control"
-                      todayButton={'Today'}
+                      todayButton={'Hôm nay'}
                     />
                   </div>
                 </form>
@@ -255,7 +255,7 @@ class FreeTime extends Component {
                 <div className="panel panel-success">
                   <div className="panel-heading">
                     {' '}
-                    <h4 className="text-center">Loại sân 5 người</h4>
+                    <h4 className="text-center loginHeader">Loại sân 5 người</h4>
                   </div>
                   <div className="panel-body">
                     {freeTime5vs5.length > 0 ? (
@@ -295,7 +295,7 @@ class FreeTime extends Component {
                 <div className="panel panel-success">
                   <div className="panel-heading">
                     {' '}
-                    <h4 className="text-center">Loại sân 7 người</h4>
+                    <h4 className="text-center loginHeader">Loại sân 7 người</h4>
                   </div>
                   <div className="panel-body">
                     {freeTime7vs7.length > 0 ? (
