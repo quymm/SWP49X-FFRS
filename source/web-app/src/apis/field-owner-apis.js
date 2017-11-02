@@ -15,6 +15,7 @@ import {
   GET_FRIENDLY_MATCH,
   GET_TOUR_MATCH,
   GET_OVERCONE,
+  UPDATE_PROFILE,
 } from './base-URL';
 
 export function fetchGetMatchByFieldOwnerAndDay(
@@ -185,5 +186,22 @@ export function fetchGetOvercome(fieldownerid) {
   return fetch(
     BASE_URL + GET_OVERCONE + '?field-owner-id=' + fieldownerid,
   ).then(res => res.json());
+}
+export function fetchUpdateProfile(id, data) {
+  return fetch(BASE_URL + UPDATE_PROFILE + '?field-owner-id=' + id, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      address: data.address,
+      avatarUrl: data.avatarUrl,
+      creditCard: data.creditCard,
+      latitude: data.latitude,
+      longitute: data.longitude,
+      name: data.fieldName,
+      password: data.password,
+      phone: data.phone,
+      username: data.username,
+    }),
+  }).then(res => res.json());
 }
 //

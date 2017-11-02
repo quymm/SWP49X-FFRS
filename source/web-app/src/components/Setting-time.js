@@ -400,7 +400,7 @@ class SettingTime extends Component {
                 </label>
                 <div className="col-sm-9">
                   <div className="row">
-                    <div className="col-sm-5">
+                    <div className="col-sm-6">
                       <div className="input-group">
                         
                         <input

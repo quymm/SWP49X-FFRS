@@ -11,6 +11,7 @@ import {
   fetchGetFriendlyMatch,
   fetchGetTourMatch,
 } from '../apis/field-owner-apis';
+import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 class Header extends Component {
@@ -30,7 +31,7 @@ class Header extends Component {
 
   handleMenu(evt) {
     evt.preventDefault();
-    const { menuOpened } = this.state; 
+    const { menuOpened } = this.state;
     this.setState({ menuOpened: !menuOpened });
     // document.getElementsByTagName('html')[0].className =!menuOpened?'nav-open':'';
   }
@@ -156,7 +157,10 @@ class Header extends Component {
     evt.preventDefault();
     this.setState({ isShowUpdateField: false });
   }
-
+  handleUpdateProfile(evt) {
+    evt.preventDefault();
+    this.props.history.push('/app/player');
+  }
   render() {
     const myStyle = { marginBottom: 0 };
     const styleNotRead = { backgroundColor: 'lavender' };
@@ -250,9 +254,9 @@ class Header extends Component {
                 <i className="glyphicon glyphicon-user" />
               </Dropdown.Toggle>
               <Dropdown.Menu className="super-colors">
-                <MenuItem>
+                <MenuItem onClick={this.handleUpdateProfile.bind(this)}>
                   {' '}
-                  <i className="glyphicon glyphicon-user" /> Cập nhật
+                  <i className="glyphicon glyphicon-user" /> Cập nhật thông tin
                 </MenuItem>
                 <MenuItem divider />
                 <MenuItem onClick={this.handleLogout.bind(this)}>
@@ -304,15 +308,15 @@ class Header extends Component {
                 <p className="text-center">
                   <strong>
                     {moment(this.state.match.timeSlotId.date).format(
-                      'DD/MM/YYYY',
+                      'dddd, Do MMMM YYYY',
                     )}
                   </strong>
                 </p>
                 <p className="text-center">
                   <strong>
                     {this.state.match.opponentId
-                      ? `${this.state.match.userId.profileId.name}, ${this
-                          .state.match.opponentId.profileId.name}`
+                      ? `${this.state.match.userId.profileId.name}, ${this.state
+                          .match.opponentId.profileId.name}`
                       : this.state.match.userId.profileId.name}
                   </strong>
                 </p>

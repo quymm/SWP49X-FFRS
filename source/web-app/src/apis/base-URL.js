@@ -20,3 +20,4 @@ export const SET_FIELD = '/match/set-field';
 export const GET_FRIENDLY_MATCH = '/match/friendly-match';
 export const GET_TOUR_MATCH = '/match/tour-match';
 export const GET_OVERCONE = '/bill/field-owner-history';
+export const UPDATE_PROFILE = '/account/managed-field-owner';

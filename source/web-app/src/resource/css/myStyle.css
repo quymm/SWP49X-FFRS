@@ -160,3 +160,18 @@
 .color-owner {
   background-color: #2e4603;
 }
+.setHeight{
+  height: 47px;
+}
+@import '~rc-time-picker/assets/index.css';
+.rc-time-picker-input {
+  font-size: 17px;
+  height: 36px;
+}
+.rc-time-picker-panel-select {
+  font-size: 17px;
+
+}
+.rc-time-picker-panel-inner {
+  font-size: 17px;
+}
