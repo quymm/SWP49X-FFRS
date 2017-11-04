@@ -64,7 +64,7 @@ public class AccountServices {
         profileEntity.setName(inputFieldOwnerDTO.getName());
         profileEntity.setAddress(inputFieldOwnerDTO.getAddress());
         profileEntity.setAvatarUrl(inputFieldOwnerDTO.getAvatarUrl());
-        profileEntity.setCreaditCard(inputFieldOwnerDTO.getCreditCard());
+        profileEntity.setBalance(profileEntity.getBalance());
         profileEntity.setLongitude(inputFieldOwnerDTO.getLongitute());
         profileEntity.setLatitude(inputFieldOwnerDTO.getLatitude());
         profileEntity.setPhone(inputFieldOwnerDTO.getPhone());
@@ -102,11 +102,11 @@ public class AccountServices {
         return accountRepository.findByIdAndRole(id, roleEntity, true);
     }
 
-    public AccountEntity checkLogin(String username, String password, String role){
+    public AccountEntity checkLogin(String username, String password, String role) {
         RoleEntity roleEntity = roleServices.findByRoleName(role);
         AccountEntity accountEntity = accountRepository.findByUsernamePasswordAndRoleEntity(username, password, roleEntity, true);
-        if(accountEntity == null){
-            throw new EntityNotFoundException(String.format("Not found account have username: %s and password: %s",username, password));
+        if (accountEntity == null) {
+            throw new EntityNotFoundException(String.format("Not found account have username: %s and password: %s", username, password));
         }
         return accountEntity;
     }
@@ -115,7 +115,7 @@ public class AccountServices {
         ProfileEntity profileEntity = new ProfileEntity();
         profileEntity.setAddress(inputFieldOwnerDTO.getAddress());
         profileEntity.setAvatarUrl(inputFieldOwnerDTO.getAvatarUrl());
-        profileEntity.setCreaditCard(inputFieldOwnerDTO.getCreditCard());
+        profileEntity.setBalance(0);
         profileEntity.setLatitude(inputFieldOwnerDTO.getLatitude());
         profileEntity.setLongitude(inputFieldOwnerDTO.getLongitute());
         profileEntity.setName(inputFieldOwnerDTO.getName());
@@ -128,7 +128,7 @@ public class AccountServices {
         ProfileEntity profileEntity = new ProfileEntity();
         profileEntity.setName(inputUserDTO.getTeamName());
         profileEntity.setPhone(inputUserDTO.getPhone());
-        profileEntity.setCreaditCard(inputUserDTO.getCreditCard());
+        profileEntity.setBalance(0);
         profileEntity.setAvatarUrl(inputUserDTO.getAvatarUrl());
         profileEntity.setBonusPoint(0);
         profileEntity.setRatingScore(2000);
@@ -136,7 +136,7 @@ public class AccountServices {
         return profileEntity;
     }
 
-    public List<AccountEntity> findMax10FieldOwnerNearByPosition(String longitudeStr, String latitudeStr){
+    public List<AccountEntity> findMax10FieldOwnerNearByPosition(String longitudeStr, String latitudeStr) {
         double longitude = NumberUtils.parseFromStringToDouble(longitudeStr);
         double latitude = NumberUtils.parseFromStringToDouble(latitudeStr);
         CordinationPoint cordinationPointA = new CordinationPoint(longitude, latitude);
@@ -145,7 +145,7 @@ public class AccountServices {
         List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
         List<AccountEntity> returnFieldOwnerList = new ArrayList<>();
 
-        if(!fieldOwnerList.isEmpty() && fieldOwnerList.size() > 1){
+        if (!fieldOwnerList.isEmpty() && fieldOwnerList.size() > 1) {
             for (AccountEntity fieldOwner : fieldOwnerList) {
                 CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(fieldOwner.getProfileId().getLongitude()),
                         NumberUtils.parseFromStringToDouble(fieldOwner.getProfileId().getLatitude()));
@@ -154,9 +154,9 @@ public class AccountServices {
                 fieldOwnerAndDistanceList.add(fieldOwnerAndDistance);
             }
 
-        // sắp xếp theo thứ tự khoảng cách tăng dần
-        matchServices.arrangeFieldOwnerByDistance(fieldOwnerAndDistanceList);
-            for (int i = 0; i < (fieldOwnerAndDistanceList.size()<10 ? fieldOwnerAndDistanceList.size() : 10); i++) {
+            // sắp xếp theo thứ tự khoảng cách tăng dần
+            matchServices.arrangeFieldOwnerByDistance(fieldOwnerAndDistanceList);
+            for (int i = 0; i < (fieldOwnerAndDistanceList.size() < 10 ? fieldOwnerAndDistanceList.size() : 10); i++) {
                 AccountEntity returnFieldOwner = fieldOwnerAndDistanceList.get(i).getFieldOwner();
                 returnFieldOwnerList.add(returnFieldOwner);
             }
@@ -165,7 +165,7 @@ public class AccountServices {
         return fieldOwnerList;
     }
 
-    public List<AccountEntity> findByNameLikeAndRole(String name, String role){
+    public List<AccountEntity> findByNameLikeAndRole(String name, String role) {
         RoleEntity roleEntity = roleServices.findByRoleName(role);
         List<ProfileEntity> profileEntityList = profileRepository.searchByName("%" + name + "%", true);
 
@@ -173,12 +173,27 @@ public class AccountServices {
 
         for (ProfileEntity profileEntity : profileEntityList) {
             AccountEntity accountEntity = accountRepository.findByProfileIdAndRoleIdAndStatus(profileEntity, roleEntity, true);
-            if(accountEntity != null){
+            if (accountEntity != null) {
                 returnAccountEntityList.add(accountEntity);
             }
         }
         return returnAccountEntityList;
     }
 
-
+    public AccountEntity changeBlance(int accountId, int balanceNumber, String role) {
+        AccountEntity accountEntity = findAccountEntityById(accountId, role);
+        ProfileEntity profileEntity = accountEntity.getProfileId();
+        if (balanceNumber > 0) {
+            profileEntity.setBalance(profileEntity.getBalance() + balanceNumber);
+        }
+        if (balanceNumber < 0) {
+            if (balanceNumber > profileEntity.getBalance()) {
+                throw new IllegalArgumentException(String.format("Account balance: %s. Not enough to withdraw!", profileEntity.getBalance()));
+            } else {
+                profileEntity.setBalance(profileEntity.getBalance() - balanceNumber);
+            }
+        }
+        accountEntity.setProfileId(profileRepository.save(profileEntity));
+        return accountEntity;
+    }
 }

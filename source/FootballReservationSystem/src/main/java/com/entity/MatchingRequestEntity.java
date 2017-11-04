@@ -42,9 +42,6 @@ public class MatchingRequestEntity implements Serializable {
     @Column(name = "latitude")
     private String latitude;
     @Basic(optional = false)
-    @Column(name = "address")
-    private String address;
-    @Basic(optional = false)
     @Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
@@ -56,6 +53,9 @@ public class MatchingRequestEntity implements Serializable {
     @Column(name = "end_time")
     @Temporal(TemporalType.TIME)
     private Date endTime;
+    @Basic(optional = false)
+    @Column(name = "duration")
+    private Integer duration;
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
@@ -112,14 +112,6 @@ public class MatchingRequestEntity implements Serializable {
         this.latitude = latitude;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public Date getDate() {
         return date;
     }
@@ -142,6 +134,14 @@ public class MatchingRequestEntity implements Serializable {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 
     public boolean isStatus() {
