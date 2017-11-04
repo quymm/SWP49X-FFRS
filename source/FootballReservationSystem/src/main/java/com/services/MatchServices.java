@@ -42,6 +42,12 @@ public class MatchServices {
     FieldTypeServices fieldTypeServices;
 
     @Autowired
+    BlacklistOpponentServices blacklistOpponentServices;
+
+    @Autowired
+    FavoritesFieldServices favoritesFieldServices;
+
+    @Autowired
     BillServices billServices;
 
     public MatchingRequestEntity findMatchingRequestEntityById(int id) {
@@ -93,32 +99,30 @@ public class MatchServices {
         matchingRequestEntity.setDate(date);
         matchingRequestEntity.setStartTime(startTime);
         matchingRequestEntity.setEndTime(endTime);
-        matchingRequestEntity.setAddress(inputMatchingRequestDTO.getAddress());
+        matchingRequestEntity.setDuration(inputMatchingRequestDTO.getDuration());
         matchingRequestEntity.setLongitude(inputMatchingRequestDTO.getLongitude());
         matchingRequestEntity.setLatitude(inputMatchingRequestDTO.getLatitude());
         matchingRequestEntity.setStatus(true);
         return matchingRequestRepository.save(matchingRequestEntity);
     }
 
-    public List<MatchingRequestEntity> suggestOpponent(int userId, int fieldTypeId, String longitude, String latitude, String dateStr, String startTimeStr, int deviationTime, int deviationDistance) {
-        AccountEntity user = accountServices.findAccountEntityById(userId, "user");
-        FieldTypeEntity fieldType = fieldTypeServices.findById(fieldTypeId);
+    public List<MatchingRequestEntity> suggestOpponent(InputMatchingRequestDTO inputMatchingRequestDTO, int deviationDistance) {
+        AccountEntity user = accountServices.findAccountEntityById(inputMatchingRequestDTO.getUserId(), "user");
+        FieldTypeEntity fieldType = fieldTypeServices.findById(inputMatchingRequestDTO.getFieldTypeId());
 
-        Date date = DateTimeUtils.convertFromStringToDate(dateStr);
-        Date time = DateTimeUtils.convertFromStringToTime(startTimeStr);
-        Date startTime = new Date(time.getTime() - deviationTime * 60000);
-        Date endTime = new Date(time.getTime() + deviationTime * 60000);
+        Date date = DateTimeUtils.convertFromStringToDate(inputMatchingRequestDTO.getDate());
+        Date startTime = DateTimeUtils.convertFromStringToTime(inputMatchingRequestDTO.getStartTime());
+        Date endTime = DateTimeUtils.convertFromStringToTime(inputMatchingRequestDTO.getEndTime());
 
-        CordinationPoint cordinationPointA = new CordinationPoint(NumberUtils.parseFromStringToDouble(longitude),
-                NumberUtils.parseFromStringToDouble(latitude));
+        CordinationPoint cordinationPointA = new CordinationPoint(NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLongitude()),
+                NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()));
 
         int ratingScore = user.getProfileId().getRatingScore();
-        // tìm các request cùng loại sân, thời gian dao động trong khoảng trước và sau deviationTime phút, rating score dao động trong khoảng 100 điểm
+        // tìm các request cùng loại sân, thời gian đá dao động trong khoảng trước và sau deviationTime phút, rating score dao động trong khoảng 100 điểm
         List<MatchingRequestEntity> similarMatchingRequestList = matchingRequestRepository.findSimilarMatchingRequest(fieldType, true, date, startTime, endTime);
 
         List<MatchingRequestEntity> returnMatchingRequest = new ArrayList<>();
         if (!similarMatchingRequestList.isEmpty()) {
-
             for (MatchingRequestEntity matchingRequest : similarMatchingRequestList) {
                 CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(matchingRequest.getLongitude()),
                         NumberUtils.parseFromStringToDouble(matchingRequest.getLatitude()));
@@ -127,8 +131,10 @@ public class MatchServices {
 
                 boolean checkRatingScore = matchingRequest.getUserId().getProfileId().getRatingScore() > (ratingScore - 100)
                         && matchingRequest.getUserId().getProfileId().getRatingScore() < (ratingScore + 100);
+
+                boolean checkBlackList = blacklistOpponentServices.findBlacklistByUserIdAndOpponentId(user.getId(), matchingRequest.getUserId().getId()) == null ? true : false;
                 // khoảng cách là nhỏ hơn deviation
-                if (matchingRequest.getUserId().getId() != userId && distance < deviationDistance && checkRatingScore) {
+                if (matchingRequest.getUserId().getId() != inputMatchingRequestDTO.getUserId() && distance < deviationDistance && checkBlackList && checkRatingScore) {
                     returnMatchingRequest.add(matchingRequest);
                 }
             }
@@ -138,7 +144,29 @@ public class MatchServices {
 
     public TimeSlotEntity chooseSuitableField(InputMatchingRequestDTO inputMatchingRequestDTO, int matchingRequestId, int deviationDistance) {
         MatchingRequestEntity opponentMatching = matchingRequestRepository.findByIdAndStatus(matchingRequestId, true);
+        // tìm những sân chung trong sở thích của 2 người chơi
+        List<AccountEntity> favoritesFieldList = favoritesFieldServices.findFavoritesFieldOf2User(inputMatchingRequestDTO.getUserId(), opponentMatching.getUserId().getId());
 
+        // tạo dữ liệu đặt sân dựa trên dữ liệu gốc theo matchingRequestId (người confirm đã đồng ý về thời gian của người tạo request)
+        InputReservationDTO inputReservationDTO = new InputReservationDTO();
+        inputReservationDTO.setStartTime(DateTimeUtils.formatTime(opponentMatching.getStartTime()));
+        inputReservationDTO.setEndTime(DateTimeUtils.formatTime(opponentMatching.getEndTime()));
+        inputReservationDTO.setDate(DateTimeUtils.formatDate(opponentMatching.getDate()));
+        inputReservationDTO.setFieldTypeId(opponentMatching.getFieldTypeId().getId());
+
+        if(!favoritesFieldList.isEmpty()){
+            for (AccountEntity favoritesField : favoritesFieldList){
+                inputReservationDTO.setFieldOwnerId(favoritesField.getId());
+                TimeSlotEntity timeSlotEntity = timeSlotServices.reserveTimeSlot(inputReservationDTO);
+                if (timeSlotEntity != null) {
+                    // trả nửa phí tiền sân đối với tour match
+                    timeSlotEntity.setPrice(timeSlotEntity.getPrice() / 2);
+                    return timeSlotEntity;
+                }
+            }
+        }
+
+        // khi những sân chung nằm trong sở thích của 2 người ko đặt được thì tìm những sân trung bình về khoảng cách
         // tạo list những sân và khoảng cách đến sân đó sắp xếp theo thứ tự tăng dần
         CordinationPoint cordinationPointUser = new CordinationPoint(NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLongitude()),
                 NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()));
@@ -157,12 +185,6 @@ public class MatchServices {
             }
         }
 
-        // tạo dữ liệu đặt sân dựa trên dữ liệu gốc theo matchingRequestId (ưu tiên theo người đặt sân trước)
-        InputReservationDTO inputReservationDTO = new InputReservationDTO();
-        inputReservationDTO.setStartTime(DateTimeUtils.formatTime(opponentMatching.getStartTime()));
-        inputReservationDTO.setEndTime(DateTimeUtils.formatTime(opponentMatching.getEndTime()));
-        inputReservationDTO.setDate(DateTimeUtils.formatDate(opponentMatching.getDate()));
-        inputReservationDTO.setFieldTypeId(opponentMatching.getFieldTypeId().getId());
 
         for (FieldOwnerAndDistance fieldOwnerAndDistance : fieldOwnerAndDistanceList) {
             inputReservationDTO.setFieldOwnerId(fieldOwnerAndDistance.getFieldOwner().getId());
@@ -173,6 +195,7 @@ public class MatchServices {
                 return timeSlotEntity;
             }
         }
+        // nếu vẫn ko có sân phù hợp thì trả về null, hệ thống sẽ báo ko tìm được sân phù hợp
         return null;
     }
 

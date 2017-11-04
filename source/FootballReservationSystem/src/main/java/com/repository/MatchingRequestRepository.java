@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface MatchingRequestRepository extends JpaRepository<MatchingRequestEntity, Integer> {
     @Query("SELECT m FROM MatchingRequestEntity m WHERE m.fieldTypeId = :fieldType AND m.date = :date" +
-            " AND m.status = :status AND m.startTime BETWEEN :startTime AND :endTime")
+            " AND m.status = :status AND :startTime < m.endTime AND :endTime > m.startTime")
     List<MatchingRequestEntity> findSimilarMatchingRequest(@Param("fieldType") FieldTypeEntity fieldTypeEntity, @Param("status") boolean status,
                                                            @Param("date") Date date,
                                                            @Param("startTime") Date startTime, @Param("endTime") Date endTime);

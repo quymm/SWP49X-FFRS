@@ -18,14 +18,12 @@ public class InputFieldOwnerDTO {
 
     private String latitude;
 
-    private String creditCard;
-
     private String avatarUrl;
 
     public InputFieldOwnerDTO() {
     }
 
-    public InputFieldOwnerDTO(String username, String password, String name, String phone, String address, String longitute, String latitude, String creditCard, String avatarUrl) {
+    public InputFieldOwnerDTO(String username, String password, String name, String phone, String address, String longitute, String latitude, String avatarUrl) {
         this.username = username;
         this.password = password;
         this.name = name;
@@ -33,7 +31,6 @@ public class InputFieldOwnerDTO {
         this.address = address;
         this.longitute = longitute;
         this.latitude = latitude;
-        this.creditCard = creditCard;
         this.avatarUrl = avatarUrl;
     }
 
@@ -91,14 +88,6 @@ public class InputFieldOwnerDTO {
 
     public void setLatitude(String latitude) {
         this.latitude = latitude;
-    }
-
-    public String getCreditCard() {
-        return creditCard;
-    }
-
-    public void setCreditCard(String creditCard) {
-        this.creditCard = creditCard;
     }
 
     public String getAvatarUrl() {

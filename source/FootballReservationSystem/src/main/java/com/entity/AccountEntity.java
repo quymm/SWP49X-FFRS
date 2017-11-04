@@ -39,6 +39,9 @@ public class AccountEntity implements Serializable {
     @Column(name = "password")
     private String password;
     @Basic(optional = false)
+    @Column(name = "lock")
+    private boolean lock;
+    @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
@@ -84,6 +87,14 @@ public class AccountEntity implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean setLock() {
+        return lock;
+    }
+
+    public void setLock(boolean lock) {
+        this.lock = lock;
     }
 
     public boolean getStatus() {

@@ -89,7 +89,11 @@ public class AccountController {
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
-
-
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/account/money", method = RequestMethod.PUT)
+    public ResponseEntity insertMoney(@RequestParam("account-id") int accountId, @RequestParam("role") String role, @RequestParam("balance") int balance){
+        Wrapper wrapper = new Wrapper(accountServices.changeBlance(accountId, balance, role), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
 
 }
