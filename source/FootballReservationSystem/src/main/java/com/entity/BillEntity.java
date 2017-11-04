@@ -46,6 +46,9 @@ public class BillEntity implements Serializable {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private AccountEntity userId;
+    @JoinColumn(name = "field_owner_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private AccountEntity fieldOwnerId;
     @JoinColumn(name = "friendly_match_id", referencedColumnName = "id")
     @ManyToOne
     private FriendlyMatchEntity friendlyMatchId;
@@ -124,6 +127,14 @@ public class BillEntity implements Serializable {
 
     public void setVoucherId(VoucherEntity voucherId) {
         this.voucherId = voucherId;
+    }
+
+    public AccountEntity getFieldOwnerId() {
+        return fieldOwnerId;
+    }
+
+    public void setFieldOwnerId(AccountEntity fieldOwnerId) {
+        this.fieldOwnerId = fieldOwnerId;
     }
 
     public TourMatchEntity getTourMatchId() {

@@ -33,4 +33,7 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlotEntity, Intege
                                                                                                           Date targetDate, boolean reservationStatus,
                                                                                                           boolean status);
 
+    @Query("SELECT t FROM TimeSlotEntity t WHERE t.date >= :targetDate AND t.status = :status AND t.fieldOwnerId = :fieldOwnerId AND t.fieldTypeId = :fieldTypeId GROUP BY t.date")
+    List<TimeSlotEntity> findTimeWhenAddNewField(@Param("targetDate") Date date, @Param("status") boolean status,
+                                                  @Param("fieldOwnerId") AccountEntity fieldOwner, @Param("fieldTypeId") FieldTypeEntity fieldType);
 }
