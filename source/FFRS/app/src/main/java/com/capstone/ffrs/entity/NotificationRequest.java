@@ -11,14 +11,14 @@ import java.util.Map;
  * Created by HuanPMSE61860 on 10/17/2017.
  */
 
-public class Notification {
+public class NotificationRequest {
 
     private String teamName;
     private Date startTime, endTime, date;
     private int userId, requestId, fieldTypeId;
     private double latitude, longitude;
 
-    public Notification() {
+    public NotificationRequest() {
     }
 
     public String getTeamName() {

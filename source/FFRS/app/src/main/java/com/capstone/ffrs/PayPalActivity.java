@@ -1,7 +1,10 @@
 package com.capstone.ffrs;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +19,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.controller.NetworkController;
+import com.capstone.ffrs.entity.FieldOwnerFriendlyNotification;
+import com.capstone.ffrs.entity.FieldOwnerTourNotification;
+import com.capstone.ffrs.service.TimerServices;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
@@ -28,6 +37,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PayPalActivity extends AppCompatActivity {
 
@@ -61,12 +74,43 @@ public class PayPalActivity extends AppCompatActivity {
     PayPalPayment thingToBuy;
 
     RequestQueue queue;
-    String localhost;
+    String hostURL;
+
+    private BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, Intent intent) {
+            stopService(new Intent(context, TimerServices.class));
+            Toast.makeText(context, "Hết thời gian đặt sân", Toast.LENGTH_LONG).show();
+            Bundle b = getIntent().getExtras();
+            int timeSlotId = b.getInt("time_slot_id");
+            String url = hostURL + getResources().getString(R.string.url_cancel_reservation);
+            url = String.format(url, timeSlotId);
+            RequestQueue queue = NetworkController.getInstance(context).getRequestQueue();
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Intent intent = new Intent(PayPalActivity.this, FieldSuggestActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Intent intent = new Intent(PayPalActivity.this, FieldSuggestActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
+            });
+            queue.add(request);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay_pal);
+
+        stopService(new Intent(this, TimerServices.class));
 
         Bundle b = getIntent().getExtras();
 
@@ -99,19 +143,36 @@ public class PayPalActivity extends AppCompatActivity {
                         .getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
                 if (confirm != null) {
 
-                    localhost = getResources().getString(R.string.local_host);
+                    hostURL = getResources().getString(R.string.local_host);
                     Bundle b = getIntent().getExtras();
                     final boolean tourMatchMode = b.getBoolean("tour_match_mode");
                     String url;
+                    Map<String, Object> params = null;
                     if (!tourMatchMode) {
-                        url = localhost + "/swp49x-ffrs/match/friendly-match?time-slot-id=" + b.getInt("time_slot_id") + "&user-id=" + b.getInt("user_id") + "&voucher-id=0";
+                        url = hostURL + getResources().getString(R.string.url_reserve_friendly_match);
+                        url = String.format(url, b.getInt("time_slot_id"), b.getInt("user_id"), 0);
                     } else {
-                        url = localhost + "/swp49x-ffrs/match/tour-match?time-slot-id=" + b.getInt("time_slot_id") + "&matching-request-id=" + b.getInt("matching_request_id") + "&opponent-id=" + b.getInt("opponent_id") + "&voucher-id=0";
+                        if (!b.containsKey("tour_match_id")) {
+                            url = hostURL + getResources().getString(R.string.url_reserve_tour_match);
+                            url = String.format(url, b.getInt("time_slot_id"), b.getInt("matching_request_id"), b.getInt("opponent_id"), 0);
+                        } else {
+                            Integer tourMatchId = b.getInt("tour_match_id");
+                            url = hostURL + getResources().getString(R.string.url_add_bill);
+                            params = new HashMap<>();
+                            params.put("opponentPayment", true);
+                            params.put("tourMatchId", tourMatchId);
+                            params.put("voucherId", 0);
+                        }
                     }
 
                     queue = NetworkController.getInstance(this).getRequestQueue();
 
-                    JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, null,
+                    JSONObject jsonParams = null;
+                    if (params != null) {
+                        jsonParams = new JSONObject(params);
+                    }
+
+                    JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, jsonParams,
                             new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
@@ -122,16 +183,44 @@ public class PayPalActivity extends AppCompatActivity {
                                                 Bundle b = getIntent().getExtras();
                                                 Intent intent = new Intent(PayPalActivity.this, ReservationResultActivity.class);
                                                 intent.putExtra("user_id", b.getInt("user_id"));
-                                                if (!tourMatchMode) {
-                                                    intent.putExtra("reserve_id", body.getJSONObject("friendlyMatchId").getInt("id"));
-                                                } else {
-                                                    intent.putExtra("reserve_id", body.getJSONObject("tourMatchId").getInt("id"));
-                                                }
                                                 intent.putExtra("field_id", b.getInt("field_id"));
                                                 intent.putExtra("field_name", b.getString("field_name"));
                                                 intent.putExtra("field_address", b.getString("field_address"));
                                                 intent.putExtra("image_url", b.getString("image_url"));
                                                 intent.putExtra("payment_result", "Succeed");
+                                                if (!tourMatchMode) {
+                                                    intent.putExtra("reserve_id", body.getJSONObject("friendlyMatchId").getInt("id"));
+                                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                    DatabaseReference ref = database.getReference();
+                                                    DatabaseReference friendlyRef = ref.child("fieldOwner").child(b.getInt("field_id") + "")
+                                                            .child("friendlyMatch").child(body.getJSONObject("friendlyMatchId").getInt("id") + "");
+                                                    FieldOwnerFriendlyNotification notification = new FieldOwnerFriendlyNotification();
+                                                    notification.setIsRead(0);
+                                                    notification.setIsShowed(0);
+                                                    notification.setTime(new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(new Date()));
+                                                    notification.setUsername(body.getJSONObject("userId").getJSONObject("profileId").getString("name"));
+                                                    friendlyRef.setValue(notification);
+                                                } else {
+                                                    intent.putExtra("reserve_id", body.getJSONObject("tourMatchId").getInt("id"));
+                                                    if (!b.containsKey("tour_match_id")) {
+                                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                        DatabaseReference ref = database.getReference();
+                                                        ref.child("response").child(b.getInt("opponent_id") + "").child(body.getJSONObject("tourMatchId").getInt("id") + "").setValue(0);
+                                                        DatabaseReference tourRef = ref.child("fieldOwner").child(b.getInt("field_id") + "")
+                                                                .child("tourMatch").child(body.getJSONObject("tourMatchId").getInt("id") + "");
+                                                        FieldOwnerTourNotification notification = new FieldOwnerTourNotification();
+                                                        notification.setIsRead(0);
+                                                        notification.setIsShowed(0);
+                                                        notification.setTime(new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(new Date()));
+                                                        tourRef.setValue(notification);
+                                                    } else {
+                                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                        DatabaseReference ref = database.getReference();
+                                                        ref.child("request").child(b.getInt("opponent_id") + "").child(b.getInt("matching_request_id") + "").removeValue();
+                                                        ref.child("response").child(b.getInt("user_id") + "").child(body.getJSONObject("tourMatchId").getInt("id") + "").removeValue();
+                                                    }
+
+                                                }
                                                 startActivity(intent);
                                             } catch (Exception e) {
                                                 Log.d("EXCEPTION", e.getMessage());
@@ -209,6 +298,21 @@ public class PayPalActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerReceiver(br, new IntentFilter(TimerServices.COUNTDOWN_BR));
+    }
+
+    @Override
+    public void onStop() {
+        try {
+            unregisterReceiver(br);
+        } catch (Exception e) {
+            // Receiver was probably already stopped in onPause()
+        }
+        super.onStop();
+    }
 
     private void sendAuthorizationToServer(PayPalAuthorization authorization) {
 

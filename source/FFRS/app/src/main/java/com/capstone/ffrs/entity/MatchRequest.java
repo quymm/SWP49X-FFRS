@@ -8,6 +8,7 @@ public class MatchRequest {
     private int id, ratingScore, userId;
     private String date, startTime, endTime;
     private String teamName;
+    private boolean isSelected;
 
     public MatchRequest() {
 
@@ -77,5 +78,13 @@ public class MatchRequest {
 
     public void setTeamName(String teamName) {
         this.teamName = teamName;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

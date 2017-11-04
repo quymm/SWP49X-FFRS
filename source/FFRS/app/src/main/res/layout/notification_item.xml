@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     card_view:cardCornerRadius="2dp"
-    card_view:cardElevation="3dp"
+    card_view:cardElevation="1dp"
+    card_view:cardPreventCornerOverlap="false"
     card_view:cardUseCompatPadding="true">
 
     <RelativeLayout
@@ -63,6 +64,18 @@
                     android:textColor="@color/primaryText"
                     android:textSize="24sp"
                     android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/notification_sub_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="7dp"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginRight="7dp"
+                    android:text="Notification text"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/time_view"

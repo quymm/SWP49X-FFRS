@@ -1,8 +1,6 @@
-package layout;
+package com.capstone.ffrs.fragment;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,64 +9,59 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.capstone.ffrs.CreateMatchingRequestActivity;
 import com.capstone.ffrs.MatchActivity;
-import com.capstone.ffrs.MatchMapActivity;
 import com.capstone.ffrs.R;
-import com.capstone.ffrs.entity.FieldTime;
-import com.capstone.ffrs.utils.CustomTimePickerDialog;
+import com.capstone.ffrs.adapter.PlacesAutoCompleteAdapter;
+import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.utils.TimePickerListener;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.joda.time.LocalDateTime;
-import org.w3c.dom.Text;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 public class MatchSearchFragment extends Fragment {
 
     private String displayFormat = "dd/MM/yyyy";
-    private Spinner spinner;
+    private Spinner fieldSpinner, durationSpinner;
     private LatLng currentPosition = null;
-    private Button btFindRequest;
+    private LatLng customPosition = null;
+    private Button btFindRequest, btCreateRequest;
 
     public MatchSearchFragment() {
         // Required empty public constructor
@@ -82,7 +75,7 @@ public class MatchSearchFragment extends Fragment {
     public BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            EditText txtAddress = (EditText) getView().findViewById(R.id.input_address);
+            AutoCompleteTextView txtAddress = (AutoCompleteTextView) getView().findViewById(R.id.input_address);
             if (txtAddress.getText().toString().isEmpty()) {
                 double latitude = intent.getDoubleExtra("latitude", -1);
                 double longitude = intent.getDoubleExtra("longitude", -1);
@@ -95,11 +88,10 @@ public class MatchSearchFragment extends Fragment {
                     btFindRequest.setText("Tìm đối thủ");
                     Geocoder geocoder;
                     List<Address> addresses;
-                    geocoder = new Geocoder(context, Locale.getDefault());
+                    geocoder = new Geocoder(context, Locale.forLanguageTag("vi_VN"));
                     try {
                         addresses = geocoder.getFromLocation(currentPosition.latitude, currentPosition.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
                         String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-
                         txtAddress.setHint(address);
                         validate();
                     } catch (IOException e) {
@@ -120,29 +112,33 @@ public class MatchSearchFragment extends Fragment {
     public void validate() {
         EditText from = (EditText) getActivity().findViewById(R.id.input_start_time);
         EditText to = (EditText) getActivity().findViewById(R.id.input_end_time);
-
-        if (currentPosition == null) {
+        if (currentPosition == null && customPosition == null) {
             btFindRequest.setEnabled(false);
             btFindRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
-        } else if (!from.getText().toString().isEmpty() && !to.getText().toString().isEmpty()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
-
-            try {
-                Date startTime = sdf.parse(from.getText().toString());
-                Date endTime = sdf.parse(to.getText().toString());
-                if (startTime.compareTo(endTime) < 0) {
-                    btFindRequest.setEnabled(true);
-                    btFindRequest.setBackgroundColor(Color.parseColor("#009632"));
-                } else {
-                    btFindRequest.setEnabled(false);
-                    btFindRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
+            btCreateRequest.setEnabled(false);
+            btCreateRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
+        } else if (!from.getText().toString().isEmpty()) {
+            btFindRequest.setEnabled(true);
+            btFindRequest.setBackgroundColor(Color.parseColor("#009632"));
+            if (!to.getText().toString().isEmpty()) {
+                SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+                try {
+                    Date startTime = sdf.parse(from.getText().toString());
+                    Date endTime = sdf.parse(to.getText().toString());
+                    if (startTime.compareTo(endTime) < 0) {
+                        btCreateRequest.setEnabled(true);
+                        btCreateRequest.setBackgroundColor(Color.parseColor("#009632"));
+                    } else {
+                        btCreateRequest.setEnabled(false);
+                        btCreateRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-            } catch (ParseException e) {
-                e.printStackTrace();
+            } else {
+                btCreateRequest.setEnabled(false);
+                btCreateRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
             }
-        } else {
-            btFindRequest.setEnabled(false);
-            btFindRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
         }
     }
 
@@ -152,12 +148,12 @@ public class MatchSearchFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_match_search, container, false);
 
-        final EditText date = (EditText) view.findViewById(R.id.input_date);
+        final EditText mDate = (EditText) view.findViewById(R.id.input_date);
         SimpleDateFormat sdf = new SimpleDateFormat(displayFormat);
 
         long currentMillis = System.currentTimeMillis();
         String strCurrentDate = sdf.format(currentMillis);
-        date.setText(strCurrentDate);
+        mDate.setText(strCurrentDate);
 
         final Calendar dateSelected = Calendar.getInstance();
         final DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
@@ -173,12 +169,12 @@ public class MatchSearchFragment extends Fragment {
                 //In which you need put here
                 SimpleDateFormat sdf = new SimpleDateFormat(displayFormat);
 
-                date.setText(sdf.format(dateSelected.getTime()));
+                mDate.setText(sdf.format(dateSelected.getTime()));
             }
 
         };
 
-        date.setOnClickListener(new View.OnClickListener() {
+        mDate.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -206,11 +202,17 @@ public class MatchSearchFragment extends Fragment {
                 hour = 0;
                 LocalDateTime dateTime = LocalDateTime.now();
                 dateTime = dateTime.plusDays(1);
-                date.setText(sdf.format(dateTime.toDate()));
+                mDate.setText(sdf.format(dateTime.toDate()));
             }
         }
 
-        from.setOnClickListener(new TimePickerListener(view.getContext(), from));
+        TimePickerListener startListener = new TimePickerListener(view.getContext(), from);
+        try {
+            startListener.setMaxTime(new SimpleDateFormat("H:mm").parse("23:00"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        from.setOnClickListener(startListener);
         from.setText(hour + ":" + (minutes == 0 ? "00" : "30"));
 
         final EditText to = (EditText) view.findViewById(R.id.input_end_time);
@@ -221,7 +223,7 @@ public class MatchSearchFragment extends Fragment {
                 if (!from.getText().toString().isEmpty()) {
                     try {
                         SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
-                        setMinTime(sdf.parse(from.getText().toString()));
+                        setMinTime(new LocalDateTime(sdf.parse(from.getText().toString())).plusMinutes(30).toDate());
 
                         super.onClick(v);
                     } catch (ParseException e) {
@@ -233,7 +235,7 @@ public class MatchSearchFragment extends Fragment {
             }
         });
 
-        EditText txtAddress = (EditText) view.findViewById(R.id.input_address);
+        final AutoCompleteTextView txtAddress = (AutoCompleteTextView) view.findViewById(R.id.input_address);
         txtAddress.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -248,16 +250,16 @@ public class MatchSearchFragment extends Fragment {
                     try {
                         Geocoder geocoder;
                         List<Address> addresses;
-                        geocoder = new Geocoder(getActivity(), Locale.getDefault());
+                        geocoder = new Geocoder(getActivity(), Locale.forLanguageTag("vi-VN"));
 
                         addresses = geocoder.getFromLocationName(v.getText().toString(), 1);
 
                         if (!addresses.isEmpty()) {
-                            currentPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-                            Toast.makeText(getActivity(), addresses.get(0).getLatitude() + ":" + addresses.get(0).getLongitude(), Toast.LENGTH_LONG).show();
+                            customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                            Toast.makeText(getActivity(), "Tọa độ: " + addresses.get(0).getLatitude() + ":" + addresses.get(0).getLongitude(), Toast.LENGTH_LONG).show();
                         } else {
-                            currentPosition = null;
-                            Toast.makeText(getActivity(), "Cannot get address", Toast.LENGTH_LONG).show();
+                            customPosition = null;
+                            Toast.makeText(getActivity(), "Không thế lấy tọa độ từ địa chỉ này", Toast.LENGTH_LONG).show();
                         }
 
                         validate();
@@ -269,9 +271,34 @@ public class MatchSearchFragment extends Fragment {
                 return false;
             }
         });
+        txtAddress.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.place_autocomplete_list_item));
+        txtAddress.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String str = (String) parent.getItemAtPosition(position);
+                txtAddress.setText(str);
+                try {
+                    Geocoder geocoder;
+                    List<Address> addresses;
+                    geocoder = new Geocoder(getActivity(), Locale.forLanguageTag("vi-VN"));
+
+                    addresses = geocoder.getFromLocationName(str, 1);
+                    if (!addresses.isEmpty()) {
+                        customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                        Toast.makeText(getActivity(), "Tọa độ: " + addresses.get(0).getLatitude() + ":" + addresses.get(0).getLongitude(), Toast.LENGTH_LONG).show();
+                    } else {
+                        customPosition = null;
+                        Toast.makeText(getActivity(), "Không thế lấy tọa độ từ địa chỉ này", Toast.LENGTH_LONG).show();
+                    }
+
+                    validate();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         btFindRequest = (Button) view.findViewById(R.id.btFindRequest);
-        btFindRequest.setText("Đang tìm vị trí của bạn");
         btFindRequest.setEnabled(false);
         btFindRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
         btFindRequest.setOnClickListener(new View.OnClickListener() {
@@ -279,18 +306,77 @@ public class MatchSearchFragment extends Fragment {
             public void onClick(View v) {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(v.getContext());
                 Intent intent = new Intent(v.getContext(), MatchActivity.class);
-                intent.putExtra("field_type_id", (spinner.getSelectedItemPosition() + 1));
-                intent.putExtra("field_date", date.getText().toString());
+                intent.putExtra("field_type_id", (fieldSpinner.getSelectedItemPosition() + 1));
+                intent.putExtra("field_date", mDate.getText().toString());
                 intent.putExtra("field_start_time", from.getText().toString());
-                intent.putExtra("field_end_time", to.getText().toString());
                 intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
-                intent.putExtra("latitude", currentPosition.latitude);
-                intent.putExtra("longitude", currentPosition.longitude);
+                if (txtAddress.getText().toString().isEmpty() || customPosition == null) {
+                    intent.putExtra("latitude", currentPosition.latitude);
+                    intent.putExtra("longitude", currentPosition.longitude);
+                } else {
+                    intent.putExtra("latitude", customPosition.latitude);
+                    intent.putExtra("longitude", customPosition.longitude);
+                }
                 startActivity(intent);
             }
         });
 
-        addSpinner(view);
+        btCreateRequest = (Button) view.findViewById(R.id.btCreateRequest);
+        btCreateRequest.setEnabled(false);
+        btCreateRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
+        btCreateRequest.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View v) {
+                final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(v.getContext());
+                String url = getResources().getString(R.string.local_host) + getResources().getString(R.string.url_create_matching_request);
+
+                RequestQueue queue = NetworkController.getInstance(getActivity()).getRequestQueue();
+
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                try {
+                    Date date = sdf.parse(mDate.getText().toString());
+                    sdf = new SimpleDateFormat("dd-MM-yyyy");
+                    String strDate = sdf.format(date);
+
+                    HashMap<String, Object> params = new HashMap<String, Object>();
+                    params.put("address", "ssss");
+                    params.put("date", strDate);
+                    params.put("userId", sharedPreferences.getInt("user_id", -1));
+                    params.put("startTime", from.getText().toString());
+                    params.put("endTime", to.getText().toString());
+                    params.put("fieldTypeId", (fieldSpinner.getSelectedItemPosition() + 1));
+                    if (txtAddress.getText().toString().isEmpty() || customPosition == null) {
+                        params.put("latitude", currentPosition.latitude);
+                        params.put("longitude", currentPosition.longitude);
+                    } else {
+                        params.put("latitude", customPosition.latitude);
+                        params.put("longitude", customPosition.longitude);
+                    }
+                    JsonObjectRequest createRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    Intent intent = new Intent(getActivity(), CreateMatchingRequestActivity.class);
+                                    intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
+                                    startActivity(intent);
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d("Error.Response", error.getMessage());
+                        }
+                    });
+                    queue.add(createRequest);
+                } catch (ParseException e) {
+                    Log.d("Parse_Exception", e.getMessage());
+                }
+            }
+        });
+
+        addFieldSpinner(view);
+        addDurationSpinner(view);
 
         return view;
     }
@@ -314,11 +400,17 @@ public class MatchSearchFragment extends Fragment {
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(timepickerReceiver);
     }
 
-    public void addSpinner(View view) {
-        spinner = (Spinner) view.findViewById(R.id.spinner);
+    public void addFieldSpinner(View view) {
+        fieldSpinner = (Spinner) view.findViewById(R.id.spField);
         ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(getContext(), R.array.field_types, android.R.layout.simple_spinner_item);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(dataAdapter);
+        fieldSpinner.setAdapter(dataAdapter);
     }
 
+    public void addDurationSpinner(View view) {
+        durationSpinner = (Spinner) view.findViewById(R.id.spDuration);
+        ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(getContext(), R.array.field_types, android.R.layout.simple_spinner_item);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        durationSpinner.setAdapter(dataAdapter);
+    }
 }

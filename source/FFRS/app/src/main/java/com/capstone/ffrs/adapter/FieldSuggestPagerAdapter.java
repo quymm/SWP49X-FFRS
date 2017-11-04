@@ -5,16 +5,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.capstone.ffrs.R;
+import com.capstone.ffrs.fragment.FieldSearchFragment;
+import com.capstone.ffrs.fragment.MatchSearchFragment;
 
-import layout.FieldSearchFragment;
-import layout.MatchSearchFragment;
-
-public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
+public class FieldSuggestPagerAdapter extends FragmentPagerAdapter {
 
     private Context mContext;
 
-    public SimpleFragmentPagerAdapter(Context context, FragmentManager fm) {
+    public FieldSuggestPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
     }
@@ -23,9 +21,9 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return new MatchSearchFragment();
-        } else {
             return new FieldSearchFragment();
+        } else {
+            return new MatchSearchFragment();
         }
     }
 
@@ -41,9 +39,9 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
         // Generate title based on item position
         switch (position) {
             case 0:
-                return "Tìm đối thủ";
-            case 1:
                 return "Tìm sân";
+            case 1:
+                return "Tìm đối thủ";
             default:
                 return null;
         }

@@ -1,27 +1,22 @@
-package layout;
+package com.capstone.ffrs.fragment;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SearchView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -43,15 +38,11 @@ import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.adapter.FieldAdapter;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.Field;
-import com.capstone.ffrs.utils.GPSLocationListener;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
+import com.capstone.ffrs.entity.FieldOwner;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,14 +58,16 @@ import java.util.Map;
 public class FieldSearchFragment extends Fragment {
 
     private String url;
-    private String localhost;
+    private String hostURL;
 
     private RecyclerView recyclerView;
     private RequestQueue queue;
-    private List<Field> fieldList = new ArrayList<Field>();
+    private List<FieldOwner> fieldOwnerList = new ArrayList<FieldOwner>();
     private FieldAdapter adapter;
     private TextView txtNotFound;
-    private EditText edit_text;
+    private EditText searchText;
+    private Activity mActivity;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private Location currentLocation;
 
@@ -91,6 +84,8 @@ public class FieldSearchFragment extends Fragment {
 
             if (getView() != null && currentLocation.getLatitude() != -1 && currentLocation.getLongitude() != -1
                     && !searchMode) {
+                TextView progressText = (TextView) mActivity.findViewById(R.id.text_progress);
+                progressText.setText("Đang tìm sân gần bạn");
                 loadFields(getView());
             }
         }
@@ -105,7 +100,7 @@ public class FieldSearchFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             boolean flag = intent.getBooleanExtra("empty_list", false);
             if (flag) {
-                txtNotFound.setText("Không có sân nào chứa từ '" + edit_text.getText().toString() + "'");
+                txtNotFound.setText("Không có sân nào chứa từ '" + searchText.getText().toString() + "'");
                 txtNotFound.setVisibility(View.VISIBLE);
             } else {
                 txtNotFound.setVisibility(View.GONE);
@@ -121,22 +116,22 @@ public class FieldSearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        localhost = getResources().getString(R.string.local_host);
+        hostURL = getResources().getString(R.string.local_host);
 
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_field_search, container, false);
 
-        edit_text = (EditText) view.findViewById(R.id.edit_text);
-        edit_text.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-        edit_text.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        searchText = (EditText) view.findViewById(R.id.edit_text);
+        searchText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE
                         || (event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER))) {
                     InputMethodManager inputManager = (InputMethodManager)
-                            getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-                    inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                    inputManager.hideSoftInputFromWindow(mActivity.getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
                     txtNotFound.setVisibility(View.GONE);
                     if (!v.getText().toString().isEmpty()) {
@@ -154,7 +149,21 @@ public class FieldSearchFragment extends Fragment {
         });
 
         txtNotFound = (TextView) view.findViewById(R.id.text_not_found);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
 
+                if (!searchText.getText().toString().isEmpty()) {
+                    searchMode = true;
+                    searchFieldByName(view, searchText.getText().toString());
+                } else {
+                    searchMode = false;
+                    loadFields(view);
+                }
+            }
+        });
+        mActivity = getActivity();
         return view;
     }
 
@@ -162,29 +171,24 @@ public class FieldSearchFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(locationReceiver,
+        LocalBroadcastManager.getInstance(mActivity).registerReceiver(locationReceiver,
                 new IntentFilter("location-message"));
 
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(filterReceiver,
+        LocalBroadcastManager.getInstance(mActivity).registerReceiver(filterReceiver,
                 new IntentFilter("search-message"));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(locationReceiver);
+        LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(locationReceiver);
 
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(filterReceiver);
-    }
-
-    public void clearData() {
-        fieldList.clear();
-        adapter.notifyDataSetChanged();
+        LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(filterReceiver);
     }
 
     public void loadFields(View view) {
-        if (!fieldList.isEmpty()) {
-            clearData();
+        if (!fieldOwnerList.isEmpty()) {
+            fieldOwnerList.clear();
         }
 
         if (sharedPreferences == null) {
@@ -193,13 +197,12 @@ public class FieldSearchFragment extends Fragment {
 
         //Initialize RecyclerView
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        adapter = new FieldAdapter(this.getContext(), fieldList);
+        adapter = new FieldAdapter(this.getContext(), fieldOwnerList);
         adapter.setUserId(sharedPreferences.getInt("user_id", -1));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
-        url = localhost + "/swp49x-ffrs/account/top-10-field-owner?longitude=" + currentLocation.getLongitude() + "&latitude=" + currentLocation.getLatitude();
-//        url = String.format(url, currentPosition.longitude, currentPosition.latitude);
-
+        url = hostURL + getResources().getString(R.string.url_get_field);
+        url = String.format(url, currentLocation.getLongitude(), currentLocation.getLatitude());
         //Getting Instance of Volley Request Queue
         queue = NetworkController.getInstance(getContext()).getRequestQueue();
         //Volley's inbuilt class to make Json array request
@@ -214,10 +217,10 @@ public class FieldSearchFragment extends Fragment {
                                 try {
                                     JSONObject obj = body.getJSONObject(i);
                                     JSONObject profile = obj.getJSONObject("profileId");
-                                    Field field = new Field(profile.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
+                                    FieldOwner fieldOwner = new FieldOwner(obj.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
 
                                     // adding movie to movies array
-                                    fieldList.add(field);
+                                    fieldOwnerList.add(fieldOwner);
 
                                 } catch (Exception e) {
                                     Log.d("EXCEPTION", e.getMessage());
@@ -226,10 +229,12 @@ public class FieldSearchFragment extends Fragment {
                                     adapter.notifyItemChanged(i);
                                 }
                             }
-                            LinearLayout progressLayout = (LinearLayout) getActivity().findViewById(R.id.progress_layout);
-                            progressLayout.setVisibility(View.GONE);
-                            RelativeLayout fieldLayout = (RelativeLayout) getActivity().findViewById(R.id.fields_layout);
-                            fieldLayout.setVisibility(View.VISIBLE);
+                            if (mActivity != null) {
+                                LinearLayout progressLayout = (LinearLayout) mActivity.findViewById(R.id.progress_layout);
+                                progressLayout.setVisibility(View.GONE);
+                                RelativeLayout fieldLayout = (RelativeLayout) mActivity.findViewById(R.id.fields_layout);
+                                fieldLayout.setVisibility(View.VISIBLE);
+                            }
                         } else {
                             txtNotFound.setVisibility(View.VISIBLE);
                         }
@@ -237,20 +242,24 @@ public class FieldSearchFragment extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                swipeRefreshLayout.setRefreshing(false);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                    Toast.makeText(getContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
-                } else if (error instanceof AuthFailureError) {
-                    Toast.makeText(getContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
-                } else if (error instanceof ServerError) {
-                    Toast.makeText(getContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
-                } else if (error instanceof NetworkError) {
-                    Toast.makeText(getContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
-                } else if (error instanceof ParseError) {
-                    Toast.makeText(getContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                if (getContext() != null) {
+                    if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                        Toast.makeText(getContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof AuthFailureError) {
+                        Toast.makeText(getContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof ServerError) {
+                        Toast.makeText(getContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof NetworkError) {
+                        Toast.makeText(getContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof ParseError) {
+                        Toast.makeText(getContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                    }
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             }
         }) {
@@ -274,24 +283,23 @@ public class FieldSearchFragment extends Fragment {
     }
 
     public void searchFieldByName(View view, String searchValue) {
-        if (!fieldList.isEmpty()) {
-            clearData();
+        if (!fieldOwnerList.isEmpty()) {
+            fieldOwnerList.clear();
         }
-        Bundle b = getActivity().getIntent().getExtras();
+
         //Initialize RecyclerView
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        adapter = new FieldAdapter(this.getContext(), fieldList);
+        adapter = new FieldAdapter(this.getContext(), fieldOwnerList);
         adapter.setUserId(sharedPreferences.getInt("user_id", -1));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
-        url = localhost + "/swp49x-ffrs/account/name?name=%s&role=%s";
+        url = hostURL + getResources().getString(R.string.url_get_field_by_name);
         try {
             url = String.format(url, URLEncoder.encode(searchValue, "utf-8"), "owner");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        Log.d("URL", url);
 
         //Getting Instance of Volley Request Queue
         queue = NetworkController.getInstance(getContext()).getRequestQueue();
@@ -308,10 +316,10 @@ public class FieldSearchFragment extends Fragment {
                                 try {
                                     JSONObject obj = body.getJSONObject(i);
                                     JSONObject profile = obj.getJSONObject("profileId");
-                                    Field field = new Field(obj.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
+                                    FieldOwner fieldOwner = new FieldOwner(obj.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
 
                                     // adding movie to movies array
-                                    fieldList.add(field);
+                                    fieldOwnerList.add(fieldOwner);
 
                                 } catch (Exception e) {
                                     Log.d("EXCEPTION", e.getMessage());
@@ -328,20 +336,24 @@ public class FieldSearchFragment extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                swipeRefreshLayout.setRefreshing(false);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                    Toast.makeText(getContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
-                } else if (error instanceof AuthFailureError) {
-                    Toast.makeText(getContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
-                } else if (error instanceof ServerError) {
-                    Toast.makeText(getContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
-                } else if (error instanceof NetworkError) {
-                    Toast.makeText(getContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
-                } else if (error instanceof ParseError) {
-                    Toast.makeText(getContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                if (getContext() != null) {
+                    if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                        Toast.makeText(getContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof AuthFailureError) {
+                        Toast.makeText(getContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof ServerError) {
+                        Toast.makeText(getContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof NetworkError) {
+                        Toast.makeText(getContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof ParseError) {
+                        Toast.makeText(getContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                    }
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             }
         }) {

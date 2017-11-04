@@ -1,4 +1,4 @@
-package layout;
+package com.capstone.ffrs.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import com.capstone.ffrs.R;
 
 public class ReserveSuccessFragment extends Fragment {
 
-    private Button btHome, btRedo;
+    private Button btHome;
 
     public ReserveSuccessFragment() {
         // Required empty public constructor
@@ -38,30 +38,11 @@ public class ReserveSuccessFragment extends Fragment {
         btHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle b = getActivity().getIntent().getExtras();
-
                 Intent intent = new Intent(getContext(), FieldSuggestActivity.class);
-                intent.putExtra("user_id", b.getInt("user_id"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });
-//        btRedo = (Button) view.findViewById(R.id.btRedo);
-//        btRedo.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Bundle b = getActivity().getIntent().getExtras();
-//
-//                Intent intent = new Intent(getContext(), FieldTimeActivity.class);
-//                intent.putExtra("user_id", b.getInt("user_id"));
-//                intent.putExtra("field_id", b.getInt("field_id"));
-//                intent.putExtra("field_name", b.getString("field_name"));
-//                intent.putExtra("field_address", b.getString("field_address"));
-//                intent.putExtra("image_url", b.getString("image_url"));
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                startActivity(intent);
-//            }
-//        });
 
         Bundle b = getActivity().getIntent().getExtras();
         TextView code = (TextView) view.findViewById(R.id.text_code);

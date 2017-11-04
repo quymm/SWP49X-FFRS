@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -63,26 +64,26 @@ import java.util.Map;
 
 public class FieldTimeActivity extends AppCompatActivity {
 
-    String url;
-    String localhost;
+    private String url;
+    private String hostURL;
 
-    RecyclerView recyclerView;
-    RequestQueue queue;
-    List<FieldTime> fieldTimeList = new ArrayList<FieldTime>();
-    FieldTimeAdapter adapter;
+    private RecyclerView recyclerView;
+    private RequestQueue queue;
+    private List<FieldTime> fieldTimeList = new ArrayList<FieldTime>();
+    private FieldTimeAdapter adapter;
 
-    String imageUrl, name, address;
+    private String name, address;
     int id;
-    int price = 0;
 
-    String displayFormat = "dd/MM/yyyy";
-    String serverFormat = "dd-MM-yyyy";
+    private String displayFormat = "dd/MM/yyyy";
+    private String serverFormat = "dd-MM-yyyy";
 
     private ProgressBar progressBar;
     private TextView txtNotFound;
     private Spinner spinner;
     private Button date;
     private TimePickerListener startTimeListener, endTimeListener;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -122,11 +123,9 @@ public class FieldTimeActivity extends AppCompatActivity {
 
                     if (fromFrame.compareTo(startTime) <= 0 && toFrame.compareTo(startTime) > 0) {
                         LocalDateTime time = new LocalDateTime(startTime);
-                        if (time.getMinuteOfHour() == 30) {
-                            time = time.plusMinutes(30);
-                            startTime = time.toDate();
-                        }
-                        endTimeListener.setMinTime(startTime);
+                        time = time.plusMinutes(30);
+                        startTime = time.toDate();
+                        endTimeListener.setMinTime(new LocalDateTime(startTime).toDate());
                         endTimeListener.setMaxTime(toFrame);
                         flag = true;
                         break;
@@ -168,11 +167,13 @@ public class FieldTimeActivity extends AppCompatActivity {
                     } else {
                         btReserve.setEnabled(false);
                         btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
+                        from.setText("");
                         to.setText("");
                     }
                 } else {
                     btReserve.setEnabled(false);
                     btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
+                    from.setText("");
                     to.setText("");
                 }
             } catch (ParseException e) {
@@ -181,6 +182,7 @@ public class FieldTimeActivity extends AppCompatActivity {
         } else {
             btReserve.setEnabled(false);
             btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
+            from.setText("");
             to.setText("");
         }
     }
@@ -194,7 +196,7 @@ public class FieldTimeActivity extends AppCompatActivity {
 
         txtNotFound = (TextView) findViewById(R.id.text_no_free_time);
 
-        localhost = getResources().getString(R.string.local_host);
+        hostURL = getResources().getString(R.string.local_host);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -211,12 +213,7 @@ public class FieldTimeActivity extends AppCompatActivity {
         TextView txtAddress = (TextView) findViewById(R.id.field_address);
         txtAddress.setText(address);
 
-//        imageUrl = b.getString("image_url");
-        //  NetworkImageView imageView = (NetworkImageView) findViewById(R.id.field_image);
-//        imageView.setImageUrl(imageUrl, NetworkController.getInstance(this.getBaseContext()).getImageLoader());
-
         id = b.getInt("field_id");
-        Log.d("receivedId", id + "");
 
         date = (Button) findViewById(R.id.date_picker);
         SimpleDateFormat sdf = new SimpleDateFormat(displayFormat);
@@ -244,7 +241,8 @@ public class FieldTimeActivity extends AppCompatActivity {
 
                 sdf = new SimpleDateFormat(serverFormat);
 
-                url = localhost + "/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + (spinner.getSelectedItemPosition() + 1) + "&date=" + sdf.format(dateSelected.getTime());
+                url = hostURL + getResources().getString(R.string.url_get_free_time);
+                url = String.format(url, id, (spinner.getSelectedItemPosition() + 1), sdf.format(dateSelected.getTime()));
 
                 progressBar.setVisibility(View.VISIBLE);
 
@@ -254,7 +252,6 @@ public class FieldTimeActivity extends AppCompatActivity {
                     txtNotFound.setVisibility(View.GONE);
                 }
                 loadFieldTimes();
-                toggleButton();
             }
 
         };
@@ -274,12 +271,19 @@ public class FieldTimeActivity extends AppCompatActivity {
 
         final EditText from = (EditText) findViewById(R.id.text_from);
         startTimeListener = new TimePickerListener(this, from);
-        from.setOnClickListener(startTimeListener);
 
-//        sdf = new SimpleDateFormat(serverFormat);
-//
-//        url = localhost + "/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + (spinner.getSelectedItemPosition() + 1) + "&date=" + sdf.format(currentMillis);
-//        loadFieldTimes();
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (!fieldTimeList.isEmpty()) {
+                    clearData();
+                } else {
+                    txtNotFound.setVisibility(View.GONE);
+                }
+                loadFieldTimes();
+            }
+        });
     }
 
     @Override
@@ -312,7 +316,8 @@ public class FieldTimeActivity extends AppCompatActivity {
                     SimpleDateFormat sdf = new SimpleDateFormat(displayFormat);
                     Date dateObj = sdf.parse(date.getText().toString());
                     sdf = new SimpleDateFormat(serverFormat);
-                    url = localhost + "/swp49x-ffrs/match/free-time?field-owner-id=" + id + "&field-type-id=" + (position + 1) + "&date=" + sdf.format(dateObj);
+                    url = hostURL + getResources().getString(R.string.url_get_free_time);
+                    url = String.format(url, id, (position + 1), sdf.format(dateObj));
                     progressBar.setVisibility(View.VISIBLE);
                     if (!fieldTimeList.isEmpty()) {
                         clearData();
@@ -355,7 +360,7 @@ public class FieldTimeActivity extends AppCompatActivity {
 
             final Bundle b = getIntent().getExtras();
 
-            String url = localhost + "/swp49x-ffrs/match/reserve-time-slot";
+            String url = hostURL + getResources().getString(R.string.url_reserve_time_slot);
             queue = NetworkController.getInstance(this).getRequestQueue();
             Map<String, Object> params = new HashMap<>();
             params.put("date", new SimpleDateFormat("dd-MM-yyyy").format(date));
@@ -369,30 +374,37 @@ public class FieldTimeActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
-                                JSONObject body = response.getJSONObject("body");
-                                if (body != null && body.length() > 0) {
-                                    try {
-                                        Intent intent = new Intent(FieldTimeActivity.this, FieldDetailActivity.class);
-                                        intent.putExtra("field_id", id);
-                                        intent.putExtra("field_name", name);
-                                        intent.putExtra("field_address", address);
-                                        intent.putExtra("field_type_id", spinner.getSelectedItemPosition() + 1);
-                                        intent.putExtra("date", date);
-                                        intent.putExtra("time_from", fromTime);
-                                        intent.putExtra("time_to", toTime);
-                                        intent.putExtra("price", body.getInt("price"));
-                                        intent.putExtra("user_id", b.getInt("user_id"));
-                                        intent.putExtra("time_slot_id", body.getInt("id"));
-                                        intent.putExtra("tour_match_mode", false);
-                                        startActivity(intent);
-                                    } catch (Exception e) {
-                                        Log.d("EXCEPTION", e.getMessage());
+                                if (!response.isNull("body")) {
+                                    JSONObject body = response.getJSONObject("body");
+                                    if (body != null && body.length() > 0) {
+                                        try {
+                                            Intent intent = new Intent(FieldTimeActivity.this, FieldDetailActivity.class);
+                                            intent.putExtra("field_id", id);
+                                            intent.putExtra("field_name", name);
+                                            intent.putExtra("field_address", address);
+                                            intent.putExtra("field_type_id", spinner.getSelectedItemPosition() + 1);
+                                            intent.putExtra("date", date);
+                                            intent.putExtra("time_from", fromTime);
+                                            intent.putExtra("time_to", toTime);
+                                            intent.putExtra("price", body.getInt("price"));
+                                            intent.putExtra("user_id", b.getInt("user_id"));
+                                            intent.putExtra("time_slot_id", body.getInt("id"));
+                                            intent.putExtra("tour_match_mode", false);
+                                            startActivity(intent);
+                                        } catch (Exception e) {
+                                            Log.d("EXCEPTION", e.getMessage());
+                                        }
+                                    } else {
+                                        Toast.makeText(FieldTimeActivity.this, "Không thể đặt sân!", Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
-                                    Toast.makeText(FieldTimeActivity.this, "Không thể đặt sân!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(FieldTimeActivity.this, "Không còn sân trống!", Toast.LENGTH_SHORT).show();
+                                    loadFieldTimes();
                                 }
                             } catch (JSONException e) {
                                 Log.d("ParseException", e.getMessage());
+                            } finally {
+                                toggleButton();
                             }
                         }
                     },
@@ -429,6 +441,9 @@ public class FieldTimeActivity extends AppCompatActivity {
     }
 
     public void loadFieldTimes() {
+        if (fieldTimeList != null) {
+            fieldTimeList.clear();
+        }
         //Initialize RecyclerView
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         adapter = new FieldTimeAdapter(this, fieldTimeList);
@@ -445,58 +460,64 @@ public class FieldTimeActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONArray body = response.getJSONArray("body");
-                    if (body != null && body.length() > 0) {
-                        for (int i = 0; i < body.length(); i++) {
-                            try {
-                                JSONObject obj = body.getJSONObject(i);
+                    if (!response.isNull("body")) {
+                        JSONArray body = response.getJSONArray("body");
+                        if (body != null && body.length() > 0) {
+                            for (int i = 0; i < body.length(); i++) {
+                                try {
+                                    JSONObject obj = body.getJSONObject(i);
 
-                                FieldTime fieldTime = new FieldTime(sdf.format(sdf.parse(obj.getString("startTime"))), sdf.format(sdf.parse(obj.getString("endTime"))));
+                                    FieldTime fieldTime = new FieldTime(sdf.format(sdf.parse(obj.getString("startTime"))), sdf.format(sdf.parse(obj.getString("endTime"))));
 
-                                // adding movie to movies array
-                                fieldTimeList.add(fieldTime);
+                                    // adding movie to movies array
+                                    fieldTimeList.add(fieldTime);
 
-                            } catch (Exception e) {
-                                Log.d("EXCEPTION", e.getMessage());
-                            } finally {
-                                //Notify adapter about data changes\
-                                Collections.sort(fieldTimeList, new Comparator<FieldTime>() {
-                                    @Override
-                                    public int compare(FieldTime o1, FieldTime o2) {
-                                        try {
-                                            return sdf.parse(o1.getFromTime()).compareTo(sdf.parse(o2.getFromTime()));
-                                        } catch (ParseException e) {
-                                            e.printStackTrace();
+                                } catch (Exception e) {
+                                    Log.d("EXCEPTION", e.getMessage());
+                                } finally {
+                                    //Notify adapter about data changes\
+                                    Collections.sort(fieldTimeList, new Comparator<FieldTime>() {
+                                        @Override
+                                        public int compare(FieldTime o1, FieldTime o2) {
+                                            try {
+                                                return sdf.parse(o1.getFromTime()).compareTo(sdf.parse(o2.getFromTime()));
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                            return 0;
                                         }
-                                        return 0;
-                                    }
-                                });
-                                adapter.notifyItemChanged(i);
+                                    });
+                                    adapter.notifyItemChanged(i);
+                                }
                             }
-                        }
-                        if (!fieldTimeList.isEmpty()) {
-                            Date endFrame = sdf.parse(fieldTimeList.get(fieldTimeList.size() - 1).getToTime());
-                            LocalDateTime time = new LocalDateTime(endFrame);
-                            if (time.getMinuteOfHour() == 0) {
-                                time = time.minusMinutes(30);
-                                endFrame = time.toDate();
+                            if (!fieldTimeList.isEmpty()) {
+                                Date endFrame = sdf.parse(fieldTimeList.get(fieldTimeList.size() - 1).getToTime());
+                                LocalDateTime time = new LocalDateTime(endFrame);
+                                if (time.getMinuteOfHour() == 0) {
+                                    time = time.minusMinutes(30);
+                                    endFrame = time.toDate();
+                                }
+                                startTimeListener.setMinTime(sdf.parse(fieldTimeList.get(0).getFromTime()));
+                                startTimeListener.setMaxTime(endFrame);
+                                final EditText from = (EditText) findViewById(R.id.text_from);
+                                from.setOnClickListener(startTimeListener);
                             }
-                            startTimeListener.setMinTime(sdf.parse(fieldTimeList.get(0).getFromTime()));
-                            startTimeListener.setMaxTime(endFrame);
+                        } else {
+                            txtNotFound.setVisibility(View.VISIBLE);
+                            final EditText from = (EditText) findViewById(R.id.text_from);
+                            final EditText to = (EditText) findViewById(R.id.text_to);
+                            from.setOnClickListener(null);
+                            to.setOnClickListener(null);
                         }
-                    } else {
-                        txtNotFound.setVisibility(View.VISIBLE);
-                        final EditText from = (EditText) findViewById(R.id.text_from);
-                        final EditText to = (EditText) findViewById(R.id.text_to);
-                        from.setOnClickListener(null);
-                        to.setOnClickListener(null);
                     }
+                    toggleButton();
                     progressBar.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                swipeRefreshLayout.setRefreshing(false);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -512,6 +533,7 @@ public class FieldTimeActivity extends AppCompatActivity {
                 } else if (error instanceof ParseError) {
                     Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
                 }
+                swipeRefreshLayout.setRefreshing(false);
             }
         }) {
             @Override

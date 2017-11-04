@@ -4,12 +4,12 @@ package com.capstone.ffrs.entity;
  * Created by HuanPMSE61860 on 9/29/2017.
  */
 
-public class Field {
+public class FieldOwner {
 
     private String imgURL, fieldName, address;
     private int id;
 
-    public Field(int id, String fieldName, String address, String imgURL) {
+    public FieldOwner(int id, String fieldName, String address, String imgURL) {
         this.id = id;
         this.imgURL = imgURL;
         this.fieldName = fieldName;

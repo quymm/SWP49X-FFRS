@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.capstone.ffrs.R;
@@ -26,16 +28,11 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MyViewHolder
     private List<MatchRequest> matchList;
     private Context context;
     private LayoutInflater inflater;
-    private int userId;
 
     public MatchAdapter(Context context, List<MatchRequest> matchList) {
         this.matchList = matchList;
         this.context = context;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     @Override
@@ -45,7 +42,7 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MyViewHolder
     }
 
     @Override
-    public void onBindViewHolder(MatchAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MatchAdapter.MyViewHolder holder, int position) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             MatchRequest item = matchList.get(position);
