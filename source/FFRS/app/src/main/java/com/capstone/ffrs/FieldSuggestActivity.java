@@ -118,6 +118,9 @@ public class FieldSuggestActivity extends AppCompatActivity
         TextView txtPoints = (TextView) headerLayout.findViewById(R.id.text_points);
         txtPoints.setText("Điểm đổi thưởng: " + preferences.getInt("points", 0));
 
+        TextView txtBalance = (TextView) headerLayout.findViewById(R.id.text_balance);
+        txtBalance.setText("Tiền còn lại: " + preferences.getInt("balance", 0));
+
         gpsLocationListener = new GPSLocationListener(this);
     }
 

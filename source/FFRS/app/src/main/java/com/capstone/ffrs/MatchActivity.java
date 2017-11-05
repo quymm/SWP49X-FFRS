@@ -104,10 +104,6 @@ public class MatchActivity extends AppCompatActivity {
 
         hostURL = getResources().getString(R.string.local_host);
 
-        Button btSendRequest = (Button) findViewById(R.id.btRequest);
-        btSendRequest.setEnabled(false);
-        btSendRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
-
         loadMatches();
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
@@ -144,15 +140,13 @@ public class MatchActivity extends AppCompatActivity {
         }
         Bundle b = getIntent().getExtras();
         SimpleDateFormat sdf = new SimpleDateFormat(displayDateFormat);
-        String strDate;
+        String strDate = "";
         try {
             Date date = sdf.parse(b.getString("field_date"));
             sdf = new SimpleDateFormat(serverDateFormat);
             strDate = sdf.format(date);
             url = hostURL + getResources().getString(R.string.url_get_matching_requests);
-            url = String.format(url, b.getInt("user_id"), b.getInt("field_type_id"),
-                    b.getDouble("longitude"), b.getDouble("latitude"),
-                    120, 5, strDate, b.getString("field_start_time"));
+            url = String.format(url, 5);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -163,10 +157,20 @@ public class MatchActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", b.getInt("user_id"));
+        params.put("fieldTypeId", b.getInt("field_type_id"));
+        params.put("latitude", b.getDouble("latitude"));
+        params.put("longitude", b.getDouble("longitude"));
+        params.put("startTime", b.getString("field_start_time"));
+        params.put("endTime", b.getString("field_end_time"));
+        params.put("date", strDate);
+        params.put("duration", b.getInt("duration"));
+
         //Getting Instance of Volley Request Queue
         queue = NetworkController.getInstance(this).getRequestQueue();
         //Volley's inbuilt class to make Json array request
-        JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.PUT, url, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
@@ -182,7 +186,6 @@ public class MatchActivity extends AppCompatActivity {
                             match.setStartTime(obj.getString("startTime"));
                             match.setEndTime(obj.getString("endTime"));
                             match.setRatingScore(obj.getJSONObject("userId").getJSONObject("profileId").getInt("ratingScore"));
-                            match.setSelected(false);
                             // adding movie to movies array
                             opponentList.add(match);
 

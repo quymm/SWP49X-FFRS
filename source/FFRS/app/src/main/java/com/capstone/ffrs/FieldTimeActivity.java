@@ -123,7 +123,7 @@ public class FieldTimeActivity extends AppCompatActivity {
 
                     if (fromFrame.compareTo(startTime) <= 0 && toFrame.compareTo(startTime) > 0) {
                         LocalDateTime time = new LocalDateTime(startTime);
-                        time = time.plusMinutes(30);
+                        time = time.plusMinutes(60);
                         startTime = time.toDate();
                         endTimeListener.setMinTime(new LocalDateTime(startTime).toDate());
                         endTimeListener.setMaxTime(toFrame);
@@ -494,7 +494,7 @@ public class FieldTimeActivity extends AppCompatActivity {
                                 Date endFrame = sdf.parse(fieldTimeList.get(fieldTimeList.size() - 1).getToTime());
                                 LocalDateTime time = new LocalDateTime(endFrame);
                                 if (time.getMinuteOfHour() == 0) {
-                                    time = time.minusMinutes(30);
+                                    time = time.minusMinutes(60);
                                     endFrame = time.toDate();
                                 }
                                 startTimeListener.setMinTime(sdf.parse(fieldTimeList.get(0).getFromTime()));

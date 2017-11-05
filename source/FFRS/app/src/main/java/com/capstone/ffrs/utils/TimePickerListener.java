@@ -52,8 +52,8 @@ public class TimePickerListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         CustomTimePickerDialog mTimePickerDialog;
-        int hour;
-        int minute;
+        int hour = -1;
+        int minute = -1;
         Calendar mCurrentTime = Calendar.getInstance();
         if (!edit.getText().toString().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
@@ -65,47 +65,43 @@ public class TimePickerListener implements View.OnClickListener {
             }
             mCurrentTime.setTime(time);
         }
-        if (minTime != null) {
+        if (minTime != null || maxTime != null) {
             LocalTime time = LocalTime.now();
-            LocalTime minLocalTime = LocalDateTime.fromDateFields(minTime).toLocalTime();
-            if (time.isBefore(minLocalTime)) {
-                hour = minTime.getHours();
-                minute = minTime.getMinutes();
-            } else {
-                hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
-                minute = mCurrentTime.get(Calendar.MINUTE);
+            if (minTime != null) {
+                LocalTime minLocalTime = LocalDateTime.fromDateFields(minTime).toLocalTime();
+                if (time.isBefore(minLocalTime)) {
+                    hour = minTime.getHours();
+                    minute = minTime.getMinutes();
+                } else {
+                    hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+                    minute = mCurrentTime.get(Calendar.MINUTE);
+                }
             }
-        } else if (maxTime != null) {
-            LocalTime time = LocalTime.now();
-            LocalTime maxLocalTime = LocalDateTime.fromDateFields(maxTime).toLocalTime();
-            if (time.isAfter(maxLocalTime)) {
-                hour = maxTime.getHours();
-                minute = maxTime.getMinutes();
-            } else {
-                hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
-                minute = mCurrentTime.get(Calendar.MINUTE);
+            if (maxTime != null) {
+                LocalTime maxLocalTime = LocalDateTime.fromDateFields(maxTime).toLocalTime();
+                if (time.isAfter(maxLocalTime)) {
+                    hour = maxTime.getHours();
+                    minute = maxTime.getMinutes();
+                } else {
+                    hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+                    minute = mCurrentTime.get(Calendar.MINUTE);
+                }
             }
         } else {
             hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
             minute = mCurrentTime.get(Calendar.MINUTE);
         }
 
-        mTimePickerDialog = new
-
-                CustomTimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
+        mTimePickerDialog = new CustomTimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                 edit.setText(selectedHour + ":" + (selectedMinute < 10 ? "0" + selectedMinute : selectedMinute));
             }
         }, hour, minute, true);
-        if (minTime != null)
-
-        {
+        if (minTime != null) {
             mTimePickerDialog.setMinTime(minTime);
         }
-        if (maxTime != null)
-
-        {
+        if (maxTime != null) {
             mTimePickerDialog.setMaxTime(maxTime);
         }
         mTimePickerDialog.setTitle("Chọn giờ");

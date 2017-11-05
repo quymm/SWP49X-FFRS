@@ -141,13 +141,12 @@ public class PaidMatchFragment extends Fragment {
                                         int tourUserId = tourMatch.getJSONObject("userId").getInt("id");
                                         int tourOpponentId = tourMatch.getJSONObject("opponentId").getInt("id");
                                         if (userId == tourUserId) {
-                                            request.setOpponentId(tourMatch.getJSONObject("opponentId").getInt("id"));
+                                            request.setOpponentId(tourOpponentId);
                                             request.setTeamName(tourMatch.getJSONObject("opponentId").getJSONObject("profileId").getString("name"));
                                         } else if (userId == tourOpponentId) {
-                                            request.setOpponentId(tourMatch.getJSONObject("userId").getInt("id"));
+                                            request.setOpponentId(tourUserId);
                                             request.setTeamName(tourMatch.getJSONObject("userId").getJSONObject("profileId").getString("name"));
                                         }
-
                                         request.setTourMatchId(tourMatch.getInt("id"));
                                         request.setDate(tourMatch.getJSONObject("timeSlotId").getString("date"));
                                         request.setStartTime(tourMatch.getJSONObject("timeSlotId").getString("startTime"));

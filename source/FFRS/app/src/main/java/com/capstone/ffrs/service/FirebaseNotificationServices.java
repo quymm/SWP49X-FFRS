@@ -26,6 +26,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.FieldDetailActivity;
+import com.capstone.ffrs.HistoryActivity;
 import com.capstone.ffrs.NotificationActivity;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.controller.NetworkController;
@@ -61,7 +62,6 @@ public class FirebaseNotificationServices extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("TEST", "SERVICE STARTED");
         context = this;
 
         mDatabase = FirebaseDatabase.getInstance();
@@ -158,7 +158,7 @@ public class FirebaseNotificationServices extends Service {
 
                 }
             });
-            myRef.child("response").child(userId + "").addValueEventListener(new ValueEventListener() {
+            myRef.child("tourMatch").child(userId + "").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (firstResponseCreated == false) {
@@ -172,12 +172,11 @@ public class FirebaseNotificationServices extends Service {
 
                 }
             });
-            myRef.child("response").child(userId + "").addChildEventListener(new ChildEventListener() {
+            myRef.child("tourMatch").child(userId + "").addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     if (firstResponseCreated == true) {
-                        Log.d("LOG", dataSnapshot.getKey() + "-" + dataSnapshot.getValue());
-                        showNotification(context, "response", dataSnapshot);
+                        showNotification(context, "tourMatch", dataSnapshot);
                     }
                 }
 
@@ -336,8 +335,82 @@ public class FirebaseNotificationServices extends Service {
             };
             queue.add(newsReq);
 
-        } else if (keyword.equalsIgnoreCase("request removed")) {
-            Log.d("NOTIFICATION", "Request removed");
+        } else if (keyword.equalsIgnoreCase("tourMatch")) {
+            final int tourMatchId = Integer.valueOf(snapshot.getKey());
+            String url = hostURL + getResources().getString(R.string.url_get_tour_match_by_id);
+            url = String.format(url, tourMatchId);
+
+            RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
+            JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        if (!response.isNull("body")) {
+                            JSONObject body = response.getJSONObject("body");
+                            if (body != null) {
+
+                                String opponentTeamName = body.getJSONObject("userId").getJSONObject("profileId").getString("name");
+                                String content = opponentTeamName + " đã chấp nhận yêu cầu của bạn. Trận đấu đã được sắp xếp.";
+
+                                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                                        .setSmallIcon(R.mipmap.ic_launcher)
+                                        .setContentTitle(title)
+                                        .setDefaults(NotificationCompat.DEFAULT_ALL)
+                                        .setContentText(content)
+                                        .setAutoCancel(true);
+
+                                Intent backIntent = new Intent(context, HistoryActivity.class);
+
+                                backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                final PendingIntent pendingIntent = PendingIntent.getActivities(context, 900,
+                                        new Intent[]{backIntent}, PendingIntent.FLAG_ONE_SHOT);
+
+                                mBuilder.setContentIntent(pendingIntent);
+
+                                NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                                mNotificationManager.notify(1, mBuilder.build());
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
+
+                    } else if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                        Toast.makeText(getApplicationContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof AuthFailureError) {
+                        Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof ServerError) {
+                        Toast.makeText(getApplicationContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof NetworkError) {
+                        Toast.makeText(getApplicationContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof ParseError) {
+                        Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }) {
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                    try {
+                        String utf8String = new String(response.data, "UTF-8");
+                        return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
+                    } catch (UnsupportedEncodingException e) {
+                        // log error
+                        return Response.error(new ParseError(e));
+                    } catch (JSONException e) {
+                        // log error
+                        return Response.error(new ParseError(e));
+                    }
+                }
+
+            };
+            queue.add(newsReq);
+
         }
 
 

@@ -66,6 +66,25 @@
                 android:layout_height="match_parent">
 
                 <TextView
+                    android:id="@+id/text_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="Khoảng giờ chơi: *" />
+
+                <Spinner
+                    android:id="@+id/spDuration"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_weight="1" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
                     android:id="@+id/text_start_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -93,7 +112,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Kết thúc: " />
+                    android:text="Kết thúc: *" />
 
                 <EditText
                     android:id="@+id/input_end_time"
@@ -104,25 +123,6 @@
                     android:focusable="false"
                     android:hint="Thời gian kết thúc"
                     android:inputType="none" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/text_duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:text="Khoảng giờ chơi: " />
-
-                <Spinner
-                    android:id="@+id/spDuration"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_weight="1" />
             </TableRow>
 
             <TableRow

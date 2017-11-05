@@ -152,17 +152,17 @@ public class PayPalActivity extends AppCompatActivity {
                         url = hostURL + getResources().getString(R.string.url_reserve_friendly_match);
                         url = String.format(url, b.getInt("time_slot_id"), b.getInt("user_id"), 0);
                     } else {
-                        if (!b.containsKey("tour_match_id")) {
-                            url = hostURL + getResources().getString(R.string.url_reserve_tour_match);
-                            url = String.format(url, b.getInt("time_slot_id"), b.getInt("matching_request_id"), b.getInt("opponent_id"), 0);
-                        } else {
-                            Integer tourMatchId = b.getInt("tour_match_id");
-                            url = hostURL + getResources().getString(R.string.url_add_bill);
-                            params = new HashMap<>();
-                            params.put("opponentPayment", true);
-                            params.put("tourMatchId", tourMatchId);
-                            params.put("voucherId", 0);
-                        }
+                        url = hostURL + getResources().getString(R.string.url_reserve_tour_match);
+                        url = String.format(url, b.getInt("time_slot_id"), b.getInt("matching_request_id"), b.getInt("user_id"), 0);
+
+//                        else {
+//                            Integer tourMatchId = b.getInt("tour_match_id");
+//                            url = hostURL + getResources().getString(R.string.url_add_bill);
+//                            params = new HashMap<>();
+//                            params.put("opponentPayment", true);
+//                            params.put("tourMatchId", tourMatchId);
+//                            params.put("voucherId", 0);
+//                        }
                     }
 
                     queue = NetworkController.getInstance(this).getRequestQueue();
@@ -205,7 +205,7 @@ public class PayPalActivity extends AppCompatActivity {
                                                     if (!b.containsKey("tour_match_id")) {
                                                         FirebaseDatabase database = FirebaseDatabase.getInstance();
                                                         DatabaseReference ref = database.getReference();
-                                                        ref.child("response").child(b.getInt("opponent_id") + "").child(body.getJSONObject("tourMatchId").getInt("id") + "").setValue(0);
+                                                        ref.child("tourMatch").child(b.getInt("opponent_id") + "").child(body.getJSONObject("tourMatchId").getInt("id") + "").setValue(0);
                                                         DatabaseReference tourRef = ref.child("fieldOwner").child(b.getInt("field_id") + "")
                                                                 .child("tourMatch").child(body.getJSONObject("tourMatchId").getInt("id") + "");
                                                         FieldOwnerTourNotification notification = new FieldOwnerTourNotification();
@@ -213,12 +213,13 @@ public class PayPalActivity extends AppCompatActivity {
                                                         notification.setIsShowed(0);
                                                         notification.setTime(new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(new Date()));
                                                         tourRef.setValue(notification);
-                                                    } else {
-                                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                                        DatabaseReference ref = database.getReference();
-                                                        ref.child("request").child(b.getInt("opponent_id") + "").child(b.getInt("matching_request_id") + "").removeValue();
-                                                        ref.child("response").child(b.getInt("user_id") + "").child(body.getJSONObject("tourMatchId").getInt("id") + "").removeValue();
                                                     }
+//                                                    else {
+//                                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//                                                        DatabaseReference ref = database.getReference();
+//                                                        ref.child("request").child(b.getInt("opponent_id") + "").child(b.getInt("matching_request_id") + "").removeValue();
+//                                                        ref.child("response").child(b.getInt("user_id") + "").child(body.getJSONObject("tourMatchId").getInt("id") + "").removeValue();
+//                                                    }
 
                                                 }
                                                 startActivity(intent);

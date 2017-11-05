@@ -117,29 +117,39 @@ public class MatchSearchFragment extends Fragment {
             btFindRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
             btCreateRequest.setEnabled(false);
             btCreateRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
-        } else if (!from.getText().toString().isEmpty()) {
-            btFindRequest.setEnabled(true);
-            btFindRequest.setBackgroundColor(Color.parseColor("#009632"));
-            if (!to.getText().toString().isEmpty()) {
-                SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
-                try {
-                    Date startTime = sdf.parse(from.getText().toString());
-                    Date endTime = sdf.parse(to.getText().toString());
-                    if (startTime.compareTo(endTime) < 0) {
+        } else if (!from.getText().toString().isEmpty() && !to.getText().toString().isEmpty()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+            try {
+                Date startTime = sdf.parse(from.getText().toString());
+                Date endTime = sdf.parse(to.getText().toString());
+                if (startTime.compareTo(endTime) < 0) {
+                    long duration = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
+                    if (duration >= (60 + durationSpinner.getSelectedItemPosition() * 30)) {
+                        btFindRequest.setEnabled(true);
+                        btFindRequest.setBackgroundColor(Color.parseColor("#009632"));
                         btCreateRequest.setEnabled(true);
                         btCreateRequest.setBackgroundColor(Color.parseColor("#009632"));
                     } else {
+                        to.setText("");
+                        btFindRequest.setEnabled(false);
+                        btFindRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
                         btCreateRequest.setEnabled(false);
                         btCreateRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
                     }
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                } else {
+                    btFindRequest.setEnabled(false);
+                    btFindRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
+                    btCreateRequest.setEnabled(false);
+                    btCreateRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
                 }
-            } else {
-                btCreateRequest.setEnabled(false);
-                btCreateRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+        } else {
+            btCreateRequest.setEnabled(false);
+            btCreateRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
         }
+
     }
 
     @Override
@@ -223,7 +233,7 @@ public class MatchSearchFragment extends Fragment {
                 if (!from.getText().toString().isEmpty()) {
                     try {
                         SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
-                        setMinTime(new LocalDateTime(sdf.parse(from.getText().toString())).plusMinutes(30).toDate());
+                        setMinTime(new LocalDateTime(sdf.parse(from.getText().toString())).plusMinutes(60 + durationSpinner.getSelectedItemPosition() * 30).toDate());
 
                         super.onClick(v);
                     } catch (ParseException e) {
@@ -309,6 +319,8 @@ public class MatchSearchFragment extends Fragment {
                 intent.putExtra("field_type_id", (fieldSpinner.getSelectedItemPosition() + 1));
                 intent.putExtra("field_date", mDate.getText().toString());
                 intent.putExtra("field_start_time", from.getText().toString());
+                intent.putExtra("field_end_time", to.getText().toString());
+                intent.putExtra("duration", 60 + durationSpinner.getSelectedItemPosition() * 30);
                 intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
                 if (txtAddress.getText().toString().isEmpty() || customPosition == null) {
                     intent.putExtra("latitude", currentPosition.latitude);
@@ -346,6 +358,7 @@ public class MatchSearchFragment extends Fragment {
                     params.put("userId", sharedPreferences.getInt("user_id", -1));
                     params.put("startTime", from.getText().toString());
                     params.put("endTime", to.getText().toString());
+                    params.put("duration", 60 + durationSpinner.getSelectedItemPosition() * 30);
                     params.put("fieldTypeId", (fieldSpinner.getSelectedItemPosition() + 1));
                     if (txtAddress.getText().toString().isEmpty() || customPosition == null) {
                         params.put("latitude", currentPosition.latitude);
@@ -376,6 +389,19 @@ public class MatchSearchFragment extends Fragment {
         });
 
         addFieldSpinner(view);
+
+        durationSpinner = (Spinner) view.findViewById(R.id.spDuration);
+        durationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                validate();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         addDurationSpinner(view);
 
         return view;
@@ -408,8 +434,7 @@ public class MatchSearchFragment extends Fragment {
     }
 
     public void addDurationSpinner(View view) {
-        durationSpinner = (Spinner) view.findViewById(R.id.spDuration);
-        ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(getContext(), R.array.field_types, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(getContext(), R.array.duration_types, android.R.layout.simple_spinner_item);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         durationSpinner.setAdapter(dataAdapter);
     }
