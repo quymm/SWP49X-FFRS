@@ -162,6 +162,10 @@
         <activity
             android:name=".RegisterActivity"
             android:label="@string/title_activity_register"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".RequestTimeActivity"
+            android:label="@string/title_activity_request_time"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

@@ -34,28 +34,21 @@
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_refresh_layout"
-            android:layout_above="@id/btRequest"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_above="@id/btRequest">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:layout_editor_absoluteX="8dp"
-                tools:layout_editor_absoluteY="0dp" />
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:layout_editor_absoluteX="8dp"
+                    tools:layout_editor_absoluteY="0dp" />
+            </ScrollView>
         </android.support.v4.widget.SwipeRefreshLayout>
-
-        <Button
-            android:id="@+id/btRequest"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:background="#197a35"
-            android:onClick="onClickSendRequest"
-            android:text="Gửi yêu cầu"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
-
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

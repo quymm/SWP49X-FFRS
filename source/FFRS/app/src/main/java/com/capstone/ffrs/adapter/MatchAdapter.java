@@ -1,7 +1,10 @@
 package com.capstone.ffrs.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,9 +13,14 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.capstone.ffrs.R;
+import com.capstone.ffrs.RequestTimeActivity;
+import com.capstone.ffrs.entity.FirebaseUserInfo;
 import com.capstone.ffrs.entity.MatchRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,6 +55,8 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MyViewHolder
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             MatchRequest item = matchList.get(position);
 
+            holder.itemView.setTag(R.id.card_view, item);
+
             holder.teamName.setText(item.getTeamName());
 
             holder.date.setText(sdf.format(new Date(Long.parseLong(item.getDate()))));
@@ -80,6 +90,31 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MyViewHolder
             time = (TextView) itemView.findViewById(R.id.time_view);
             date = (TextView) itemView.findViewById(R.id.date_view);
             ratingScore = (TextView) itemView.findViewById(R.id.rating_score);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (context instanceof Activity) {
+                        final Bundle b = ((Activity) context).getIntent().getExtras();
+
+                        MatchRequest request = (MatchRequest) v.getTag(R.id.card_view);
+
+//                        // Firebase
+//                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//                        DatabaseReference myRef = database.getReference();
+//
+//                        Integer userId = b.getInt("user_id");
+//
+//                        FirebaseUserInfo info = new FirebaseUserInfo();
+//                        info.setStatus(0);
+//                        info.setLatitude(b.getDouble("latitude"));
+//                        info.setLongitude(b.getDouble("longitude"));
+//                        myRef.child("request").child(request.getUserId() + "").child(request.getId() + "").child(userId.toString()).setValue(info);
+                        Intent intent = new Intent(context, RequestTimeActivity.class);
+
+                        context.startActivity(intent);
+                    }
+                }
+            });
         }
     }
 }

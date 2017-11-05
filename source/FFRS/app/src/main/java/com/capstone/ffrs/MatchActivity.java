@@ -236,24 +236,7 @@ public class MatchActivity extends AppCompatActivity {
     }
 
     public void onClickSendRequest(View view) {
-        final Bundle b = getIntent().getExtras();
 
-        // Firebase
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference();
-
-        Integer userId = b.getInt("user_id");
-
-        FirebaseUserInfo info = new FirebaseUserInfo();
-        info.setStatus(0);
-        info.setLatitude(b.getDouble("latitude"));
-        info.setLongitude(b.getDouble("longitude"));
-        for (MatchRequest opponent : opponentList) {
-            if (opponent.isSelected()) {
-                myRef.child("request").child(opponent.getUserId() + "").child(opponent.getId() + "").child(userId.toString()).setValue(info);
-            }
-        }
-        Toast.makeText(this, "Đã gửi yêu cầu đến những người bạn đã chọn", Toast.LENGTH_LONG).show();
     }
 
 }
