@@ -429,7 +429,4 @@ public class TimeSlotServices {
             }
         return timeSlotEntityList;
     }
-
-
-
 }

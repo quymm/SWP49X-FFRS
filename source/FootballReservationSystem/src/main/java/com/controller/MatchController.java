@@ -35,7 +35,7 @@ public class MatchController {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/swp49x-ffrs/match/suggest-opponent", method = RequestMethod.GET)
+    @RequestMapping(value = "/swp49x-ffrs/match/suggest-opponent", method = RequestMethod.PUT)
     public ResponseEntity suggestOpponent(@RequestBody InputMatchingRequestDTO matchingRequestDTO, @RequestParam("deviation-distance") int deviationDistance) {
         Wrapper wrapper = new Wrapper(matchServices.suggestOpponent(matchingRequestDTO, deviationDistance), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);

@@ -33,12 +33,12 @@ INSERT INTO `capstone_project`.`profile` (`name`, `address`, `phone`, `longitude
 INSERT INTO `capstone_project`.`profile` (`name`, `address`, `phone`, `longitude`, `latitude`, `avatar_url`) VALUES ('Sân Bóng Đá Mini Đất Mới', '354 Bình Trị Đông, Bình Tân, Hồ Chí Minh, Vietnam','01244455567', '106.5780451', '10.8183862', 'http://baoduongcanhquan.com/upload/images/hinh/trong%20co/co-nhan-tao-san-bong-da-mini.jpg');
 
 -- tạo profile cho người dùng
-INSERT INTO profile (`name`, `address`, `phone`) VALUES ('Minh Quy FC', 'Dương Quảng Hàm, Gò Vấp, Hồ Chí Minh', '0969377089');
-INSERT INTO profile (`name`, `address`, `phone`) VALUES ('Huu Thanh Club', 'Tô Ký, Công viên phần mềm Quang Trung', '0973337269');
-INSERT INTO profile (`name`, `address`, `phone`) VALUES ('Huan Messi', 'Phường 7, Tân Phú, Hồ Chí Minh', '0977477877');
-INSERT INTO profile (`name`, `address`, `phone`) VALUES ('Hieu Map Manucians', 'Tân Kỳ Tân Quý, Tân Bình, Hồ Chí Minh', '0951151049');
-INSERT INTO profile (`name`, `address`, `phone`) VALUES ('Sai Gon Pro', 'Cây Trâm, Gò Vấp, Hồ Chí Minh', '0932137455');
-INSERT INTO profile (`name`, `address`, `phone`) VALUES ('RMIT FC', 'Nguyễn Văn Linh, Quận 7, Hồ Chí Minh', '0913131215');
+INSERT INTO profile (`name`, `address`, `phone`, `rating_score`) VALUES ('Minh Quy FC', 'Dương Quảng Hàm, Gò Vấp, Hồ Chí Minh', '0969377089', '2000');
+INSERT INTO profile (`name`, `address`, `phone`, `rating_score`) VALUES ('Huu Thanh Club', 'Tô Ký, Công viên phần mềm Quang Trung', '0973337269', '2000');
+INSERT INTO profile (`name`, `address`, `phone`, `rating_score`) VALUES ('Huan Messi', 'Phường 7, Tân Phú, Hồ Chí Minh', '0977477877', '2000');
+INSERT INTO profile (`name`, `address`, `phone`, `rating_score`) VALUES ('Hieu Map Manucians', 'Tân Kỳ Tân Quý, Tân Bình, Hồ Chí Minh', '0951151049', '2000');
+INSERT INTO profile (`name`, `address`, `phone`, `rating_score`) VALUES ('Sai Gon Pro', 'Cây Trâm, Gò Vấp, Hồ Chí Minh', '0932137455', '2000');
+INSERT INTO profile (`name`, `address`, `phone`, `rating_score`) VALUES ('RMIT FC', 'Nguyễn Văn Linh, Quận 7, Hồ Chí Minh', '0913131215', '2000');
 
 -- tạo account cho người dùng
 INSERT INTO account (`username`, `password`, `profile_id`, `role_id`) VALUES('quymm', '123456', '23', '1');
