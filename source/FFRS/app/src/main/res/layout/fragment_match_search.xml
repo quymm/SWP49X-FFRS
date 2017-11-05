@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="layout.MatchSearchFragment">
+    tools:context=".fragment.MatchSearchFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,18 +21,20 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/text_field_type"
+                    android:id="@+id/text_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:text="Loại sân:" />
+                    android:text="Địa chỉ: * " />
 
-                <Spinner
-                    android:id="@+id/spinner"
+                <AutoCompleteTextView
+                    android:id="@+id/input_address"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_weight="1" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="Địa chỉ (Tùy chọn)"
+                    android:inputType="text" />
 
             </TableRow>
 
@@ -45,7 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Ngày chơi: " />
+                    android:text="Ngày đá: *" />
 
                 <EditText
                     android:id="@+id/input_date"
@@ -64,11 +66,30 @@
                 android:layout_height="match_parent">
 
                 <TextView
+                    android:id="@+id/text_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="Khoảng giờ chơi: *" />
+
+                <Spinner
+                    android:id="@+id/spDuration"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_weight="1" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
                     android:id="@+id/text_start_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Bắt đầu: " />
+                    android:text="Bắt đầu: *" />
 
                 <EditText
                     android:id="@+id/input_start_time"
@@ -91,7 +112,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Kết thúc: " />
+                    android:text="Kết thúc: *" />
 
                 <EditText
                     android:id="@+id/input_end_time"
@@ -102,7 +123,6 @@
                     android:focusable="false"
                     android:hint="Thời gian kết thúc"
                     android:inputType="none" />
-
             </TableRow>
 
             <TableRow
@@ -110,23 +130,32 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/text_address"
+                    android:id="@+id/text_field_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:text="Địa chỉ: " />
+                    android:text="Loại sân: *" />
 
-                <EditText
-                    android:id="@+id/input_address"
+                <Spinner
+                    android:id="@+id/spField"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:hint="Địa chỉ (Tùy chọn)"
-                    android:inputType="text" />
+                    android:layout_height="40dp"
+                    android:layout_weight="1" />
 
             </TableRow>
+            <!--<TableRow-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
 
+            <!--<TextView-->
+            <!--android:id="@+id/text_option_search"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="Tìm kiếm nâng cao" />-->
+
+            <!--</TableRow>-->
         </TableLayout>
 
         <Button
@@ -135,11 +164,21 @@
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"
             android:layout_below="@id/table_layout"
+            android:layout_marginBottom="10dp"
             android:background="#009632"
             android:text="Tìm đối thủ"
             android:textColor="@android:color/white"
-            android:textSize="18dp">
+            android:textSize="18dp" />
 
-        </Button>
+        <Button
+            android:id="@+id/btCreateRequest"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/btFindRequest"
+            android:background="#009632"
+            android:text="Tạo yêu cầu mới"
+            android:textColor="@android:color/white"
+            android:textSize="18dp" />
     </RelativeLayout>
 </FrameLayout>

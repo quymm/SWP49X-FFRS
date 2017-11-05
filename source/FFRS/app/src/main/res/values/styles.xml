@@ -32,4 +32,10 @@
     <style name="DatepickerCalendarTheme" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">#009632</item>
     </style>
+
+    <style name="TimePickerTheme" parent="@android:style/Theme.Holo.Light.Dialog.MinWidth">
+        <item name="android:windowIsFloating">true</item>
+        <item name="colorAccent">#009632</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
 </resources>

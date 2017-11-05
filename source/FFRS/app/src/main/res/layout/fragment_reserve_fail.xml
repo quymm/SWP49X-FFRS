@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="layout.ReserveFailFragment">
+    tools:context=".fragment.ReserveFailFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,26 +18,16 @@
             android:layout_marginBottom="10dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:text="Thanh toán thất bại!"
+            android:text="Thanh toán đã bị hủy!\nNhấn OK để tiếp tục."
             android:textAlignment="center"
             android:textSize="20dp" />
-
-        <Button
-            android:id="@+id/btRetry"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:background="#009632"
-            android:text="Thử lại"
-            android:textColor="@android:color/white"
-            android:textSize="18dp" />
 
         <Button
             android:id="@+id/btHome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#009632"
-            android:text="Trở về màn hình chính"
+            android:text="OK"
             android:textColor="@android:color/white"
             android:textSize="18dp" />
     </LinearLayout>
