@@ -1,19 +1,19 @@
-<<<<<<< HEAD
 package com.services;
 
-import com.dto.InputMatchingRequestDTO;
-import com.dto.OutputMatchDTO;
+import com.dto.*;
 import com.entity.*;
-import com.repository.FieldRepository;
 import com.repository.FriendlyMatchRepository;
 import com.repository.MatchingRequestRepository;
 import com.repository.TourMatchRepository;
+import com.utils.DateTimeUtils;
+import com.utils.MapUtils;
+import com.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import javax.persistence.EntityNotFoundException;
+import java.util.*;
+
 
 /**
  * Created by MinhQuy on 9/29/2017.
@@ -41,174 +41,250 @@ public class MatchServices {
     @Autowired
     FieldTypeServices fieldTypeServices;
 
-    public List<OutputMatchDTO> findMatchByFieldIdAndDate(Date targetDate, int fieldId) {
-        List<TimeSlotEntity> timeSlotEntityList = timeSlotServices.findReserveTimeSlotByFieldIdAndFieldName(targetDate, fieldId);
-        List<OutputMatchDTO> outputMatchDTOList = new ArrayList<>();
-        for (TimeSlotEntity timeSlot : timeSlotEntityList) {
-            FriendlyMatchEntity friendlyMatchEntity = friendlyMatchRepository.findByTimeSlotIdAndStatus(timeSlot, true);
-            TourMatchEntity tourMatchEntity = tourMatchRepository.findByTimeSlotIdAndStatus(timeSlot, true);
-            if (friendlyMatchEntity != null) {
-                outputMatchDTOList.add(convertFromFriendlyMatchEntityToOuputMatchDTO(friendlyMatchEntity));
-            }
-            if (tourMatchEntity != null) {
-                outputMatchDTOList.add(convertFromTourMatchToOutputMatchDTO(tourMatchEntity));
-            }
+    @Autowired
+    BlacklistOpponentServices blacklistOpponentServices;
+
+    @Autowired
+    FavoritesFieldServices favoritesFieldServices;
+
+    @Autowired
+    BillServices billServices;
+
+    public MatchingRequestEntity findMatchingRequestEntityById(int id) {
+        MatchingRequestEntity matchingRequestEntity = matchingRequestRepository.findByIdAndStatus(id, true);
+        if (matchingRequestEntity == null) {
+            throw new EntityNotFoundException(String.format("Not found Matching Request have id = %s", id));
         }
-        return outputMatchDTOList;
+        return matchingRequestEntity;
     }
 
-    public List<OutputMatchDTO> findMatchByFieldOwnerIdAndDate(Date targetDate, int fieldOwnerId) {
+    public BillEntity reserveFriendlyMatch(int timeSlotId, int userId, int voucherId) {
+        AccountEntity userEntity = accountServices.findAccountEntityById(userId, "user");
+        TimeSlotEntity timeSlotEntity = timeSlotServices.findById(timeSlotId);
+        FriendlyMatchEntity friendlyMatchEntity = new FriendlyMatchEntity();
+        friendlyMatchEntity.setTimeSlotId(timeSlotEntity);
+        friendlyMatchEntity.setUserId(userEntity);
+        friendlyMatchEntity.setStatus(true);
 
-        List<FieldEntity> fieldEntityList = fieldServices.findFieldEntityByFieldOwnerId(fieldOwnerId);
-        List<OutputMatchDTO> outputMatchDTOList = new ArrayList<>();
-        for (FieldEntity fieldEntity : fieldEntityList) {
-            List<OutputMatchDTO> outputMatchDTOListWithField = findMatchByFieldIdAndDate(targetDate, fieldEntity.getId());
-            outputMatchDTOList.addAll(outputMatchDTOListWithField);
+        FriendlyMatchEntity savedFriendlyMatchEntity = friendlyMatchRepository.save(friendlyMatchEntity);
+
+        InputBillDTO inputBillDTO = new InputBillDTO();
+        inputBillDTO.setFriendlyMatchId(savedFriendlyMatchEntity.getId());
+        if (voucherId != 0) {
+            inputBillDTO.setVoucherId(voucherId);
         }
-        return outputMatchDTOList;
+        return billServices.createBill(inputBillDTO);
+    }
+
+    public FriendlyMatchEntity findFriendlyMatchByTimeSlot(int timeSlotId) {
+        TimeSlotEntity timeSlotEntity = timeSlotServices.findById(timeSlotId);
+        return friendlyMatchRepository.findByTimeSlotIdAndStatus(timeSlotEntity, true);
+    }
+
+    public TourMatchEntity findTourMatchByTimeSlot(int timeSlotId) {
+        TimeSlotEntity timeSlotEntity = timeSlotServices.findById(timeSlotId);
+        return tourMatchRepository.findByTimeSlotIdAndStatus(timeSlotEntity, true);
     }
 
     public MatchingRequestEntity createNewMatchingRequest(InputMatchingRequestDTO inputMatchingRequestDTO) {
-        MatchingRequestEntity matchingRequestEntity = convertFromInputMatchingRequestDTOToEntity(inputMatchingRequestDTO);
+        AccountEntity user = accountServices.findAccountEntityById(inputMatchingRequestDTO.getUserId(), "user");
+        FieldTypeEntity fieldType = fieldTypeServices.findById(inputMatchingRequestDTO.getFieldTypeId());
+        Date date = DateTimeUtils.convertFromStringToDate(inputMatchingRequestDTO.getDate());
+        Date startTime = DateTimeUtils.convertFromStringToTime(inputMatchingRequestDTO.getStartTime());
+        Date endTime = DateTimeUtils.convertFromStringToTime(inputMatchingRequestDTO.getEndTime());
+
+        MatchingRequestEntity matchingRequestEntity = new MatchingRequestEntity();
+        matchingRequestEntity.setFieldTypeId(fieldType);
+        matchingRequestEntity.setUserId(user);
+        matchingRequestEntity.setDate(date);
+        matchingRequestEntity.setStartTime(startTime);
+        matchingRequestEntity.setEndTime(endTime);
+        matchingRequestEntity.setDuration(inputMatchingRequestDTO.getDuration());
+        matchingRequestEntity.setLongitude(inputMatchingRequestDTO.getLongitude());
+        matchingRequestEntity.setLatitude(inputMatchingRequestDTO.getLatitude());
+        matchingRequestEntity.setStatus(true);
         return matchingRequestRepository.save(matchingRequestEntity);
     }
 
-    public OutputMatchDTO convertFromFriendlyMatchEntityToOuputMatchDTO(FriendlyMatchEntity friendlyMatchEntity) {
-        OutputMatchDTO outputMatchDTO = new OutputMatchDTO();
-        outputMatchDTO.setUserId(friendlyMatchEntity.getUserId());
-        outputMatchDTO.setOpponentId(friendlyMatchEntity.getUserId());
-        outputMatchDTO.setWinnerId(0);
-        outputMatchDTO.setTimeSlotId(friendlyMatchEntity.getTimeSlotId());
-        return outputMatchDTO;
-    }
+    public List<MatchingRequestEntity> suggestOpponent(InputMatchingRequestDTO inputMatchingRequestDTO, int deviationDistance) {
+        AccountEntity user = accountServices.findAccountEntityById(inputMatchingRequestDTO.getUserId(), "user");
+        FieldTypeEntity fieldType = fieldTypeServices.findById(inputMatchingRequestDTO.getFieldTypeId());
 
-    public OutputMatchDTO convertFromTourMatchToOutputMatchDTO(TourMatchEntity tourMatchEntity) {
-        OutputMatchDTO outputMatchDTO = new OutputMatchDTO();
-        outputMatchDTO.setUserId(tourMatchEntity.getUserId());
-        outputMatchDTO.setOpponentId(tourMatchEntity.getOpponentId());
-        outputMatchDTO.setTimeSlotId(tourMatchEntity.getTimeSlotId());
-        outputMatchDTO.setWinnerId(tourMatchEntity.getWinnerId());
-        return outputMatchDTO;
-    }
+        Date date = DateTimeUtils.convertFromStringToDate(inputMatchingRequestDTO.getDate());
+        Date startTime = DateTimeUtils.convertFromStringToTime(inputMatchingRequestDTO.getStartTime());
+        Date endTime = DateTimeUtils.convertFromStringToTime(inputMatchingRequestDTO.getEndTime());
 
-    public MatchingRequestEntity convertFromInputMatchingRequestDTOToEntity(InputMatchingRequestDTO inputMatchingRequestDTO) {
-        MatchingRequestEntity matchingRequestEntity = new MatchingRequestEntity();
-        AccountEntity userEntity = accountServices.findAccountEntityById(inputMatchingRequestDTO.getUserId());
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(inputMatchingRequestDTO.getFieldTypeId());
-        matchingRequestEntity.setUserId(userEntity);
-        matchingRequestEntity.setFieldTypeId(fieldTypeEntity);
-        matchingRequestEntity.setLongitude(inputMatchingRequestDTO.getLongitude());
-        matchingRequestEntity.setLatitude(inputMatchingRequestDTO.getLatitude());
-        matchingRequestEntity.setDuration(inputMatchingRequestDTO.getDuration());
-        matchingRequestEntity.setStartTime(inputMatchingRequestDTO.getStartTime());
-        matchingRequestEntity.setStatus(true);
-        return matchingRequestEntity;
-    }
-}
-=======
-package com.services;
+        CordinationPoint cordinationPointA = new CordinationPoint(NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLongitude()),
+                NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()));
 
-import com.dto.InputMatchingRequestDTO;
-import com.dto.OutputMatchDTO;
-import com.entity.*;
-import com.repository.FriendlyMatchRepository;
-import com.repository.MatchingRequestRepository;
-import com.repository.TourMatchRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+        int ratingScore = user.getProfileId().getRatingScore();
+        // tìm các request cùng loại sân, thời gian đá dao động trong khoảng trước và sau deviationTime phút, rating score dao động trong khoảng 100 điểm
+        List<MatchingRequestEntity> similarMatchingRequestList = matchingRequestRepository.findSimilarMatchingRequest(fieldType, true, date, startTime, endTime);
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+        List<MatchingRequestEntity> returnMatchingRequest = new ArrayList<>();
+        if (!similarMatchingRequestList.isEmpty()) {
+            for (MatchingRequestEntity matchingRequest : similarMatchingRequestList) {
+                CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(matchingRequest.getLongitude()),
+                        NumberUtils.parseFromStringToDouble(matchingRequest.getLatitude()));
 
-/**
- * Created by MinhQuy on 9/29/2017.
- */
-@Service
-public class MatchServices {
-    @Autowired
-    FriendlyMatchRepository friendlyMatchRepository;
+                double distance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
 
-    @Autowired
-    TourMatchRepository tourMatchRepository;
+                boolean checkRatingScore = matchingRequest.getUserId().getProfileId().getRatingScore() > (ratingScore - 100)
+                        && matchingRequest.getUserId().getProfileId().getRatingScore() < (ratingScore + 100);
 
-    @Autowired
-    MatchingRequestRepository matchingRequestRepository;
-
-    @Autowired
-    TimeSlotServices timeSlotServices;
-
-    @Autowired
-    FieldServices fieldServices;
-
-    @Autowired
-    AccountServices accountServices;
-
-    @Autowired
-    FieldTypeServices fieldTypeServices;
-
-    public List<OutputMatchDTO> findMatchByFieldIdAndDate(Date targetDate, int fieldId) {
-        List<TimeSlotEntity> timeSlotEntityList = timeSlotServices.findTimeSlotByDateFieldIdAndReservateStatus(targetDate, fieldId, true);
-        List<OutputMatchDTO> outputMatchDTOList = new ArrayList<>();
-        for (TimeSlotEntity timeSlot : timeSlotEntityList) {
-            FriendlyMatchEntity friendlyMatchEntity = friendlyMatchRepository.findByTimeSlotIdAndStatus(timeSlot, true);
-            TourMatchEntity tourMatchEntity = tourMatchRepository.findByTimeSlotIdAndStatus(timeSlot, true);
-            if (friendlyMatchEntity != null) {
-                outputMatchDTOList.add(convertFromFriendlyMatchEntityToOuputMatchDTO(friendlyMatchEntity));
-            }
-            if (tourMatchEntity != null) {
-                outputMatchDTOList.add(convertFromTourMatchToOutputMatchDTO(tourMatchEntity));
+                boolean checkBlackList = blacklistOpponentServices.findBlacklistByUserIdAndOpponentId(user.getId(), matchingRequest.getUserId().getId()) == null
+                        && blacklistOpponentServices.findBlacklistByUserIdAndOpponentId(matchingRequest.getUserId().getId(), user.getId()) == null ? true : false;
+                // khoảng cách là nhỏ hơn deviation
+                if (matchingRequest.getUserId().getId() != inputMatchingRequestDTO.getUserId() && distance < deviationDistance && checkBlackList && checkRatingScore) {
+                    returnMatchingRequest.add(matchingRequest);
+                }
             }
         }
-        return outputMatchDTOList;
+        return returnMatchingRequest;
     }
 
-    public List<OutputMatchDTO> findMatchByFieldOwnerIdAndDate(Date targetDate, int fieldOwnerId) {
+    public TimeSlotEntity chooseSuitableField(InputMatchingRequestDTO inputMatchingRequestDTO, int matchingRequestId, int deviationDistance) {
+        MatchingRequestEntity opponentMatching = matchingRequestRepository.findByIdAndStatus(matchingRequestId, true);
+        // tìm những sân chung trong sở thích của 2 người chơi
+        List<AccountEntity> favoritesFieldList = favoritesFieldServices.findFavoritesFieldOf2User(inputMatchingRequestDTO.getUserId(), opponentMatching.getUserId().getId());
 
-        List<FieldEntity> fieldEntityList = fieldServices.findFieldEntityByFieldOwnerId(fieldOwnerId);
-        List<OutputMatchDTO> outputMatchDTOList = new ArrayList<>();
-        for (FieldEntity fieldEntity : fieldEntityList) {
-            List<OutputMatchDTO> outputMatchDTOListWithField = findMatchByFieldIdAndDate(targetDate, fieldEntity.getId());
-            outputMatchDTOList.addAll(outputMatchDTOListWithField);
+        // tạo dữ liệu đặt sân dựa trên dữ liệu gốc theo matchingRequestId (người confirm đã đồng ý về thời gian của người tạo request)
+        InputReservationDTO inputReservationDTO = new InputReservationDTO();
+        inputReservationDTO.setStartTime(inputMatchingRequestDTO.getStartTime());
+        inputReservationDTO.setEndTime(inputMatchingRequestDTO.getEndTime());
+        inputReservationDTO.setDate(DateTimeUtils.formatDate(opponentMatching.getDate()));
+        inputReservationDTO.setFieldTypeId(opponentMatching.getFieldTypeId().getId());
+
+        if(!favoritesFieldList.isEmpty()){
+            for (AccountEntity favoritesField : favoritesFieldList){
+                inputReservationDTO.setFieldOwnerId(favoritesField.getId());
+                TimeSlotEntity timeSlotEntity = timeSlotServices.reserveTimeSlot(inputReservationDTO);
+                if (timeSlotEntity != null) {
+                    // trả nửa phí tiền sân đối với tour match
+                    timeSlotEntity.setPrice(timeSlotEntity.getPrice() / 2);
+                    return timeSlotEntity;
+                }
+            }
         }
-        return outputMatchDTOList;
+
+        // khi những sân chung nằm trong sở thích của 2 người ko đặt được thì tìm những sân trung bình về khoảng cách
+        // tạo list những sân và khoảng cách đến sân đó sắp xếp theo thứ tự tăng dần
+        CordinationPoint cordinationPointUser = new CordinationPoint(NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLongitude()),
+                NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()));
+        CordinationPoint cordinationPointOpponent = new CordinationPoint(NumberUtils.parseFromStringToDouble(opponentMatching.getLongitude()),
+                NumberUtils.parseFromStringToDouble(opponentMatching.getLatitude()));
+        List<FieldOwnerAndDistance> fieldOwnerAndDistanceListFromUser = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPointUser, deviationDistance);
+        List<FieldOwnerAndDistance> fieldOwnerAndDistanceListFromOpponent = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPointOpponent, deviationDistance);
+        List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
+
+        // tìm những sân chung trong danh sách
+        for (int i = 0; i < fieldOwnerAndDistanceListFromUser.size(); i++) {
+            for (int j = 0; j < fieldOwnerAndDistanceListFromOpponent.size(); j++) {
+                if (fieldOwnerAndDistanceListFromUser.get(i).getFieldOwner().getId() == fieldOwnerAndDistanceListFromOpponent.get(j).getFieldOwner().getId()) {
+                    fieldOwnerAndDistanceList.add(fieldOwnerAndDistanceListFromUser.get(i));
+                }
+            }
+        }
+
+
+        for (FieldOwnerAndDistance fieldOwnerAndDistance : fieldOwnerAndDistanceList) {
+            inputReservationDTO.setFieldOwnerId(fieldOwnerAndDistance.getFieldOwner().getId());
+            TimeSlotEntity timeSlotEntity = timeSlotServices.reserveTimeSlot(inputReservationDTO);
+            if (timeSlotEntity != null) {
+                // trả nửa phí tiền sân đối với tour match
+                timeSlotEntity.setPrice(timeSlotEntity.getPrice() / 2);
+                return timeSlotEntity;
+            }
+        }
+        // nếu vẫn ko có sân phù hợp thì trả về null, hệ thống sẽ báo ko tìm được sân phù hợp
+        return null;
     }
 
-    public MatchingRequestEntity createNewMatchingRequest(InputMatchingRequestDTO inputMatchingRequestDTO) {
-        MatchingRequestEntity matchingRequestEntity = convertFromInputMatchingRequestDTOToEntity(inputMatchingRequestDTO);
-        return matchingRequestRepository.save(matchingRequestEntity);
+    private List<FieldOwnerAndDistance> getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(CordinationPoint cordinationPointA, int deviationDistance) {
+        List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
+        List<AccountEntity> allfieldOwnerList = accountServices.findAccountByRole("owner");
+
+        for (AccountEntity accountEntity : allfieldOwnerList) {
+            CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(accountEntity.getProfileId().getLongitude()),
+                    NumberUtils.parseFromStringToDouble(accountEntity.getProfileId().getLatitude()));
+            double distance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
+            if (distance <= deviationDistance) {
+                FieldOwnerAndDistance fieldOwnerAndDistance = new FieldOwnerAndDistance(accountEntity, distance);
+                fieldOwnerAndDistanceList.add(fieldOwnerAndDistance);
+            }
+        }
+        return arrangeFieldOwnerByDistance(fieldOwnerAndDistanceList);
     }
 
-    public OutputMatchDTO convertFromFriendlyMatchEntityToOuputMatchDTO(FriendlyMatchEntity friendlyMatchEntity) {
-        OutputMatchDTO outputMatchDTO = new OutputMatchDTO();
-        outputMatchDTO.setUserId(friendlyMatchEntity.getUserId());
-        outputMatchDTO.setOpponentId(friendlyMatchEntity.getUserId());
-        outputMatchDTO.setWinnerId(0);
-        outputMatchDTO.setTimeSlotId(friendlyMatchEntity.getTimeSlotId());
-        return outputMatchDTO;
+    public BillEntity reserveTourMatch(int timeSlotId, int matchingRequestId, int opponentId, int voucherId) {
+        TimeSlotEntity timeSlotEntity = timeSlotServices.findById(timeSlotId);
+        MatchingRequestEntity matchingRequestEntity = findMatchingRequestEntityById(matchingRequestId);
+        AccountEntity user = matchingRequestEntity.getUserId();
+        AccountEntity opponent = accountServices.findAccountEntityById(opponentId, "user");
+
+        TourMatchEntity tourMatchEntity = new TourMatchEntity();
+        tourMatchEntity.setTimeSlotId(timeSlotEntity);
+        tourMatchEntity.setUserId(user);
+        tourMatchEntity.setOpponentId(opponent);
+        tourMatchEntity.setCompleteStatus(false);
+        tourMatchEntity.setStatus(true);
+
+        TourMatchEntity savedTourMatchEntity = tourMatchRepository.save(tourMatchEntity);
+
+        // xóa matching request
+        matchingRequestEntity.setStatus(false);
+        matchingRequestRepository.save(matchingRequestEntity);
+
+        InputBillDTO inputBillDTO = new InputBillDTO();
+        if (voucherId != 0) {
+            inputBillDTO.setVoucherId(voucherId);
+        }
+        inputBillDTO.setTourMatchId(savedTourMatchEntity.getId());
+        return billServices.createBill(inputBillDTO);
     }
 
-    public OutputMatchDTO convertFromTourMatchToOutputMatchDTO(TourMatchEntity tourMatchEntity) {
-        OutputMatchDTO outputMatchDTO = new OutputMatchDTO();
-        outputMatchDTO.setUserId(tourMatchEntity.getUserId());
-        outputMatchDTO.setOpponentId(tourMatchEntity.getOpponentId());
-        outputMatchDTO.setTimeSlotId(tourMatchEntity.getTimeSlotId());
-        outputMatchDTO.setWinnerId(tourMatchEntity.getWinnerId());
-        return outputMatchDTO;
+    public List<FieldOwnerAndDistance> arrangeFieldOwnerByDistance(List<FieldOwnerAndDistance> inputList) {
+        if (!inputList.isEmpty()) {
+            if (inputList.size() > 1) {
+                {
+                    for (int i = 0; i < inputList.size(); i++) {
+                        for (int j = inputList.size() - 1; j > 0; j--) {
+                            if (inputList.get(j).getDistance() < inputList.get(j - 1).getDistance()) {
+                                FieldOwnerAndDistance temp = inputList.get(j);
+                                inputList.set(j, inputList.get(j - 1));
+                                inputList.set(j - 1, temp);
+                            }
+                        }
+                    }
+                }
+                return inputList;
+            }
+            return inputList;
+        }
+        return inputList;
     }
 
-    public MatchingRequestEntity convertFromInputMatchingRequestDTOToEntity(InputMatchingRequestDTO inputMatchingRequestDTO) {
-        MatchingRequestEntity matchingRequestEntity = new MatchingRequestEntity();
-        AccountEntity userEntity = accountServices.findAccountEntityById(inputMatchingRequestDTO.getUserId());
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(inputMatchingRequestDTO.getFieldTypeId());
-        matchingRequestEntity.setUserId(userEntity);
-        matchingRequestEntity.setFieldTypeId(fieldTypeEntity);
-        matchingRequestEntity.setLongitude(inputMatchingRequestDTO.getLongitude());
-        matchingRequestEntity.setLatitude(inputMatchingRequestDTO.getLatitude());
-        matchingRequestEntity.setDuration(inputMatchingRequestDTO.getDuration());
-        matchingRequestEntity.setStartTime(inputMatchingRequestDTO.getStartTime());
-        matchingRequestEntity.setStatus(true);
-        return matchingRequestEntity;
+    public TourMatchEntity findTourMatchEntityById(int tourMatchId) {
+        TourMatchEntity tourMatchEntity = tourMatchRepository.findByIdAndStatus(tourMatchId, true);
+        if (tourMatchEntity == null) {
+            throw new EntityNotFoundException(String.format("Not found Tour Match have id = %s", tourMatchId));
+        }
+        return tourMatchEntity;
     }
+
+    public FriendlyMatchEntity findFriendlyMatchEntityById(int friendlyMatchId) {
+        FriendlyMatchEntity friendlyMatchEntity = friendlyMatchRepository.findByIdAndStatus(friendlyMatchId, true);
+        if (friendlyMatchEntity == null) {
+            throw new EntityNotFoundException(String.format("Not found Friendly Match have id = %s", friendlyMatchId));
+        }
+        return friendlyMatchEntity;
+    }
+
+    public List<MatchingRequestEntity> findMatchingRequestByUserId(int userId){
+        AccountEntity user = accountServices.findAccountEntityById(userId, "user");
+        List<MatchingRequestEntity> matchingRequestEntityList = matchingRequestRepository.findByUserIdAndStatus(user, true);
+        return matchingRequestEntityList;
+    }
+
+
 }
->>>>>>> master

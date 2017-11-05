@@ -1,0 +1,98 @@
+package com.services;
+
+import com.dto.InputBillDTO;
+import com.entity.*;
+import com.repository.BillRepository;
+import com.repository.FriendlyMatchRepository;
+import com.repository.TourMatchRepository;
+import com.repository.VoucherRepository;
+import com.utils.DateTimeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class BillServices {
+    @Autowired
+    BillRepository billRepository;
+
+    @Autowired
+    AccountServices accountServices;
+
+    @Autowired
+    VoucherServices voucherServices;
+
+    @Autowired
+    MatchServices matchServices;
+
+
+    public BillEntity createBill(InputBillDTO inputBillDTO) {
+        BillEntity billEntity = new BillEntity();
+        billEntity.setDateCharge(new Date());
+
+        Float price = new Float(0.0);
+        if (inputBillDTO.getFriendlyMatchId() != null && inputBillDTO.getFriendlyMatchId() != 0) {
+            FriendlyMatchEntity friendlyMatchEntity = matchServices.findFriendlyMatchEntityById(inputBillDTO.getFriendlyMatchId());
+            billEntity.setFriendlyMatchId(friendlyMatchEntity);
+            billEntity.setUserId(friendlyMatchEntity.getUserId());
+            TimeSlotEntity timeSlotEntity = friendlyMatchEntity.getTimeSlotId();
+            billEntity.setFieldOwnerId(timeSlotEntity.getFieldOwnerId());
+            price = timeSlotEntity.getPrice();
+        } else {
+            TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(inputBillDTO.getTourMatchId());
+            billEntity.setTourMatchId(tourMatchEntity);
+            TimeSlotEntity timeSlotEntity = tourMatchEntity.getTimeSlotId();
+            billEntity.setFieldOwnerId(timeSlotEntity.getFieldOwnerId());
+            price = timeSlotEntity.getPrice() / 2;
+            if (!inputBillDTO.isOpponentPayment()) {
+                billEntity.setUserId(tourMatchEntity.getUserId());
+            } else {
+                billEntity.setUserId(tourMatchEntity.getOpponentId());
+            }
+        }
+        if (inputBillDTO.getVoucherId() != null && inputBillDTO.getVoucherId() != 0) {
+            VoucherEntity voucherEntity = voucherServices.findVoucherEntityById(inputBillDTO.getVoucherId());
+            if (voucherEntity != null) {
+                billEntity.setVoucherId(voucherEntity);
+
+                //tinh gia cho Bill neu co voucher
+                Float voucherValue = voucherEntity.getVoucherValue();
+                price = price - voucherValue;
+            }
+
+        }
+        billEntity.setPrice(price);
+
+        billEntity.setStatus(true);
+        return billRepository.save(billEntity);
+    }
+
+    public BillEntity findById(int billId){
+        BillEntity billEntity = billRepository.findByIdAndStatus(billId, true);
+        if(billEntity == null){
+            throw new EntityNotFoundException(String.format("Not found Bill Entity have id = %s", billId));
+        }
+        return billEntity;
+    }
+
+    public List<BillEntity> findByUserIdIn7Date(int userId){
+        AccountEntity user = accountServices.findAccountEntityById(userId, "user");
+        Date now = new Date();
+        Date targetDate = new Date(now.getTime() - 7*24*60*60*1000); //7 day
+        List<BillEntity> billEntityList = billRepository.findBillWithUserIdAndDateCharge(user, true, targetDate);
+        return billEntityList;
+    }
+
+    public List<BillEntity> findByFieldOwnerIdIn7Date(int fieldOwnerId){
+        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        Date now = new Date();
+        Date targetDate = new Date(now.getTime() - 7*24*60*60*1000);
+        List<BillEntity> billEntityList = billRepository.findBillWithFieldOwnerIdAndDateCharge(fieldOwner, targetDate, true);
+        return billEntityList;
+    }
+
+
+}

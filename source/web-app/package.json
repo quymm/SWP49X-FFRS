@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "rc-time-picker": "^2.4.1",
     "react": "^15.6.1",
     "react-datepicker": "^0.55.0",
     "react-dom": "^15.6.1",
     "react-router-dom": "^4.2.2",
+    "redux": "^3.7.2",
+    "redux-persist": "^4.10.1",
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {

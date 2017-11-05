@@ -1,7 +1,7 @@
-<<<<<<< HEAD
 package com.controller;
 
 import com.dto.InputFieldTypeDTO;
+import com.dto.Wrapper;
 import com.entity.FieldTypeEntity;
 import com.services.FieldTypeServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,51 +17,24 @@ public class FieldTypeController {
     @Autowired
     FieldTypeServices fieldTypeServices;
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/fieldType/createNewFieldType", method = RequestMethod.POST)
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/field-type/managed-field-type", method = RequestMethod.POST)
     public ResponseEntity createNewFieldType(@RequestBody InputFieldTypeDTO inputFieldTypeDTO){
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.createNewFieldTypeEntity(inputFieldTypeDTO);
-        return new ResponseEntity(fieldTypeEntity, HttpStatus.CREATED);
+        Wrapper wrapper = new Wrapper(fieldTypeServices.createNewFieldType(inputFieldTypeDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+        return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/fieldType/getByFieldTypeId", method = RequestMethod.GET)
-    public ResponseEntity getFieldTypeById(@RequestParam("fieldTypeId") int fieldTypeId){
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(fieldTypeId);
-        return new ResponseEntity(fieldTypeEntity, HttpStatus.FOUND);
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/field-type/managed-field-type", method = RequestMethod.GET)
+    public ResponseEntity getFieldTypeById(@RequestParam("field-type-id") int fieldTypeId){
+        Wrapper wrapper = new Wrapper(fieldTypeServices.findById(fieldTypeId), HttpStatus.OK.value(), HttpStatus.CREATED.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/field-type/managed-field-type", method = RequestMethod.DELETE)
+    public ResponseEntity delteFieldType(@RequestParam("field-type-id") int fieldTypeId){
+        Wrapper wrapper = new Wrapper(fieldTypeServices.deleteFieldType(fieldTypeId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 }
-=======
-package com.controller;
-
-import com.dto.InputFieldTypeDTO;
-import com.entity.FieldTypeEntity;
-import com.services.FieldTypeServices;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-/**
- * Created by MinhQuy on 9/24/2017.
- */
-@RestController
-public class FieldTypeController {
-    @Autowired
-    FieldTypeServices fieldTypeServices;
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/fieldType/createNewFieldType", method = RequestMethod.POST)
-    public ResponseEntity createNewFieldType(@RequestBody InputFieldTypeDTO inputFieldTypeDTO){
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.createNewFieldTypeEntity(inputFieldTypeDTO);
-        return new ResponseEntity(fieldTypeEntity, HttpStatus.CREATED);
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/fieldType/getByFieldTypeId", method = RequestMethod.GET)
-    public ResponseEntity getFieldTypeById(@RequestParam("fieldTypeId") int fieldTypeId){
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findFieldTypeEntityById(fieldTypeId);
-        return new ResponseEntity(fieldTypeEntity, HttpStatus.OK);
-    }
-}
->>>>>>> master

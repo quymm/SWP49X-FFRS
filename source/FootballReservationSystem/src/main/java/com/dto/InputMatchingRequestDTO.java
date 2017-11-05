@@ -11,20 +11,26 @@ public class InputMatchingRequestDTO {
 
     private String latitude;
 
-    private Date startTime;
+    private String date;
+
+    private String startTime;
+
+    private String endTime;
 
     private Integer duration;
 
-    public InputMatchingRequestDTO(Integer userId, Integer fieldTypeId, String longitude, String latitude, Date startTime, Integer duration) {
+    public InputMatchingRequestDTO() {
+    }
+
+    public InputMatchingRequestDTO(Integer userId, Integer fieldTypeId, String longitude, String latitude, String date, String startTime, String endTime, Integer duration) {
         this.userId = userId;
         this.fieldTypeId = fieldTypeId;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.date = date;
         this.startTime = startTime;
+        this.endTime = endTime;
         this.duration = duration;
-    }
-
-    public InputMatchingRequestDTO() {
     }
 
     public Integer getUserId() {
@@ -59,19 +65,35 @@ public class InputMatchingRequestDTO {
         this.latitude = latitude;
     }
 
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
     public Integer getDuration() {
         return duration;
     }
 
     public void setDuration(Integer duration) {
         this.duration = duration;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 }
