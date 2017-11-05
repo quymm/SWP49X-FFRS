@@ -132,7 +132,8 @@ public class MatchServices {
                 boolean checkRatingScore = matchingRequest.getUserId().getProfileId().getRatingScore() > (ratingScore - 100)
                         && matchingRequest.getUserId().getProfileId().getRatingScore() < (ratingScore + 100);
 
-                boolean checkBlackList = blacklistOpponentServices.findBlacklistByUserIdAndOpponentId(user.getId(), matchingRequest.getUserId().getId()) == null ? true : false;
+                boolean checkBlackList = blacklistOpponentServices.findBlacklistByUserIdAndOpponentId(user.getId(), matchingRequest.getUserId().getId()) == null
+                        && blacklistOpponentServices.findBlacklistByUserIdAndOpponentId(matchingRequest.getUserId().getId(), user.getId()) == null ? true : false;
                 // khoảng cách là nhỏ hơn deviation
                 if (matchingRequest.getUserId().getId() != inputMatchingRequestDTO.getUserId() && distance < deviationDistance && checkBlackList && checkRatingScore) {
                     returnMatchingRequest.add(matchingRequest);
@@ -149,8 +150,8 @@ public class MatchServices {
 
         // tạo dữ liệu đặt sân dựa trên dữ liệu gốc theo matchingRequestId (người confirm đã đồng ý về thời gian của người tạo request)
         InputReservationDTO inputReservationDTO = new InputReservationDTO();
-        inputReservationDTO.setStartTime(DateTimeUtils.formatTime(opponentMatching.getStartTime()));
-        inputReservationDTO.setEndTime(DateTimeUtils.formatTime(opponentMatching.getEndTime()));
+        inputReservationDTO.setStartTime(inputMatchingRequestDTO.getStartTime());
+        inputReservationDTO.setEndTime(inputMatchingRequestDTO.getEndTime());
         inputReservationDTO.setDate(DateTimeUtils.formatDate(opponentMatching.getDate()));
         inputReservationDTO.setFieldTypeId(opponentMatching.getFieldTypeId().getId());
 
