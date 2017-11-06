@@ -171,7 +171,12 @@ public class CustomTimePickerDialog extends TimePickerDialog {
             NumberPicker minuteSpinner = (NumberPicker) mTimePicker
                     .findViewById(field.getInt(null));
             List<String> displayedValues = new ArrayList<>();
-            if (isMinThirty) {
+            if (minTime != null && maxTime != null && minTime.getHours() == maxTime.getHours() && minTime.getMinutes() == maxTime.getMinutes()) {
+                minuteSpinner.setDisplayedValues(null);
+                minuteSpinner.setMinValue(minTime.getMinutes() / TIME_PICKER_INTERVAL);
+                minuteSpinner.setMaxValue(minTime.getMinutes() / TIME_PICKER_INTERVAL);
+                displayedValues.add(String.format("%02d", minTime.getMinutes()));
+            } else if (isMinThirty) {
                 minuteSpinner.setDisplayedValues(null);
                 minuteSpinner.setMinValue(1);
                 minuteSpinner.setMaxValue(1);

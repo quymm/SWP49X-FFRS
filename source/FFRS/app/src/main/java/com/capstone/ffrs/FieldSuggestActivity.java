@@ -119,7 +119,7 @@ public class FieldSuggestActivity extends AppCompatActivity
         txtPoints.setText("Điểm đổi thưởng: " + preferences.getInt("points", 0));
 
         TextView txtBalance = (TextView) headerLayout.findViewById(R.id.text_balance);
-        txtBalance.setText("Tiền còn lại: " + preferences.getInt("balance", 0));
+        txtBalance.setText("Tiền còn lại: " + preferences.getInt("balance", 0) + "K đồng");
 
         gpsLocationListener = new GPSLocationListener(this);
     }
