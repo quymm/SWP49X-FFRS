@@ -18,10 +18,13 @@ class Field extends Component {
 
   async componentDidMount() {
     const { id, roleId } = this.props.auth.user.data;
-    
+
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
-      if (authLocalStorage === null || authLocalStorage.roleId.roleName !== 'owner') {
+      if (
+        authLocalStorage === null ||
+        authLocalStorage.roleId.roleName !== 'owner'
+      ) {
         await this.props.accessDenied();
         this.props.history.push('/login');
       } else {
@@ -43,7 +46,7 @@ class Field extends Component {
 
   async deleteField(evt) {
     const fieldId = evt.target.value;
-    const {id} = this.props.auth.user.data;
+    const { id } = this.props.auth.user.data;
     await fetchDeleteField(fieldId);
     const data = await fetchGetAllField(id);
     await this.props.getAllField(data.body);
@@ -54,13 +57,13 @@ class Field extends Component {
     console.log(listField);
     const renderField =
       listField.length > 0
-        ? listField.map((listField,index) => {
+        ? listField.map((listField, index) => {
             return (
               <tr key={listField.id}>
                 <td>{index + 1}</td>
                 <td>{listField.name}</td>
                 <td>{listField.fieldTypeId.name}</td>
-                <td>               
+                <td>
                   <button
                     value={listField.id}
                     onClick={this.deleteField.bind(this)}
@@ -75,7 +78,7 @@ class Field extends Component {
         : 'Hiện tại chưa có sân';
     const { isCreateShowed } = this.state;
     return (
-        <div className="main-panel">
+      <div className="main-panel">
         <div className="content">
           <div className="container-fluid">
             <div className="row">
@@ -87,23 +90,29 @@ class Field extends Component {
             <div className="col-md-8 col-md-offset-2">
               <div className="panel panel-dafault">
                 <div className="panel-body">
-              <div className="table-responsive">
-                <table className="table table-striped">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Tên sân</th>
-                      <th>Loại sân</th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {listField == null ? '<td>Chưa có sân</td>' : renderField}
-                  </tbody>
-                </table>
+                  <div className="table-responsive">
+                    <table className="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Tên sân</th>
+                          <th>Loại sân</th>
+                          <th />
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {listField == null ? (
+                          <tr>
+                            <td>Chưa có sân</td>
+                          </tr>
+                        ) : (
+                          renderField
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-            </div>
-            </div>
             </div>
           </div>
         </div>

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { doLogout } from '../redux/guest/guest-action-creators';
-import { Dropdown, Glyphicon, MenuItem, Badge } from 'react-bootstrap';
+import { Dropdown, MenuItem } from 'react-bootstrap';
 import fire from '../services/firebase';
 import { Modal } from 'react-bootstrap';
 import moment from 'moment';
@@ -11,7 +11,6 @@ import {
   fetchGetFriendlyMatch,
   fetchGetTourMatch,
 } from '../apis/field-owner-apis';
-import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 class Header extends Component {
@@ -35,9 +34,10 @@ class Header extends Component {
     this.setState({ menuOpened: !menuOpened });
     // document.getElementsByTagName('html')[0].className =!menuOpened?'nav-open':'';
   }
-  componentWillMount() {
+  componentDidMount() {
     const { id } = this.props.auth.user.data;
-    if (id === undefined) {
+    const { currentDaySelected } = this.props.currentDaySelected
+    if (id === undefined) {      
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
       const idLocal = authLocalStorage.id;
       /* Create reference to messages in Firebase Database */
@@ -55,6 +55,7 @@ class Header extends Component {
         !message.text.isRead
           ? this.setState({ count: this.state.count + 1 })
           : null;
+          console.log(currentDaySelected)
         this.setState({
           messages: [message].concat(this.state.messages),
           tourMatch: true,
@@ -79,6 +80,9 @@ class Header extends Component {
         });
       });
     } else {
+      if (currentDaySelected !== undefined) {
+        console.log('currentDay: ', currentDaySelected);
+      }
       /* Create reference to messages in Firebase Database */
       let messagesRef = fire.database().ref(`fieldOwner/${id}`);
       messagesRef.child('friendlyMatch').on('child_added', snapshot => {
@@ -168,11 +172,11 @@ class Header extends Component {
     const { id } = this.props.auth.user.data;
     if (messages.length > 0) {
       const afterSort = messages.sort(
-        (a, b) => new Date(a.text.time) - new Date(b.text.time),
+        (a, b) => moment(a.text.time) - moment(b.text.time),
       );
       messages.reverse();
     }
-    console.log(this.state.match);
+    console.log(this.props);
     return (
       <nav
         className={`navbar navbar-default ${this.state.menuOpened
@@ -200,18 +204,18 @@ class Header extends Component {
             </span>
           </a>
         </div>
-        <ul className="nav navbar-nav navbar-right">
+        <ul className="navbar-right">
           <li>
             <Dropdown id="dropdown-toggle">
               <Dropdown.Toggle>
+                <i className="glyphicon glyphicon-globe" />
                 {this.state.count > 0 ? (
                   <span className="notification hidden-sm hidden-xs">
                     {this.state.count}
                   </span>
                 ) : null}
-                <i className="glyphicon glyphicon-globe" />
               </Dropdown.Toggle>
-              <Dropdown.Menu className="dropdown-menu dropdown-messages">
+              <Dropdown.Menu className="dropdown-menu-right dropdown-messages">
                 {messages.length > 0
                   ? messages.map((message, index) => (
                       <li
@@ -253,7 +257,7 @@ class Header extends Component {
               <Dropdown.Toggle>
                 <i className="glyphicon glyphicon-user" />
               </Dropdown.Toggle>
-              <Dropdown.Menu className="super-colors">
+              <Dropdown.Menu className="dropdown-menu-right super-colors">
                 <MenuItem onClick={this.handleUpdateProfile.bind(this)}>
                   {' '}
                   <i className="glyphicon glyphicon-user" /> Cập nhật thông tin
@@ -340,6 +344,7 @@ class Header extends Component {
 function mapPropsToState(state) {
   return {
     auth: state.auth,
+    currentDaySelected: state.currentDaySelected,
   };
 }
 

@@ -109,7 +109,7 @@ h1 .subtitle {
   color: #1DC7EA !important; }
 
 .text-success, .text-success:hover {
-  color: #50770f !important; }
+  color: #388E3C !important; }
 
 .text-warning, .text-warning:hover {
   color: #FF9500 !important; }
@@ -252,7 +252,7 @@ body > .navbar-collapse {
     .sidebar .nav li > a,
     body > .navbar-collapse .nav li > a {
       color: #FFFFFF;
-      margin: 5px 15px;
+      /* margin: 5px 15px; */
       opacity: .86;
       border-radius: 4px;
       display: block; }

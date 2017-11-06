@@ -132,6 +132,36 @@
 .tourMatch {
   background-color: #07b7bf;
 }
+.navbar.navbar-default .navbar-brand {
+  padding: 10px 15px;
+  height: 60px;
+  margin: 0;
+}
+.navbar-right {
+  position: absolute;  
+  top: 0;
+  right: 0;
+  z-index: 100;
+  margin: 0;
+  padding: 0 15px;
+}
+.navbar-right .notification {
+  position: relative;
+  top: -6px;
+  left: -3px;
+  display: inline-block;
+  padding: 0 3px;
+  background: red;
+  border-radius: 20px;
+  font-weight: bold;
+  color: #FFF;
+  font-size: 11px;
+  line-height: 12px;
+  vertical-align: middle;
+}
+.navbar-right > li{
+  display: inline-block;
+}
 @media (min-width: 768px){
   
 }
@@ -142,13 +172,23 @@
     right: 0;
   }
   .navbar .navbar-right {
-    position: absolute;
-    right: 90px;
-    top: 0;
+    right: 50px;
   }  
   .navbar .navbar-nav > li {
     float: left;
   }
+  .navbar .btn.dropdown-toggle {
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 375px){
+  .navbar .navbar-right .dropdown-menu.dropdown-messages {
+    right: calc(100% - 170px);
+  } 
+  .navbar .navbar-right .dropdown-menu.super-colors {
+    right: calc(100% - 115px);
+  } 
 }
 .form-group.required .control-label:after {
   content:"*";
@@ -174,4 +214,45 @@
 }
 .rc-time-picker-panel-inner {
   font-size: 17px;
+}
+.text-while {
+  color: #ffffff
+}
+.next-left {
+  position: absolute;
+  top: 50%;
+  z-index: 99;
+  left: -10px;
+  display: block;
+  box-sizing: border-box;
+  border-radius: 20px;
+  box-shadow: none;
+  border: none;
+  color: #388E3C;
+  font-size: 2rem;
+  background-color: #d4e8b1;
+}
+.next-right {
+  position: absolute;
+  top: 50%;
+  z-index: 99;
+  right: -10px;
+  display: block;
+  box-sizing: border-box;
+  border-radius: 20px;
+  box-shadow: none;
+  border: none;
+  color: #388E3C;
+  font-size: 2rem;
+  background-color: #d4e8b1;
+}
+.match-padding {
+  padding: 0 25px;
+  min-height: 230px
+}
+button.next-right:hover {
+  background-color: #ffffff;
+}
+button.next-left:hover {
+  background-color: #ffffff;
 }

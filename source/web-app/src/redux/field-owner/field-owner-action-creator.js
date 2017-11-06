@@ -64,3 +64,9 @@ export function getAllNotify(data) {
     payloads: data,
   };
 }
+export function setCurrentDaySelected(data){
+  return {
+    type: 'SET_CURRENT_DAY_SELECTED',
+    payloads: data,
+  }
+}

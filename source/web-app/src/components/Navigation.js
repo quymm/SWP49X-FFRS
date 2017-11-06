@@ -61,6 +61,11 @@ export class Navigation extends Component {
                 <i className="pe-7s-news-paper" /> <strong>Thu nhập</strong>
               </NavLink>
             </li>
+            <li>
+              <NavLink to="/app/promotion" activeClassName="active">
+                <i className="glyphicon glyphicon-gift" /> <strong>Khuyễn mãi</strong>
+              </NavLink>
+            </li>
           </ul>
         </div>
       </div>

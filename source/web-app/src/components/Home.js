@@ -9,6 +9,7 @@ import {
 import {
   GetMatchByFieldOwnerAndDay,
   getAllFreeField,
+  setCurrentDaySelected
 } from '../redux/field-owner/field-owner-action-creator';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
@@ -40,6 +41,33 @@ class Home extends Component {
     this.handleShowModalField = this.handleShowModalField.bind(this);
   }
 
+  async handelNextDay(evt){
+    evt.preventDefault();
+    const { dateSelected } = this.state;
+    this.setState({dateSelected: dateSelected.add(1, 'days')});
+    const { id } = this.props.auth.user.data;
+    const match = await fetchGetMatchByFieldOwnerAndDay(
+      id,
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      1,
+    );
+    await this.props.GetMatchByFieldOwnerAndDay(match.body);
+    this.props.setCurrentDaySelected(this.state.dateSelected);
+  }
+  async handelPreviousDay(evt){
+    
+    evt.preventDefault();
+    const { dateSelected } = this.state;
+    this.setState({dateSelected: dateSelected.subtract(1, 'days')});
+    const { id } = this.props.auth.user.data;
+    const match = await fetchGetMatchByFieldOwnerAndDay(
+      id,
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      1,
+    );
+    await this.props.GetMatchByFieldOwnerAndDay(match.body);
+    this.props.setCurrentDaySelected(this.state.dateSelected);
+  }
   configTimeDiable() {
     let disableTime = [];
     for (let i = 1; i < 30; i++) {
@@ -86,6 +114,7 @@ class Home extends Component {
         console.log('error: ', error);
       }
     }
+    this.props.setCurrentDaySelected(this.state.dateSelected);
   }
 
   async handelSetFieldSubmit(evt) {
@@ -235,7 +264,14 @@ class Home extends Component {
                   </div>
                 </div> */}
               </div>
-              <div className="col-md-12">
+              <div className="col-md-12 match-padding ">
+                <button className="next-left" onClick={this.handelPreviousDay.bind(this)} >
+                  {' '}
+                  <i className="glyphicon glyphicon-chevron-left" />
+                </button>
+                <button className="next-right" onClick={this.handelNextDay.bind(this)}>
+                  <i className="glyphicon glyphicon-chevron-right" />
+                </button>
                 <div className="row">
                   {listMatch.length > 0
                     ? listMatch.map(listMatch => (
@@ -260,7 +296,7 @@ class Home extends Component {
                                       ? 'tourMatch'
                                       : 'friendlyMatch'} margin-bot-none`}
                                   >
-                                    <h3 className="text-center text-primary">
+                                    <h3 className="text-center text-success">
                                       <strong>
                                         {moment(
                                           '10-10-2017 ' +
@@ -316,7 +352,7 @@ class Home extends Component {
                                           this.handleShowModalField(listMatch)}
                                         className="btn btn-md btn-primary"
                                       >
-                                        Cập nhật sân
+                                        Chọn sân
                                       </button>
                                     </p>
                                   </div>
@@ -423,4 +459,5 @@ export default connect(mapStateToProps, {
   getAllFreeField,
   doLoginSuccessful,
   accessDenied,
+  setCurrentDaySelected,
 })(Home);

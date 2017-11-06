@@ -8,14 +8,6 @@ import { fetchAddField, fetchGetAllField } from '../apis/field-owner-apis';
 import { withRouter } from 'react-router-dom';
 import { Modal } from 'react-bootstrap';
 import {toast } from 'react-toastify';
-var Notyf = require('notyf');//component ten notyf a, uhm de t xem da, css thoi dung ko?
-// Create an instance of Notyf
-var notyf = new Notyf({
-  delay: 2000000,
-  // alertIcon: 'fa fa-exclamation-circle',
-  // confirmIcon: 'fa fa-check-circle',
-});
-
 class FormCreateField extends Component {
   constructor(props) {
     super(props);
@@ -61,7 +53,7 @@ class FormCreateField extends Component {
 
   async handleShowConfirm(evt) {
     evt.preventDefault();
-    const { fieldName, fieldStyle } = this.state;
+    const { fieldName } = this.state;
     if (fieldName === null || fieldName === undefined || fieldName === "") {
       this.setState({ errorMessage: 'Tên sân không thể bỏ trống!' });
     }

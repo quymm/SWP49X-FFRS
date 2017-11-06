@@ -11,12 +11,13 @@ import {
   doLoginSuccessful,
   accessDenied,
 } from '../redux/guest/guest-action-creators';
-import { Tabs, Tab, Modal, Checkbox } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import moment from 'moment';
 class SettingTime extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      message: undefined,
       fieldType: '5 vs 5',
       fieldTypeId: 1,
       daySelected: 'Mon',
@@ -30,42 +31,49 @@ class SettingTime extends Component {
           value: 'Mon',
           text: 'Thứ hai',
           checked: false,
+          disable: false,
         },
         {
           id: 1,
           value: 'Tue',
           text: 'Thứ ba',
           checked: false,
+          disable: false,
         },
         {
           id: 2,
           value: 'Wed',
           text: 'Thứ tư',
           checked: false,
+          disable: false,
         },
         {
           id: 3,
           value: 'Thu',
           text: 'Thứ năm',
           checked: false,
+          disable: false,
         },
         {
           id: 4,
           value: 'Fri',
           text: 'Thứ sáu',
           checked: false,
+          disable: false,
         },
         {
           id: 5,
           value: 'Sat',
           text: 'Thứ bảy',
           checked: false,
+          disable: false,
         },
         {
           id: 6,
           value: 'Sun',
           text: 'Chủ nhật',
           checked: false,
+          disable: false,
         },
       ],
       buttonGroupFieldType: [
@@ -152,7 +160,6 @@ class SettingTime extends Component {
     const dayInWeek = buttonGroupDayInWeek;
     dayInWeek[day.id].checked = !dayInWeek[day.id].checked;
     await this.setState({ buttonGroupDayInWeek: dayInWeek });
-    console.log(this.state);
   }
   async handleInputChange(evt) {
     const target = evt.target;
@@ -182,15 +189,56 @@ class SettingTime extends Component {
   }
   async handelTimeStartDayInputChange(evt) {
     await this.setState({ startDay: evt });
-    console.log(this.state);
   }
   async handelTimeEndDayInputChange(evt) {
     await this.setState({ endDay: evt });
-    console.log(this.state);
   }
-
+  // disableDayClick(timeEnable){
+  //   const monday = timeEnable.filter(day => day.dateInWeek === 'Mon');
+  //   debugger;
+  //   if (monday.length > 0) {
+  //     for (let i = 0; i < monday.length; i++) {
+  //       if (
+  //         startDay.hours() <=
+  //           moment(`10-10-2017 ${monday[i].endTime}`).hours() ||
+  //         startDay.hours() >=
+  //           moment(`10-10-2017 ${monday[i].startTime}`).hours() ||
+  //         endDay.hours() <= moment(`10-10-2017 ${monday[i].endTime}`).hours() ||
+  //         endDay.hours() >= moment(`10-10-2017 ${monday[i].startTime}`).hours()
+  //       ) {
+  //         const timeDisable = this.state.buttonGroupDayInWeek;
+  //         timeDisable[0].disable = true;
+  //         this.setState({ buttonGroupDayInWeek: timeDisable });
+  //       }
+  //     }
+  //   }
+  // }
   handelShowModal(evt) {
     evt.preventDefault();
+    const { timeEnable } = this.props.timeEnable;
+    const { daySelected, endDay, startDay } = this.state;
+    console.log(timeEnable);
+    const dayfilter = timeEnable.filter(day => day.dateInWeek === daySelected);
+    if (dayfilter.length > 0) {
+      if (moment(`10-10-2017 ${dayfilter[0].startTime}`).hours() > 6) {
+        this.setState({
+          startDay: moment()
+            .hours(6)
+            .minutes(0),
+          endDay: moment(`10-10-2017 ${dayfilter[0].startTime}`),
+        });
+      } else {
+        if (moment(`10-10-2017 ${dayfilter[0].endTime}`).hours() < 22) {
+          this.setState({
+            endDay: moment()
+              .hours(22)
+              .minutes(0),
+            startDay: moment(`10-10-2017 ${dayfilter[0].endTime}`),
+          });
+        }
+      }
+    }
+    
     this.setState({ isShowAddTime: true });
   }
 
@@ -205,8 +253,9 @@ class SettingTime extends Component {
       isShowAddTime,
       fieldTypeId,
     } = this.state;
-
-    if (startDay !== null && endDay !== null && price !== null) {
+    const priceRegex = '^\\d+$';
+    if (startDay !== null && endDay !== null && price !== undefined) {
+      if (price.match(priceRegex)) {
       const dayAdd = this.state.buttonGroupDayInWeek.filter(
         data => data.checked === true,
       );
@@ -225,7 +274,12 @@ class SettingTime extends Component {
       this.props.getAllTimeEnableInWeek(data.body);
       this.props.history.push('/app/setting-time');
     }
-    // await this.setState({ isShowAddTime: !isShowAddTime });
+  else{
+    this.setState({message: 'Giá không hợp lệ'})
+  }}
+    else{
+      this.setState({message: 'Vui lòng điền giá tiền', isShowAddTime: true});
+    }
   }
 
   render() {
@@ -357,11 +411,14 @@ class SettingTime extends Component {
               className="form-horizontal"
               onSubmit={this.handleSubmitTimeInWeek.bind(this)}
             >
+            <p className="text-danger text-center">{this.state.message? this.state.message : null}</p>
               <div className="form-group">
+                
                 <label htmlFor="inputEmail3" className="col-sm-3 control-label">
                   Từ
                 </label>
                 <div className="col-sm-9">
+                  
                   <div className="row">
                     <div className="col-sm-6">
                       <TimePicker
@@ -402,7 +459,6 @@ class SettingTime extends Component {
                   <div className="row">
                     <div className="col-sm-6">
                       <div className="input-group">
-                        
                         <input
                           type="text"
                           className="form-control"
@@ -411,9 +467,7 @@ class SettingTime extends Component {
                           value={this.state.price}
                           onChange={this.handleInputChange.bind(this)}
                         />
-                        <span className="input-group-addon">
-                          nghìn đồng
-                        </span>
+                        <span className="input-group-addon">nghìn đồng</span>
                       </div>
                     </div>
                   </div>
@@ -426,6 +480,7 @@ class SettingTime extends Component {
                     value={day.value}
                     checked={day.checked}
                     onChange={() => this.handelCheckboxDay(day)}
+                    disabled={day.disable}
                   />{' '}
                   {day.text}
                 </label>

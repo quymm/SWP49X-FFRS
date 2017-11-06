@@ -32,7 +32,6 @@ class ProfilePlayer extends Component {
       await this.props.accessDenied();
       this.props.history.push('/login');
     } else {
-      const idLocal = authLocalStorage.id;
       await this.props.doLoginSuccessful(authLocalStorage);
       this.setState({
         username: authLocalStorage.username,
