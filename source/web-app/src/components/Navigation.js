@@ -42,7 +42,7 @@ export class Navigation extends Component {
             <li>
               <NavLink to="/app/free-time" activeClassName="active">
                 <i className="glyphicon glyphicon-time" />{' '}
-                <strong>Thời gian trống</strong>
+                <strong>Thời gian rảnh</strong>
               </NavLink>
             </li>
             <li>

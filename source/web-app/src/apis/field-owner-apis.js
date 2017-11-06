@@ -16,6 +16,8 @@ import {
   GET_TOUR_MATCH,
   GET_OVERCONE,
   UPDATE_PROFILE,
+  GET_ALL_PROMOTION,
+  ADD_PROMOTION,
 } from './base-URL';
 
 export function fetchGetMatchByFieldOwnerAndDay(
@@ -204,4 +206,26 @@ export function fetchUpdateProfile(id, data) {
     }),
   }).then(res => res.json());
 }
+export function fetchGetAllPromotion(id) {
+  return fetch(
+    BASE_URL + GET_ALL_PROMOTION + '?field-owner-id=' + id,
+  ).then(res => res.json());
+}
+export function fetchAddPromotion(id, data) {
+  return fetch(BASE_URL + ADD_PROMOTION, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      dateFrom: data.startDate.format('DD-MM-YYYY'),
+      dateTo: data.endDate.format('DD-MM-YYYY'),
+      endTime: data.endTime.format('Hh:mm'),
+      fieldOwnerId: id,
+      fieldTypeId: data.fieldStyle,
+      freeServices: data.decription,
+      saleOff: data.saleOff,
+      startTime: data.startTime.format('Hh:mm')
+    })
+  });
+}
+
 //

@@ -226,7 +226,7 @@ class FreeTime extends Component {
           <div className="container-fluid">
             <div className="row">
             <div className="col-sm-4">
-              <h2 className="page-header">Thời gian trống</h2>
+              <h2 className="page-header">Thời gian rảnh</h2>
             </div>
             <div className="col-sm-4">
               <div className="page-header">

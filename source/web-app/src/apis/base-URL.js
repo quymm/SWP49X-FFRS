@@ -1,8 +1,8 @@
 export const GOOGLE_MAP_KEY = "AIzaSyBHg0iReiIw8DpfaSaPxeaDRrJVP0FWs9A";
 export const GOOGLE_MAP_URL = "https://maps.googleapis.com/maps/api/geocode/json?";
 
-export const BASE_URL = "http://192.168.1.162:8080/swp49x-ffrs";
-// export const BASE_URL = "http://localhost:8080/swp49x-ffrs";
+// export const BASE_URL = "http://192.168.1.162:8080/swp49x-ffrs";
+export const BASE_URL = "http://localhost:8080/swp49x-ffrs";
 export const LOGIN = "/account/login-field-owner";
 export const REGISTER = "/account/managed-field-owner";
 export const GET_MATCH_BY_DAY = "/match/match-upcoming";
@@ -21,3 +21,5 @@ export const GET_FRIENDLY_MATCH = '/match/friendly-match';
 export const GET_TOUR_MATCH = '/match/tour-match';
 export const GET_OVERCONE = '/bill/field-owner-history';
 export const UPDATE_PROFILE = '/account/managed-field-owner';
+export const GET_ALL_PROMOTION = '/promotion/field-owner';
+export const ADD_PROMOTION = '/promotion/managed-promotion';

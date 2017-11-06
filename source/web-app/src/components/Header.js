@@ -24,6 +24,7 @@ class Header extends Component {
       isShowUpdateField: false,
       match: undefined,
       menuOpened: false,
+      currentDaySelected: moment(),
     };
     this.handelClickDetailMatch = this.handelClickDetailMatch.bind(this);
   }
@@ -34,6 +35,7 @@ class Header extends Component {
     this.setState({ menuOpened: !menuOpened });
     // document.getElementsByTagName('html')[0].className =!menuOpened?'nav-open':'';
   }
+  
   componentDidMount() {
     const { id } = this.props.auth.user.data;
     const { currentDaySelected } = this.props.currentDaySelected
