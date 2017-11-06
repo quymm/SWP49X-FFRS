@@ -1,9 +1,12 @@
 package com.capstone.ffrs.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -29,7 +32,7 @@ public class GPSLocationListener implements GoogleApiClient.ConnectionCallbacks,
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
      */
-    public static long UPDATE_INTERVAL_IN_MILLISECONDS = 1 * 1000;
+    public static long UPDATE_INTERVAL_IN_MILLISECONDS = 3 * 1000;
 
     /**
      * The fastest rate for active location updates. Exact. Updates will never be more frequent
@@ -56,7 +59,6 @@ public class GPSLocationListener implements GoogleApiClient.ConnectionCallbacks,
     protected Location mCurrentLocation;
 
     private Activity activity;
-
 
     public GPSLocationListener(Activity activity) {
 
@@ -106,7 +108,11 @@ public class GPSLocationListener implements GoogleApiClient.ConnectionCallbacks,
         // application will never receive updates faster than this value.
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
 
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        if (isWifiConnected(activity.getBaseContext()) || isMobileConnected(activity.getBaseContext())) {
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        } else if (hasGPS(activity.getBaseContext())) {
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        }
 
         mLocationRequest.setSmallestDisplacement(DISPLACEMENT);
     }
@@ -177,7 +183,7 @@ public class GPSLocationListener implements GoogleApiClient.ConnectionCallbacks,
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
         // If location is get then change interval to 1 minutes
-        if (UPDATE_INTERVAL_IN_MILLISECONDS == 1 * 1000) {
+        if (UPDATE_INTERVAL_IN_MILLISECONDS == 3 * 1000) {
             UPDATE_INTERVAL_IN_MILLISECONDS = 5 * 60 * 1000;
             FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
             mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
@@ -208,4 +214,23 @@ public class GPSLocationListener implements GoogleApiClient.ConnectionCallbacks,
         return mGoogleApiClient;
     }
 
+    public static boolean isWifiConnected(Context context) {
+        ConnectivityManager connManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return ((netInfo != null) && netInfo.isConnected());
+    }
+
+    public static boolean isMobileConnected(Context context) {
+        ConnectivityManager connManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        return ((netInfo != null) && netInfo.isConnected());
+    }
+
+    public static boolean hasGPS(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        boolean hasGPS = packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+        return hasGPS;
+    }
 }

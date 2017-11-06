@@ -5,6 +5,9 @@
     <color name="colorAccent">#FF4081</color>
     <color name="primaryText">#212121</color>
     <color name="secondaryText">#727272</color>
+    <color name="green">#009632</color>
+    <color name="yellow">#e08600</color>
+    <color name="red">#ba0900</color>
 
     <color name="black_overlay">#66000000</color>
 </resources>

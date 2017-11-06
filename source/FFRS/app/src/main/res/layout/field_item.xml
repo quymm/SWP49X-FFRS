@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     card_view:cardCornerRadius="3dp"
-    card_view:cardElevation="2dp"
+    card_view:cardElevation="1dp"
     card_view:cardUseCompatPadding="true">
 
     <LinearLayout
@@ -24,7 +24,7 @@
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/thumbnail"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
+            android:layout_height="180dp"
             android:layout_alignParentLeft="true"
             android:layout_marginBottom="10dp"
             android:scaleType="fitXY" />
