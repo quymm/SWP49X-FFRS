@@ -76,6 +76,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
             sdf = new SimpleDateFormat("H:mm");
             holder.txtTime.setText(sdf.format(startTime) + " - " + sdf.format(endTime));
 
+
         } catch (ParseException e) {
             e.printStackTrace();
         }

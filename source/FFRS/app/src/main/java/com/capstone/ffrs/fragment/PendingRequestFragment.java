@@ -121,7 +121,7 @@ public class PendingRequestFragment extends Fragment {
                                     request.setDate(obj.getString("date"));
                                     request.setStartTime(obj.getString("startTime"));
                                     request.setEndTime(obj.getString("endTime"));
-                                    //request.setDuration();
+                                    request.setDuration(obj.getInt("duration"));
                                     requestList.add(request);
                                 } catch (Exception e) {
                                     Log.d("EXCEPTION", e.getMessage());

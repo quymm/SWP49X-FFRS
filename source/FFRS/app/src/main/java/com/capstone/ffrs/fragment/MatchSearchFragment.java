@@ -30,9 +30,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.CreateMatchingRequestActivity;
@@ -353,7 +359,6 @@ public class MatchSearchFragment extends Fragment {
                     String strDate = sdf.format(date);
 
                     HashMap<String, Object> params = new HashMap<String, Object>();
-                    params.put("address", "ssss");
                     params.put("date", strDate);
                     params.put("userId", sharedPreferences.getInt("user_id", -1));
                     params.put("startTime", from.getText().toString());
@@ -378,7 +383,19 @@ public class MatchSearchFragment extends Fragment {
                             }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Log.d("Error.Response", error.getMessage());
+                            if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
+
+                            } else if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                                Toast.makeText(getContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                            } else if (error instanceof AuthFailureError) {
+                                Toast.makeText(getContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                            } else if (error instanceof ServerError) {
+                                Toast.makeText(getContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                            } else if (error instanceof NetworkError) {
+                                Toast.makeText(getContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                            } else if (error instanceof ParseError) {
+                                Toast.makeText(getContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                     queue.add(createRequest);
