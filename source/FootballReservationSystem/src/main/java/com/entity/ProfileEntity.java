@@ -41,14 +41,17 @@ public class ProfileEntity implements Serializable {
     @Column(name = "latitude")
     private String latitude;
     @Basic(optional = false)
-    @Column(name = "creadit_card")
-    private String creaditCard;
+    @Column(name = "balance")
+    private Integer balance;
     @Column(name = "avatar_url")
     private String avatarUrl;
     @Column(name = "rating_score")
     private Integer ratingScore;
     @Column(name = "bonus_point")
     private Integer bonusPoint;
+    @Basic(optional = false)
+    @Column(name = "num_of_report")
+    private Integer numOfReport;
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
@@ -60,11 +63,10 @@ public class ProfileEntity implements Serializable {
         this.id = id;
     }
 
-    public ProfileEntity(Integer id, String name, String phone, String creaditCard, boolean status) {
+    public ProfileEntity(Integer id, String name, String phone, boolean status) {
         this.id = id;
         this.name = name;
         this.phone = phone;
-        this.creaditCard = creaditCard;
         this.status = status;
     }
 
@@ -116,12 +118,12 @@ public class ProfileEntity implements Serializable {
         this.latitude = latitude;
     }
 
-    public String getCreaditCard() {
-        return creaditCard;
+    public Integer getBalance() {
+        return balance;
     }
 
-    public void setCreaditCard(String creaditCard) {
-        this.creaditCard = creaditCard;
+    public void setBalance(Integer balance) {
+        this.balance = balance;
     }
 
     public String getAvatarUrl() {
@@ -146,6 +148,14 @@ public class ProfileEntity implements Serializable {
 
     public void setBonusPoint(Integer bonusPoint) {
         this.bonusPoint = bonusPoint;
+    }
+
+    public Integer getNumOfReport() {
+        return numOfReport;
+    }
+
+    public void setNumOfReport(Integer numOfReport) {
+        this.numOfReport = numOfReport;
     }
 
     public boolean getStatus() {

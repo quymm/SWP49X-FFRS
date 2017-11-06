@@ -36,11 +36,8 @@ public class MatchController {
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/suggest-opponent", method = RequestMethod.GET)
-    public ResponseEntity suggestOpponent(@RequestParam("user-id") int userId, @RequestParam("field-type-id") int fieldTypeId,
-                                          @RequestParam("longitude") String longitude, @RequestParam("latitude") String latitude,
-                                          @RequestParam("deviation-time") int deviationTime, @RequestParam("deviation-distance") int deviationDistance,
-                                          @RequestParam("date") String date, @RequestParam("start-time") String startTime) {
-        Wrapper wrapper = new Wrapper(matchServices.suggestOpponent(userId, fieldTypeId, longitude, latitude, date, startTime, deviationTime, deviationDistance), HttpStatus.OK.value(), HttpStatus.OK.name());
+    public ResponseEntity suggestOpponent(@RequestBody InputMatchingRequestDTO matchingRequestDTO, @RequestParam("deviation-distance") int deviationDistance) {
+        Wrapper wrapper = new Wrapper(matchServices.suggestOpponent(matchingRequestDTO, deviationDistance), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
