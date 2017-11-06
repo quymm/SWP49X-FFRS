@@ -1,5 +1,6 @@
 package com.services;
 
+import com.config.Constant;
 import com.dto.CordinationPoint;
 import com.dto.FieldOwnerAndDistance;
 import com.dto.InputFieldOwnerDTO;
@@ -37,8 +38,11 @@ public class AccountServices {
     @Autowired
     MatchServices matchServices;
 
+    @Autowired
+    Constant constant;
+
     public AccountEntity createNewFieldOwner(InputFieldOwnerDTO inputFieldOwnerDTO) {
-        RoleEntity roleEntity = roleServices.findByRoleName("owner");
+        RoleEntity roleEntity = roleServices.findByRoleName(constant.getFieldOwnerRole());
         if (accountRepository.findByUsernameAndStatusAndRoleId(inputFieldOwnerDTO.getUsername(), true, roleEntity) != null) {
             throw new DuplicateKeyException(String.format("Username: %s is already exists!", inputFieldOwnerDTO.getUsername()));
         }
@@ -74,7 +78,7 @@ public class AccountServices {
     }
 
     public AccountEntity createNewUser(InputUserDTO inputUserDTO) {
-        RoleEntity roleEntity = roleServices.findByRoleName("user");
+        RoleEntity roleEntity = roleServices.findByRoleName(constant.getUserRole());
         if (accountRepository.findByUsernameAndStatusAndRoleId(inputUserDTO.getUsername(), true, roleEntity) != null) {
             throw new DuplicateKeyException(String.format("Username: %s is already exists!", inputUserDTO.getUsername()));
         }
@@ -115,7 +119,7 @@ public class AccountServices {
         ProfileEntity profileEntity = new ProfileEntity();
         profileEntity.setAddress(inputFieldOwnerDTO.getAddress());
         profileEntity.setAvatarUrl(inputFieldOwnerDTO.getAvatarUrl());
-        profileEntity.setBalance(0);
+        profileEntity.setBalance(Float.valueOf(0));
         profileEntity.setLatitude(inputFieldOwnerDTO.getLatitude());
         profileEntity.setLongitude(inputFieldOwnerDTO.getLongitute());
         profileEntity.setName(inputFieldOwnerDTO.getName());
@@ -128,7 +132,7 @@ public class AccountServices {
         ProfileEntity profileEntity = new ProfileEntity();
         profileEntity.setName(inputUserDTO.getTeamName());
         profileEntity.setPhone(inputUserDTO.getPhone());
-        profileEntity.setBalance(0);
+        profileEntity.setBalance(Float.valueOf(0));
         profileEntity.setAvatarUrl(inputUserDTO.getAvatarUrl());
         profileEntity.setBonusPoint(0);
         profileEntity.setRatingScore(2000);
@@ -141,7 +145,7 @@ public class AccountServices {
         double latitude = NumberUtils.parseFromStringToDouble(latitudeStr);
         CordinationPoint cordinationPointA = new CordinationPoint(longitude, latitude);
 
-        List<AccountEntity> fieldOwnerList = findAccountByRole("owner");
+        List<AccountEntity> fieldOwnerList = findAccountByRole(constant.getFieldOwnerRole());
         List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
         List<AccountEntity> returnFieldOwnerList = new ArrayList<>();
 
@@ -180,7 +184,7 @@ public class AccountServices {
         return returnAccountEntityList;
     }
 
-    public AccountEntity changeBlance(int accountId, int balanceNumber, String role) {
+    public AccountEntity changeBlance(int accountId, float balanceNumber, String role) {
         AccountEntity accountEntity = findAccountEntityById(accountId, role);
         ProfileEntity profileEntity = accountEntity.getProfileId();
         if (balanceNumber > 0) {

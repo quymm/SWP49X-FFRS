@@ -1,5 +1,6 @@
 package com.services;
 
+import com.config.Constant;
 import com.dto.InputVoucherRecordDTO;
 import com.entity.AccountEntity;
 import com.entity.VoucherEntity;
@@ -20,9 +21,12 @@ public class VoucherRecordServices {
     @Autowired
     VoucherRecordRepository voucherRecordRepository;
 
+    @Autowired
+    Constant constant;
+
     public VoucherRecordEntity createNewVoucherRecord(InputVoucherRecordDTO inputVoucherRecordDTO){
         VoucherEntity voucherEntity = voucherServices.findVoucherEntityById(inputVoucherRecordDTO.getVoucherId());
-        AccountEntity accountEntity = accountServices.findAccountEntityById(inputVoucherRecordDTO.getUserId(), "user");
+        AccountEntity accountEntity = accountServices.findAccountEntityById(inputVoucherRecordDTO.getUserId(), constant.getUserRole());
 
         VoucherRecordEntity voucherRecordEntity = voucherRecordRepository.findByUserIdAndVoucherIdAndStatus(accountEntity, voucherEntity, false);
         if (voucherRecordEntity != null) {
@@ -41,7 +45,7 @@ public class VoucherRecordServices {
     }
 
     public List<VoucherRecordEntity> findByUserId(int userId){
-        AccountEntity accountEntity = accountServices.findAccountEntityById(userId, "user");
+        AccountEntity accountEntity = accountServices.findAccountEntityById(userId, constant.getUserRole());
         return voucherRecordRepository.findByUserIdAndStatus(accountEntity, true);
     }
 }

@@ -1,5 +1,6 @@
 package com.services;
 
+import com.config.Constant;
 import com.dto.*;
 import com.entity.*;
 import com.repository.FriendlyMatchRepository;
@@ -50,6 +51,9 @@ public class MatchServices {
     @Autowired
     BillServices billServices;
 
+    @Autowired
+    Constant constant;
+
     public MatchingRequestEntity findMatchingRequestEntityById(int id) {
         MatchingRequestEntity matchingRequestEntity = matchingRequestRepository.findByIdAndStatus(id, true);
         if (matchingRequestEntity == null) {
@@ -59,8 +63,15 @@ public class MatchServices {
     }
 
     public BillEntity reserveFriendlyMatch(int timeSlotId, int userId, int voucherId) {
-        AccountEntity userEntity = accountServices.findAccountEntityById(userId, "user");
+        AccountEntity userEntity = accountServices.findAccountEntityById(userId, constant.getUserRole());
         TimeSlotEntity timeSlotEntity = timeSlotServices.findById(timeSlotId);
+        if (!timeSlotEntity.getReserveStatus()) {
+            throw new IllegalArgumentException("Time slot not yet reserve!");
+        }
+        if (userEntity.getProfileId().getBalance() < timeSlotEntity.getPrice()) {
+            timeSlotServices.cancelReservationTimeSlot(timeSlotEntity.getId());
+            throw new IllegalArgumentException("Not enough money to reserve field");
+        }
         FriendlyMatchEntity friendlyMatchEntity = new FriendlyMatchEntity();
         friendlyMatchEntity.setTimeSlotId(timeSlotEntity);
         friendlyMatchEntity.setUserId(userEntity);
@@ -87,7 +98,11 @@ public class MatchServices {
     }
 
     public MatchingRequestEntity createNewMatchingRequest(InputMatchingRequestDTO inputMatchingRequestDTO) {
-        AccountEntity user = accountServices.findAccountEntityById(inputMatchingRequestDTO.getUserId(), "user");
+        AccountEntity user = accountServices.findAccountEntityById(inputMatchingRequestDTO.getUserId(), constant.getUserRole());
+        float maxPrice = constant.getMaxPrice();
+        if (user.getProfileId().getBalance() < maxPrice * inputMatchingRequestDTO.getDuration() / 60) {
+            throw new IllegalArgumentException(String.format("User not have enough money to create request!"));
+        }
         FieldTypeEntity fieldType = fieldTypeServices.findById(inputMatchingRequestDTO.getFieldTypeId());
         Date date = DateTimeUtils.convertFromStringToDate(inputMatchingRequestDTO.getDate());
         Date startTime = DateTimeUtils.convertFromStringToTime(inputMatchingRequestDTO.getStartTime());
@@ -107,7 +122,7 @@ public class MatchServices {
     }
 
     public List<MatchingRequestEntity> suggestOpponent(InputMatchingRequestDTO inputMatchingRequestDTO, int deviationDistance) {
-        AccountEntity user = accountServices.findAccountEntityById(inputMatchingRequestDTO.getUserId(), "user");
+        AccountEntity user = accountServices.findAccountEntityById(inputMatchingRequestDTO.getUserId(), constant.getUserRole());
         FieldTypeEntity fieldType = fieldTypeServices.findById(inputMatchingRequestDTO.getFieldTypeId());
 
         Date date = DateTimeUtils.convertFromStringToDate(inputMatchingRequestDTO.getDate());
@@ -155,8 +170,8 @@ public class MatchServices {
         inputReservationDTO.setDate(DateTimeUtils.formatDate(opponentMatching.getDate()));
         inputReservationDTO.setFieldTypeId(opponentMatching.getFieldTypeId().getId());
 
-        if(!favoritesFieldList.isEmpty()){
-            for (AccountEntity favoritesField : favoritesFieldList){
+        if (!favoritesFieldList.isEmpty()) {
+            for (AccountEntity favoritesField : favoritesFieldList) {
                 inputReservationDTO.setFieldOwnerId(favoritesField.getId());
                 TimeSlotEntity timeSlotEntity = timeSlotServices.reserveTimeSlot(inputReservationDTO);
                 if (timeSlotEntity != null) {
@@ -202,7 +217,7 @@ public class MatchServices {
 
     private List<FieldOwnerAndDistance> getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(CordinationPoint cordinationPointA, int deviationDistance) {
         List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
-        List<AccountEntity> allfieldOwnerList = accountServices.findAccountByRole("owner");
+        List<AccountEntity> allfieldOwnerList = accountServices.findAccountByRole(constant.getFieldOwnerRole());
 
         for (AccountEntity accountEntity : allfieldOwnerList) {
             CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(accountEntity.getProfileId().getLongitude()),
@@ -216,11 +231,11 @@ public class MatchServices {
         return arrangeFieldOwnerByDistance(fieldOwnerAndDistanceList);
     }
 
-    public BillEntity reserveTourMatch(int timeSlotId, int matchingRequestId, int opponentId, int voucherId) {
+    public BillEntity reserveTourMatch(int timeSlotId, int matchingRequestId, int userId, int voucherId) {
         TimeSlotEntity timeSlotEntity = timeSlotServices.findById(timeSlotId);
         MatchingRequestEntity matchingRequestEntity = findMatchingRequestEntityById(matchingRequestId);
-        AccountEntity user = matchingRequestEntity.getUserId();
-        AccountEntity opponent = accountServices.findAccountEntityById(opponentId, "user");
+        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
+        AccountEntity opponent = matchingRequestEntity.getUserId();
 
         TourMatchEntity tourMatchEntity = new TourMatchEntity();
         tourMatchEntity.setTimeSlotId(timeSlotEntity);
@@ -235,12 +250,22 @@ public class MatchServices {
         matchingRequestEntity.setStatus(false);
         matchingRequestRepository.save(matchingRequestEntity);
 
-        InputBillDTO inputBillDTO = new InputBillDTO();
+        // create bill of user
+        InputBillDTO billOfUser = new InputBillDTO();
         if (voucherId != 0) {
-            inputBillDTO.setVoucherId(voucherId);
+            billOfUser.setVoucherId(voucherId);
         }
-        inputBillDTO.setTourMatchId(savedTourMatchEntity.getId());
-        return billServices.createBill(inputBillDTO);
+        billOfUser.setTourMatchId(savedTourMatchEntity.getId());
+        billOfUser.setOpponentPayment(false);
+        BillEntity savedBillOfUser = billServices.createBill(billOfUser);
+
+        // create bill of opponent
+        InputBillDTO billOfOpponent = new InputBillDTO();
+        billOfOpponent.setOpponentPayment(true);
+        billOfOpponent.setTourMatchId(savedTourMatchEntity.getId());
+        billServices.createBill(billOfOpponent);
+
+        return savedBillOfUser;
     }
 
     public List<FieldOwnerAndDistance> arrangeFieldOwnerByDistance(List<FieldOwnerAndDistance> inputList) {
@@ -280,8 +305,8 @@ public class MatchServices {
         return friendlyMatchEntity;
     }
 
-    public List<MatchingRequestEntity> findMatchingRequestByUserId(int userId){
-        AccountEntity user = accountServices.findAccountEntityById(userId, "user");
+    public List<MatchingRequestEntity> findMatchingRequestByUserId(int userId) {
+        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
         List<MatchingRequestEntity> matchingRequestEntityList = matchingRequestRepository.findByUserIdAndStatus(user, true);
         return matchingRequestEntityList;
     }

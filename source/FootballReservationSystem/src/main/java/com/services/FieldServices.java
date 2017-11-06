@@ -1,5 +1,6 @@
 package com.services;
 
+import com.config.Constant;
 import com.dto.InputFieldDTO;
 import com.entity.AccountEntity;
 import com.entity.FieldEntity;
@@ -27,9 +28,12 @@ public class FieldServices {
     @Autowired
     TimeSlotServices timeSlotServices;
 
+    @Autowired
+    Constant constant;
+
     public FieldEntity createNewField(InputFieldDTO inputFieldDTO) {
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(inputFieldDTO.getFieldTypeId());
-        AccountEntity accountEntity = accountServices.findAccountEntityById(inputFieldDTO.getFieldOwnerId(), "owner");
+        AccountEntity accountEntity = accountServices.findAccountEntityById(inputFieldDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
         FieldEntity fieldEntity = fieldRepository.findByFieldOwnerIdAndFieldTypeIdAndNameAndStatus(accountEntity, fieldTypeEntity, inputFieldDTO.getFieldName(), false);
         if (fieldEntity != null) {
             fieldEntity.setStatus(true);
@@ -47,12 +51,12 @@ public class FieldServices {
     }
 
     public List<FieldEntity> findFieldEntityByFieldOwnerId(int fieldOwnerId) {
-        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
         return fieldRepository.findByFieldOwnerIdAndStatus(accountEntity, true);
     }
 
     public FieldEntity findFieldEntityByFieldNameAndFieldOwnerId(String fieldName, int fieldOwnerId) {
-        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
         return fieldRepository.findByFieldOwnerIdAndNameAndStatus(accountEntity, fieldName, true);
     }
 

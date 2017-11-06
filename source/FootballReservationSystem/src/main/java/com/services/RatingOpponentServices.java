@@ -1,10 +1,12 @@
 package com.services;
 
+import com.config.Constant;
 import com.dto.InputRatingOpponentDTO;
 import com.entity.AccountEntity;
 import com.entity.RatingOpponentEntity;
 import com.entity.TourMatchEntity;
 import com.repository.RatingOpponentRepository;
+import com.repository.TourMatchRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,18 +21,23 @@ public class RatingOpponentServices {
     @Autowired
     MatchServices matchServices;
 
-
     @Autowired
     RatingOpponentRepository ratingOpponentRepository;
 
+    @Autowired
+    TourMatchRepository tourMatchRepository;
+
+    @Autowired
+    Constant constant;
+
 
     public List<RatingOpponentEntity> findByUserId(int userId) {
-        AccountEntity accountEntity = accountServices.findAccountEntityById(userId, "user");
+        AccountEntity accountEntity = accountServices.findAccountEntityById(userId, constant.getUserRole());
         return ratingOpponentRepository.findByUserIdAndStatus(accountEntity, true);
     }
 
     public List<RatingOpponentEntity> findByOpponentId(int opponentId) {
-        AccountEntity accountEntity = accountServices.findAccountEntityById(opponentId, "user");
+        AccountEntity accountEntity = accountServices.findAccountEntityById(opponentId, constant.getUserRole());
         return ratingOpponentRepository.findByOpponentIdAndStatus(accountEntity, true);
     }
 
@@ -39,16 +46,16 @@ public class RatingOpponentServices {
         return ratingOpponentRepository.findByTourMatchIdAndStatus(tourMatchEntity, true);
     }
 
-    public RatingOpponentEntity findByUserIdAndOpponentIdAndTourMatchIdAndStatus(int userId, int opponentId, int tourMatchId, boolean status) {
-        AccountEntity userAccountEntity = accountServices.findAccountEntityById(userId, "user");
-        AccountEntity opponentAccountEntity = accountServices.findAccountEntityById(opponentId, "user");
+    public RatingOpponentEntity findByUserIdAndOpponentIdAndTourMatchIdAndStatus(int userId, int opponentId, int tourMatchId) {
+        AccountEntity userAccountEntity = accountServices.findAccountEntityById(userId, constant.getUserRole());
+        AccountEntity opponentAccountEntity = accountServices.findAccountEntityById(opponentId, constant.getUserRole());
         TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(tourMatchId);
         return ratingOpponentRepository.findByUserIdAndOpponentIdAndTourMatchIdAndStatus(userAccountEntity, opponentAccountEntity, tourMatchEntity, true);
     }
 
-    public RatingOpponentEntity findById(int ratingId){
+    public RatingOpponentEntity findById(int ratingId) {
         RatingOpponentEntity ratingOpponentEntity = ratingOpponentRepository.findByIdAndStatus(ratingId, true);
-        if(ratingOpponentEntity == null){
+        if (ratingOpponentEntity == null) {
             throw new EntityNotFoundException(String.format("Not found Rating Opponent have id = %s", ratingId));
         }
         return ratingOpponentEntity;
@@ -58,7 +65,7 @@ public class RatingOpponentServices {
         RatingOpponentEntity ratingOpponentEntity = new RatingOpponentEntity();
         TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(inputRatingOpponentDTO.getTourMatchId());
 
-        AccountEntity user = accountServices.findAccountEntityById(inputRatingOpponentDTO.getUserId(), "user");
+        AccountEntity user = accountServices.findAccountEntityById(inputRatingOpponentDTO.getUserId(), constant.getUserRole());
         ratingOpponentEntity.setUserId(user);
         if (user.getId() == tourMatchEntity.getUserId().getId()) {
             ratingOpponentEntity.setOpponentId(tourMatchEntity.getOpponentId());
@@ -69,7 +76,16 @@ public class RatingOpponentServices {
         ratingOpponentEntity.setRatingScore(inputRatingOpponentDTO.getRatingScore());
         ratingOpponentEntity.setWin(inputRatingOpponentDTO.isWin());
         ratingOpponentEntity.setStatus(true);
-        return ratingOpponentRepository.save(ratingOpponentEntity);
+        RatingOpponentEntity savedRatingOpponentEntity = ratingOpponentRepository.save(ratingOpponentEntity);
+
+        // nếu đã đủ cả 2 đánh giá thì thực hiện
+        if (findBytourMatchId(tourMatchEntity.getId()).isEmpty()
+                && findBytourMatchId(tourMatchEntity.getId()).size() == 2) {
+            tourMatchEntity.setCompleteStatus(true);
+            tourMatchRepository.save(tourMatchEntity);
+            calculateRatingPointAndBonusPoint(tourMatchEntity.getId());
+        }
+        return savedRatingOpponentEntity;
     }
 
     public void calculateRatingPointAndBonusPoint(int tourMatchId) {
@@ -77,8 +93,8 @@ public class RatingOpponentServices {
         AccountEntity user = tourMatchEntity.getUserId();
         AccountEntity opponent = tourMatchEntity.getOpponentId();
         if (tourMatchEntity.getCompleteStatus()) {
-            RatingOpponentEntity ratingOpponent = ratingOpponentRepository.findByUserIdAndOpponentIdAndTourMatchIdAndStatus(user, opponent, tourMatchEntity, true);
-            RatingOpponentEntity ratingUser = ratingOpponentRepository.findByUserIdAndOpponentIdAndTourMatchIdAndStatus(opponent, user, tourMatchEntity, true);
+            RatingOpponentEntity ratingOpponent = findByUserIdAndOpponentIdAndTourMatchIdAndStatus(user.getId(), opponent.getId(), tourMatchEntity.getId());
+            RatingOpponentEntity ratingUser = findByUserIdAndOpponentIdAndTourMatchIdAndStatus(opponent.getId(), user.getId(), tourMatchEntity.getId());
             // kết quả đánh giá đối lập nhau
             if (ratingOpponent.getWin() != ratingUser.getWin()) {
                 if (ratingOpponent.getWin()) {

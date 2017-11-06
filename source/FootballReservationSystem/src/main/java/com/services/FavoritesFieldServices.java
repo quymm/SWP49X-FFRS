@@ -1,5 +1,6 @@
 package com.services;
 
+import com.config.Constant;
 import com.entity.AccountEntity;
 import com.entity.FavoritesFieldEntity;
 import com.repository.FavoritesFieldRepository;
@@ -17,9 +18,12 @@ public class FavoritesFieldServices {
     @Autowired
     AccountServices accountServices;
 
+    @Autowired
+    Constant constant;
+
     public FavoritesFieldEntity createNewFavoritesField(int userId, int fieldOwnerId) {
-        AccountEntity user = accountServices.findAccountEntityById(userId, "user");
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
         FavoritesFieldEntity favoritesFieldEntity = favoritesFieldRepository.findByUserIdAndFieldOwnerIdAndStatus(user, fieldOwner, false);
         if (favoritesFieldEntity != null) {
             favoritesFieldEntity.setStatus(true);
@@ -33,13 +37,13 @@ public class FavoritesFieldServices {
     }
 
     public List<FavoritesFieldEntity> findFavoritesFieldByUserId(int userId) {
-        AccountEntity user = accountServices.findAccountEntityById(userId, "user");
+        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
         return favoritesFieldRepository.findByUserIdAndStatus(user, true);
     }
 
     public FavoritesFieldEntity findFavoritesFieldByUserIdAndFieldOwnerId(int userId, int fieldOwnerId) {
-        AccountEntity user = accountServices.findAccountEntityById(userId, "user");
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
         return favoritesFieldRepository.findByUserIdAndFieldOwnerIdAndStatus(user, fieldOwner, true);
     }
 
