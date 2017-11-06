@@ -9,6 +9,7 @@ import { Modal } from 'react-bootstrap';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import TimePicker from 'rc-time-picker';
+import { toast } from 'react-toastify';
 class Promotion extends Component {
   constructor(props) {
     super(props);
@@ -83,9 +84,15 @@ class Promotion extends Component {
       startTime,
     } = this.state;
     const { id } = this.props.auth.user.data;
+    const dataAdd = await fetchAddPromotion(id, this.state);
     const dataPromotion = await fetchGetAllPromotion(id);
-    this.setState({ promotion: dataPromotion.body });
-    await fetchAddPromotion(id, this.state);
+    this.setState({ promotion: dataPromotion.body, showModalPromotion: false });
+    if (dataAdd.status === 201) {
+      toast.success("Thêm mới Khuyến mãi thành công");
+    } else {
+      toast.error("Thêm mới Khuyến mãi thất bại");
+    }
+    
   }
   render() {
     console.log(this.state.promotion);
@@ -95,7 +102,7 @@ class Promotion extends Component {
           <div className="container-fluid">
             <div className="row">
               <div className="col-sm-4">
-                <h2 className="page-header">Khuyễn mãi</h2>
+                <h2 className="page-header">Khuyến mãi</h2>
               </div>
               <div className="col-sm-12">
                 <div className="panel panel-default">
@@ -105,7 +112,7 @@ class Promotion extends Component {
                       name="isShowUpdate"
                       onClick={this.handelShowModal.bind(this)}
                     >
-                      <i className="glyphicon glyphicon-plus" /> Thêm mới khuyễn
+                      <i className="glyphicon glyphicon-plus" /> Thêm mới Khuyến
                       mãi
                     </button>
                   </div>
@@ -118,7 +125,7 @@ class Promotion extends Component {
                             <th>Từ ngày</th>
                             <th>Tới ngày</th>
                             <th>Khung giờ</th>
-                            <th>Khuyễn mãi</th>
+                            <th>Khuyến mãi</th>
                             <th>Giảm giá</th>
                             <th>Loại sân</th>
                             <th />
@@ -212,7 +219,6 @@ class Promotion extends Component {
                   </div>
                 </div>
               </div>
-
               <div className="form-group">
                 <label htmlFor="inputEmail3" className="col-sm-3 control-label">
                   Đến

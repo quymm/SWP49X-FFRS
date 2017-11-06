@@ -421,7 +421,8 @@ body > .navbar-collapse {
     background-size: 150% 150%; }
 
 .main-panel {
-  background: rgba(203, 203, 210, 0.15);
+  /* background: rgba(203, 203, 210, 0.15); */
+  background: #ecf5ef;
   position: relative;
   z-index: 0;
   float: right;

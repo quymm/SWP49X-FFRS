@@ -63,7 +63,7 @@ export class Navigation extends Component {
             </li>
             <li>
               <NavLink to="/app/promotion" activeClassName="active">
-                <i className="glyphicon glyphicon-gift" /> <strong>Khuyễn mãi</strong>
+                <i className="glyphicon glyphicon-gift" /> <strong>Khuyến mãi</strong>
               </NavLink>
             </li>
           </ul>
