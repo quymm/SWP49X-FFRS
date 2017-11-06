@@ -7,11 +7,16 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
 import android.widget.TimePicker;
 
+import com.capstone.ffrs.R;
+
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,8 +36,13 @@ public class CustomTimePickerDialog extends TimePickerDialog {
 
     public CustomTimePickerDialog(Context context, OnTimeSetListener listener,
                                   int hourOfDay, int minute, boolean is24HourView) {
-        super(context, TimePickerDialog.THEME_HOLO_LIGHT, null, hourOfDay,
+        super(context, R.style.TimePickerTheme, null, hourOfDay,
                 minute / TIME_PICKER_INTERVAL, is24HourView);
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+            // Fix TimePicker spinner mode error in API 24
+            fixTimePickerNougat(context, hourOfDay, minute, is24HourView);
+        }
+
         mTimeSetListener = listener;
 
         lastSavedHour = hourOfDay;
@@ -41,8 +51,6 @@ public class CustomTimePickerDialog extends TimePickerDialog {
 
     public void setMinTime(Date minTime) {
         this.minTime = minTime;
-        lastSavedHour = minTime.getHours();
-        lastSavedMinute = minTime.getMinutes() / TIME_PICKER_INTERVAL;
     }
 
     public void setMaxTime(Date maxTime) {
@@ -80,10 +88,6 @@ public class CustomTimePickerDialog extends TimePickerDialog {
 
     @Override
     public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-        Log.d("LASTHOUR", lastSavedHour + "");
-        Log.d("HOUR", hourOfDay + "");
-        Log.d("LASTMINUTE", lastSavedMinute + "");
-        Log.d("MINUTE", minute + "");
         // Fix on 30 minute intervals time picker
         if (lastSavedHour != hourOfDay) {
             if (lastSavedMinute != minute) {
@@ -96,6 +100,7 @@ public class CustomTimePickerDialog extends TimePickerDialog {
                     view.setCurrentMinute(lastSavedMinute);
                 }
             } else {
+                validateTimePicker(view, hourOfDay);
                 lastSavedHour = hourOfDay;
             }
         }
@@ -110,7 +115,6 @@ public class CustomTimePickerDialog extends TimePickerDialog {
             Field timePickerField = classForid.getField("timePicker");
             mTimePicker = (TimePicker) findViewById(timePickerField.getInt(null));
             mTimePicker.setDescendantFocusability(TimePicker.FOCUS_BLOCK_DESCENDANTS);
-
             Field hourField = classForid.getField("hour");
 
             NumberPicker mHourSpinner = (NumberPicker) mTimePicker
@@ -125,21 +129,142 @@ public class CustomTimePickerDialog extends TimePickerDialog {
                 calendar.setTime(maxTime);
                 mHourSpinner.setMaxValue(calendar.get(Calendar.HOUR_OF_DAY));
             }
+            mHourSpinner.setWrapSelectorWheel(false);
+
+            validateTimePicker(mTimePicker, lastSavedHour);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void validateTimePicker(TimePicker view, int hourOfDay) {
+        if (minTime != null && hourOfDay == minTime.getHours()) {
+            if (minTime.getMinutes() == 0) {
+                setMinutePicker(false, false);
+                return;
+            } else if (minTime.getMinutes() == 30) {
+                lastSavedMinute = 1;
+                view.setCurrentMinute(1);
+                setMinutePicker(true, false);
+                return;
+            }
+        }
+        if (maxTime != null && hourOfDay == maxTime.getHours()) {
+            if (maxTime.getMinutes() == 0) {
+                lastSavedMinute = 0;
+                view.setCurrentMinute(0);
+                setMinutePicker(false, true);
+                return;
+            } else if (maxTime.getMinutes() == 30) {
+                setMinutePicker(false, false);
+                return;
+            }
+        }
+        setMinutePicker(false, false);
+    }
+
+    public void setMinutePicker(boolean isMinThirty, boolean isMaxZero) {
+        try {
+            Class<?> classForid = Class.forName("com.android.internal.R$id");
 
             Field field = classForid.getField("minute");
             NumberPicker minuteSpinner = (NumberPicker) mTimePicker
                     .findViewById(field.getInt(null));
-            minuteSpinner.setMinValue(0);
-            minuteSpinner.setMaxValue((60 / TIME_PICKER_INTERVAL) - 1);
             List<String> displayedValues = new ArrayList<>();
-            for (int i = 0; i < 60; i += TIME_PICKER_INTERVAL) {
-                displayedValues.add(String.format("%02d", i));
+            if (isMinThirty) {
+                minuteSpinner.setDisplayedValues(null);
+                minuteSpinner.setMinValue(1);
+                minuteSpinner.setMaxValue(1);
+                displayedValues.add(String.format("%02d", 30));
+            } else if (isMaxZero) {
+                minuteSpinner.setDisplayedValues(null);
+                minuteSpinner.setMinValue(0);
+                minuteSpinner.setMaxValue(0);
+                displayedValues.add(String.format("%02d", 0));
+            } else {
+                minuteSpinner.setDisplayedValues(null);
+                minuteSpinner.setMinValue(0);
+                minuteSpinner.setMaxValue((60 / TIME_PICKER_INTERVAL) - 1);
+                for (int i = 0; i < 60; i += TIME_PICKER_INTERVAL) {
+                    displayedValues.add(String.format("%02d", i));
+                }
             }
             minuteSpinner.setDisplayedValues(displayedValues
                     .toArray(new String[displayedValues.size()]));
-            minuteSpinner.setWrapSelectorWheel(true);
+            minuteSpinner.setWrapSelectorWheel(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void fixTimePickerNougat(Context context, int hourOfDay, int minute, boolean is24HourView) {
+        try {
+            final Field field = this.findField(
+                    TimePickerDialog.class,
+                    TimePicker.class,
+                    "mTimePicker"
+            );
+            mTimePicker = (TimePicker) field.get(this);
+            final Class<?> delegateClass = Class.forName(
+                    "android.widget.TimePicker$TimePickerDelegate"
+            );
+            final Field delegateField = this.findField(
+                    TimePicker.class,
+                    delegateClass,
+                    "mDelegate"
+            );
+
+            final Object delegate = delegateField.get(mTimePicker);
+            final Class<?> spinnerDelegateClass = Class.forName(
+                    "android.widget.TimePickerSpinnerDelegate"
+            );
+
+            if (delegate.getClass() != spinnerDelegateClass) {
+                delegateField.set(mTimePicker, null);
+                mTimePicker.removeAllViews();
+
+                final Constructor spinnerDelegateConstructor =
+                        spinnerDelegateClass.getDeclaredConstructor(
+                                TimePicker.class,
+                                Context.class,
+                                AttributeSet.class,
+                                int.class,
+                                int.class
+                        );
+                spinnerDelegateConstructor.setAccessible(true);
+
+                final Object spinnerDelegate = spinnerDelegateConstructor.newInstance(
+                        mTimePicker,
+                        context,
+                        null,
+                        android.R.attr.timePickerStyle,
+                        0
+                );
+                delegateField.set(mTimePicker, spinnerDelegate);
+
+                mTimePicker.setIs24HourView(is24HourView);
+                mTimePicker.setCurrentHour(hourOfDay);
+                mTimePicker.setCurrentMinute(minute);
+                mTimePicker.setOnTimeChangedListener(this);
+            }
+        } catch (Exception e) { /* Do nothing */ }
+    }
+
+    private Field findField(Class objectClass, Class fieldClass, String expectedName) {
+        try {
+            final Field field = objectClass.getDeclaredField(expectedName);
+            field.setAccessible(true);
+            return field;
+        } catch (NoSuchFieldException e) { /* Ignore */ }
+
+        // Search for it if it wasn't found under the expectedName.
+        for (final Field field : objectClass.getDeclaredFields()) {
+            if (field.getType() == fieldClass) {
+                field.setAccessible(true);
+                return field;
+            }
+        }
+
+        return null;
     }
 }

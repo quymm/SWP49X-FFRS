@@ -20,42 +20,35 @@
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintTop_creator="1">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <TextView
+            android:id="@+id/text_not_found"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#dbdbdb"
-            tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="0dp" />
+            android:layout_gravity="center"
+            android:paddingTop="10dp"
+            android:text="Không tìm thấy đối thủ phù hợp"
+            android:textAlignment="center"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
-        <LinearLayout
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:layout_height="wrap_content"
+            android:layout_above="@id/btRequest">
 
-            <Button
-                android:id="@+id/btRequest"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="#197a35"
-                android:onClick="onClickSendRequest"
-                android:text="Gửi yêu cầu"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <Button
-                android:id="@+id/btCreate"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="#700000"
-                android:onClick="onClickCreate"
-                android:text="Tạo yêu cầu mới"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-        </LinearLayout>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:layout_editor_absoluteX="8dp"
+                    tools:layout_editor_absoluteY="0dp" />
+            </ScrollView>
+        </android.support.v4.widget.SwipeRefreshLayout>
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

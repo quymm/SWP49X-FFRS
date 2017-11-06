@@ -48,13 +48,13 @@ import java.util.Map;
  */
 public class LoginActivity extends AppCompatActivity {
 
-    String localhost;
+    String hostURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
-        localhost = getResources().getString(R.string.local_host);
+        hostURL = getResources().getString(R.string.local_host);
         setContentView(R.layout.activity_login);
     }
 
@@ -83,7 +83,9 @@ public class LoginActivity extends AppCompatActivity {
 
     public void requestLogin(String username, String password) {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = localhost + "/swp49x-ffrs/account/login-user?username=" + username + "&password=" + password;
+        String url = hostURL + getResources().getString(R.string.url_login);
+        url = String.format(url, username, password);
+
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -123,9 +125,11 @@ public class LoginActivity extends AppCompatActivity {
                 editor.putInt("user_id", body.getInt("id"));
                 editor.putString("username", body.getString("username"));
                 editor.putString("password", body.getString("password"));
+                editor.putString("teamName", body.getJSONObject("profileId").getString("name"));
+                editor.putInt("points", body.getJSONObject("profileId").getInt("bonusPoint"));
                 editor.commit();
             }
-            intent.putExtra("user_id", body.getInt("id"));
+
         } catch (JSONException e) {
             Log.d("EXCEPTION", e.getMessage());
         }

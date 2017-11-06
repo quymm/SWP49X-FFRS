@@ -1,5 +1,6 @@
 package com.services;
 
+import com.config.Constant;
 import com.dto.InputTimeEnableDTO;
 import com.entity.AccountEntity;
 import com.entity.FieldTypeEntity;
@@ -26,6 +27,9 @@ public class TimeEnableServices {
     @Autowired
     FieldTypeServices fieldTypeServices;
 
+    @Autowired
+    Constant constant;
+
     public List<TimeEnableEntity> setUpTimeEnable(List<InputTimeEnableDTO> inputTimeEnableDTOList) {
         List<TimeEnableEntity> savedTimeEnableEntity = new ArrayList<>();
         for (InputTimeEnableDTO inputTimeEnableDTO : inputTimeEnableDTOList) {
@@ -36,13 +40,13 @@ public class TimeEnableServices {
     }
 
     public List<TimeEnableEntity> findTimeEnableByFieldOwnerIdAndFieldTypeId(int fieldOwnerId, int fieldTypeId) {
-        AccountEntity fieldOwnerEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        AccountEntity fieldOwnerEntity = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(fieldTypeId);
         return timeEnableRepository.findByFieldOwnerIdAndFieldTypeIdAndStatus(fieldOwnerEntity, fieldTypeEntity, true);
     }
 
     public List<TimeEnableEntity> findTimeEnableByFieldOwnerId(int fieldOwnerId) {
-        AccountEntity fieldOwnerEntity = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        AccountEntity fieldOwnerEntity = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
         return timeEnableRepository.findByFieldOwnerIdAndStatus(fieldOwnerEntity, true);
     }
 
@@ -53,7 +57,7 @@ public class TimeEnableServices {
     public TimeEnableEntity convertFromInputTimeEnableDTOToEntity(InputTimeEnableDTO inputTimeEnableDTO) {
         TimeEnableEntity timeEnableEntity = new TimeEnableEntity();
         timeEnableEntity.setDateInWeek(inputTimeEnableDTO.getDayInWeek());
-        timeEnableEntity.setFieldOwnerId(accountServices.findAccountEntityById(inputTimeEnableDTO.getFieldOwnerId(), "owner"));
+        timeEnableEntity.setFieldOwnerId(accountServices.findAccountEntityById(inputTimeEnableDTO.getFieldOwnerId(), constant.getFieldOwnerRole()));
         timeEnableEntity.setFieldTypeId(fieldTypeServices.findById(inputTimeEnableDTO.getFieldTypeId()));
         timeEnableEntity.setStartTime(DateTimeUtils.convertFromStringToTime(inputTimeEnableDTO.getStartTime()));
         timeEnableEntity.setEndTime(DateTimeUtils.convertFromStringToTime(inputTimeEnableDTO.getEndTime()));

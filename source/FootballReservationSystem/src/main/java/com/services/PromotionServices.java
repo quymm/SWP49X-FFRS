@@ -1,5 +1,6 @@
 package com.services;
 
+import com.config.Constant;
 import com.dto.InputPromotionDTO;
 import com.entity.AccountEntity;
 import com.entity.FieldTypeEntity;
@@ -23,10 +24,13 @@ public class PromotionServices {
     @Autowired
     AccountServices accountServices;
 
+    @Autowired
+    Constant constant;
+
     public PromotionEntity createNewPromotion(InputPromotionDTO inputPromotionDTO){
         PromotionEntity promotionEntity = new PromotionEntity();
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(inputPromotionDTO.getFieldTypeId());
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(inputPromotionDTO.getFieldOwnerId(), "owner");
+        AccountEntity fieldOwner = accountServices.findAccountEntityById(inputPromotionDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
         promotionEntity.setFieldTypeId(fieldTypeEntity);
         promotionEntity.setFieldOwnerId(fieldOwner);
         promotionEntity.setDateFrom(DateTimeUtils.convertFromStringToDate(inputPromotionDTO.getDateFrom()));
@@ -41,7 +45,7 @@ public class PromotionServices {
 
     public List<PromotionEntity> getListPromotionByFieldOwnerAndDate(int fieldOwnerId, String date){
         Date targetDate = DateTimeUtils.convertFromStringToDate(date);
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
         return promotionRepository.getPromotionByFieldOwnerAndTargetDate(fieldOwner, targetDate, true);
     }
 
@@ -51,7 +55,7 @@ public class PromotionServices {
     }
 
     public List<PromotionEntity> getListPromotionByFieldOwnerId(int fieldOwnerId){
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
         return promotionRepository.findByFieldOwnerIdAndStatus(fieldOwner, true);
     }
 

@@ -1,12 +1,14 @@
 package com.capstone.ffrs;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.PowerManager;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -27,6 +29,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -63,7 +68,7 @@ public class MapsActivity extends AppCompatActivity implements
     private Marker currentMarker;
     private LatLngBounds.Builder builder;
 
-    private String localhost;
+    private String hostURL;
 
     protected static final String TAG = "location-updates-sample";
 
@@ -85,7 +90,7 @@ public class MapsActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        localhost = getResources().getString(R.string.local_host);
+        hostURL = getResources().getString(R.string.local_host);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -95,7 +100,7 @@ public class MapsActivity extends AppCompatActivity implements
 //        String directionApiPath = Helper.getUrl(String.valueOf(currentPosition.latitude), String.valueOf(currentPosition.longitude),
 //                String.valueOf(fieldLocation.latitude), String.valueOf(fieldLocation.longitude));
 
-        url = localhost + "/swp49x-ffrs/account/managed-field-owner?field-owner-id=" + id;
+        url = String.format(hostURL + getResources().getString(R.string.url_get_field_by_id), id);
 
         builder = new LatLngBounds.Builder();
 
@@ -150,7 +155,7 @@ public class MapsActivity extends AppCompatActivity implements
     public void onStop() {
         super.onStop();
         // Stop location updates to save battery, but don't disconnect the GoogleApiClient object.
-        if (mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient!= null && mGoogleApiClient.isConnected()) {
             stopLocationUpdates();
             mGoogleApiClient.disconnect();
         }
@@ -187,7 +192,6 @@ public class MapsActivity extends AppCompatActivity implements
         currentPosition = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         currentMarker = mMap.addMarker(new MarkerOptions().position(currentPosition).title("Vị trí của tôi").icon(BitmapDescriptorFactory
                 .defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-        currentMarker.showInfoWindow();
         // If location is get then change interval to 1 minutes
         if (UPDATE_INTERVAL_IN_MILLISECONDS == 1 * 1000) {
             UPDATE_INTERVAL_IN_MILLISECONDS = 60 * 1000;
@@ -219,7 +223,8 @@ public class MapsActivity extends AppCompatActivity implements
         // The connection to Google Play services was lost for some reason. We call connect() to
         // attempt to re-establish the connection.
         Log.i(TAG, "Connection suspended");
-        mGoogleApiClient.connect();
+            mGoogleApiClient.connect();
+
     }
 
     @Override
@@ -499,8 +504,10 @@ public class MapsActivity extends AppCompatActivity implements
             }
 
             // Drawing polyline in the Google Map for the i-th route
-            mMap.addPolyline(lineOptions);
-            directionCreated = true;
+            if (lineOptions != null) {
+                mMap.addPolyline(lineOptions);
+                directionCreated = true;
+            }
         }
     }
 

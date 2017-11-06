@@ -1,5 +1,6 @@
 package com.services;
 
+import com.config.Constant;
 import com.entity.AccountEntity;
 import com.entity.BlacklistOpponentEntity;
 import com.repository.BlacklistOpponentRepository;
@@ -16,9 +17,12 @@ public class BlacklistOpponentServices {
     @Autowired
     AccountServices accountServices;
 
+    @Autowired
+    Constant constant;
+
     public BlacklistOpponentEntity createNewBlackListOpponent(int userId, int opponentId){
-        AccountEntity user = accountServices.findAccountEntityById(userId, "user");
-        AccountEntity opponent = accountServices.findAccountEntityById(opponentId, "user");
+        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
+        AccountEntity opponent = accountServices.findAccountEntityById(opponentId, constant.getUserRole());
 
         BlacklistOpponentEntity blacklistOpponentEntity = blacklistOpponentRepository.findByUserIdAndOpponentIdAndStatus(user, opponent, false);
         if(blacklistOpponentEntity != null){
@@ -33,7 +37,7 @@ public class BlacklistOpponentServices {
     }
 
     public List<BlacklistOpponentEntity> findBlacklistByUserId(int userId){
-        AccountEntity user = accountServices.findAccountEntityById(userId, "user");
+        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
         return blacklistOpponentRepository.findByUserIdAndStatus(user, true);
     }
 
@@ -44,8 +48,8 @@ public class BlacklistOpponentServices {
     }
 
     public BlacklistOpponentEntity findBlacklistByUserIdAndOpponentId(int userId, int opponentId){
-        AccountEntity user = accountServices.findAccountEntityById(userId, "user");
-        AccountEntity opponent = accountServices.findAccountEntityById(opponentId, "user");
+        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
+        AccountEntity opponent = accountServices.findAccountEntityById(opponentId, constant.getUserRole());
         return blacklistOpponentRepository.findByUserIdAndOpponentIdAndStatus(user, opponent, true);
     }
 

@@ -13,16 +13,6 @@ public class MatchRequest {
 
     }
 
-    public MatchRequest(int id, int userId, int ratingScore, String date, String startTime, String endTime, String teamName) {
-        this.id = id;
-        this.userId = userId;
-        this.ratingScore = ratingScore;
-        this.date = date;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.teamName = teamName;
-    }
-
     public int getId() {
         return id;
     }

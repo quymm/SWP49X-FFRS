@@ -1,15 +1,22 @@
 package com.capstone.ffrs;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -26,9 +33,18 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.capstone.ffrs.adapter.MatchAdapter;
 import com.capstone.ffrs.controller.NetworkController;
+import com.capstone.ffrs.entity.FirebaseUserInfo;
 import com.capstone.ffrs.entity.MatchRequest;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,21 +61,39 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 public class MatchActivity extends AppCompatActivity {
-    String url;
+    private String url;
 
-    RecyclerView recyclerView;
-    RequestQueue queue;
-    List<MatchRequest> opponentList = new ArrayList<MatchRequest>();
-    MatchAdapter adapter;
-    String localhost;
+    private RecyclerView recyclerView;
+    private RequestQueue queue;
+    private List<MatchRequest> opponentList = new ArrayList<MatchRequest>();
+    private MatchAdapter adapter;
+    private String hostURL;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private String displayDateFormat = "dd/MM/yyyy";
     private String serverDateFormat = "dd-MM-yyyy";
-    private String timeFormat = "H:mm";
+
+    private BroadcastReceiver mRequestReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean flag = intent.getBooleanExtra("isChecked", false);
+            if (flag) {
+                Button btSendRequest = (Button) findViewById(R.id.btRequest);
+                btSendRequest.setEnabled(true);
+                btSendRequest.setBackgroundColor(Color.parseColor("#009632"));
+            } else {
+                Button btSendRequest = (Button) findViewById(R.id.btRequest);
+                btSendRequest.setEnabled(false);
+                btSendRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +101,31 @@ public class MatchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_match);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        localhost = getResources().getString(R.string.local_host);
+
+        hostURL = getResources().getString(R.string.local_host);
+
         loadMatches();
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadMatches();
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRequestReceiver,
+                new IntentFilter("RequestButton-Message"));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRequestReceiver);
     }
 
     @Override
@@ -78,20 +135,18 @@ public class MatchActivity extends AppCompatActivity {
     }
 
     public void loadMatches() {
+        if (!opponentList.isEmpty()) {
+            opponentList.clear();
+        }
         Bundle b = getIntent().getExtras();
         SimpleDateFormat sdf = new SimpleDateFormat(displayDateFormat);
-        String strDate;
+        String strDate = "";
         try {
             Date date = sdf.parse(b.getString("field_date"));
             sdf = new SimpleDateFormat(serverDateFormat);
             strDate = sdf.format(date);
-            url = localhost + "/swp49x-ffrs/match/matching-request";
-            url += "?user-id=" + b.getInt("user_id");
-            url += "&field-type-id=" + b.getInt("field_type_id");
-            url += "&longitude=" + b.getDouble("longitude");
-            url += "&latitude=" + b.getDouble("latitude");
-            url += "&date=" + strDate;
-            url += "&start-time=" + b.getString("field_start_time");
+            url = hostURL + getResources().getString(R.string.url_get_matching_requests);
+            url = String.format(url, 5);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -99,14 +154,23 @@ public class MatchActivity extends AppCompatActivity {
         //Initialize RecyclerView
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         adapter = new MatchAdapter(this, opponentList);
-        adapter.setUserId(b.getInt("user_id"));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", b.getInt("user_id"));
+        params.put("fieldTypeId", b.getInt("field_type_id"));
+        params.put("latitude", b.getDouble("latitude"));
+        params.put("longitude", b.getDouble("longitude"));
+        params.put("startTime", b.getString("field_start_time"));
+        params.put("endTime", b.getString("field_end_time"));
+        params.put("date", strDate);
+        params.put("duration", b.getInt("duration"));
 
         //Getting Instance of Volley Request Queue
         queue = NetworkController.getInstance(this).getRequestQueue();
         //Volley's inbuilt class to make Json array request
-        JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.PUT, url, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
@@ -134,6 +198,8 @@ public class MatchActivity extends AppCompatActivity {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                } finally {
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             }
         }, new Response.ErrorListener() {
@@ -150,6 +216,7 @@ public class MatchActivity extends AppCompatActivity {
                 } else if (error instanceof ParseError) {
                     Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
                 }
+                swipeRefreshLayout.setRefreshing(false);
             }
         }) {
             @Override
@@ -171,149 +238,8 @@ public class MatchActivity extends AppCompatActivity {
         queue.add(newsReq);
     }
 
-    public void onClickCreate(View view) {
-        Bundle b = getIntent().getExtras();
-        url = localhost + "/swp49x-ffrs/match/matching-request";
-
-        queue = NetworkController.getInstance(this).getRequestQueue();
-
-        SimpleDateFormat sdf = new SimpleDateFormat(displayDateFormat);
-        try {
-            Date date = sdf.parse(b.getString("field_date"));
-            sdf = new SimpleDateFormat(serverDateFormat);
-            String strDate = sdf.format(date);
-
-            HashMap<String, Object> params = new HashMap<String, Object>();
-            params.put("date", strDate);
-            params.put("userId", b.getInt("user_id"));
-            params.put("startTime", b.getString("field_start_time"));
-            params.put("endTime", b.getString("field_end_time"));
-            params.put("fieldTypeId", b.getInt("field_type_id"));
-            params.put("latitude", b.getDouble("latitude"));
-            params.put("longitude", b.getDouble("longitude"));
-            JsonObjectRequest createRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Bundle b = getIntent().getExtras();
-                            Intent intent = new Intent(MatchActivity.this, CreateMatchingRequestActivity.class);
-                            intent.putExtra("user_id", b.getInt("user_id"));
-                            startActivity(intent);
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d("Error.Response", error.getMessage());
-                }
-            });
-            queue.add(createRequest);
-        } catch (ParseException e) {
-            Log.d("Parse_Exception", e.getMessage());
-        }
-    }
-
     public void onClickSendRequest(View view) {
-        final Bundle b = getIntent().getExtras();
-        SimpleDateFormat sdf = new SimpleDateFormat(displayDateFormat);
-
-        try {
-            final Date date = sdf.parse(b.getString("field_date"));
-
-            sdf = new SimpleDateFormat(serverDateFormat);
-            final String strDate = sdf.format(date);
-
-            sdf = new SimpleDateFormat(timeFormat);
-
-            String url = localhost + "/swp49x-ffrs/match/choose-field?matching-request-id=" + opponentList.get(0).getId();
-
-            queue = NetworkController.getInstance(this).getRequestQueue();
-            Map<String, Object> params = new HashMap<>();
-            params.put("date", strDate);
-            params.put("userId", b.getInt("user_id"));
-            params.put("startTime", b.getString("field_start_time"));
-            params.put("endTime", b.getString("field_end_time"));
-            params.put("fieldTypeId", b.getInt("field_type_id"));
-            params.put("latitude", b.getDouble("latitude"));
-            params.put("longitude", b.getDouble("longitude"));
-            JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-                                JSONObject body = response.getJSONObject("body");
-                                if (body != null && body.length() > 0) {
-                                    try {
-                                        final Date fromTime = new Date(body.getLong("startTime"));
-                                        final Date toTime = new Date(body.getLong("endTime"));
-                                        Intent intent = new Intent(MatchActivity.this, FieldDetailActivity.class);
-                                        intent.putExtra("field_id", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getInt("id"));
-                                        intent.putExtra("field_name", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("name"));
-                                        intent.putExtra("field_address", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("address"));
-                                        intent.putExtra("field_type_id", body.getJSONObject("fieldTypeId").getInt("id"));
-                                        intent.putExtra("image_url", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("avatarUrl"));
-                                        intent.putExtra("date", date);
-                                        intent.putExtra("time_from", fromTime);
-                                        intent.putExtra("time_to", toTime);
-                                        intent.putExtra("price", (body.getInt("price") / 2));
-                                        intent.putExtra("user_id", b.getInt("user_id"));
-                                        intent.putExtra("time_slot_id", body.getInt("id"));
-                                        intent.putExtra("tour_match_mode", true);
-                                        intent.putExtra("opponent_id", opponentList.get(0).getUserId());
-                                        startActivity(intent);
-                                    } catch (Exception e) {
-                                        Log.d("EXCEPTION", e.getMessage());
-                                    }
-                                } else {
-                                    Toast.makeText(MatchActivity.this, "Không thể đặt sân!", Toast.LENGTH_SHORT).show();
-                                }
-                            } catch (JSONException e) {
-                                Log.d("ParseException", e.getMessage());
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.d("Error.Response", error.toString());
-                        }
-                    }) {
-
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<String, String>();
-                    headers.put("Content-Type", "application/json; charset=utf-8");
-                    return headers;
-                }
-            };
-            queue.add(postRequest);
-        } catch (ParseException e) {
-            Log.d("LOG", e.getMessage());
-        }
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference();
-//
-//        Bundle b = getIntent().getExtras();
-//        List<Integer> matchingRequestIdList = new ArrayList<>();
-//        for (MatchRequest opponent: opponentList){
-//            matchingRequestIdList.add(opponent.getId());
-//        }
-//        myRef.child("tourMatch").child(b.getInt("user_id")+"").setValue(matchingRequestIdList);
-//        myRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                String value = dataSnapshot.getValue(String.class);
-//                Toast.makeText(getApplicationContext(), "Value is: " + value, Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError error) {
-//                // Failed to read value
-//                Log.w("TAG", "Failed to read value.", error.toException());
-//            }
-//        });
-
 
     }
+
 }
