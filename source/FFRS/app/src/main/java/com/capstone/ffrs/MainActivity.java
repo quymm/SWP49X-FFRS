@@ -15,17 +15,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.capstone.ffrs.service.FirebaseNotificationServices;
+import com.capstone.ffrs.utils.GPSLocationListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.okhttp.internal.http.HttpMethod;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,23 +45,20 @@ import org.json.JSONObject;
 
 public class MainActivity extends Activity {
 
-    private String localhost;
+    private String hostURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         } else {
             getLoginInfoFromSession();
         }
-
-
     }
 
     public void getLoginInfoFromSession() {
-        localhost = getResources().getString(R.string.local_host);
+        hostURL = getResources().getString(R.string.local_host);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (sharedPreferences.contains("username") && sharedPreferences.contains("password")) {
             requestLogin(sharedPreferences.getString("username", null), sharedPreferences.getString("password", null));
@@ -60,12 +66,15 @@ public class MainActivity extends Activity {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            overridePendingTransition(0, 0);
         }
     }
 
     public void requestLogin(String username, String password) {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = localhost + "/swp49x-ffrs/account/login-user?username=" + username + "&password=" + password;
+        String url = hostURL + getResources().getString(R.string.url_login);
+        url = String.format(url, username, password);
+
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -75,9 +84,11 @@ public class MainActivity extends Activity {
                             if (body != null && body.length() > 0) {
                                 changeActivity(body);
                             } else {
+                                clearSharedPreferences();
                                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
+                                overridePendingTransition(0, 0);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -87,7 +98,29 @@ public class MainActivity extends Activity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("Error.Response", error.toString());
+                        if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
+                            clearSharedPreferences();
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            overridePendingTransition(0, 0);
+                        } else {
+                            if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                                Toast.makeText(getApplicationContext(), "Không thể kết nối với máy chủ! Vui lòng thử lại sau!", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                overridePendingTransition(0, 0);
+                            } else if (error instanceof AuthFailureError) {
+                                Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                            } else if (error instanceof ServerError) {
+                                Toast.makeText(getApplicationContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                            } else if (error instanceof NetworkError) {
+                                Toast.makeText(getApplicationContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                            } else if (error instanceof ParseError) {
+                                Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
                 }) {
         };
@@ -103,14 +136,17 @@ public class MainActivity extends Activity {
                 editor.putInt("user_id", body.getInt("id"));
                 editor.putString("username", body.getString("username"));
                 editor.putString("password", body.getString("password"));
+                editor.putString("teamName", body.getJSONObject("profileId").getString("name"));
+                editor.putString("balance", body.getJSONObject("profileId").getString("balance"));
+                editor.putInt("points", body.getJSONObject("profileId").getInt("bonusPoint"));
                 editor.commit();
             }
-            intent.putExtra("user_id", body.getInt("id"));
         } catch (JSONException e) {
             Log.d("EXCEPTION", e.getMessage());
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+        overridePendingTransition(0, 0);
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -176,7 +212,7 @@ public class MainActivity extends Activity {
 
                 } else {
                     // Permission denied, Disable the functionality that depends on this permission.
-                    Toast.makeText(this, "Ứng dụng phải sử dụng vị trí của bạn để thực hiện các chức năng!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Ứng dụng phải có quyền sử dụng vị trí của bạn để thực hiện các chức năng chính!", Toast.LENGTH_SHORT).show();
                     finish();
                 }
                 return;
@@ -187,4 +223,10 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void clearSharedPreferences() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        editor.commit();
+    }
 }

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#009632"
+    android:background="@drawable/logo"
     tools:context="com.capstone.ffrs.LoginActivity">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
@@ -12,9 +12,9 @@
         android:id="@+id/fullscreen_content_controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="bottom"
         android:orientation="vertical"
-        android:padding="10dp"
+        android:padding="20dp"
         android:weightSum="5">
 
         <EditText
@@ -22,6 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_weight="1"
+            android:alpha="0.8"
             android:background="@android:color/white"
             android:ems="10"
             android:hint="Tên tài khoản"
@@ -34,23 +35,25 @@
             android:layout_height="50dp"
             android:layout_marginBottom="15dp"
             android:layout_weight="1"
+            android:alpha="0.8"
             android:background="@android:color/white"
             android:ems="10"
+            android:fontFamily="sans-serif"
             android:hint="Mật khẩu"
             android:inputType="textPassword"
-            android:fontFamily="sans-serif"
             android:padding="5dp" />
 
         <Button
             android:id="@+id/btLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="10dp"
             android:layout_weight="1"
-            android:background="#c62323"
-            android:text="Đăng nhập"
+            android:background="#008e21"
             android:onClick="onClickLogin"
-            android:textColor="@android:color/white" />
+            android:text="Đăng nhập"
+            android:textColor="@android:color/white"
+            android:textSize="18dp" />
 
         <Button
             android:id="@+id/btRegister"
@@ -58,9 +61,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:layout_weight="1"
-            android:background="#00af7d"
+            android:background="#004c11"
             android:text="Đăng ký"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="18dp" />
 
     </LinearLayout>
 

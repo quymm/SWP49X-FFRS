@@ -1,7 +1,5 @@
 <resources>
-    <string name="app_name">FFRS</string>
-
-    <string name="local_host">http://192.168.1.6:8080</string>
+    <string name="app_name">FFR</string>
 
     <string-array name="field_types">
         <item>5 vs 5</item>
@@ -9,6 +7,64 @@
         <!--<item>11 vs 11</item>-->
     </string-array>
 
+    <string-array name="duration_types">
+        <item>1 tiếng</item>
+        <item>1 tiếng 30 phút</item>
+        <item>2 tiếng</item>
+        <item>2 tiếng 30 phút</item>
+        <item>3 tiếng</item>
+    </string-array>
+
+    <!-- URLs -->
+    <string name="local_host">http://192.168.1.159:8080</string>
+
+    //// Users
+    <string name="url_login">/swp49x-ffrs/account/login-user?username=%s&amp;password=%s</string>
+    <string name="url_get_user_by_id">/swp49x-ffrs/account/managed-user?user-id=%s</string>
+
+    //// Field
+    <string name="url_get_field">/swp49x-ffrs/account/top-10-field-owner?longitude=%s&amp;latitude=%s</string>
+    <string name="url_get_field_by_name">/swp49x-ffrs/account/name?name=%s&amp;role=%s</string>
+    <string name="url_get_field_by_id">/swp49x-ffrs/account/managed-field-owner?field-owner-id=%s</string>
+    <string name="url_choose_field">"/swp49x-ffrs/match/choose-field?matching-request-id=%s&amp;deviation-distance=%s</string>
+
+    //// Field Times
+    <string name="url_get_free_time">/swp49x-ffrs/match/free-time?field-owner-id=%s&amp;field-type-id=%s&amp;date=%s</string>
+
+    //// Time slot reservation
+    <string name="url_reserve_time_slot">/swp49x-ffrs/match/reserve-time-slot</string>
+    <string name="url_cancel_reservation">/swp49x-ffrs/match/cancel-reservation?time-slot-id=%s</string>
+
+    //// Reservation
+    <string name="url_reserve_friendly_match">/swp49x-ffrs/match/friendly-match?time-slot-id=%s&amp;user-id=%s&amp;voucher-id=%s</string>
+    <string name="url_reserve_tour_match">/swp49x-ffrs/match/tour-match?time-slot-id=%s&amp;matching-request-id=%s&amp;opponent-id=%s&amp;voucher-id=%s</string>
+    <string name="url_add_bill">/swp49x-ffrs/bill/managed-bill</string>
+
+    //// Matching request
+    <string name="url_get_matching_requests">/swp49x-ffrs/match/suggest-opponent?deviation-distance=%s</string>
+    <string name="url_get_matching_request_by_id">/swp49x-ffrs/match/matching-request?matching-request-id=%s</string>
+    <string name="url_create_matching_request">/swp49x-ffrs/match/matching-request</string>
+
+    //// Match
+    <string name="url_get_tour_match_by_id">/swp49x-ffrs/match/tour-match?tour-match-id=%s</string>
+    <string name="url_get_pending_match_by_id">/swp49x-ffrs/match/user-history?user-id=%s</string>
+
+    //// Bill
+    <string name="url_get_paid_match_by_id">/swp49x-ffrs/bill/user-history?user-id=%s</string>
+
+    //// Rating
+    <string name="url_send_rating_opponent">/swp49x-ffrs/rating/rating-opponent</string>
+
+    //// Blacklist
+    <string name="url_add_black_list">/swp49x-ffrs/blacklist/managed-blacklist?user-id=%s&amp;opponent-id=%s</string>
+    <string name="url_remove_black_list">/swp49x-ffrs/blacklist/managed-blacklist?id=%s</string>
+
+    ////Favorite field
+    <string name="url_add_favorite_field">/swp49x-ffrs/favorites/managed-favorites?user-id=%s&amp;field-owner-id=%s</string>
+    <string name="url_get_favorite_fields">/swp49x-ffrs/favorites/managed-favorites?user-id=%s</string>
+    <string name="url_remove_favorite_field">/swp49x-ffrs/favorites/managed-favorites?id=%s</string>
+
+    <!-- Activity title -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -21,9 +77,19 @@
 
     <string name="title_activity_maps">Bản đồ</string>
     <string name="title_activity_reservation_result">Ứng dụng đặt sân</string>
-    <string name="title_activity_match_map">Bản đồ</string>
     <string name="title_activity_match">Kết quả tìm kiếm đối thủ</string>
     <string name="title_activity_pay_pal">PayPal</string>
     <string name="title_activity_create_matching_request">Tạo yêu cầu mới</string>
     <string name="title_activity_notification">Thông báo</string>
+    <string name="title_activity_history">Lịch sử đặt sân</string>
+    <string name="title_activity_payment_option">PaymentOptionActivity</string>
+    <string name="title_activity_rating_field">Đánh giá sân bóng</string>
+    <string name="title_activity_report_opponent">Báo cáo đối thủ</string>
+    <string name="title_activity_rating_opponent">Đánh giá đối thủ</string>
+    <string name="title_activity_profile">Thông tin tài khoản</string>
+    <string name="title_activity_register">Đăng ký</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_request_time">Chọn giờ đá</string>
 </resources>

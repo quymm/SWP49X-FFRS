@@ -1,6 +1,10 @@
 package com.capstone.ffrs;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,7 +26,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.capstone.ffrs.controller.NetworkController;
+import com.capstone.ffrs.service.TimerServices;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
@@ -31,15 +37,71 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
-public class FieldDetailActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class FieldDetailActivity extends AppCompatActivity {
 
-    String imageUrl, name, address;
-    Date from, to, date;
-    int id, totalPrice, fieldTypeId;
+    private String name, address;
+    private Date from, to, date;
+    private int id, totalPrice, fieldTypeId;
 
-    String localhost;
+    String hostURL;
+    PendingIntent pendingIntent;
+    boolean isPaused;
+
+    private BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, Intent intent) {
+            stopService(new Intent(context, TimerServices.class));
+            Bundle b = getIntent().getExtras();
+            int timeSlotId = b.getInt("time_slot_id");
+            final String status = intent.getExtras().getString("status");
+            String url = hostURL + getResources().getString(R.string.url_cancel_reservation);
+            url = String.format(url, timeSlotId);
+            RequestQueue queue = NetworkController.getInstance(context).getRequestQueue();
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    if (status.equals("running")) {
+                        Toast.makeText(context, "FFR: Đã hết thời gian giữ sân", Toast.LENGTH_LONG).show();
+                        unregisterReceiver(br);
+                        Intent intent = new Intent(context, FieldSuggestActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        pendingIntent =
+                                PendingIntent.getActivity(context, 0, intent, 0);
+                        if (!isPaused) {
+                            try {
+                                pendingIntent.send();
+                            } catch (PendingIntent.CanceledException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if (status.equals("running")) {
+                        Toast.makeText(context, "FFR: Đã hết thời gian giữ sân", Toast.LENGTH_LONG).show();
+                        unregisterReceiver(br);
+                        Intent intent = new Intent(context, FieldSuggestActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        pendingIntent =
+                                PendingIntent.getActivity(context, 0, intent, 0);
+                        if (!isPaused) {
+                            try {
+                                pendingIntent.send();
+                            } catch (PendingIntent.CanceledException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            });
+            queue.add(request);
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +110,10 @@ public class FieldDetailActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        localhost = getResources().getString(R.string.local_host);
+        Intent intent = new Intent(this, TimerServices.class);
+        startService(intent);
+
+        hostURL = getResources().getString(R.string.local_host);
 
         Bundle b = getIntent().getExtras();
 
@@ -60,14 +125,11 @@ public class FieldDetailActivity extends AppCompatActivity
         TextView txtAddress = (TextView) findViewById(R.id.field_address);
         txtAddress.setText(address);
 
-//        imageUrl = b.getString("image_url");
-//        NetworkImageView imageView = (NetworkImageView) findViewById(R.id.field_image);
-//        imageView.setImageUrl(imageUrl, NetworkController.getInstance(this.getBaseContext()).getImageLoader());
-
         date = (Date) b.getSerializable("date");
 
-        from = (Date) b.getSerializable("time_from");
-        to = (Date) b.getSerializable("time_to");
+        from = (Date) b.get("time_from");
+        Log.d("START", from.toString());
+        to = (Date) b.get("time_to");
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm", Locale.US);
 
         id = b.getInt("field_id");
@@ -108,12 +170,30 @@ public class FieldDetailActivity extends AppCompatActivity
         txtFieldType.setText(strFieldType);
 
         TextView txtPrice = (TextView) findViewById(R.id.text_total_price);
-        txtPrice.setText((totalPrice / 1000) + "K đồng");
+        txtPrice.setText(totalPrice + "K đồng");
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        stopService(new Intent(this, TimerServices.class));
+        unregisterReceiver(br);
+        Bundle b = getIntent().getExtras();
+        int timeSlotId = b.getInt("time_slot_id");
+        String url = hostURL + getResources().getString(R.string.url_cancel_reservation);
+        url = String.format(url, timeSlotId);
+        RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                finish();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                finish();
+            }
+        });
+        queue.add(request);
     }
 
     @Override
@@ -122,28 +202,29 @@ public class FieldDetailActivity extends AppCompatActivity
         return true;
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        if (id == R.id.nav_rewards) {
-            Intent intent = new Intent(this, RewardActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_logout) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+    public void onResume() {
+        super.onResume();
+        isPaused = false;
+        if (pendingIntent != null) {
+            try {
+                pendingIntent.send();
+            } catch (PendingIntent.CanceledException e) {
+                e.printStackTrace();
+            }
+        } else {
+            registerReceiver(br, new IntentFilter(TimerServices.COUNTDOWN_BR));
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isPaused = true;
     }
 
     public void onClickGoBackToTime(View view) {
-        finish();
+        onBackPressed();
     }
 
     public void onClickShowMap(View view) {
@@ -160,12 +241,20 @@ public class FieldDetailActivity extends AppCompatActivity
         intent.putExtra("field_id", id);
         intent.putExtra("field_name", name);
         intent.putExtra("field_address", address);
-        intent.putExtra("image_url", imageUrl);
         intent.putExtra("price", totalPrice);
-        intent.putExtra("tour_match_mode", b.getBoolean("tour_match_mode"));
-        if (b.containsKey("opponent_id")) {
-            intent.putExtra("opponent_id", b.getInt("opponent_id"));
+
+        boolean tourMatchMode = b.getBoolean("tour_match_mode");
+        if (tourMatchMode) {
+            intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
+            intent.putExtra("tour_match_mode", tourMatchMode);
+            if (b.containsKey("tour_match_id")) {
+                intent.putExtra("tour_match_id", b.getInt("tour_match_id"));
+            }
+            if (b.containsKey("opponent_id")) {
+                intent.putExtra("opponent_id", b.getInt("opponent_id"));
+            }
         }
+        unregisterReceiver(br);
         startActivity(intent);
     }
 }

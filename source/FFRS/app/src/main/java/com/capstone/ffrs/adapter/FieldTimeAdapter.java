@@ -65,10 +65,11 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyVi
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent("custom-message");
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                     String[] hours = title.getText().toString().split(" - ");
                     intent.putExtra("from", hours[0]);
                     intent.putExtra("to", hours[1]);
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+
                 }
             });
         }
