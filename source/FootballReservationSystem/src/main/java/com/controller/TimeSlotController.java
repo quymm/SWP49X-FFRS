@@ -30,7 +30,7 @@ public class TimeSlotController {
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/reserve-time-slot", method = RequestMethod.POST)
-    public ResponseEntity reserveTimeSlot(@RequestBody InputReservationDTO inputReservationDTO) {
+    public synchronized ResponseEntity reserveTimeSlot(@RequestBody InputReservationDTO inputReservationDTO) {
         Wrapper wrapper = new Wrapper(timeSlotServices.reserveTimeSlot(inputReservationDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }

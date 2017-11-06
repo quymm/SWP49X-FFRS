@@ -42,7 +42,7 @@ public class ProfileEntity implements Serializable {
     private String latitude;
     @Basic(optional = false)
     @Column(name = "balance")
-    private Integer balance;
+    private Float balance;
     @Column(name = "avatar_url")
     private String avatarUrl;
     @Column(name = "rating_score")
@@ -118,11 +118,11 @@ public class ProfileEntity implements Serializable {
         this.latitude = latitude;
     }
 
-    public Integer getBalance() {
+    public Float getBalance() {
         return balance;
     }
 
-    public void setBalance(Integer balance) {
+    public void setBalance(Float balance) {
         this.balance = balance;
     }
 

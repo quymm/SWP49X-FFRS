@@ -1,5 +1,6 @@
 package com.services;
 
+import com.config.Constant;
 import com.dto.InputReservationDTO;
 import com.dto.MatchReturnDTO;
 import com.dto.TimeSlotDTO;
@@ -36,9 +37,12 @@ public class TimeSlotServices {
     @Autowired
     MatchServices matchServices;
 
+    @Autowired
+    Constant constant;
+
     public List<MatchReturnDTO> findUpcomingReservationByDate(String dateString, int fieldOwnerId) {
         Date targetDate = DateTimeUtils.convertFromStringToDate(dateString);
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndReserveStatusAndDateAndStatus(fieldOwner, true, targetDate, true);
         List<MatchReturnDTO> matchReturnDTOList = new ArrayList<>();
 
@@ -109,7 +113,7 @@ public class TimeSlotServices {
     }
 
     public TimeSlotEntity reserveTimeSlot(InputReservationDTO inputReservationDTO) {
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(inputReservationDTO.getFieldOwnerId(), "owner");
+        AccountEntity fieldOwner = accountServices.findAccountEntityById(inputReservationDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
         FieldTypeEntity fieldType = fieldTypeServices.findById(inputReservationDTO.getFieldTypeId());
         Date targetDate = DateTimeUtils.convertFromStringToDate(inputReservationDTO.getDate());
         if (timeSlotRepository.countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(fieldOwner, fieldType, targetDate, true) == 0) {
@@ -180,7 +184,7 @@ public class TimeSlotServices {
     }
 
     public List<TimeSlotEntity> findFreeTimeByFieldOwnerTypeAndDate(int fieldOwnerId, int fieldTypeId, String dateString) {
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
         FieldTypeEntity fieldType = fieldTypeServices.findById(fieldTypeId);
         Date targetDate = DateTimeUtils.convertFromStringToDate(dateString);
 
@@ -265,7 +269,7 @@ public class TimeSlotServices {
     }
 
     public List<FieldEntity> getListFreeFieldAtSpecificTime(String targetDateStr, String targetTimeStr, int fieldOwnerId, int fieldTypeId) {
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, "owner");
+        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
         FieldTypeEntity fieldType = fieldTypeServices.findById(fieldTypeId);
         Date targetDate = DateTimeUtils.convertFromStringToDate(targetDateStr);
         Date targetTime = DateTimeUtils.convertFromStringToTime(targetTimeStr);

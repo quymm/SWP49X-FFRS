@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.config.Constant;
 import com.dto.InputFieldOwnerDTO;
 import com.dto.InputUserDTO;
 import com.dto.Wrapper;
@@ -18,6 +19,9 @@ public class AccountController {
 
     @Autowired
     AccountServices accountServices;
+
+    @Autowired
+    Constant constant;
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-field-owner", method = RequestMethod.POST)
@@ -43,28 +47,28 @@ public class AccountController {
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-field-owner", method = RequestMethod.GET)
     public ResponseEntity getFieldOwnerById(@RequestParam("field-owner-id") int fieldOwnerId){
-        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityById(fieldOwnerId, "owner"), HttpStatus.OK.value(), HttpStatus.OK.name());
+        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole()), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/login-field-owner", method = RequestMethod.GET)
     public ResponseEntity<Wrapper> checkLoginFieldOwner(@RequestParam("username") String username, @RequestParam("password") String password){
-        Wrapper wrapper = new Wrapper(accountServices.checkLogin(username, password, "owner"), HttpStatus.OK.value(), HttpStatus.OK.name());
+        Wrapper wrapper = new Wrapper(accountServices.checkLogin(username, password, constant.getFieldOwnerRole()), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity<>(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/login-user", method = RequestMethod.GET)
     public ResponseEntity<Wrapper> checkLoginUser(@RequestParam("username") String username, @RequestParam("password") String password){
-        Wrapper wrapper = new Wrapper(accountServices.checkLogin(username, password, "user"), HttpStatus.OK.value(), HttpStatus.OK.name());
+        Wrapper wrapper = new Wrapper(accountServices.checkLogin(username, password, constant.getUserRole()), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity<>(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-user", method = RequestMethod.GET)
     public ResponseEntity getUserById(@RequestParam("user-id") int userId){
-        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityById(userId, "user"), HttpStatus.OK.value(), HttpStatus.OK.name());
+        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityById(userId, constant.getUserRole()), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 

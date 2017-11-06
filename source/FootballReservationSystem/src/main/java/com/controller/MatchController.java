@@ -43,7 +43,7 @@ public class MatchController {
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/choose-field", method = RequestMethod.POST)
-    public ResponseEntity chooseSuitableField(@RequestBody InputMatchingRequestDTO inputMatchingRequestDTO, @RequestParam("matching-request-id") int matchingRequestId,
+    public synchronized ResponseEntity chooseSuitableField(@RequestBody InputMatchingRequestDTO inputMatchingRequestDTO, @RequestParam("matching-request-id") int matchingRequestId,
                                               @RequestParam("deviation-distance") int deviationDistance) {
         Wrapper wrapper = new Wrapper(matchServices.chooseSuitableField(inputMatchingRequestDTO, matchingRequestId, deviationDistance), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
