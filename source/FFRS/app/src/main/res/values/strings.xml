@@ -44,6 +44,7 @@
     <string name="url_get_matching_requests">/swp49x-ffrs/match/suggest-opponent?deviation-distance=%s</string>
     <string name="url_get_matching_request_by_id">/swp49x-ffrs/match/matching-request?matching-request-id=%s</string>
     <string name="url_create_matching_request">/swp49x-ffrs/match/matching-request</string>
+    <string name="url_cancel_matching_request"></string>
 
     //// Match
     <string name="url_get_tour_match_by_id">/swp49x-ffrs/match/tour-match?tour-match-id=%s</string>

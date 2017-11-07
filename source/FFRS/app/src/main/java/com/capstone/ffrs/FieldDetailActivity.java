@@ -241,7 +241,7 @@ public class FieldDetailActivity extends AppCompatActivity {
         intent.putExtra("field_id", id);
         intent.putExtra("field_name", name);
         intent.putExtra("field_address", address);
-        intent.putExtra("price", totalPrice);
+        intent.putExtra("price", -1 * totalPrice);
 
         boolean tourMatchMode = b.getBoolean("tour_match_mode");
         if (tourMatchMode) {
