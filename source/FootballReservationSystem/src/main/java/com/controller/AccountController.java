@@ -4,7 +4,6 @@ import com.config.Constant;
 import com.dto.InputFieldOwnerDTO;
 import com.dto.InputUserDTO;
 import com.dto.Wrapper;
-import com.entity.AccountEntity;
 import com.services.AccountServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -96,7 +95,7 @@ public class AccountController {
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/money", method = RequestMethod.PUT)
     public ResponseEntity insertMoney(@RequestParam("account-id") int accountId, @RequestParam("role") String role, @RequestParam("balance") int balance){
-        Wrapper wrapper = new Wrapper(accountServices.changeBlance(accountId, balance, role), HttpStatus.OK.value(), HttpStatus.OK.name());
+        Wrapper wrapper = new Wrapper(accountServices.changeBalance(accountId, balance, role), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
