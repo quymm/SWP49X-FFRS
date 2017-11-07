@@ -125,10 +125,12 @@ public class LoginActivity extends AppCompatActivity {
                 editor.putInt("user_id", body.getInt("id"));
                 editor.putString("username", body.getString("username"));
                 editor.putString("password", body.getString("password"));
-                editor.putString("teamName", body.getJSONObject("profileId").getString("name"));
-                editor.putInt("points", body.getJSONObject("profileId").getInt("bonusPoint"));
-                editor.commit();
+
             }
+            editor.putString("teamName", body.getJSONObject("profileId").getString("name"));
+            editor.putInt("balance", body.getJSONObject("profileId").getInt("balance"));
+            editor.putInt("points", body.getJSONObject("profileId").getInt("bonusPoint"));
+            editor.commit();
 
         } catch (JSONException e) {
             Log.d("EXCEPTION", e.getMessage());

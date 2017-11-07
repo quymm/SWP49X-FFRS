@@ -3,8 +3,10 @@ package com.services;
 import com.config.Constant;
 import com.dto.InputRatingOpponentDTO;
 import com.entity.AccountEntity;
+import com.entity.ProfileEntity;
 import com.entity.RatingOpponentEntity;
 import com.entity.TourMatchEntity;
+import com.repository.ProfileRepository;
 import com.repository.RatingOpponentRepository;
 import com.repository.TourMatchRepository;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ public class RatingOpponentServices {
 
     @Autowired
     TourMatchRepository tourMatchRepository;
+
+    @Autowired
+    ProfileRepository profileRepository;
 
     @Autowired
     Constant constant;
@@ -79,7 +84,7 @@ public class RatingOpponentServices {
         RatingOpponentEntity savedRatingOpponentEntity = ratingOpponentRepository.save(ratingOpponentEntity);
 
         // nếu đã đủ cả 2 đánh giá thì thực hiện
-        if (findBytourMatchId(tourMatchEntity.getId()).isEmpty()
+        if (!findBytourMatchId(tourMatchEntity.getId()).isEmpty()
                 && findBytourMatchId(tourMatchEntity.getId()).size() == 2) {
             tourMatchEntity.setCompleteStatus(true);
             tourMatchRepository.save(tourMatchEntity);
@@ -92,6 +97,8 @@ public class RatingOpponentServices {
         TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(tourMatchId);
         AccountEntity user = tourMatchEntity.getUserId();
         AccountEntity opponent = tourMatchEntity.getOpponentId();
+        ProfileEntity userProfile = user.getProfileId();
+        ProfileEntity opponentProfile = opponent.getProfileId();
         if (tourMatchEntity.getCompleteStatus()) {
             RatingOpponentEntity ratingOpponent = findByUserIdAndOpponentIdAndTourMatchIdAndStatus(user.getId(), opponent.getId(), tourMatchEntity.getId());
             RatingOpponentEntity ratingUser = findByUserIdAndOpponentIdAndTourMatchIdAndStatus(opponent.getId(), user.getId(), tourMatchEntity.getId());
@@ -99,18 +106,20 @@ public class RatingOpponentServices {
             if (ratingOpponent.getWin() != ratingUser.getWin()) {
                 if (ratingOpponent.getWin()) {
                     // user la nguoi thang
-                    user.getProfileId().setRatingScore(user.getProfileId().getRatingScore() + 20);
-                    opponent.getProfileId().setRatingScore(opponent.getProfileId().getRatingScore() - 20);
+                    userProfile.setRatingScore(user.getProfileId().getRatingScore() + 20);
+                    opponentProfile.setRatingScore(opponent.getProfileId().getRatingScore() - 20);
 
                 } else {
                     // user la nguoi thua
-                    user.getProfileId().setRatingScore(user.getProfileId().getRatingScore() - 20);
-                    opponent.getProfileId().setRatingScore(opponent.getProfileId().getRatingScore() + 20);
+                    userProfile.setRatingScore(user.getProfileId().getRatingScore() - 20);
+                    opponentProfile.setRatingScore(opponent.getProfileId().getRatingScore() + 20);
 
                 }
                 // duoc cong diem bonus point
-                user.getProfileId().setBonusPoint(user.getProfileId().getBonusPoint() + 10);
-                opponent.getProfileId().setBonusPoint(user.getProfileId().getBonusPoint() + 10);
+                userProfile.setBonusPoint(user.getProfileId().getBonusPoint() + 10);
+                opponentProfile.setBonusPoint(user.getProfileId().getBonusPoint() + 10);
+                profileRepository.save(userProfile);
+                profileRepository.save(opponentProfile);
             }
         } else {
             throw new IllegalArgumentException(String.format("Tour Match have id = %s is not complete! No result to calculate rating", tourMatchEntity.getId()));

@@ -5,8 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -190,6 +192,12 @@ public class PayPalActivity extends AppCompatActivity {
                                                 intent.putExtra("payment_result", "Succeed");
                                                 if (!tourMatchMode) {
                                                     intent.putExtra("reserve_id", body.getJSONObject("friendlyMatchId").getInt("id"));
+
+                                                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(PayPalActivity.this);
+                                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                    editor.putInt("balance", body.getJSONObject("userId").getJSONObject("profileId").getInt("balance"));
+                                                    editor.commit();
+
                                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                                                     DatabaseReference ref = database.getReference();
                                                     DatabaseReference friendlyRef = ref.child("fieldOwner").child(b.getInt("field_id") + "")
@@ -202,6 +210,12 @@ public class PayPalActivity extends AppCompatActivity {
                                                     friendlyRef.setValue(notification);
                                                 } else {
                                                     intent.putExtra("reserve_id", body.getJSONObject("tourMatchId").getInt("id"));
+
+                                                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(PayPalActivity.this);
+                                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                    editor.putInt("balance", body.getJSONObject("userId").getJSONObject("profileId").getInt("balance"));
+                                                    editor.commit();
+
                                                     if (!b.containsKey("tour_match_id")) {
                                                         FirebaseDatabase database = FirebaseDatabase.getInstance();
                                                         DatabaseReference ref = database.getReference();

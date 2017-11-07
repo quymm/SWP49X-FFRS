@@ -76,6 +76,15 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
             sdf = new SimpleDateFormat("H:mm");
             holder.txtTime.setText(sdf.format(startTime) + " - " + sdf.format(endTime));
 
+            int duration = request.getDuration();
+            String strDuration = "";
+            if (duration / 60 > 0) {
+                strDuration += (duration / 60) + " tiếng";
+            }
+            if (duration % 60 == 30) {
+                strDuration += " " + (duration % 60) + " phút";
+            }
+            holder.txtDuration.setText(strDuration);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -114,7 +123,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                                            public void onClick(DialogInterface dialog, int which) {
                                                                // continue with delete
                                                                RequestQueue queue = NetworkController.getInstance(context).getRequestQueue();
-                                                               String url = context.getResources().getString(R.string.local_host);
+                                                               String url = context.getResources().getString(R.string.local_host) + context.getResources().getString(R.string.url_cancel_matching_request);
                                                                JsonObjectRequest request = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
                                                                    @Override
                                                                    public void onResponse(JSONObject response) {
