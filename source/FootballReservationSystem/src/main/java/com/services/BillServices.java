@@ -4,7 +4,6 @@ import com.config.Constant;
 import com.dto.InputBillDTO;
 import com.entity.*;
 import com.repository.*;
-import com.utils.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,8 +69,8 @@ public class BillServices {
         billEntity.setPrice(price);
 
         // transfer fee from user to owner
-        accountServices.changeBlance(billEntity.getUserId().getId(), billEntity.getPrice() * (-1), constant.getUserRole());
-        accountServices.changeBlance(billEntity.getFieldOwnerId().getId(), billEntity.getPrice(), constant.getFieldOwnerRole());
+        accountServices.changeBalance(billEntity.getUserId().getId(), billEntity.getPrice() * (-1), constant.getUserRole());
+        accountServices.changeBalance(billEntity.getFieldOwnerId().getId(), billEntity.getPrice(), constant.getFieldOwnerRole());
 
         billEntity.setStatus(true);
         return billRepository.save(billEntity);

@@ -184,7 +184,7 @@ public class AccountServices {
         return returnAccountEntityList;
     }
 
-    public AccountEntity changeBlance(int accountId, float balanceNumber, String role) {
+    public AccountEntity changeBalance(int accountId, float balanceNumber, String role) {
         AccountEntity accountEntity = findAccountEntityById(accountId, role);
         ProfileEntity profileEntity = accountEntity.getProfileId();
         if (balanceNumber > 0) {

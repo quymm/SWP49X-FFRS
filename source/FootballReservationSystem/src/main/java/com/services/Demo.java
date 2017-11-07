@@ -39,5 +39,7 @@ public class Demo {
 //        System.out.println(bDouble);
 //        System.out.println(format.format(dateTime));
 //        System.out.println(timeFormat.format(dateTime));
+        double a = 3.6;
+        System.out.println((int)Math.rint(3.3));
     }
 }
