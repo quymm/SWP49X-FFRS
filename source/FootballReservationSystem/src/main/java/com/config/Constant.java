@@ -18,6 +18,9 @@ public class Constant {
     @Value("${admin.role}")
     private String adminRole;
 
+    @Value("${staff.role}")
+    private String staffRole;
+
     @Value("${max.price}")
     private Float maxPrice;
 
@@ -33,8 +36,8 @@ public class Constant {
     @Value("${bonus.point}")
     private Integer bonusPoint;
 
-    @Value("${profit.commission}")
-    private Float profitCommision;
+    @Value("${percent.profit}")
+    private Float percentProfit;
 
     public String getFieldOwnerRole() {
         return fieldOwnerRole;
@@ -68,7 +71,7 @@ public class Constant {
         return bonusPoint;
     }
 
-    public Float getProfitCommision() {
-        return profitCommision;
+    public Float getPercentProfit() {
+        return percentProfit;
     }
 }

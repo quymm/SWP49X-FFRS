@@ -26,6 +26,9 @@ public class BillServices {
     MatchServices matchServices;
 
     @Autowired
+    TimeSlotServices timeSlotServices;
+
+    @Autowired
     Constant constant;
 
 
@@ -66,6 +69,7 @@ public class BillServices {
             }
 
         }
+
         billEntity.setPrice(price);
 
         // transfer fee from user to owner
