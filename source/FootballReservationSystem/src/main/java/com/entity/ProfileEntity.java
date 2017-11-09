@@ -5,14 +5,12 @@
  */
 package com.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.Date;
+import javax.persistence.*;
 
 /**
  *
@@ -42,7 +40,7 @@ public class ProfileEntity implements Serializable {
     private String latitude;
     @Basic(optional = false)
     @Column(name = "balance")
-    private Float balance;
+    private float balance;
     @Column(name = "avatar_url")
     private String avatarUrl;
     @Column(name = "rating_score")
@@ -51,10 +49,21 @@ public class ProfileEntity implements Serializable {
     private Integer bonusPoint;
     @Basic(optional = false)
     @Column(name = "num_of_report")
-    private Integer numOfReport;
+    private int numOfReport;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "percent_profit")
+    private Float percentProfit;
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
+    @Basic(optional = false)
+    @Column(name = "creation_date")
+    @CreationTimestamp
+    private Date creationDate;
+    @Basic(optional = false)
+    @Column(name = "modification_date")
+    @UpdateTimestamp
+    private Date modificationDate;
 
     public ProfileEntity() {
     }
@@ -118,11 +127,11 @@ public class ProfileEntity implements Serializable {
         this.latitude = latitude;
     }
 
-    public Float getBalance() {
+    public float getBalance() {
         return balance;
     }
 
-    public void setBalance(Float balance) {
+    public void setBalance(float balance) {
         this.balance = balance;
     }
 
@@ -150,12 +159,20 @@ public class ProfileEntity implements Serializable {
         this.bonusPoint = bonusPoint;
     }
 
-    public Integer getNumOfReport() {
+    public int getNumOfReport() {
         return numOfReport;
     }
 
-    public void setNumOfReport(Integer numOfReport) {
+    public void setNumOfReport(int numOfReport) {
         this.numOfReport = numOfReport;
+    }
+
+    public Float getPercentProfit() {
+        return percentProfit;
+    }
+
+    public void setPercentProfit(Float percentProfit) {
+        this.percentProfit = percentProfit;
     }
 
     public boolean getStatus() {
@@ -164,6 +181,22 @@ public class ProfileEntity implements Serializable {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(Date modificationDate) {
+        this.modificationDate = modificationDate;
     }
 
     @Override

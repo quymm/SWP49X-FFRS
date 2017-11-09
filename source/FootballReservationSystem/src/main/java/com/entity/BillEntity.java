@@ -5,6 +5,9 @@
  */
 package com.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -43,6 +46,14 @@ public class BillEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
+    @Basic(optional = false)
+    @Column(name = "creation_date")
+    @CreationTimestamp
+    private Date creationDate;
+    @Basic(optional = false)
+    @Column(name = "modification_date")
+    @UpdateTimestamp
+    private Date modificationDate;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private AccountEntity userId;
@@ -103,6 +114,22 @@ public class BillEntity implements Serializable {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(Date modificationDate) {
+        this.modificationDate = modificationDate;
     }
 
     public AccountEntity getUserId() {

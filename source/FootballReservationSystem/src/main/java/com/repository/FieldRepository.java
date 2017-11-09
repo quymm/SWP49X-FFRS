@@ -4,7 +4,6 @@ import com.entity.AccountEntity;
 import com.entity.FieldEntity;
 import com.entity.FieldTypeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 

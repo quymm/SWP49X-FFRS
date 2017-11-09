@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -92,7 +93,10 @@ public class AccountServices {
         accountEntity.setPassword(inputUserDTO.getPassword());
         accountEntity.setProfileId(savedProfileEntity);
         accountEntity.setRoleId(roleEntity);
+        accountEntity.setLockStatus(true);
         accountEntity.setStatus(true);
+        accountEntity.setCreationDate(new Date());
+        accountEntity.setModificationDate(new Date());
         return accountRepository.save(accountEntity);
     }
 
@@ -124,6 +128,8 @@ public class AccountServices {
         profileEntity.setLongitude(inputFieldOwnerDTO.getLongitute());
         profileEntity.setName(inputFieldOwnerDTO.getName());
         profileEntity.setPhone(inputFieldOwnerDTO.getPhone());
+        profileEntity.setPercentProfit((float) 0.05);
+        profileEntity.setNumOfReport(0);
         profileEntity.setStatus(true);
         return profileEntity;
     }
@@ -136,6 +142,7 @@ public class AccountServices {
         profileEntity.setAvatarUrl(inputUserDTO.getAvatarUrl());
         profileEntity.setBonusPoint(0);
         profileEntity.setRatingScore(2000);
+        profileEntity.setNumOfReport(0);
         profileEntity.setStatus(true);
         return profileEntity;
     }
@@ -194,7 +201,7 @@ public class AccountServices {
             if (balanceNumber > profileEntity.getBalance()) {
                 throw new IllegalArgumentException(String.format("Account balance: %s. Not enough to withdraw!", profileEntity.getBalance()));
             } else {
-                profileEntity.setBalance(profileEntity.getBalance() - balanceNumber);
+                profileEntity.setBalance(profileEntity.getBalance() + balanceNumber);
             }
         }
         accountEntity.setProfileId(profileRepository.save(profileEntity));

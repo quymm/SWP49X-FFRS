@@ -28,9 +28,6 @@ public class RoleServices {
 
     public RoleEntity findByRoleName(String roleName) {
         RoleEntity roleEntity = roleRepository.findByRoleNameAndStatus(roleName, true);
-        if(roleEntity == null){
-            throw new EntityNotFoundException(String.format("Not found role have role name: %s", roleName));
-        }
         return roleEntity;
     }
 

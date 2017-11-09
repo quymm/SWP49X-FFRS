@@ -5,16 +5,12 @@
  */
 package com.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.Date;
+import javax.persistence.*;
 
 /**
  *
@@ -38,6 +34,14 @@ public class RatingFieldEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
+    @Basic(optional = false)
+    @Column(name = "creation_date")
+    @CreationTimestamp
+    private Date creationDate;
+    @Basic(optional = false)
+    @Column(name = "modification_date")
+    @UpdateTimestamp
+    private Date modificationDate;
     @JoinColumn(name = "field_owner_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private AccountEntity fieldOwnerId;
@@ -88,6 +92,22 @@ public class RatingFieldEntity implements Serializable {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(Date modificationDate) {
+        this.modificationDate = modificationDate;
     }
 
     public AccountEntity getFieldOwnerId() {
