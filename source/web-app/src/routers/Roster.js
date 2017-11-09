@@ -39,10 +39,10 @@ const Roster = ({ match }) => (
         <Route path={`${match.url}/player`} component={ProfilePlayer} />
         <Route path={`${match.url}/setting-time`} component={SettingTime} />
         <Route path={`${match.url}/free-time`} component={FreeTime} />
-        <Route path={`${match.url}/overcome`} component={Overcome} />
+        <Route path={`${match.url}/income`} component={Overcome} />
         <Route path={`${match.url}/promotion`} component={Promotion} />
         <Route path={`${match.url}/staff-manage-user`} component={ManageUser} />
-        <Route path={`${match.url}/staff-manage-overcome`} component={ManageOvercome} />
+        <Route path={`${match.url}/staff-manage-income`} component={ManageOvercome} />
         <Route path={`${match.url}/staff-manage-price`} component={ManagePrice} />
         <Route path={`${match.url}/staff-manage-voucher`} component={ManageVoucher} />
         <Route path={`${match.url}/staff-manage-field-owner`} component={ManageFieldOwner} />

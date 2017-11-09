@@ -21,8 +21,8 @@ class SettingTime extends Component {
       fieldType: '5 vs 5',
       fieldTypeId: 1,
       daySelected: 'Mon',
-      startDay: moment('10-10-2017 06:00:00'),
-      endDay: moment('10-10-2017 22:00:00'),
+      startDay: moment('10-10-2017 06:00:00', 'YYYY-MM-DD HH:mm'),
+      endDay: moment('10-10-2017 22:00:00', 'YYYY-MM-DD HH:mm'),
       price: undefined,
       isShowAddTime: false,
       buttonGroupDayInWeek: [
@@ -225,20 +225,20 @@ class SettingTime extends Component {
     console.log(timeEnable);
     const dayfilter = timeEnable.filter(day => day.dateInWeek === daySelected);
     if (dayfilter.length > 0) {
-      if (moment(`10-10-2017 ${dayfilter[0].startTime}`).hours() > 6) {
+      if (moment(`10-10-2017 ${dayfilter[0].startTime}`, 'MM-DD-YYYY HH:mm').hours() > 6) {
         this.setState({
           startDay: moment()
             .hours(6)
             .minutes(0),
-          endDay: moment(`10-10-2017 ${dayfilter[0].startTime}`),
+          endDay: moment(`10-10-2017 ${dayfilter[0].startTime}`, 'MM-DD-YYYY HH:mm'),
         });
       } else {
-        if (moment(`10-10-2017 ${dayfilter[0].endTime}`).hours() < 22) {
+        if (moment(`10-10-2017 ${dayfilter[0].endTime}`, 'MM-DD-YYYY HH:mm').hours() < 22) {
           this.setState({
             endDay: moment()
               .hours(22)
               .minutes(0),
-            startDay: moment(`10-10-2017 ${dayfilter[0].endTime}`),
+            startDay: moment(`10-10-2017 ${dayfilter[0].endTime}`, 'MM-DD-YYYY HH:mm'),
           });
         }
       }

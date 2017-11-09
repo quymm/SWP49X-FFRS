@@ -271,11 +271,11 @@ class FreeTime extends Component {
                             <div className="col-sm-9">
                               <h4>
                                 {moment(
-                                  '10-10-2017 ' + freeTime.startTime,
+                                  '10-10-2017 ' + freeTime.startTime, 'DD-MM-YYYY HH:mm'
                                 ).format('HH:mm')}{' '}
                                 -{' '}
                                 {moment(
-                                  '10-10-2017 ' + freeTime.endTime,
+                                  '10-10-2017 ' + freeTime.endTime, 'DD-MM-YYYY HH:mm'
                                 ).format('HH:mm')}
                               </h4>
                             </div>
@@ -313,11 +313,11 @@ class FreeTime extends Component {
                             <div className="col-sm-9">
                               <h4>
                                 {moment(
-                                  '10-10-2017 ' + freeTime.startTime,
+                                  '10-10-2017 ' + freeTime.startTime, 'DD-MM-YYYY HH:mm'
                                 ).format('HH:mm')}{' '}
                                 -{' '}
                                 {moment(
-                                  '10-10-2017 ' + freeTime.endTime,
+                                  '10-10-2017 ' + freeTime.endTime,'DD-MM-YYYY HH:mm'
                                 ).format('HH:mm')}
                               </h4>
                             </div>
@@ -377,7 +377,7 @@ class FreeTime extends Component {
                               this,
                             )}
                             defaultValue={moment(
-                              '10-10-2017 ' + this.state.timeLowerLimit,
+                              '10-10-2017 ' + this.state.timeLowerLimit,'DD-MM-YYYY HH:mm'
                             )}
                             disabledMinutes={this.configTimeDiable.bind(this)}
                             disabledHours={this.configHoursDisable.bind(this)}
@@ -400,7 +400,7 @@ class FreeTime extends Component {
                             showSecond={false}
                             onChange={this.handelEndTimeInputChange.bind(this)}
                             defaultValue={moment(
-                              '10-10-2017 ' + this.state.timeUpperLimit,
+                              '10-10-2017 ' + this.state.timeUpperLimit,'DD-MM-YYYY HH:mm'
                             )}
                             disabledMinutes={this.configTimeDiable.bind(this)}
                             disabledHours={this.configHoursDisable.bind(this)}

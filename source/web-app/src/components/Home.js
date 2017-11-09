@@ -337,7 +337,7 @@ class Home extends Component {
                                       <strong>
                                         {moment(
                                           '10-10-2017 ' +
-                                            listMatch.timeSlotEntity.startTime,
+                                            listMatch.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'
                                         ).format('HH:mm')}
                                       </strong>{' '}
                                     </h3>
@@ -345,23 +345,23 @@ class Home extends Component {
                                       <strong>
                                         {moment(
                                           '10-10-2017 ' +
-                                            listMatch.timeSlotEntity.endTime,
-                                        ).hour() *
+                                            listMatch.timeSlotEntity.endTime
+                                        ,'DD-MM-YYYY HH:mm').hour() *
                                           60 +
                                           moment(
                                             '10-10-2017 ' +
-                                              listMatch.timeSlotEntity.endTime,
-                                          ).minute() -
+                                              listMatch.timeSlotEntity.endTime
+                                          ,'DD-MM-YYYY HH:mm').minute() -
                                           (moment(
                                             '10-10-2017 ' +
                                               listMatch.timeSlotEntity
-                                                .startTime,
+                                                .startTime,'DD-MM-YYYY HH:mm'
                                           ).hour() *
                                             60 +
                                             moment(
                                               '10-10-2017 ' +
                                                 listMatch.timeSlotEntity
-                                                  .startTime,
+                                                  .startTime,'DD-MM-YYYY HH:mm'
                                             ).minute())}{' '}
                                         phút
                                       </strong>

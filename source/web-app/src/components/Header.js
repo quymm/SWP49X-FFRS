@@ -182,7 +182,7 @@ class Header extends Component {
     const { id } = this.props.auth.user.data;
     if (messages.length > 0) {
       const afterSort = messages.sort(
-        (a, b) => moment(a.text.time) - moment(b.text.time),
+        (a, b) => moment(a.text.time, 'MM-DD-YYYY HH:mm') - moment(b.text.time, 'MM-DD-YYYY HH:mm'),
       );
       messages.reverse();
     }
@@ -245,7 +245,7 @@ class Header extends Component {
                               )}
                             </strong>
                             <span className="pull-right text-muted">
-                              <em>{moment(message.text.time).fromNow()}</em>
+                              <em>{moment(message.text.time, 'MM-DD-YYYY HH:mm').fromNow()}</em>
                             </span>
                           </div>
                           <div>
@@ -295,25 +295,25 @@ class Header extends Component {
                 <h3 className="text-center text-primary">
                   <strong>
                     {moment(
-                      '10-10-2017 ' + this.state.match.timeSlotId.startTime,
+                      '10-10-2017 ' + this.state.match.timeSlotId.startTime,  'MM-DD-YYYY HH:mm'
                     ).format('HH:mm')}
                   </strong>
                 </h3>
                 <p className="text-center">
                   <strong>
                     {moment(
-                      '10-10-2017 ' + this.state.match.timeSlotId.endTime,
+                      '10-10-2017 ' + this.state.match.timeSlotId.endTime, 'MM-DD-YYYY HH:mm'
                     ).hour() *
                       60 +
                       moment(
-                        '10-10-2017 ' + this.state.match.timeSlotId.endTime,
+                        '10-10-2017 ' + this.state.match.timeSlotId.endTime, 'MM-DD-YYYY HH:mm'
                       ).minute() -
                       (moment(
-                        '10-10-2017 ' + this.state.match.timeSlotId.startTime,
+                        '10-10-2017 ' + this.state.match.timeSlotId.startTime, 'MM-DD-YYYY HH:mm'
                       ).hour() *
                         60 +
                         moment(
-                          '10-10-2017 ' + this.state.match.timeSlotId.startTime,
+                          '10-10-2017 ' + this.state.match.timeSlotId.startTime, 'MM-DD-YYYY HH:mm'
                         ).minute())}{' '}
                     phút
                   </strong>

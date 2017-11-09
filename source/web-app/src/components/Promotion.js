@@ -4,7 +4,10 @@ import {
   fetchGetAllPromotion,
   fetchAddPromotion,
 } from '../apis/field-owner-apis';
-import { doLoginSuccessful, doLogout } from '../redux/guest/guest-action-creators';
+import {
+  doLoginSuccessful,
+  doLogout,
+} from '../redux/guest/guest-action-creators';
 import { Modal } from 'react-bootstrap';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
@@ -19,8 +22,8 @@ class Promotion extends Component {
       startDate: moment(),
       endDate: moment().add(30, 'days'),
       saleOff: undefined,
-      startTime: moment('10-10-2017 06:00:00'),
-      endTime: moment('10-10-2017 22:00:00'),
+      startTime: moment('10-10-2017 06:00:00', 'MM-DD-YYYY HH:mm'),
+      endTime: moment('10-10-2017 22:00:00', 'MM-DD-YYYY HH:mm'),
       decription: undefined,
       fieldStyle: 1,
       message: undefined,
@@ -153,10 +156,12 @@ class Promotion extends Component {
                                   <td>
                                     {moment(
                                       '10-10-2017 ' + promotion.startTime,
+                                      'MM-DD-YYYY HH:mm',
                                     ).format('HH:mm') +
                                       ' - ' +
                                       moment(
                                         '10-10-2017 ' + promotion.endTime,
+                                        'MM-DD-YYYY HH:mm',
                                       ).format('HH:mm')}
                                   </td>
                                   <td>
@@ -165,8 +170,9 @@ class Promotion extends Component {
                                       cols="20"
                                       rows="5"
                                       className="form-control"
+                                      value={promotion.freeServices}
                                     >
-                                      {promotion.freeServices}
+                                      
                                     </textarea>
                                   </td>
                                   <td>{promotion.saleOff} %</td>
@@ -216,7 +222,10 @@ class Promotion extends Component {
                       <TimePicker
                         showSecond={false}
                         name="startTime"
-                        defaultValue={moment('10-10-2017 06:00:00')}
+                        defaultValue={moment(
+                          '10-10-2017 06:00:00',
+                          'MM-DD-YYYY HH:mm',
+                        )}
                         onChange={this.handleStartTimeChange.bind(this)}
                       />
                     </div>
@@ -241,7 +250,10 @@ class Promotion extends Component {
                       <TimePicker
                         showSecond={false}
                         name="endTime"
-                        defaultValue={moment('10-10-2017 22:00:00')}
+                        defaultValue={moment(
+                          '10-10-2017 22:00:00',
+                          'MM-DD-YYYY HH:mm',
+                        )}
                         onChange={this.handleEndTimeChange.bind(this)}
                       />
                     </div>
@@ -332,4 +344,6 @@ class Promotion extends Component {
 function mapPropsToState(state) {
   return { auth: state.auth };
 }
-export default connect(mapPropsToState, { doLoginSuccessful, doLogout })(Promotion);
+export default connect(mapPropsToState, { doLoginSuccessful, doLogout })(
+  Promotion,
+);

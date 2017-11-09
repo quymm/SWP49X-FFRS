@@ -59,7 +59,7 @@ export class Navigation extends Component {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/app/overcome" activeClassName="active">
+                <NavLink to="/app/income" activeClassName="active">
                   <i className="pe-7s-news-paper" /> <strong>Thu nhập</strong>
                 </NavLink>
               </li>
