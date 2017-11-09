@@ -40,49 +40,55 @@ class Header extends Component {
     const { id, roleId } = this.props.auth.user.data;
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
-      console.log(authLocalStorage);
-      const { id, roleId } = authLocalStorage;
-      const idLocal = id;
-      if (roleId.roleName === 'owner') {
-        /* Create reference to messages in Firebase Database */
-        let messagesRef = fire.database().ref(`fieldOwner/${idLocal}`);
-        messagesRef.child('friendlyMatch').on('child_added', snapshot => {
-          let message = {
-            text: snapshot.val(),
-            id: snapshot.key,
-            tourMatch: false,
-          };
-          !message.text.isShowed
-            ? (toast.info(message.text.username + ' đã đặt sân của bạn'),
-              messagesRef.child(`friendlyMatch/${message.id}/isShowed`).set(1))
-            : null;
-          !message.text.isRead
-            ? this.setState({ count: this.state.count + 1 })
-            : null;
+      if (authLocalStorage === null) {
+        this.props.doLogout();
+        this.props.history.push('/login');
+      } else {
+        const { id, roleId } = authLocalStorage;
+        const idLocal = id;
+        if (roleId.roleName === 'owner') {
+          /* Create reference to messages in Firebase Database */
+          let messagesRef = fire.database().ref(`fieldOwner/${idLocal}`);
+          messagesRef.child('friendlyMatch').on('child_added', snapshot => {
+            let message = {
+              text: snapshot.val(),
+              id: snapshot.key,
+              tourMatch: false,
+            };
+            !message.text.isShowed
+              ? (toast.info(message.text.username + ' đã đặt sân của bạn'),
+                messagesRef
+                  .child(`friendlyMatch/${message.id}/isShowed`)
+                  .set(1))
+              : null;
+            !message.text.isRead
+              ? this.setState({ count: this.state.count + 1 })
+              : null;
 
-          this.setState({
-            messages: [message].concat(this.state.messages),
-            tourMatch: true,
+            this.setState({
+              messages: [message].concat(this.state.messages),
+              tourMatch: true,
+            });
           });
-        });
-        messagesRef.child('tourMatch').on('child_added', snapshot => {
-          /* Update React state when message is added at Firebase Database */
-          let message = {
-            text: snapshot.val(),
-            id: snapshot.key,
-            tourMatch: true,
-          };
-          !message.text.isShowed
-            ? (toast.info('Hệ thống đã chọn sân của bạn'),
-              messagesRef.child(`tourMatch/${message.id}/isShowed`).set(1))
-            : null;
-          !message.text.isRead
-            ? this.setState({ count: this.state.count + 1 })
-            : null;
-          this.setState({
-            messages: [message].concat(this.state.messages),
+          messagesRef.child('tourMatch').on('child_added', snapshot => {
+            /* Update React state when message is added at Firebase Database */
+            let message = {
+              text: snapshot.val(),
+              id: snapshot.key,
+              tourMatch: true,
+            };
+            !message.text.isShowed
+              ? (toast.info('Hệ thống đã chọn sân của bạn'),
+                messagesRef.child(`tourMatch/${message.id}/isShowed`).set(1))
+              : null;
+            !message.text.isRead
+              ? this.setState({ count: this.state.count + 1 })
+              : null;
+            this.setState({
+              messages: [message].concat(this.state.messages),
+            });
           });
-        });
+        }
       }
     } else {
       if (roleId.roleName === 'owner') {
@@ -194,7 +200,7 @@ class Header extends Component {
             className="navbar-toggle"
             data-toggle="collapse"
             data-target=".sidebar-collapse"
-            onClick={this.handleMenu.bind(this)} 
+            onClick={this.handleMenu.bind(this)}
           >
             <span className="sr-only">Toggle navigation</span>
             <span className="icon-bar" />
@@ -218,7 +224,7 @@ class Header extends Component {
                   </span>
                 ) : null}
               </Dropdown.Toggle>
-              <Dropdown.Menu className="dropdown-menu-right dropdown-messages">
+              <Dropdown.Menu className="dropdown-menu-right dropdown-messages scroll-noty">
                 {messages.length > 0
                   ? messages.map((message, index) => (
                       <li

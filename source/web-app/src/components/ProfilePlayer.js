@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import {
   doLoginSuccessful,
   accessDenied,
+  doLogout
 } from '../redux/guest/guest-action-creators';
 import { fetchUpdateProfile } from '../apis/field-owner-apis';
 import { toast } from 'react-toastify';
@@ -25,25 +26,27 @@ class ProfilePlayer extends Component {
   async componentDidMount() {
     const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
     console.log(authLocalStorage);
-    if (
-      authLocalStorage === null ||
-      authLocalStorage.roleId.roleName !== 'owner'
-    ) {
-      await this.props.accessDenied();
+    if (authLocalStorage === null) {
+      this.props.doLogout();
       this.props.history.push('/login');
     } else {
-      await this.props.doLoginSuccessful(authLocalStorage);
-      this.setState({
-        username: authLocalStorage.username,
-        fieldName: authLocalStorage.profileId.name,
-        address: authLocalStorage.profileId.address,
-        phone: authLocalStorage.profileId.phone,
-        longitude: authLocalStorage.profileId.longitude,
-        latitude: authLocalStorage.profileId.longitude,
-        avatarUrl: authLocalStorage.profileId.avatarUrl,
-        creditCard: authLocalStorage.profileId.creaditCard,
-        password: authLocalStorage.password,
-      });
+      if (authLocalStorage.roleId.roleName !== 'owner') {
+        await this.props.accessDenied();
+        this.props.history.push('/login');
+      } else {
+        await this.props.doLoginSuccessful(authLocalStorage);
+        this.setState({
+          username: authLocalStorage.username,
+          fieldName: authLocalStorage.profileId.name,
+          address: authLocalStorage.profileId.address,
+          phone: authLocalStorage.profileId.phone,
+          longitude: authLocalStorage.profileId.longitude,
+          latitude: authLocalStorage.profileId.longitude,
+          avatarUrl: authLocalStorage.profileId.avatarUrl,
+          creditCard: authLocalStorage.profileId.creaditCard,
+          password: authLocalStorage.password,
+        });
+      }
     }
   }
   async handelSumitUpdate(evt) {
@@ -168,5 +171,5 @@ function mapPropsToState(state) {
   };
 }
 export default withRouter(
-  connect(mapPropsToState, { accessDenied, doLoginSuccessful })(ProfilePlayer),
+  connect(mapPropsToState, { accessDenied, doLoginSuccessful, doLogout })(ProfilePlayer),
 );

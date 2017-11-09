@@ -7,6 +7,7 @@ import { withRouter } from 'react-router-dom';
 import {
   accessDenied,
   doLoginSuccessful,
+  doLogout
 } from '../redux/guest/guest-action-creators';
 class Field extends Component {
   constructor(props) {
@@ -21,8 +22,11 @@ class Field extends Component {
 
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
+      if (authLocalStorage === null) {
+        this.props.doLogout();
+        this.props.history.push('/login');
+      } else {
       if (
-        authLocalStorage === null ||
         authLocalStorage.roleId.roleName !== 'owner'
       ) {
         await this.props.accessDenied();
@@ -33,6 +37,7 @@ class Field extends Component {
         const data = await fetchGetAllField(idLocal);
         await this.props.getAllField(data.body);
       }
+    }
     } else {
       if (roleId.roleName !== 'owner') {
         this.props.accessDenied();
@@ -129,7 +134,7 @@ function mapStateToProps(state) {
 }
 
 export default withRouter(
-  connect(mapStateToProps, { getAllField, accessDenied, doLoginSuccessful })(
+  connect(mapStateToProps, { getAllField, accessDenied, doLoginSuccessful, doLogout })(
     Field,
   ),
 );

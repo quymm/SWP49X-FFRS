@@ -7,7 +7,7 @@ import {
 import { fetchAddField, fetchGetAllField } from '../apis/field-owner-apis';
 import { withRouter } from 'react-router-dom';
 import { Modal } from 'react-bootstrap';
-import {toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 class FormCreateField extends Component {
   constructor(props) {
     super(props);
@@ -54,10 +54,10 @@ class FormCreateField extends Component {
   async handleShowConfirm(evt) {
     evt.preventDefault();
     const { fieldName } = this.state;
-    if (fieldName === null || fieldName === undefined || fieldName === "") {
+    if (fieldName === null || fieldName === undefined || fieldName === '') {
       this.setState({ errorMessage: 'Tên sân không thể bỏ trống!' });
     }
-    if (fieldName !== null && fieldName !== undefined && fieldName !== "") {
+    if (fieldName !== null && fieldName !== undefined && fieldName !== '') {
       // debugger;
       this.setState({ isShowConfirm: true });
     }
@@ -69,85 +69,87 @@ class FormCreateField extends Component {
       <div className="col-sm-8 col-sm-offset-2">
         <div className="panel panel-default">
           <div className="panel-body">
-        <form
-          onSubmit={this.handleShowConfirm.bind(this)}
-          className="form-horizontal"
-        >
-          {errorMessage === undefined ? null : (
-            <div className="alert alert-danger">
-              <strong>Lỗi!</strong> {errorMessage}
-            </div>
-          )}
+            <form
+              onSubmit={this.handleShowConfirm.bind(this)}
+              className="form-horizontal"
+            >
+              {errorMessage === undefined ? null : (
+                <div className="alert alert-danger">
+                  <strong>Lỗi!</strong> {errorMessage}
+                </div>
+              )}
 
-          <div className="form-group">
-            <label htmlFor="inputEmail3" className="col-sm-3 control-label">
-              Tên sân
-            </label>
-            <div className="col-sm-9">
-              <div className="row">
-                <div className="col-sm-6">
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="inputPassword3"
-                    value={this.state.fieldName}
-                    onChange={this.handelInputChange.bind(this)}
-                    ref={ el => this.inputEl = el }
-                  />
+              <div className="form-group">
+                <label htmlFor="inputEmail3" className="col-sm-3 control-label">
+                  Tên sân
+                </label>
+                <div className="col-sm-9">
+                  <div className="row">
+                    <div className="col-sm-6">
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="inputPassword3"
+                        value={this.state.fieldName}
+                        onChange={this.handelInputChange.bind(this)}
+                        ref={el => (this.inputEl = el)}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="form-group">
-            <label htmlFor="sel1" className="col-sm-3 control-label">
-              Loại sân
-            </label>
-            <div className="col-sm-3">
-              <select
-                value={this.state.fieldStyle}
-                onChange={this.handleSelectChange.bind(this)}
-                className="form-control"
-                id="sel1"
-              >
-                <option value="1">5 vs 5</option>
-                <option value="2">7 vs 7</option>
-              </select>
-            </div>
-          </div>
-          <div className="form-group">
-            <div className="col-sm-offset-3 col-sm-9">
-              <button type="submit" className="btn btn-primary">
-                Tạo sân
-              </button>
-            </div>
-          </div>
-        </form>
-        <Modal
-          /* {...this.props} */
-          show={this.state.isShowConfirm}
-          onHide={this.hideModal}
-          dialogClassName="custom-modal"
-        >
-          <Modal.Header>
-            <Modal.Title>Bạn có chắc muốn tạo sân?</Modal.Title>
-          </Modal.Header>
-          <Modal.Footer>
-            <button
-              onClick={this.handleSubmit.bind(this)}
-              className="btn btn-primary"
+
+              <div className="form-group">
+                <label htmlFor="sel1" className="col-sm-3 control-label">
+                  Loại sân
+                </label>
+                <div className="col-sm-3">
+                  <select
+                    value={this.state.fieldStyle}
+                    onChange={this.handleSelectChange.bind(this)}
+                    className="form-control"
+                    id="sel1"
+                  >
+                    <option value="1">5 vs 5</option>
+                    <option value="2">7 vs 7</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <div className="col-sm-offset-3 col-sm-9">
+                  <button type="submit" className="btn btn-primary">
+                    Tạo sân
+                  </button>
+                </div>
+              </div>
+            </form>
+            <Modal
+              /* {...this.props} */
+              show={this.state.isShowConfirm}
+              onHide={this.hideModal}
+              dialogClassName="custom-modal"
             >
-              Xác nhận
-            </button>
-            <button
-              onClick={this.handleHideConfirm.bind(this)}
-              className="btn btn-danger"
-            >
-              Huỷ
-            </button>
-          </Modal.Footer>
-        </Modal>
-      </div>
-      </div>
+              <Modal.Header>
+                <Modal.Title>Bạn có chắc muốn tạo sân?</Modal.Title>
+              </Modal.Header>
+              <Modal.Footer>
+                <button
+                  onClick={this.handleSubmit.bind(this)}
+                  className="btn btn-primary"
+                >
+                  Xác nhận
+                </button>
+                <button
+                  onClick={this.handleHideConfirm.bind(this)}
+                  className="btn btn-danger"
+                >
+                  Huỷ
+                </button>
+              </Modal.Footer>
+            </Modal>
+          </div>
+        </div>
       </div>
     );
   }

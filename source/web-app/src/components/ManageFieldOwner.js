@@ -1,6 +1,16 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { doLoginSuccessful } from '../redux/guest/guest-action-creators';
 class ManageFieldOwner extends Component {
-  state = {};
+  async componentDidMount() {
+    const { id } = this.props.auth.user.data;
+    if (id === undefined) {
+      const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
+      const idLocal = authLocalStorage.id;
+      await this.props.doLoginSuccessful(authLocalStorage);
+    } else {
+    }
+  }
   render() {
     return (
       <div className="main-panel">
@@ -22,5 +32,8 @@ class ManageFieldOwner extends Component {
     );
   }
 }
+function mapPropsToState(state) {
+  return { auth: state.auth };
+}
 
-export default ManageFieldOwner;
+export default connect(mapPropsToState, {doLoginSuccessful}) (ManageFieldOwner);

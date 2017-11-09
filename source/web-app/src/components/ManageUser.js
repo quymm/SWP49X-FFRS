@@ -19,8 +19,13 @@ class ManageUser extends Component {
       showModelUser: false,
       result: undefined,
       listReported: [],
+      userTarget: 'user',
     };
     this.handelShowModalUser = this.handelShowModalUser.bind(this);
+  }
+  async handeSelectUserTarget(evt) {
+    await this.setState({ userTarget: evt.target.value });
+    console.log(this.state);
   }
   onChange = async (event, { newValue }) => {
     console.log(newValue);
@@ -34,7 +39,10 @@ class ManageUser extends Component {
 
   onSuggestionsFetchRequested = async ({ value }) => {
     if (value.length > 0) {
-      const dataUser = await fetchGetUserOrFieldOwnerSuggestion(value, 'user');
+      const dataUser = await fetchGetUserOrFieldOwnerSuggestion(
+        value,
+        this.state.userTarget,
+      );
       this.setState({
         suggestions: dataUser.body,
       });
@@ -100,20 +108,43 @@ class ManageUser extends Component {
               <div className="col-sm-12">
                 <div className="panel panel-default">
                   <div className="panel panel-body">
-                    <div className="col-sm-12 text-center">
-                      <Autosuggest
-                        suggestions={suggestions}
-                        onSuggestionsFetchRequested={
-                          this.onSuggestionsFetchRequested
-                        }
-                        onSuggestionsClearRequested={
-                          this.onSuggestionsClearRequested
-                        }
-                        getSuggestionValue={getSuggestionValue}
-                        renderSuggestion={renderSuggestion}
-                        inputProps={inputProps}
-                        onSuggestionSelected={this.getSuggestionValue}
-                      />
+                    <div className="col-sm-12">
+                      <div className="col-sm-6 text-center">
+                        <Autosuggest
+                          suggestions={suggestions}
+                          onSuggestionsFetchRequested={
+                            this.onSuggestionsFetchRequested
+                          }
+                          onSuggestionsClearRequested={
+                            this.onSuggestionsClearRequested
+                          }
+                          getSuggestionValue={getSuggestionValue}
+                          renderSuggestion={renderSuggestion}
+                          inputProps={inputProps}
+                          onSuggestionSelected={this.getSuggestionValue}
+                        />
+                      </div>
+                      <div className="col-sm-5">
+                        <div className="form-group">
+                          {/* <label
+                            htmlFor="sel1"
+                            className="col-sm-3 control-label padding-top-12px "
+                          >
+                            Theo
+                          </label> */}
+                          <div className="col-sm-9">
+                            <select
+                              value={this.state.target}
+                              onChange={this.handeSelectUserTarget.bind(this)}
+                              className="form-control"
+                              id="sel1"
+                            >
+                              <option value="user">Người chơi</option>
+                              <option value="owner">Chủ sân</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div className="table-responsive">
                       <div className="panel panel-heading">
@@ -200,45 +231,70 @@ class ManageUser extends Component {
           bsSize="large"
         >
           <Modal.Header>
-            <Modal.Title>Thông tin người dùng</Modal.Title>
+            <Modal.Title>
+              Thông tin{' '}
+              {this.state.userTarget === 'user' ? 'người dùng' : 'chủ sân'}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {result ? (
               <div>
                 <div className="row">
-                  <div className="col-sm-4">
+                  <div className="col-sm-3">
                     <img
-                      src={result.profileId.avatarUrl? result.profileId.avatarUrl : require('../resource/images/user.png')}
+                      src={
+                        result.profileId.avatarUrl
+                          ? result.profileId.avatarUrl
+                          : require('../resource/images/user.png')
+                      }
                       style={imgStyle}
                     />
                   </div>
-                  <div className="col-sm-4">
+                  <div className="col-sm-5">
                     <div className="table-responsive">
                       <table className="table ">
                         <tbody>
-                        <tr>
-                          <td><strong>Tên đăng nhập</strong></td>
-                          <td>{result.username}</td>
-                        </tr>
-                        <tr>
-                          <td><strong>Tên đội</strong></td>
-                          <td>{result.profileId.name}</td>
-                        </tr>
-                        <tr>
-                          <td><strong>Tiền </strong></td>
-                          <td>{result.profileId.balance.toLocaleString('vi')+ ' VND'}</td>
-                        </tr>
-                        <tr>
-                          <td><strong>Số điện thoại </strong></td>
-                          <td>{result.profileId.phone}</td>
-                        </tr>
-                        <tr>
-                          <td><strong>Điểm đội </strong></td>
-                          <td>{result.profileId.ratingScore}</td>
-                        </tr><tr>
-                          <td><strong>Điểm thưởng </strong></td>
-                          <td>{result.profileId.bonusPoint}</td>
-                        </tr>
+                          <tr>
+                            <td>
+                              <strong>Tên đăng nhập</strong>
+                            </td>
+                            <td>{result.username}</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <strong>Tên đội</strong>
+                            </td>
+                            <td>{result.profileId.name}</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <strong>Tiền </strong>
+                            </td>
+                            <td>
+                              {result.profileId.balance.toLocaleString('vi') +
+                                ' VND'}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <strong>Số điện thoại </strong>
+                            </td>
+                            <td>{result.profileId.phone}</td>
+                          </tr>
+                          {this.state.userTarget === 'user' ? (
+                            <tr>
+                              <td>
+                                <strong>Điểm đội </strong>
+                              </td>
+                              <td>{result.profileId.ratingScore}</td>
+                            </tr>
+                          ) : null}
+                          <tr>
+                            <td>
+                              <strong>Điểm thưởng </strong>
+                            </td>
+                            <td>{result.profileId.bonusPoint}</td>
+                          </tr>
                         </tbody>
                       </table>
                     </div>
@@ -253,7 +309,7 @@ class ManageUser extends Component {
                 </div>
                 <div className="table-responsive">
                   <div className="panel panel-heading">
-                    <h4></h4>
+                    <h4 />
                   </div>
                   <table className="table table-striped">
                     <tbody>
@@ -264,7 +320,6 @@ class ManageUser extends Component {
                         <th />
                       </tr>
                     </tbody>
-                    
                   </table>
                 </div>
               </div>

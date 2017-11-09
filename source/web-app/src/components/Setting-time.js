@@ -119,17 +119,22 @@ class SettingTime extends Component {
     const { id, roleId } = this.props.auth.user.data;
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
-      if (
-        authLocalStorage === null ||
-        authLocalStorage.roleId.roleName !== 'owner'
-      ) {
-        await this.props.accessDenied();
+      if (authLocalStorage === null) {
+        this.props.doLogout();
         this.props.history.push('/login');
       } else {
-        const idLocal = authLocalStorage.id;
-        await this.props.doLoginSuccessful(authLocalStorage);
-        const data = await fetchGetTimeEnableInWeek(idLocal);
-        this.props.getAllTimeEnableInWeek(data.body);
+        if (
+          authLocalStorage === null ||
+          authLocalStorage.roleId.roleName !== 'owner'
+        ) {
+          await this.props.accessDenied();
+          this.props.history.push('/login');
+        } else {
+          const idLocal = authLocalStorage.id;
+          await this.props.doLoginSuccessful(authLocalStorage);
+          const data = await fetchGetTimeEnableInWeek(idLocal);
+          this.props.getAllTimeEnableInWeek(data.body);
+        }
       }
     } else {
       if (roleId.roleName !== 'owner') {
@@ -238,7 +243,7 @@ class SettingTime extends Component {
         }
       }
     }
-    
+
     this.setState({ isShowAddTime: true });
   }
 
@@ -256,29 +261,28 @@ class SettingTime extends Component {
     const priceRegex = '^\\d+$';
     if (startDay !== null && endDay !== null && price !== undefined) {
       if (price.match(priceRegex)) {
-      const dayAdd = this.state.buttonGroupDayInWeek.filter(
-        data => data.checked === true,
-      );
-      for (let i = 0; i < dayAdd.length; i++) {
-        await fetchUpdateTimeEnableInWeek(
-          id,
-          dayAdd[i].value,
-          startDay.format('HH:mm'),
-          endDay.format('HH:mm'),
-          price,
-          fieldTypeId,
+        const dayAdd = this.state.buttonGroupDayInWeek.filter(
+          data => data.checked === true,
         );
+        for (let i = 0; i < dayAdd.length; i++) {
+          await fetchUpdateTimeEnableInWeek(
+            id,
+            dayAdd[i].value,
+            startDay.format('HH:mm'),
+            endDay.format('HH:mm'),
+            price,
+            fieldTypeId,
+          );
+        }
+        await this.setState({ isShowAddTime: !isShowAddTime });
+        const data = await fetchGetTimeEnableInWeek(id);
+        this.props.getAllTimeEnableInWeek(data.body);
+        this.props.history.push('/app/setting-time');
+      } else {
+        this.setState({ message: 'Giá không hợp lệ' });
       }
-      await this.setState({ isShowAddTime: !isShowAddTime });
-      const data = await fetchGetTimeEnableInWeek(id);
-      this.props.getAllTimeEnableInWeek(data.body);
-      this.props.history.push('/app/setting-time');
-    }
-  else{
-    this.setState({message: 'Giá không hợp lệ'})
-  }}
-    else{
-      this.setState({message: 'Vui lòng điền giá tiền', isShowAddTime: true});
+    } else {
+      this.setState({ message: 'Vui lòng điền giá tiền', isShowAddTime: true });
     }
   }
 
@@ -411,14 +415,14 @@ class SettingTime extends Component {
               className="form-horizontal"
               onSubmit={this.handleSubmitTimeInWeek.bind(this)}
             >
-            <p className="text-danger text-center">{this.state.message? this.state.message : null}</p>
+              <p className="text-danger text-center">
+                {this.state.message ? this.state.message : null}
+              </p>
               <div className="form-group">
-                
                 <label htmlFor="inputEmail3" className="col-sm-3 control-label">
                   Từ
                 </label>
                 <div className="col-sm-9">
-                  
                   <div className="row">
                     <div className="col-sm-6">
                       <TimePicker

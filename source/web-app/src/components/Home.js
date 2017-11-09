@@ -9,7 +9,7 @@ import {
 import {
   GetMatchByFieldOwnerAndDay,
   getAllFreeField,
-  setCurrentDaySelected
+  setCurrentDaySelected,
 } from '../redux/field-owner/field-owner-action-creator';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
@@ -20,6 +20,7 @@ import MatchByDate from '../containts/MatchByDate';
 import {
   doLoginSuccessful,
   accessDenied,
+  doLogout,
 } from '../redux/guest/guest-action-creators';
 import { Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
@@ -41,31 +42,40 @@ class Home extends Component {
     this.handleShowModalField = this.handleShowModalField.bind(this);
   }
 
-  async handelNextDay(evt){
+  async handelNextDay(evt) {
     evt.preventDefault();
     const { dateSelected } = this.state;
-    this.setState({dateSelected: dateSelected.add(1, 'days')});
+    this.setState({ dateSelected: dateSelected.add(1, 'days') });
     const { id } = this.props.auth.user.data;
     const match = await fetchGetMatchByFieldOwnerAndDay(
       id,
       this.state.dateSelected.format('DD-MM-YYYY'),
       1,
     );
-    await this.props.GetMatchByFieldOwnerAndDay(match.body);
+    const afterSort = match.body.sort(
+      (a, b) =>
+        moment('10-Jan-2017 ' + a.timeSlotEntity.startTime) -
+        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime),
+    );
+    await this.props.GetMatchByFieldOwnerAndDay(afterSort);
     this.props.setCurrentDaySelected(this.state.dateSelected);
   }
-  async handelPreviousDay(evt){
-    
+  async handelPreviousDay(evt) {
     evt.preventDefault();
     const { dateSelected } = this.state;
-    this.setState({dateSelected: dateSelected.subtract(1, 'days')});
+    this.setState({ dateSelected: dateSelected.subtract(1, 'days') });
     const { id } = this.props.auth.user.data;
     const match = await fetchGetMatchByFieldOwnerAndDay(
       id,
       this.state.dateSelected.format('DD-MM-YYYY'),
       1,
     );
-    await this.props.GetMatchByFieldOwnerAndDay(match.body);
+    const afterSort = match.body.sort(
+      (a, b) =>
+        moment('10-Jan-2017 ' + a.timeSlotEntity.startTime) -
+        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime),
+    );
+    await this.props.GetMatchByFieldOwnerAndDay(afterSort);
     this.props.setCurrentDaySelected(this.state.dateSelected);
   }
   configTimeDiable() {
@@ -82,24 +92,35 @@ class Home extends Component {
     const { id } = this.props.auth.user.data;
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
-      if (
-        authLocalStorage === null ||
-        authLocalStorage.roleId.roleName !== 'owner'
-      ) {
-        this.props.accessDenied();
+      if (authLocalStorage === null) {
+        debugger
+        this.props.doLogout();
         this.props.history.push('/login');
       } else {
-        const idLocal = authLocalStorage.id;
-        await this.props.doLoginSuccessful(authLocalStorage);
-        try {
-          const match = await fetchGetMatchByFieldOwnerAndDay(
-            idLocal,
-            this.state.dateSelected.format('DD-MM-YYYY'),
-            1,
-          );
-          await this.props.GetMatchByFieldOwnerAndDay(match.body);
-        } catch (error) {
-          console.log('error: ', error);
+        if (
+          authLocalStorage.roleId.roleName !== 'owner'
+        ) {
+          this.props.accessDenied();
+          this.props.history.push('/login');
+        } else {
+          const idLocal = authLocalStorage.id;
+          await this.props.doLoginSuccessful(authLocalStorage);
+          try {
+            const match = await fetchGetMatchByFieldOwnerAndDay(
+              idLocal,
+              this.state.dateSelected.format('DD-MM-YYYY'),
+              1,
+            );
+            const afterSort = match.body.sort(
+              (a, b) =>
+                moment('10-Jan-2017 ' + a.timeSlotEntity.startTime) -
+                moment('10-Jan-2017 ' + b.timeSlotEntity.startTime),
+            );
+            debugger;
+            await this.props.GetMatchByFieldOwnerAndDay(afterSort);
+          } catch (error) {
+            console.log('error: ', error);
+          }
         }
       }
     } else {
@@ -109,7 +130,12 @@ class Home extends Component {
           this.state.dateSelected.format('DD-MM-YYYY'),
           1,
         );
-        await this.props.GetMatchByFieldOwnerAndDay(match.body);
+        const afterSort = match.body.sort(
+          (a, b) =>
+            moment('10-Jan-2017 ' + a.timeSlotEntity.startTime) -
+            moment('10-Jan-2017 ' + b.timeSlotEntity.startTime),
+        );
+        await this.props.GetMatchByFieldOwnerAndDay(afterSort);
       } catch (error) {
         console.log('error: ', error);
       }
@@ -202,7 +228,12 @@ class Home extends Component {
       this.state.dateSelected.format('DD-MM-YYYY'),
       1,
     );
-    await this.props.GetMatchByFieldOwnerAndDay(match.body);
+    const afterSort = match.body.sort(
+      (a, b) =>
+        moment('10-Jan-2017 ' + a.timeSlotEntity.startTime) -
+        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime),
+    );
+    await this.props.GetMatchByFieldOwnerAndDay(afterSort);
   }
 
   async handleInputChange(evt) {
@@ -265,11 +296,17 @@ class Home extends Component {
                 </div> */}
               </div>
               <div className="col-md-12 match-padding ">
-                <button className="next-left" onClick={this.handelPreviousDay.bind(this)} >
+                <button
+                  className="next-left"
+                  onClick={this.handelPreviousDay.bind(this)}
+                >
                   {' '}
                   <i className="glyphicon glyphicon-chevron-left" />
                 </button>
-                <button className="next-right" onClick={this.handelNextDay.bind(this)}>
+                <button
+                  className="next-right"
+                  onClick={this.handelNextDay.bind(this)}
+                >
                   <i className="glyphicon glyphicon-chevron-right" />
                 </button>
                 <div className="row">
@@ -460,4 +497,5 @@ export default connect(mapStateToProps, {
   doLoginSuccessful,
   accessDenied,
   setCurrentDaySelected,
+  doLogout,
 })(Home);

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchGetOvercome } from '../apis/field-owner-apis';
-import { doLoginSuccessful } from '../redux/guest/guest-action-creators';
-import { Modal } from 'react-bootstrap';
+import { doLoginSuccessful, doLogout } from '../redux/guest/guest-action-creators';
+import { Modal, Pagination } from 'react-bootstrap';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 class OverCome extends Component {
@@ -13,6 +13,9 @@ class OverCome extends Component {
       overcome: [],
       isShowModalField: false,
       detailMatch: undefined,
+      itemSize: 0,
+      activePage: 1,
+      index: 1,
     };
     this.handleShowModal = this.handleShowModal.bind(this);
   }
@@ -20,13 +23,20 @@ class OverCome extends Component {
     const { id } = this.props.auth.user.data;
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
-      const idLocal = authLocalStorage.id;
-      await this.props.doLoginSuccessful(authLocalStorage);
-      const dataOvercome = await fetchGetOvercome(idLocal);
-      this.setState({ overcome: dataOvercome.body });
+      if (authLocalStorage === null) {
+        this.props.doLogout();
+        this.props.history.push('/login');
+      } else {
+        const idLocal = authLocalStorage.id;
+        await this.props.doLoginSuccessful(authLocalStorage);
+        const dataOvercome = await fetchGetOvercome(idLocal);
+        const page = Math.ceil(dataOvercome.body.length / 20);
+        this.setState({ overcome: dataOvercome.body, itemSize: page });
+      }
     } else {
       const dataOvercome = await fetchGetOvercome(id);
-      this.setState({ overcome: dataOvercome.body });
+      const page = Math.ceil(dataOvercome.body.length / 20);
+      this.setState({ overcome: dataOvercome.body, itemSize: page });
     }
   }
   async handleDateChange(date) {
@@ -46,31 +56,36 @@ class OverCome extends Component {
     evt.preventDefault();
     this.setState({ isShowModalField: false });
   }
+  handleSelectPage(eventKey) {
+    this.setState({ activePage: eventKey });
+  }
   render() {
     const { overcome } = this.state;
     console.log(overcome);
     const renderOvercome =
       overcome.length > 0
-        ? overcome.map((overcome, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{overcome.userId.profileId.name}</td>
-              <td>{overcome.price} nghìn đồng</td>
-              <td>
-                {moment(overcome.dateCharge).format(
-                  'DD [tháng] MM YYYY | HH:mm',
-                )}
-              </td>
-              <td>
-                <button
-                  onClick={() => this.handleShowModal(overcome)}
-                  className="btn btn-primary float-right"
-                >
-                  Xem trận đấu
-                </button>
-              </td>
-            </tr>
-          ))
+        ? overcome
+            .slice((this.state.activePage - 1) * 20, this.state.activePage * 20)
+            .map((overcome, index) => (
+              <tr key={index}>
+                <td>{(this.state.activePage - 1) * 20 + index + 1}</td>
+                <td>{overcome.userId.profileId.name}</td>
+                <td>{overcome.price} nghìn đồng</td>
+                <td>
+                  {moment(overcome.dateCharge).format(
+                    'DD [tháng] MM YYYY | HH:mm',
+                  )}
+                </td>
+                <td>
+                  <button
+                    onClick={() => this.handleShowModal(overcome)}
+                    className="btn btn-primary float-right"
+                  >
+                    Xem trận đấu
+                  </button>
+                </td>
+              </tr>
+            ))
         : null;
     return (
       <div className="main-panel">
@@ -120,6 +135,14 @@ class OverCome extends Component {
                   </table>
                 </div>
               </div>
+            </div>
+            <div className="col-sm-12 text-center">
+              <Pagination
+                bsSize="medium"
+                items={this.state.itemSize < 1 ? 0 : this.state.itemSize}
+                activePage={this.state.activePage}
+                onSelect={this.handleSelectPage.bind(this)}
+              />
             </div>
           </div>
         </div>
@@ -191,4 +214,4 @@ class OverCome extends Component {
 function mapPropsToState(state) {
   return { auth: state.auth };
 }
-export default connect(mapPropsToState, { doLoginSuccessful })(OverCome);
+export default connect(mapPropsToState, { doLoginSuccessful, doLogout })(OverCome);

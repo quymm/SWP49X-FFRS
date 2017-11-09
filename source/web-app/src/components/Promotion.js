@@ -4,7 +4,7 @@ import {
   fetchGetAllPromotion,
   fetchAddPromotion,
 } from '../apis/field-owner-apis';
-import { doLoginSuccessful } from '../redux/guest/guest-action-creators';
+import { doLoginSuccessful, doLogout } from '../redux/guest/guest-action-creators';
 import { Modal } from 'react-bootstrap';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
@@ -60,10 +60,15 @@ class Promotion extends Component {
     const { id } = this.props.auth.user.data;
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
-      const idLocal = authLocalStorage.id;
-      await this.props.doLoginSuccessful(authLocalStorage);
-      const dataPromotion = await fetchGetAllPromotion(idLocal);
-      this.setState({ promotion: dataPromotion.body });
+      if (authLocalStorage === null) {
+        this.props.doLogout();
+        this.props.history.push('/login');
+      } else {
+        const idLocal = authLocalStorage.id;
+        await this.props.doLoginSuccessful(authLocalStorage);
+        const dataPromotion = await fetchGetAllPromotion(idLocal);
+        this.setState({ promotion: dataPromotion.body });
+      }
     } else {
       const dataPromotion = await fetchGetAllPromotion(id);
       this.setState({ promotion: dataPromotion.body });
@@ -105,7 +110,6 @@ class Promotion extends Component {
               </div>
               <div className="col-sm-12">
                 <div className="panel panel-default">
-                  
                   <div className="panel panel-body">
                     <div className="table-responsive">
                       <div className="panel panel-heading">
@@ -328,4 +332,4 @@ class Promotion extends Component {
 function mapPropsToState(state) {
   return { auth: state.auth };
 }
-export default connect(mapPropsToState, { doLoginSuccessful })(Promotion);
+export default connect(mapPropsToState, { doLoginSuccessful, doLogout })(Promotion);

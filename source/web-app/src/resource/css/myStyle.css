@@ -321,3 +321,10 @@ button.next-left:hover {
 .react-autosuggest__suggestion--highlighted {
   background-color: #ddd;
 }
+.padding-top-12px {
+  padding-top: 12px;
+}
+.scroll-noty {
+  height: 300px;
+  overflow: scroll;
+}
