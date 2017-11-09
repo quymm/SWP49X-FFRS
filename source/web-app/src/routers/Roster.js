@@ -11,7 +11,11 @@ import FreeTime from '../components/FreeTime';
 import Overcome from '../components/Overcome';
 import Promotion from '../components/Promotion';
 import { ToastContainer } from 'react-toastify';
-
+import ManageFieldOwner from '../components/ManageFieldOwner';
+import ManageOvercome from '../components/ManageOvercome';
+import ManagePrice from '../components/ManagePrice';
+import ManageUser from '../components/ManageUser';
+import ManageVoucher from '../components/ManageVoucher';
 // import PageNotFound from '../components/PageNotFound';
 
 const Roster = ({ match }) => (
@@ -37,6 +41,11 @@ const Roster = ({ match }) => (
         <Route path={`${match.url}/free-time`} component={FreeTime} />
         <Route path={`${match.url}/overcome`} component={Overcome} />
         <Route path={`${match.url}/promotion`} component={Promotion} />
+        <Route path={`${match.url}/staff-manage-user`} component={ManageUser} />
+        <Route path={`${match.url}/staff-manage-overcome`} component={ManageOvercome} />
+        <Route path={`${match.url}/staff-manage-price`} component={ManagePrice} />
+        <Route path={`${match.url}/staff-manage-voucher`} component={ManageVoucher} />
+        <Route path={`${match.url}/staff-manage-field-owner`} component={ManageFieldOwner} />
       </Switch>
     </div>
   </div>

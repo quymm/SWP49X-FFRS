@@ -35,94 +35,96 @@ class Header extends Component {
     this.setState({ menuOpened: !menuOpened });
     // document.getElementsByTagName('html')[0].className =!menuOpened?'nav-open':'';
   }
-  
+
   componentDidMount() {
-    const { id } = this.props.auth.user.data;
-    const { currentDaySelected } = this.props.currentDaySelected
-    if (id === undefined) {      
+    const { id, roleId } = this.props.auth.user.data;
+    if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
-      const idLocal = authLocalStorage.id;
-      /* Create reference to messages in Firebase Database */
-      let messagesRef = fire.database().ref(`fieldOwner/${idLocal}`);
-      messagesRef.child('friendlyMatch').on('child_added', snapshot => {
-        let message = {
-          text: snapshot.val(),
-          id: snapshot.key,
-          tourMatch: false,
-        };
-        !message.text.isShowed
-          ? (toast.info(message.text.username + ' đã đặt sân của bạn'),
-            messagesRef.child(`friendlyMatch/${message.id}/isShowed`).set(1))
-          : null;
-        !message.text.isRead
-          ? this.setState({ count: this.state.count + 1 })
-          : null;
-          console.log(currentDaySelected)
-        this.setState({
-          messages: [message].concat(this.state.messages),
-          tourMatch: true,
+      console.log(authLocalStorage);
+      const { id, roleId } = authLocalStorage;
+      const idLocal = id;
+      if (roleId.roleName === 'owner') {
+        /* Create reference to messages in Firebase Database */
+        let messagesRef = fire.database().ref(`fieldOwner/${idLocal}`);
+        messagesRef.child('friendlyMatch').on('child_added', snapshot => {
+          let message = {
+            text: snapshot.val(),
+            id: snapshot.key,
+            tourMatch: false,
+          };
+          !message.text.isShowed
+            ? (toast.info(message.text.username + ' đã đặt sân của bạn'),
+              messagesRef.child(`friendlyMatch/${message.id}/isShowed`).set(1))
+            : null;
+          !message.text.isRead
+            ? this.setState({ count: this.state.count + 1 })
+            : null;
+
+          this.setState({
+            messages: [message].concat(this.state.messages),
+            tourMatch: true,
+          });
         });
-      });
-      messagesRef.child('tourMatch').on('child_added', snapshot => {
-        /* Update React state when message is added at Firebase Database */
-        let message = {
-          text: snapshot.val(),
-          id: snapshot.key,
-          tourMatch: true,
-        };
-        !message.text.isShowed
-          ? (toast.info('Hệ thống đã chọn sân của bạn'),
-            messagesRef.child(`tourMatch/${message.id}/isShowed`).set(1))
-          : null;
-        !message.text.isRead
-          ? this.setState({ count: this.state.count + 1 })
-          : null;
-        this.setState({
-          messages: [message].concat(this.state.messages),
+        messagesRef.child('tourMatch').on('child_added', snapshot => {
+          /* Update React state when message is added at Firebase Database */
+          let message = {
+            text: snapshot.val(),
+            id: snapshot.key,
+            tourMatch: true,
+          };
+          !message.text.isShowed
+            ? (toast.info('Hệ thống đã chọn sân của bạn'),
+              messagesRef.child(`tourMatch/${message.id}/isShowed`).set(1))
+            : null;
+          !message.text.isRead
+            ? this.setState({ count: this.state.count + 1 })
+            : null;
+          this.setState({
+            messages: [message].concat(this.state.messages),
+          });
         });
-      });
-    } else {
-      if (currentDaySelected !== undefined) {
-        console.log('currentDay: ', currentDaySelected);
       }
-      /* Create reference to messages in Firebase Database */
-      let messagesRef = fire.database().ref(`fieldOwner/${id}`);
-      messagesRef.child('friendlyMatch').on('child_added', snapshot => {
-        let message = {
-          text: snapshot.val(),
-          id: snapshot.key,
-          tourMatch: false,
-        };
-        !message.text.isShowed
-          ? (toast.info(message.text.username + ' đã đặt sân của bạn'),
-            messagesRef.child(`friendlyMatch/${message.id}/isShowed`).set(1))
-          : null;
-        !message.text.isRead
-          ? this.setState({ count: this.state.count + 1 })
-          : null;
-        this.setState({
-          messages: [message].concat(this.state.messages),
-          tourMatch: true,
+    } else {
+      if (roleId.roleName === 'owner') {
+        /* Create reference to messages in Firebase Database */
+        let messagesRef = fire.database().ref(`fieldOwner/${id}`);
+        messagesRef.child('friendlyMatch').on('child_added', snapshot => {
+          let message = {
+            text: snapshot.val(),
+            id: snapshot.key,
+            tourMatch: false,
+          };
+          !message.text.isShowed
+            ? (toast.info(message.text.username + ' đã đặt sân của bạn'),
+              messagesRef.child(`friendlyMatch/${message.id}/isShowed`).set(1))
+            : null;
+          !message.text.isRead
+            ? this.setState({ count: this.state.count + 1 })
+            : null;
+          this.setState({
+            messages: [message].concat(this.state.messages),
+            tourMatch: true,
+          });
         });
-      });
-      messagesRef.child('tourMatch').on('child_added', snapshot => {
-        /* Update React state when message is added at Firebase Database */
-        let message = {
-          text: snapshot.val(),
-          id: snapshot.key,
-          tourMatch: true,
-        };
-        !message.text.isShowed
-          ? (toast.info('Hệ thống đã chọn sân của bạn'),
-            messagesRef.child(`tourMatch/${message.id}/isShowed`).set(1))
-          : null;
-        !message.text.isRead
-          ? this.setState({ count: this.state.count + 1 })
-          : null;
-        this.setState({
-          messages: [message].concat(this.state.messages),
+        messagesRef.child('tourMatch').on('child_added', snapshot => {
+          /* Update React state when message is added at Firebase Database */
+          let message = {
+            text: snapshot.val(),
+            id: snapshot.key,
+            tourMatch: true,
+          };
+          !message.text.isShowed
+            ? (toast.info('Hệ thống đã chọn sân của bạn'),
+              messagesRef.child(`tourMatch/${message.id}/isShowed`).set(1))
+            : null;
+          !message.text.isRead
+            ? this.setState({ count: this.state.count + 1 })
+            : null;
+          this.setState({
+            messages: [message].concat(this.state.messages),
+          });
         });
-      });
+      }
     }
   }
   handleLogout(evt) {
@@ -178,7 +180,6 @@ class Header extends Component {
       );
       messages.reverse();
     }
-    console.log(this.props);
     return (
       <nav
         className={`navbar navbar-default ${this.state.menuOpened
@@ -193,7 +194,7 @@ class Header extends Component {
             className="navbar-toggle"
             data-toggle="collapse"
             data-target=".sidebar-collapse"
-            onClick={this.handleMenu.bind(this)} // dc roi do a
+            onClick={this.handleMenu.bind(this)} 
           >
             <span className="sr-only">Toggle navigation</span>
             <span className="icon-bar" />
@@ -229,7 +230,7 @@ class Header extends Component {
                             <strong>
                               {message.tourMatch ? (
                                 <span className=" label label-info">
-                                  Hệ thống chọn sân
+                                  Hệ thống chọn
                                 </span>
                               ) : (
                                 <span className=" label label-success">

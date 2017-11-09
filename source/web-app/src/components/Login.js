@@ -37,7 +37,9 @@ class Login extends Component {
             this.props.history.push('/app/index');
           }
         } else if (dataLogin.user.role === 'staff') {
-          this.props.history.push('/staff/index');
+          this.props.history.push('/staff-manage-user');
+        } else if (dataLogin.user.role === 'admin') {
+          this.props.history.push('/staff-manage-user');
         } else {
           this.props.doLoginError('Sai tên đăng nhập hoặc mật khẩu');
         }

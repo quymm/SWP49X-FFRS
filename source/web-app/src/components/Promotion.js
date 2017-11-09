@@ -88,11 +88,10 @@ class Promotion extends Component {
     const dataPromotion = await fetchGetAllPromotion(id);
     this.setState({ promotion: dataPromotion.body, showModalPromotion: false });
     if (dataAdd.status === 201) {
-      toast.success("Thêm mới Khuyến mãi thành công");
+      toast.success('Thêm mới Khuyến mãi thành công');
     } else {
-      toast.error("Thêm mới Khuyến mãi thất bại");
+      toast.error('Thêm mới Khuyến mãi thất bại');
     }
-    
   }
   render() {
     console.log(this.state.promotion);
@@ -106,18 +105,19 @@ class Promotion extends Component {
               </div>
               <div className="col-sm-12">
                 <div className="panel panel-default">
-                  <div className="panel panel-heading">
-                    <button
-                      className="btn btn-warning"
-                      name="isShowUpdate"
-                      onClick={this.handelShowModal.bind(this)}
-                    >
-                      <i className="glyphicon glyphicon-plus" /> Thêm mới Khuyến
-                      mãi
-                    </button>
-                  </div>
+                  
                   <div className="panel panel-body">
                     <div className="table-responsive">
+                      <div className="panel panel-heading">
+                        <button
+                          className="btn btn-warning"
+                          name="isShowUpdate"
+                          onClick={this.handelShowModal.bind(this)}
+                        >
+                          <i className="glyphicon glyphicon-plus" /> Thêm mới
+                          Khuyến mãi
+                        </button>
+                      </div>
                       <table className="table table-striped">
                         <thead>
                           <tr>

@@ -23,3 +23,5 @@ export const GET_OVERCONE = '/bill/field-owner-history';
 export const UPDATE_PROFILE = '/account/managed-field-owner';
 export const GET_ALL_PROMOTION = '/promotion/field-owner';
 export const ADD_PROMOTION = '/promotion/managed-promotion';
+export const GET_USER_SUGGESTION = "/account/name";
+export const GET_ALL_REPORT = '/'

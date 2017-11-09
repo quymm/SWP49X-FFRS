@@ -6,6 +6,7 @@
     "firebase": "^4.6.0",
     "rc-time-picker": "^2.4.1",
     "react": "^15.6.1",
+    "react-autosuggest": "^9.3.2",
     "react-bootstrap": "^0.31.3",
     "react-datepicker": "^0.55.0",
     "react-dom": "^15.6.1",

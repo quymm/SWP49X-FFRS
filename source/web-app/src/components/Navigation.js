@@ -15,10 +15,11 @@ export class Navigation extends Component {
   }
   render() {
     const backGround = { backgroundImage: 'url(' + BackGround + ')' };
-    const { username } = this.props.auth.user.data;
+    const { username, roleId } = this.props.auth.user.data;
     if (username === undefined) {
       return <div className="loader" />;
     }
+    console.log(roleId)
     return (
       <div
         className="sidebar"
@@ -32,41 +33,84 @@ export class Navigation extends Component {
               <i className="glyphicon glyphicon-user" /> {username}
             </a>
           </div>
-          <ul className="nav">
-            <li>
-              <NavLink to="/app/index" activeClassName="active">
-                <i className="glyphicon glyphicon-calendar" />{' '}
-                <strong>Trận trong ngày</strong>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/app/free-time" activeClassName="active">
-                <i className="glyphicon glyphicon-time" />{' '}
-                <strong>Thời gian rảnh</strong>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/app/field" activeClassName="active">
-                <i className="glyphicon glyphicon-list-alt" />{' '}
-                <strong>Quản lý sân</strong>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/app/setting-time" activeClassName="active">
-                <i className="pe-7s-alarm" /> <strong>Thiết lập giờ</strong>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/app/overcome" activeClassName="active">
-                <i className="pe-7s-news-paper" /> <strong>Thu nhập</strong>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/app/promotion" activeClassName="active">
-                <i className="glyphicon glyphicon-gift" /> <strong>Khuyến mãi</strong>
-              </NavLink>
-            </li>
-          </ul>
+          {roleId.roleName === 'owner'? (
+            <ul className="nav">
+              <li>
+                <NavLink to="/app/index" activeClassName="active">
+                  <i className="glyphicon glyphicon-calendar" />{' '}
+                  <strong>Trận trong ngày</strong>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/app/free-time" activeClassName="active">
+                  <i className="glyphicon glyphicon-time" />{' '}
+                  <strong>Thời gian rảnh</strong>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/app/field" activeClassName="active">
+                  <i className="glyphicon glyphicon-list-alt" />{' '}
+                  <strong>Quản lý sân</strong>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/app/setting-time" activeClassName="active">
+                  <i className="pe-7s-alarm" /> <strong>Thiết lập giờ</strong>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/app/overcome" activeClassName="active">
+                  <i className="pe-7s-news-paper" /> <strong>Thu nhập</strong>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/app/promotion" activeClassName="active">
+                  <i className="glyphicon glyphicon-gift" />{' '}
+                  <strong>Khuyến mãi</strong>
+                </NavLink>
+              </li>
+            </ul>
+          ) : (
+            <ul className="nav">
+              <li>
+                <NavLink to="/app/staff-manage-user" activeClassName="active">
+                  <i className="pe-7s-users" />{' '}
+                  <strong>Quản lý người dùng</strong>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/app/staff-manage-field-owner"
+                  activeClassName="active"
+                >
+                  <i className="pe-7s-user" /> <strong>Quản lý chủ sân</strong>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/app/staff-manage-overcome"
+                  activeClassName="active"
+                >
+                  <i className="pe-7s-note2" />{' '}
+                  <strong>Quản lý thu nhập</strong>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/app/staff-manage-price" activeClassName="active">
+                  <i className="pe-7s-diskette" /> <strong>Quản lý giá</strong>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/app/staff-manage-voucher"
+                  activeClassName="active"
+                >
+                  <i className="pe-7s-albums" />{' '}
+                  <strong>Quản lý voucher</strong>
+                </NavLink>
+              </li>
+            </ul>
+          )}
         </div>
       </div>
     );
