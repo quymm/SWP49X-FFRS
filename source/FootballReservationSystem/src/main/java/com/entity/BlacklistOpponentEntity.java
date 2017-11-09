@@ -5,8 +5,12 @@
  */
 package com.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -25,6 +29,14 @@ public class BlacklistOpponentEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
+    @Basic(optional = false)
+    @Column(name = "creation_date")
+    @CreationTimestamp
+    private Date creationDate;
+    @Basic(optional = false)
+    @Column(name = "modification_date")
+    @UpdateTimestamp
+    private Date modificationDate;
     @JoinColumn(name = "opponent_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private AccountEntity opponentId;
@@ -68,6 +80,21 @@ public class BlacklistOpponentEntity implements Serializable {
         this.status = status;
     }
 
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(Date modificationDate) {
+        this.modificationDate = modificationDate;
+    }
 
     public AccountEntity getUserId() {
         return userId;

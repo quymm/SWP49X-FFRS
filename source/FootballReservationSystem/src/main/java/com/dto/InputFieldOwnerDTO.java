@@ -20,6 +20,7 @@ public class InputFieldOwnerDTO {
 
     private String avatarUrl;
 
+
     public InputFieldOwnerDTO() {
     }
 
@@ -97,4 +98,5 @@ public class InputFieldOwnerDTO {
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
+
 }

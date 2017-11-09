@@ -1,7 +1,6 @@
 package com.repository;
 
 import com.entity.AccountEntity;
-import com.entity.FieldEntity;
 import com.entity.FieldTypeEntity;
 import com.entity.TimeSlotEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +15,7 @@ import java.util.List;
  */
 public interface TimeSlotRepository extends JpaRepository<TimeSlotEntity, Integer> {
     List<TimeSlotEntity> findByFieldOwnerIdAndReserveStatusAndDateAndStatus(AccountEntity accountEntity, boolean reservationStatus,
-                                                                                          Date targetDate, boolean status);
+                                                                            Date targetDate, boolean status);
 
     Integer countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(AccountEntity accountEntity, FieldTypeEntity fieldTypeEntity,
                                                               Date targetDate, boolean status);

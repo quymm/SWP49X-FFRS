@@ -5,7 +5,11 @@
  */
 package com.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,16 +18,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
- *
  * @author MinhQuy
  */
 @Entity
 @Table(name = "account")
-@XmlRootElement
 public class AccountEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -39,11 +44,19 @@ public class AccountEntity implements Serializable {
     @Column(name = "password")
     private String password;
     @Basic(optional = false)
-    @Column(name = "lock")
-    private boolean lock;
+    @Column(name = "lock_status")
+    private boolean lockStatus;
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
+    @Basic(optional = false)
+    @Column(name = "creation_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creationDate;
+    @Basic(optional = false)
+    @Column(name = "modification_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modificationDate;
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ProfileEntity profileId;
@@ -58,11 +71,14 @@ public class AccountEntity implements Serializable {
         this.id = id;
     }
 
-    public AccountEntity(Integer id, String username, String password, boolean status) {
+    public AccountEntity(Integer id, String username, String password, boolean lock, boolean status, Date creationDate, Date modificationDate) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.lockStatus = lock;
         this.status = status;
+        this.creationDate = creationDate;
+        this.modificationDate = modificationDate;
     }
 
     public Integer getId() {
@@ -89,12 +105,12 @@ public class AccountEntity implements Serializable {
         this.password = password;
     }
 
-    public boolean setLock() {
-        return lock;
+    public boolean getLockStatus() {
+        return lockStatus;
     }
 
-    public void setLock(boolean lock) {
-        this.lock = lock;
+    public void setLockStatus(boolean lockStatus) {
+        this.lockStatus = lockStatus;
     }
 
     public boolean getStatus() {
@@ -103,6 +119,22 @@ public class AccountEntity implements Serializable {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(Date modificationDate) {
+        this.modificationDate = modificationDate;
     }
 
     public ProfileEntity getProfileId() {
@@ -145,5 +177,5 @@ public class AccountEntity implements Serializable {
     public String toString() {
         return "com.entity.AccountEntity[ id=" + id + " ]";
     }
-    
+
 }
