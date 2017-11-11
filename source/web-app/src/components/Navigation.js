@@ -19,7 +19,6 @@ export class Navigation extends Component {
     if (username === undefined) {
       return <div className="loader" />;
     }
-    console.log(roleId)
     return (
       <div
         className="sidebar"

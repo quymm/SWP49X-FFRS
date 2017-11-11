@@ -43,6 +43,7 @@ export const guestReducer = (state = defaultState, action) => {
         },
       };
     case 'ACCESS_DENIED':
+    localStorage.removeItem('auth');
       return {user: {
         data: {id : undefined},
         role: 0,

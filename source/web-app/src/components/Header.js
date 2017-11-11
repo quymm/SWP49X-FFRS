@@ -141,7 +141,6 @@ class Header extends Component {
   }
 
   async handelClickDetailMatch(match) {
-    console.log(match);
     const messageabc = this.state.messages;
     const index = messageabc.findIndex(
       messageabc =>
@@ -179,10 +178,15 @@ class Header extends Component {
     const myStyle = { marginBottom: 0 };
     const styleNotRead = { backgroundColor: 'lavender' };
     const { messages, status } = this.state;
-    const { id } = this.props.auth.user.data;
+    const { roleId } = this.props.auth.user.data;
+    if (roleId === undefined) {
+      return <div className="loader" />;
+    }
     if (messages.length > 0) {
       const afterSort = messages.sort(
-        (a, b) => moment(a.text.time, 'MM-DD-YYYY HH:mm') - moment(b.text.time, 'MM-DD-YYYY HH:mm'),
+        (a, b) =>
+          moment(a.text.time, 'MM-DD-YYYY HH:mm') -
+          moment(b.text.time, 'MM-DD-YYYY HH:mm'),
       );
       messages.reverse();
     }
@@ -214,53 +218,62 @@ class Header extends Component {
           </a>
         </div>
         <ul className="navbar-right">
-          <li>
-            <Dropdown id="dropdown-toggle">
-              <Dropdown.Toggle>
-                <i className="glyphicon glyphicon-globe" />
-                {this.state.count > 0 ? (
-                  <span className="notification hidden-sm hidden-xs">
-                    {this.state.count}
-                  </span>
-                ) : null}
-              </Dropdown.Toggle>
-              <Dropdown.Menu className="dropdown-menu-right dropdown-messages scroll-noty">
-                {messages.length > 0
-                  ? messages.map((message, index) => (
-                      <li
-                        key={index}
-                        style={message.text.isRead ? null : styleNotRead}
-                      >
-                        <a onClick={() => this.handelClickDetailMatch(message)}>
-                          <div>
-                            <strong>
-                              {message.tourMatch ? (
-                                <span className=" label label-info">
-                                  Hệ thống chọn
-                                </span>
-                              ) : (
-                                <span className=" label label-success">
-                                  Người dùng đặt
-                                </span>
-                              )}
-                            </strong>
-                            <span className="pull-right text-muted">
-                              <em>{moment(message.text.time, 'MM-DD-YYYY HH:mm').fromNow()}</em>
-                            </span>
-                          </div>
-                          <div>
-                            {!message.tourMatch
-                              ? `${message.text.username} đã đặt sân của bạn`
-                              : 'Hệ thống đã chọn sân của bạn'}{' '}
-                            <i> </i>
-                          </div>
-                        </a>
-                      </li>
-                    ))
-                  : null}
-              </Dropdown.Menu>
-            </Dropdown>
-          </li>
+          {roleId.roleName === 'owner' ? (
+            <li>
+              <Dropdown id="dropdown-toggle">
+                <Dropdown.Toggle>
+                  <i className="glyphicon glyphicon-globe" />
+                  {this.state.count > 0 ? (
+                    <span className="notification hidden-sm hidden-xs">
+                      {this.state.count}
+                    </span>
+                  ) : null}
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="dropdown-menu-right dropdown-messages scroll-noty">
+                  {messages.length > 0
+                    ? messages.map((message, index) => (
+                        <li
+                          key={index}
+                          style={message.text.isRead ? null : styleNotRead}
+                        >
+                          <a
+                            onClick={() => this.handelClickDetailMatch(message)}
+                          >
+                            <div>
+                              <strong>
+                                {message.tourMatch ? (
+                                  <span className=" label label-info">
+                                    Hệ thống chọn
+                                  </span>
+                                ) : (
+                                  <span className=" label label-success">
+                                    Người dùng đặt
+                                  </span>
+                                )}
+                              </strong>
+                              <span className="pull-right text-muted">
+                                <em>
+                                  {moment(
+                                    message.text.time,
+                                    'MM-DD-YYYY HH:mm',
+                                  ).fromNow()}
+                                </em>
+                              </span>
+                            </div>
+                            <div>
+                              {!message.tourMatch
+                                ? `${message.text.username} đã đặt sân của bạn`
+                                : 'Hệ thống đã chọn sân của bạn'}{' '}
+                              <i> </i>
+                            </div>
+                          </a>
+                        </li>
+                      ))
+                    : null}
+                </Dropdown.Menu>
+              </Dropdown>
+            </li>
+          ) : null}
           <li className="dropdown">
             <Dropdown id="dropdown-custom-1">
               <Dropdown.Toggle>
@@ -295,25 +308,30 @@ class Header extends Component {
                 <h3 className="text-center text-primary">
                   <strong>
                     {moment(
-                      '10-10-2017 ' + this.state.match.timeSlotId.startTime,  'MM-DD-YYYY HH:mm'
+                      '10-10-2017 ' + this.state.match.timeSlotId.startTime,
+                      'MM-DD-YYYY HH:mm',
                     ).format('HH:mm')}
                   </strong>
                 </h3>
                 <p className="text-center">
                   <strong>
                     {moment(
-                      '10-10-2017 ' + this.state.match.timeSlotId.endTime, 'MM-DD-YYYY HH:mm'
+                      '10-10-2017 ' + this.state.match.timeSlotId.endTime,
+                      'MM-DD-YYYY HH:mm',
                     ).hour() *
                       60 +
                       moment(
-                        '10-10-2017 ' + this.state.match.timeSlotId.endTime, 'MM-DD-YYYY HH:mm'
+                        '10-10-2017 ' + this.state.match.timeSlotId.endTime,
+                        'MM-DD-YYYY HH:mm',
                       ).minute() -
                       (moment(
-                        '10-10-2017 ' + this.state.match.timeSlotId.startTime, 'MM-DD-YYYY HH:mm'
+                        '10-10-2017 ' + this.state.match.timeSlotId.startTime,
+                        'MM-DD-YYYY HH:mm',
                       ).hour() *
                         60 +
                         moment(
-                          '10-10-2017 ' + this.state.match.timeSlotId.startTime, 'MM-DD-YYYY HH:mm'
+                          '10-10-2017 ' + this.state.match.timeSlotId.startTime,
+                          'MM-DD-YYYY HH:mm',
                         ).minute())}{' '}
                     phút
                   </strong>

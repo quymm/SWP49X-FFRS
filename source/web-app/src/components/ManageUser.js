@@ -1,12 +1,18 @@
 import React, { Component } from 'react';
-import { doLoginSuccessful } from '../redux/guest/guest-action-creators';
+import {
+  doLoginSuccessful,
+  accessDenied,
+  doLogout,
+} from '../redux/guest/guest-action-creators';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
 import { Modal } from 'react-bootstrap';
 import {
   fetchGetUserOrFieldOwnerSuggestion,
-  fetchGetAllReportFieldOwner, fetchGetAllReportUser
+  fetchGetAllReportFieldOwner,
+  fetchGetAllReportUser,
 } from '../apis/staff-api';
+import moment from 'moment';
 
 const getSuggestionValue = suggestion => suggestion.profileId.name;
 const renderSuggestion = suggestion => <div>{suggestion.profileId.name}</div>;
@@ -63,14 +69,14 @@ class ManageUser extends Component {
       suggestions: [],
     });
   };
-  handelShowModalUser(evt) {
-    debugger
+  async handelShowModalUser(evt) {
     if (this.state.userTarget === 'owner') {
-      const data = fetchGetAllReportFieldOwner(evt.id);
-      this.setState({listReportWithTargetUser: data.body});
+      const data = await fetchGetAllReportFieldOwner(evt.id);
+      this.setState({ listReportWithTargetUser: data.body });
     } else {
-      const data = fetchGetAllReportUser(evt.id);
-      this.setState({listReportWithTargetUser: data.body});
+      const data = await fetchGetAllReportUser(evt.id);
+      debugger;
+      this.setState({ listReportWithTargetUser: data.body });
     }
     this.setState({ showModelUser: true, result: evt });
   }
@@ -83,8 +89,19 @@ class ManageUser extends Component {
     const { id } = this.props.auth.user.data;
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
-      const idLocal = authLocalStorage.id;
-      await this.props.doLoginSuccessful(authLocalStorage);
+      debugger;
+      if (authLocalStorage === null) {
+        this.props.doLogout();
+        this.props.history.push('/login');
+      } else {
+        if (authLocalStorage.roleId.roleName !== 'staff') {
+          this.props.accessDenied();
+          this.props.history.push('/login');
+        } else {
+          const idLocal = authLocalStorage.id;
+          await this.props.doLoginSuccessful(authLocalStorage);
+        }
+      }
     } else {
     }
     // const dataListReported = await fetchGetAllReport();
@@ -92,7 +109,7 @@ class ManageUser extends Component {
   }
   render() {
     const { value, suggestions, result, listReported } = this.state;
-    console.log(result);
+    console.log(this.state.listReportWithTargetUser);
     // Autosuggest will pass through all these props to the input.
     const inputProps = {
       placeholder: 'Tìm kiếm theo tên',
@@ -277,8 +294,9 @@ class ManageUser extends Component {
                               <strong>Tiền </strong>
                             </td>
                             <td>
-                              {(result.profileId.balance * 1000).toLocaleString('vi') +
-                                ' VND'}
+                              {(result.profileId.balance * 1000).toLocaleString(
+                                'vi',
+                              ) + ' VND'}
                             </td>
                           </tr>
                           <tr>
@@ -320,6 +338,7 @@ class ManageUser extends Component {
                   <table className="table table-striped">
                     <thead>
                       <tr>
+                        <th>#</th>
                         <th>Người tố cáo</th>
                         <th>Trận ngày</th>
                         <th>Nội dung</th>
@@ -327,12 +346,22 @@ class ManageUser extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      {this.state.listReportWithTargetUser > 0? 
-                      this.state.listReportWithTargetUser.map(report => <tr><td>
-                        
-                        </td></tr>)
-                      
-                      : null}
+                      {this.state.listReportWithTargetUser.length > 0
+                        ? this.state.listReportWithTargetUser.map(
+                            (report, index) => (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{report.userId.username}</td>
+                                <td>
+                                  {moment(report.creationDate).format(
+                                    'DD [tháng] MM, YYYY | HH:mm',
+                                  )}
+                                </td>
+                                <td>{report.reason}</td>
+                              </tr>
+                            ),
+                          )
+                        : null}
                     </tbody>
                   </table>
                 </div>
@@ -361,4 +390,6 @@ class ManageUser extends Component {
 function mapPropsToState(state) {
   return { auth: state.auth };
 }
-export default connect(mapPropsToState, { doLoginSuccessful })(ManageUser);
+export default connect(mapPropsToState, { doLoginSuccessful, accessDenied, doLogout })(
+  ManageUser,
+);

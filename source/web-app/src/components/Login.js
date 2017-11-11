@@ -96,13 +96,6 @@ class Login extends Component {
                         <Link to="/register">Đăng kí trở thành chủ sân</Link>
                       </label>
                     </div>
-                    {/* <a
-                      href="index.html"
-                      className="btn btn-lg btn-success btn-block"
-                    >
-                      Login
-                    </a> */}
-
                     <button
                       type="submit"
                       className="btn btn-lg btn-success btn-block"
