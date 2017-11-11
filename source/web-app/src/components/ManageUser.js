@@ -5,7 +5,7 @@ import Autosuggest from 'react-autosuggest';
 import { Modal } from 'react-bootstrap';
 import {
   fetchGetUserOrFieldOwnerSuggestion,
-  fetchGetAllReport,
+  fetchGetAllReportFieldOwner, fetchGetAllReportUser
 } from '../apis/staff-api';
 
 const getSuggestionValue = suggestion => suggestion.profileId.name;
@@ -20,15 +20,14 @@ class ManageUser extends Component {
       result: undefined,
       listReported: [],
       userTarget: 'user',
+      listReportWithTargetUser: [],
     };
     this.handelShowModalUser = this.handelShowModalUser.bind(this);
   }
   async handeSelectUserTarget(evt) {
     await this.setState({ userTarget: evt.target.value });
-    console.log(this.state);
   }
   onChange = async (event, { newValue }) => {
-    console.log(newValue);
     await this.setState({
       value: newValue,
     });
@@ -65,7 +64,14 @@ class ManageUser extends Component {
     });
   };
   handelShowModalUser(evt) {
-    debugger;
+    debugger
+    if (this.state.userTarget === 'owner') {
+      const data = fetchGetAllReportFieldOwner(evt.id);
+      this.setState({listReportWithTargetUser: data.body});
+    } else {
+      const data = fetchGetAllReportUser(evt.id);
+      this.setState({listReportWithTargetUser: data.body});
+    }
     this.setState({ showModelUser: true, result: evt });
   }
 
@@ -81,8 +87,8 @@ class ManageUser extends Component {
       await this.props.doLoginSuccessful(authLocalStorage);
     } else {
     }
-    const dataListReported = await fetchGetAllReport();
-    this.setState({ listReported: dataListReported.body });
+    // const dataListReported = await fetchGetAllReport();
+    // this.setState({ listReported: dataListReported.body });
   }
   render() {
     const { value, suggestions, result, listReported } = this.state;
@@ -271,7 +277,7 @@ class ManageUser extends Component {
                               <strong>Tiền </strong>
                             </td>
                             <td>
-                              {result.profileId.balance.toLocaleString('vi') +
+                              {(result.profileId.balance * 1000).toLocaleString('vi') +
                                 ' VND'}
                             </td>
                           </tr>
@@ -312,13 +318,21 @@ class ManageUser extends Component {
                     <h4 />
                   </div>
                   <table className="table table-striped">
-                    <tbody>
+                    <thead>
                       <tr>
                         <th>Người tố cáo</th>
                         <th>Trận ngày</th>
                         <th>Nội dung</th>
                         <th />
                       </tr>
+                    </thead>
+                    <tbody>
+                      {this.state.listReportWithTargetUser > 0? 
+                      this.state.listReportWithTargetUser.map(report => <tr><td>
+                        
+                        </td></tr>)
+                      
+                      : null}
                     </tbody>
                   </table>
                 </div>

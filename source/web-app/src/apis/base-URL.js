@@ -1,8 +1,8 @@
 export const GOOGLE_MAP_KEY = "AIzaSyBHg0iReiIw8DpfaSaPxeaDRrJVP0FWs9A";
 export const GOOGLE_MAP_URL = "https://maps.googleapis.com/maps/api/geocode/json?";
 
-// export const BASE_URL = "http://192.168.1.109:8080/swp49x-ffrs";
-export const BASE_URL = "http://localhost:8080/swp49x-ffrs";
+export const BASE_URL = "http://192.168.1.36:8080/swp49x-ffrs";
+// export const BASE_URL = "http://localhost:8080/swp49x-ffrs";
 export const LOGIN = "/account/login-field-owner";
 export const REGISTER = "/account/managed-field-owner";
 export const GET_MATCH_BY_DAY = "/match/match-upcoming";
@@ -24,4 +24,5 @@ export const UPDATE_PROFILE = '/account/managed-field-owner';
 export const GET_ALL_PROMOTION = '/promotion/field-owner';
 export const ADD_PROMOTION = '/promotion/managed-promotion';
 export const GET_USER_SUGGESTION = "/account/name";
-export const GET_ALL_REPORT = '/'
+export const GET_ALL_REPORT_USER = '/report/report-opponent';
+export const GET_ALL_REPORT_FIELD_OWNER = '/report/report-field';

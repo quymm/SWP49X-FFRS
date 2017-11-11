@@ -260,6 +260,9 @@ class SettingTime extends Component {
     } = this.state;
     const priceRegex = '^\\d+$';
     if (startDay !== null && endDay !== null && price !== undefined) {
+      if (startDay.hour() < endDay.hours()) {
+        
+      
       if (price.match(priceRegex)) {
         const dayAdd = this.state.buttonGroupDayInWeek.filter(
           data => data.checked === true,
@@ -281,6 +284,9 @@ class SettingTime extends Component {
       } else {
         this.setState({ message: 'Giá không hợp lệ' });
       }
+    } else {
+      this.setState({message: 'Thời gian không hợp lệ'})
+    }
     } else {
       this.setState({ message: 'Vui lòng điền giá tiền', isShowAddTime: true });
     }

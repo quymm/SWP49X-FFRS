@@ -53,8 +53,12 @@ class Login extends Component {
   render() {
     const { message } = this.props.auth.user.status;
     console.log(this.props);
+    const styleLogo = {
+      width: 200, height: 80
+    }
     return (
       <div className="container-fluid backGroundLogin">
+      <div className="neon-text"><img style={styleLogo} src={require('../resource/images/ffrs.png')}></img>Hệ Thống Quản Lý Sân Bóng </div>
         <div className="row">
           <div className="col-md-4 col-md-offset-4 login-padding">
             <div className="login-panel panel panel-default">

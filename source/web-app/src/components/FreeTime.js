@@ -175,16 +175,9 @@ class FreeTime extends Component {
       timeLowerLimit,
       timeUpperLimit,
     } = this.state;
-    // debugger;
-    // console.log(
-    //   endTime.hours() >= startTime.hours(),
-    //   endTime.minutes() - startTime.minutes() >= 30,
-    // );
+    
     if (
       endTime.hours() > startTime.hours()
-      // endTime.minutes() - startTime.minutes() >= 30
-      // startTime >= timeLowerLimit &&
-      // endTime <= timeUpperLimit
     ) {
       const bookMatchRes = await fetchBookMatch(
         this.state.dateSelected.format('DD-MM-YYYY'),
@@ -229,7 +222,7 @@ class FreeTime extends Component {
           <div className="container-fluid">
             <div className="row">
               <div className="col-sm-4">
-                <h2 className="page-header">Thời gian rảnh</h2>
+                <h2 className="page-header">Đặt sân</h2>
               </div>
               <div className="col-sm-4">
                 <div className="page-header">
