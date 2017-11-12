@@ -1,14 +1,13 @@
 package com.services;
 
 import com.config.Constant;
-import com.dto.CordinationPoint;
-import com.dto.FieldOwnerAndDistance;
-import com.dto.InputFieldOwnerDTO;
-import com.dto.InputUserDTO;
+import com.dto.*;
 import com.entity.AccountEntity;
+import com.entity.DepositHistoryEntity;
 import com.entity.ProfileEntity;
 import com.entity.RoleEntity;
 import com.repository.AccountRepository;
+import com.repository.DepositHistoryRepository;
 import com.repository.ProfileRepository;
 import com.utils.MapUtils;
 import com.utils.NumberUtils;
@@ -32,6 +31,9 @@ public class AccountServices {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    DepositHistoryRepository depositHistoryRepository;
 
     @Autowired
     RoleServices roleServices;
@@ -58,6 +60,7 @@ public class AccountServices {
         accountEntity.setProfileId(savedProfileEntity);
         accountEntity.setRoleId(roleEntity);
         accountEntity.setStatus(true);
+        accountEntity.setLockStatus(false);
         return accountRepository.save(accountEntity);
     }
 
@@ -93,10 +96,8 @@ public class AccountServices {
         accountEntity.setPassword(inputUserDTO.getPassword());
         accountEntity.setProfileId(savedProfileEntity);
         accountEntity.setRoleId(roleEntity);
-        accountEntity.setLockStatus(true);
+        accountEntity.setLockStatus(false);
         accountEntity.setStatus(true);
-        accountEntity.setCreationDate(new Date());
-        accountEntity.setModificationDate(new Date());
         return accountRepository.save(accountEntity);
     }
 
@@ -207,4 +208,51 @@ public class AccountServices {
         accountEntity.setProfileId(profileRepository.save(profileEntity));
         return accountEntity;
     }
+
+    public DepositHistoryEntity depositMoney(InputDepositHistoryDTO inputDepositHistoryDTO){
+        AccountEntity account = findAccountEntityById(inputDepositHistoryDTO.getAccountId(), inputDepositHistoryDTO.getRole());
+        DepositHistoryEntity depositHistoryEntity = new DepositHistoryEntity();
+        depositHistoryEntity.setUserId(account);
+        depositHistoryEntity.setBalance(inputDepositHistoryDTO.getBalance());
+        depositHistoryEntity.setInformation(inputDepositHistoryDTO.getInformation());
+        depositHistoryEntity.setStatus(true);
+        DepositHistoryEntity savedDepositHistoryEntity = depositHistoryRepository.save(depositHistoryEntity);
+        changeBalance(inputDepositHistoryDTO.getAccountId(), inputDepositHistoryDTO.getBalance(), inputDepositHistoryDTO.getRole());
+        return savedDepositHistoryEntity;
+    }
+
+    public List<DepositHistoryEntity> findDepositHistoryByAccountId(int accountId, String role){
+        AccountEntity account = findAccountEntityById(accountId, role);
+        return depositHistoryRepository.findByUserIdAndStatus(account, true);
+    }
+
+    public AccountEntity createNewStaff(InputStaffDTO inputStaffDTO){
+        RoleEntity roleEntity = roleServices.findByRoleName(constant.getStaffRole());
+        if(accountRepository.findByUsernameAndStatusAndRoleId(inputStaffDTO.getUsername(), true, roleEntity) != null){
+            throw new DuplicateKeyException(String.format("Username: %s is already exists!", inputStaffDTO.getUsername()));
+        }
+        ProfileEntity profileEntity = createProfileForStaff(inputStaffDTO);
+        ProfileEntity savedProfileEntity = profileRepository.save(profileEntity);
+
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setUsername(inputStaffDTO.getUsername());
+        accountEntity.setPassword(inputStaffDTO.getPassword());
+        accountEntity.setProfileId(savedProfileEntity);
+        accountEntity.setRoleId(roleEntity);
+        accountEntity.setLockStatus(false);
+        accountEntity.setStatus(true);
+        return accountRepository.save(accountEntity);
+    }
+
+    public ProfileEntity createProfileForStaff(InputStaffDTO inputStaffDTO){
+        ProfileEntity profileEntity = new ProfileEntity();
+        profileEntity.setName(inputStaffDTO.getName());
+        profileEntity.setAddress(inputStaffDTO.getAddress());
+        profileEntity.setPhone(inputStaffDTO.getPhone());
+        profileEntity.setAvatarUrl(inputStaffDTO.getAvatarUrl());
+        profileEntity.setStatus(true);
+        return profileEntity;
+    }
+
+
 }

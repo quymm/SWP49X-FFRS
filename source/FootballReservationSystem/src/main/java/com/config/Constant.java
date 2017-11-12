@@ -43,6 +43,10 @@ public class Constant {
         return fieldOwnerRole;
     }
 
+    public String getStaffRole() {
+        return staffRole;
+    }
+
     public String getUserRole() {
         return userRole;
     }

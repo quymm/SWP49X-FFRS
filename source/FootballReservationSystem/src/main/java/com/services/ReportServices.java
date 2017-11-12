@@ -89,4 +89,8 @@ public class ReportServices {
         AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
         return reportFieldRepository.findByFieldOwnerIdAndStatus(fieldOwner, true);
     }
+
+    public List<ReportOpponentEntity> getListReportOrderByNumberReport(){
+        return reportOpponentRepository.getListReportOfUser();
+    }
 }
