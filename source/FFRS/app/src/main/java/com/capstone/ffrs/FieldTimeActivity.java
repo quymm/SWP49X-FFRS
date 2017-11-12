@@ -12,6 +12,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -45,7 +46,9 @@ import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.FieldTime;
 import com.capstone.ffrs.utils.TimePickerListener;
 
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,12 +91,16 @@ public class FieldTimeActivity extends AppCompatActivity {
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             String fromTime = intent.getStringExtra("from");
             String toTime = intent.getStringExtra("to");
             EditText from = (EditText) findViewById(R.id.text_from);
             EditText to = (EditText) findViewById(R.id.text_to);
             from.setText(fromTime);
             to.setText(toTime);
+
+            Toast toast = Toast.makeText(FieldTimeActivity.this, "Khung giờ bạn chọn đã được tự động điền", Toast.LENGTH_LONG);
+            toast.show();
             toggleButton();
         }
     };
@@ -125,6 +132,7 @@ public class FieldTimeActivity extends AppCompatActivity {
                         LocalDateTime time = new LocalDateTime(startTime);
                         time = time.plusMinutes(60);
                         startTime = time.toDate();
+                        endTimeListener.setDate(new SimpleDateFormat("dd/MM/yyyy").parse(date.getText().toString()));
                         endTimeListener.setMinTime(new LocalDateTime(startTime).toDate());
                         endTimeListener.setMaxTime(toFrame);
                         flag = true;
@@ -152,7 +160,7 @@ public class FieldTimeActivity extends AppCompatActivity {
             try {
                 Date startTime = sdf.parse(from.getText().toString());
                 Date endTime = sdf.parse(to.getText().toString());
-                if (startTime.compareTo(endTime) < 0) {
+                if (((endTime.getTime() - startTime.getTime()) / 60000) >= 60) {
                     boolean flag = false;
                     for (FieldTime time : fieldTimeList) {
                         Date startFrameTime = sdf.parse(time.getFromTime());
@@ -173,7 +181,6 @@ public class FieldTimeActivity extends AppCompatActivity {
                 } else {
                     btReserve.setEnabled(false);
                     btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
-                    from.setText("");
                     to.setText("");
                 }
             } catch (ParseException e) {
@@ -182,7 +189,6 @@ public class FieldTimeActivity extends AppCompatActivity {
         } else {
             btReserve.setEnabled(false);
             btReserve.setBackgroundColor(Color.parseColor("#dbdbdb"));
-            from.setText("");
             to.setText("");
         }
     }
@@ -203,18 +209,30 @@ public class FieldTimeActivity extends AppCompatActivity {
 
         addSpinner();
 
-        Bundle b = getIntent().getExtras();
+        if (savedInstanceState == null) {
+            Bundle b = getIntent().getExtras();
 
-        name = b.getString("field_name");
-        TextView txtName = (TextView) findViewById(R.id.field_name);
-        txtName.setText(name);
+            name = b.getString("field_name");
+            TextView txtName = (TextView) findViewById(R.id.field_name);
+            txtName.setText(name);
 
-        address = b.getString("field_address");
-        TextView txtAddress = (TextView) findViewById(R.id.field_address);
-        txtAddress.setText(address);
+            address = b.getString("field_address");
+            TextView txtAddress = (TextView) findViewById(R.id.field_address);
+            txtAddress.setText(address);
 
-        id = b.getInt("field_id");
+            id = b.getInt("field_id");
 
+        } else {
+            name = savedInstanceState.getString("field_name");
+            TextView txtName = (TextView) findViewById(R.id.field_name);
+            txtName.setText(name);
+
+            address = savedInstanceState.getString("field_address");
+            TextView txtAddress = (TextView) findViewById(R.id.field_address);
+            txtAddress.setText(address);
+
+            id = savedInstanceState.getInt("field_id");
+        }
         date = (Button) findViewById(R.id.date_picker);
         SimpleDateFormat sdf = new SimpleDateFormat(displayFormat);
 
@@ -270,7 +288,35 @@ public class FieldTimeActivity extends AppCompatActivity {
         });
 
         final EditText from = (EditText) findViewById(R.id.text_from);
-        startTimeListener = new TimePickerListener(this, from);
+        startTimeListener = new TimePickerListener(this, from) {
+            @Override
+            public void onClick(View v) {
+                LocalDate localDate = LocalDate.parse(date.getText().toString(), DateTimeFormat.forPattern("dd/MM/yyyy"));
+                setDate(localDate.toDate());
+                if (localDate.isEqual(LocalDate.now())) {
+                    Calendar calendar = Calendar.getInstance();
+                    int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                    int minutes = calendar.get(Calendar.MINUTE);
+                    if (minutes > 0 && minutes < 30) {
+                        minutes = 30;
+                        calendar.set(Calendar.MINUTE, minutes);
+                    } else if (minutes > 30 && minutes <= 59) {
+                        minutes = 0;
+                        calendar.set(Calendar.MINUTE, minutes);
+                        if (hour < 23) {
+                            hour += 1;
+                            calendar.set(Calendar.HOUR_OF_DAY, hour);
+                        } else {
+                            hour = 0;
+                            calendar.set(Calendar.HOUR_OF_DAY, hour);
+                            calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1);
+                        }
+                    }
+                    setMinTime(calendar.getTime());
+                }
+                super.onClick(v);
+            }
+        };
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -287,13 +333,32 @@ public class FieldTimeActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString("field_name", name);
+        outState.putString("field_address", address);
+        outState.putInt("field_id", id);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        EditText from = (EditText) findViewById(R.id.text_from);
+        from.setText("");
+        EditText to = (EditText) findViewById(R.id.text_to);
+        to.setText("");
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("custom-message"));
 
         LocalBroadcastManager.getInstance(this).registerReceiver(timeReceiver,
-                new IntentFilter("timepicker-message"));
+                new IntentFilter("time-picker-message"));
+
+        loadFieldTimes();
     }
 
     @Override
@@ -395,10 +460,14 @@ public class FieldTimeActivity extends AppCompatActivity {
                                             Log.d("EXCEPTION", e.getMessage());
                                         }
                                     } else {
-                                        Toast.makeText(FieldTimeActivity.this, "Không thể đặt sân!", Toast.LENGTH_SHORT).show();
+                                        Toast toast = Toast.makeText(FieldTimeActivity.this, "Không thể đặt sân!", Toast.LENGTH_LONG);
+                                        toast.setGravity(Gravity.CENTER, 0, 0);
+                                        toast.show();
                                     }
                                 } else {
-                                    Toast.makeText(FieldTimeActivity.this, "Không còn sân trống!", Toast.LENGTH_SHORT).show();
+                                    Toast toast = Toast.makeText(FieldTimeActivity.this, "Không còn sân trống!", Toast.LENGTH_LONG);
+                                    toast.setGravity(Gravity.CENTER, 0, 0);
+                                    toast.show();
                                     loadFieldTimes();
                                 }
                             } catch (JSONException e) {
@@ -425,7 +494,7 @@ public class FieldTimeActivity extends AppCompatActivity {
             queue.add(postRequest);
         } catch (ParseException e) {
             Log.d("ERROR", e.getMessage());
-            Toast.makeText(getApplicationContext(), "Hãy nhập giờ chơi!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Hãy nhập giờ đá!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -493,10 +562,8 @@ public class FieldTimeActivity extends AppCompatActivity {
                             if (!fieldTimeList.isEmpty()) {
                                 Date endFrame = sdf.parse(fieldTimeList.get(fieldTimeList.size() - 1).getToTime());
                                 LocalDateTime time = new LocalDateTime(endFrame);
-                                if (time.getMinuteOfHour() == 0) {
-                                    time = time.minusMinutes(60);
-                                    endFrame = time.toDate();
-                                }
+                                time = time.minusMinutes(60);
+                                endFrame = time.toDate();
                                 startTimeListener.setMinTime(sdf.parse(fieldTimeList.get(0).getFromTime()));
                                 startTimeListener.setMaxTime(endFrame);
                                 final EditText from = (EditText) findViewById(R.id.text_from);

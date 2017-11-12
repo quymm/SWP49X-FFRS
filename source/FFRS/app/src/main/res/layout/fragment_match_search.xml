@@ -9,34 +9,43 @@
         android:layout_height="match_parent"
         android:layout_margin="10dp">
 
+        <AutoCompleteTextView
+            android:id="@+id/input_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:ems="10"
+            android:hint="Địa chỉ"
+            android:inputType="text" />
+
         <TableLayout
             android:id="@+id/table_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+            android:layout_below="@id/input_address"
             android:layout_marginBottom="10dp">
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <!--<TableRow-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
 
-                <TextView
-                    android:id="@+id/text_address"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Địa chỉ: * " />
+            <!--<TextView-->
+            <!--android:id="@+id/text_address"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="Địa chỉ: * " />-->
+            <!---->
+            <!--<AutoCompleteTextView-->
+            <!--android:id="@+id/input_address"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentTop="true"-->
+            <!--android:ems="10"-->
+            <!--android:hint="Địa chỉ (Tùy chọn)"-->
+            <!--android:inputType="text" />-->
 
-                <AutoCompleteTextView
-                    android:id="@+id/input_address"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:hint="Địa chỉ (Tùy chọn)"
-                    android:inputType="text" />
-
-            </TableRow>
+            <!--</TableRow>-->
 
             <TableRow
                 android:layout_width="match_parent"
@@ -47,7 +56,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Ngày đá: *" />
+                    android:text="Ngày đá:" />
 
                 <EditText
                     android:id="@+id/input_date"
@@ -56,7 +65,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:focusable="false"
-                    android:hint="Ngày"
+                    android:hint="Ngày đá"
                     android:inputType="none" />
 
             </TableRow>
@@ -71,13 +80,15 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:text="Khoảng giờ chơi: *" />
+                    android:text="Khoảng giờ đá:" />
 
                 <Spinner
                     android:id="@+id/spDuration"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:background="@drawable/spinner_border"
+                    android:popupBackground="@drawable/popup_spinner" />
             </TableRow>
 
             <TableRow
@@ -89,7 +100,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Bắt đầu: *" />
+                    android:text="Bắt đầu:" />
 
                 <EditText
                     android:id="@+id/input_start_time"
@@ -112,7 +123,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Kết thúc: *" />
+                    android:text="Kết thúc:" />
 
                 <EditText
                     android:id="@+id/input_end_time"
@@ -135,13 +146,15 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:text="Loại sân: *" />
+                    android:text="Loại sân:" />
 
                 <Spinner
                     android:id="@+id/spField"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:background="@drawable/spinner_border"
+                    android:popupBackground="@drawable/popup_spinner"/>
 
             </TableRow>
             <!--<TableRow-->

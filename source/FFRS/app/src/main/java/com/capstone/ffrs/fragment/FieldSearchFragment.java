@@ -14,7 +14,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.util.Log;
@@ -68,6 +71,7 @@ public class FieldSearchFragment extends Fragment {
     private EditText searchText;
     private Activity mActivity;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ImageView btnClose;
 
     private Location currentLocation;
 
@@ -95,19 +99,6 @@ public class FieldSearchFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public BroadcastReceiver filterReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean flag = intent.getBooleanExtra("empty_list", false);
-            if (flag) {
-                txtNotFound.setText("Không có sân nào chứa từ '" + searchText.getText().toString() + "'");
-                txtNotFound.setVisibility(View.VISIBLE);
-            } else {
-                txtNotFound.setVisibility(View.GONE);
-            }
-        }
-    };
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,8 +112,18 @@ public class FieldSearchFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_field_search, container, false);
 
+        btnClose = (ImageView) view.findViewById(R.id.btSearchClose);
+        btnClose.setVisibility(View.GONE);
+
         searchText = (EditText) view.findViewById(R.id.edit_text);
         searchText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        searchText.setCursorVisible(false);
+        searchText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchText.setCursorVisible(true);
+            }
+        });
         searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -141,13 +142,48 @@ public class FieldSearchFragment extends Fragment {
                         searchMode = false;
                         loadFields(view);
                     }
-//                    adapter.getFilter().filter(v.getText().toString());
                     return true;
                 }
                 return false;
             }
         });
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (searchText.getText().toString().isEmpty()) {
+                    btnClose.setVisibility(View.GONE);
+                    txtNotFound.setVisibility(View.GONE);
+                    searchMode = false;
+                } else {
+                    btnClose.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchText.getText().clear();
+                InputMethodManager inputManager = (InputMethodManager)
+                        mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(mActivity.getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+
+                searchText.setCursorVisible(false);
+                loadFields(view);
+            }
+        });
         txtNotFound = (TextView) view.findViewById(R.id.text_not_found);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -174,16 +210,18 @@ public class FieldSearchFragment extends Fragment {
         LocalBroadcastManager.getInstance(mActivity).registerReceiver(locationReceiver,
                 new IntentFilter("location-message"));
 
-        LocalBroadcastManager.getInstance(mActivity).registerReceiver(filterReceiver,
-                new IntentFilter("search-message"));
+        if (mActivity != null) {
+            LinearLayout progressLayout = (LinearLayout) mActivity.findViewById(R.id.progress_layout);
+            progressLayout.setVisibility(View.VISIBLE);
+            RelativeLayout fieldLayout = (RelativeLayout) mActivity.findViewById(R.id.fields_layout);
+            fieldLayout.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(locationReceiver);
-
-        LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(filterReceiver);
     }
 
     public void loadFields(View view) {
@@ -210,7 +248,7 @@ public class FieldSearchFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    if (response != null) {
+                    if (!response.isNull("body")) {
                         JSONArray body = response.getJSONArray("body");
                         if (body != null && body.length() > 0) {
                             for (int i = 0; i < body.length(); i++) {
@@ -308,7 +346,7 @@ public class FieldSearchFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    if (response != null) {
+                    if (!response.isNull("body")) {
                         JSONArray body = response.getJSONArray("body");
                         if (body != null && body.length() > 0) {
                             txtNotFound.setVisibility(View.GONE);

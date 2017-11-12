@@ -113,7 +113,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                            public void onClick(View v) {
                                                AlertDialog.Builder builder;
                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                                   builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
+                                                   builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
                                                } else {
                                                    builder = new AlertDialog.Builder(context);
                                                }

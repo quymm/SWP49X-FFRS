@@ -5,7 +5,7 @@ package com.capstone.ffrs.entity;
  */
 
 public class PaidTourMatchRequest {
-    private int id, userId, opponentId, fieldId, tourMatchId;
+    private int id, userId, opponentId, fieldId, tourMatchId, duration;
     private String date, startTime, endTime;
     private String teamName, fieldName;
 
@@ -50,6 +50,14 @@ public class PaidTourMatchRequest {
 
     public void setTourMatchId(int tourMatchId) {
         this.tourMatchId = tourMatchId;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     public String getDate() {

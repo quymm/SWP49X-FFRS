@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#dbdbdb"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.capstone.ffrs.FieldSuggestActivity"
+    tools:context="com.capstone.ffrs.SearchActivity"
     tools:showIn="@layout/app_bar_field_suggest">
 
     <android.support.v4.view.ViewPager

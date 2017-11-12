@@ -75,7 +75,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         if (item instanceof NotificationRequest) {
             NotificationRequest request = (NotificationRequest) item;
             holder.itemView.setTag(R.id.card_view, item);
-            holder.notificationText.setText(request.getTeamName() + " đã yêu cầu chơi với bạn");
+            holder.notificationText.setText(request.getTeamName() + " đã yêu cầu đá với bạn");
 
             holder.date.setText("Ngày: " + sdf.format(request.getDate()));
 

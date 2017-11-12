@@ -5,45 +5,43 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.NetworkImageView;
 import com.capstone.ffrs.controller.NetworkController;
+import com.capstone.ffrs.entity.FieldOwnerFriendlyNotification;
+import com.capstone.ffrs.entity.FieldOwnerTourNotification;
 import com.capstone.ffrs.service.TimerServices;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 public class FieldDetailActivity extends AppCompatActivity {
 
     private String name, address;
     private Date from, to, date;
-    private int id, totalPrice, fieldTypeId;
+    private int id, price, fieldTypeId;
 
     String hostURL;
     PendingIntent pendingIntent;
@@ -63,9 +61,11 @@ public class FieldDetailActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(JSONObject response) {
                     if (status.equals("running")) {
-                        Toast.makeText(context, "FFR: Đã hết thời gian giữ sân", Toast.LENGTH_LONG).show();
+                        Toast toast = Toast.makeText(context, "FFR: Đã hết thời gian giữ sân", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toast.show();
                         unregisterReceiver(br);
-                        Intent intent = new Intent(context, FieldSuggestActivity.class);
+                        Intent intent = new Intent(context, SearchActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         pendingIntent =
                                 PendingIntent.getActivity(context, 0, intent, 0);
@@ -82,9 +82,11 @@ public class FieldDetailActivity extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     if (status.equals("running")) {
-                        Toast.makeText(context, "FFR: Đã hết thời gian giữ sân", Toast.LENGTH_LONG).show();
+                        Toast toast = Toast.makeText(context, "FFR: Đã hết thời gian giữ sân", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toast.show();
                         unregisterReceiver(br);
-                        Intent intent = new Intent(context, FieldSuggestActivity.class);
+                        Intent intent = new Intent(context, SearchActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         pendingIntent =
                                 PendingIntent.getActivity(context, 0, intent, 0);
@@ -135,7 +137,7 @@ public class FieldDetailActivity extends AppCompatActivity {
         id = b.getInt("field_id");
         fieldTypeId = b.getInt("field_type_id");
 
-        totalPrice = b.getInt("price");
+        price = b.getInt("price");
 
         int hours = Double.valueOf(Math.abs(to.getTime() - from.getTime()) / 36e5).intValue();
         int minutes = Double.valueOf((Math.abs(to.getTime() - from.getTime()) / (60 * 1000)) % 60).intValue();
@@ -169,14 +171,26 @@ public class FieldDetailActivity extends AppCompatActivity {
         TextView txtFieldType = (TextView) findViewById(R.id.text_field_type);
         txtFieldType.setText(strFieldType);
 
-        TextView txtPrice = (TextView) findViewById(R.id.text_total_price);
-        txtPrice.setText(totalPrice + "K đồng");
+        TextView txtTotalPrice = (TextView) findViewById(R.id.text_total_price);
+        boolean tourMatchMode = b.getBoolean("tour_match_mode");
+        if (tourMatchMode) {
+            txtTotalPrice.setText((price * 2) + "K đồng");
+        } else {
+            txtTotalPrice.setText(price + "K đồng");
+        }
+
+        TextView txtPrice = (TextView) findViewById(R.id.text_price);
+        txtPrice.setText(price + "K đồng");
     }
 
     @Override
     public void onBackPressed() {
         stopService(new Intent(this, TimerServices.class));
-        unregisterReceiver(br);
+        try {
+            unregisterReceiver(br);
+        } catch (IllegalArgumentException e) {
+
+        }
         Bundle b = getIntent().getExtras();
         int timeSlotId = b.getInt("time_slot_id");
         String url = hostURL + getResources().getString(R.string.url_cancel_reservation);
@@ -234,27 +248,156 @@ public class FieldDetailActivity extends AppCompatActivity {
     }
 
     public void onClickReserve(View view) {
-        Bundle b = getIntent().getExtras();
-        Intent intent = new Intent(FieldDetailActivity.this, PayPalActivity.class);
-        intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
-        intent.putExtra("user_id", b.getInt("user_id"));
-        intent.putExtra("field_id", id);
-        intent.putExtra("field_name", name);
-        intent.putExtra("field_address", address);
-        intent.putExtra("price", -1 * totalPrice);
+        try {
+            unregisterReceiver(br);
+        } catch (IllegalArgumentException e) {
 
-        boolean tourMatchMode = b.getBoolean("tour_match_mode");
-        if (tourMatchMode) {
-            intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
-            intent.putExtra("tour_match_mode", tourMatchMode);
-            if (b.containsKey("tour_match_id")) {
-                intent.putExtra("tour_match_id", b.getInt("tour_match_id"));
-            }
-            if (b.containsKey("opponent_id")) {
-                intent.putExtra("opponent_id", b.getInt("opponent_id"));
-            }
         }
-        unregisterReceiver(br);
-        startActivity(intent);
+        final Bundle b = getIntent().getExtras();
+        final boolean tourMatchMode = b.getBoolean("tour_match_mode");
+        String url;
+        Map<String, Object> params = null;
+        if (!tourMatchMode) {
+            url = hostURL + getResources().getString(R.string.url_reserve_friendly_match);
+            url = String.format(url, b.getInt("time_slot_id"), b.getInt("user_id"), 0);
+        } else {
+            url = hostURL + getResources().getString(R.string.url_reserve_tour_match);
+            url = String.format(url, b.getInt("time_slot_id"), b.getInt("matching_request_id"), b.getInt("user_id"), 0);
+        }
+
+        RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
+
+        JSONObject jsonParams = null;
+        if (params != null) {
+            jsonParams = new JSONObject(params);
+        }
+
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, jsonParams,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            if (!response.isNull("body")) {
+                                JSONObject body = response.getJSONObject("body");
+                                if (body != null && body.length() > 0) {
+                                    try {
+                                        Bundle b = getIntent().getExtras();
+                                        Intent intent = new Intent(FieldDetailActivity.this, ReservationResultActivity.class);
+                                        intent.putExtra("payment_result", "Succeed");
+                                        if (!tourMatchMode) {
+                                            intent.putExtra("reserve_id", body.getJSONObject("friendlyMatchId").getInt("id"));
+
+                                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(FieldDetailActivity.this);
+                                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                                            editor.putInt("balance", body.getJSONObject("userId").getJSONObject("profileId").getInt("balance"));
+                                            editor.commit();
+
+                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                            DatabaseReference ref = database.getReference();
+                                            DatabaseReference friendlyRef = ref.child("fieldOwner").child(b.getInt("field_id") + "")
+                                                    .child("friendlyMatch").child(body.getJSONObject("friendlyMatchId").getInt("id") + "");
+                                            FieldOwnerFriendlyNotification notification = new FieldOwnerFriendlyNotification();
+                                            notification.setIsRead(0);
+                                            notification.setIsShowed(0);
+                                            notification.setTime(new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(new Date()));
+                                            notification.setUsername(body.getJSONObject("userId").getJSONObject("profileId").getString("name"));
+                                            friendlyRef.setValue(notification);
+                                        } else {
+                                            intent.putExtra("reserve_id", body.getJSONObject("tourMatchId").getInt("id"));
+
+                                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(FieldDetailActivity.this);
+                                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                                            editor.putInt("balance", body.getJSONObject("userId").getJSONObject("profileId").getInt("balance"));
+                                            editor.commit();
+
+                                            if (!b.containsKey("tour_match_id")) {
+                                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                DatabaseReference ref = database.getReference();
+                                                ref.child("tourMatch").child(b.getInt("opponent_id") + "").child(body.getJSONObject("tourMatchId").getInt("id") + "").setValue(0);
+                                                DatabaseReference tourRef = ref.child("fieldOwner").child(b.getInt("field_id") + "")
+                                                        .child("tourMatch").child(body.getJSONObject("tourMatchId").getInt("id") + "");
+                                                FieldOwnerTourNotification notification = new FieldOwnerTourNotification();
+                                                notification.setIsRead(0);
+                                                notification.setIsShowed(0);
+                                                notification.setTime(new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(new Date()));
+                                                tourRef.setValue(notification);
+                                            }
+                                        }
+                                        intent.putExtra("tour_match_mode", tourMatchMode);
+                                        startActivity(intent);
+                                    } catch (Exception e) {
+                                        Log.d("EXCEPTION", e.getMessage());
+                                    }
+                                } else {
+                                    Toast.makeText(FieldDetailActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error.networkResponse != null && error.networkResponse.statusCode == 400) {
+                            try {
+                                String strResponse = new String(error.networkResponse.data, "UTF-8");
+                                JSONObject response = new JSONObject(strResponse);
+                                if (response.getString("message").equals("Not enough money to reserve field")) {
+                                    Intent intent = new Intent(FieldDetailActivity.this, ReservationResultActivity.class);
+                                    intent.putExtra("field_id", id);
+                                    intent.putExtra("field_name", name);
+                                    intent.putExtra("field_address", address);
+                                    intent.putExtra("field_type_id", fieldTypeId);
+                                    intent.putExtra("date", date);
+                                    intent.putExtra("time_from", from);
+                                    intent.putExtra("time_to", to);
+                                    intent.putExtra("price", price);
+                                    intent.putExtra("user_id", b.getInt("user_id"));
+                                    intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
+                                    intent.putExtra("tour_match_mode", tourMatchMode);
+                                    if (tourMatchMode) {
+                                        intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
+                                        intent.putExtra("opponent_id", b.getInt("opponent_id"));
+                                    }
+                                    intent.putExtra("payment_result", "No Money");
+                                    startActivity(intent);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+        queue.add(postRequest);
+
+
+//        Bundle b = getIntent().getExtras();
+//        Intent intent = new Intent(FieldDetailActivity.this, PayPalActivity.class);
+//        intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
+//        intent.putExtra("user_id", b.getInt("user_id"));
+//        intent.putExtra("field_id", id);
+//        intent.putExtra("field_name", name);
+//        intent.putExtra("field_address", address);
+//        intent.putExtra("price", -1 * price);
+//
+//        boolean tourMatchMode = b.getBoolean("tour_match_mode");
+//        if (tourMatchMode) {
+//            intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
+//            intent.putExtra("tour_match_mode", tourMatchMode);
+//            if (b.containsKey("tour_match_id")) {
+//                intent.putExtra("tour_match_id", b.getInt("tour_match_id"));
+//            }
+//            if (b.containsKey("opponent_id")) {
+//                intent.putExtra("opponent_id", b.getInt("opponent_id"));
+//            }
+//        }
+//        unregisterReceiver(br);
+//        startActivity(intent);
     }
 }

@@ -97,7 +97,7 @@ public class NotificationActivity extends AppCompatActivity {
                             try {
                                 if (!response.isNull("body")) {
                                     JSONObject body = response.getJSONObject("body");
-                                    if (body != null) {
+                                    if (body != null && body.length() > 0) {
                                         Iterable<DataSnapshot> list = snapshot.getChildren();
                                         for (DataSnapshot snapshot : list) {
                                             getTeamNameByUserId(snapshot, body);
@@ -171,7 +171,7 @@ public class NotificationActivity extends AppCompatActivity {
                                     if (!response.isNull("body")) {
                                         JSONObject body = response.getJSONObject("body");
                                         Log.d("START", "START");
-                                        if (body != null) {
+                                        if (body != null && body.length() > 0) {
                                             String opponentTeamName = body.getJSONObject("userId").getJSONObject("profileId").getString("name");
 
                                             final Date fromTime = new SimpleDateFormat("HH:mm:ss").parse(body.getJSONObject("timeSlotId").getString("startTime"));
@@ -291,7 +291,7 @@ public class NotificationActivity extends AppCompatActivity {
                     try {
                         if (!response.isNull("body")) {
                             JSONObject body = response.getJSONObject("body");
-                            if (body != null) {
+                            if (body != null && body.length() > 0) {
                                 notificationRequest.setTeamName(body.getJSONObject("profileId").getString("name"));
                                 notificationRequestList.add(notificationRequest);
                             }
