@@ -6,7 +6,7 @@ import {
 } from '../redux/guest/guest-action-creators';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
-import { Modal } from 'react-bootstrap';
+import { Modal, Pagination } from 'react-bootstrap';
 import {
   fetchGetUserOrFieldOwnerSuggestion,
   fetchGetAllReportFieldOwner,
@@ -251,6 +251,14 @@ class ManageUser extends Component {
                         </tbody>
                       </table>
                     </div>
+                    <div className="col-sm-12 text-center">
+              <Pagination
+                bsSize="medium"
+                items={10}
+                activePage={1}
+
+              />
+            </div>
                   </div>
                 </div>
               </div>
@@ -304,7 +312,11 @@ class ManageUser extends Component {
                             <td>
                               <strong>Ngày tạo</strong>
                             </td>
-                            <td>{moment(result.profileId.creationDate).format('DD [tháng] MM, YYYY HH:mm')}</td>
+                            <td>
+                              {moment(result.profileId.creationDate).format(
+                                'DD [tháng] MM, YYYY HH:mm',
+                              )}
+                            </td>
                           </tr>
                           <tr>
                             <td>

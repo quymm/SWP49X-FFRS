@@ -249,7 +249,7 @@ class Home extends Component {
     const myStyle = { padding: 20 };
     const { listMatch, freeField } = this.props;
     const { isShowUpdateField, filterName, messages } = this.state;
-    console.log(this.props);
+    console.log(this.listMatch);
     return (
       <div className="main-panel">
         <div className="content">

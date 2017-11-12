@@ -181,8 +181,8 @@ class ManageFieldOwner extends Component {
                 </label>
                 <div className="col-sm-6">
                   <div className="row">
-                    <div className="col-sm-6">
-                      {/* <div className="input-group"> */}
+                    <div className="col-sm-9">
+                      <div className="input-group">
                       <input
                         type="text"
                         className="form-control"
@@ -191,6 +191,8 @@ class ManageFieldOwner extends Component {
                         value={this.state.voucherValue}
                         onChange={this.handelInputChange.bind(this)}
                       />
+                       <span className="input-group-addon">nghìn đồng</span>
+                       </div>
                     </div>
                   </div>
                 </div>
