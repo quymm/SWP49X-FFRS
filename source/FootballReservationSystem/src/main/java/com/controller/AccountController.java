@@ -36,8 +36,8 @@ public class AccountController {
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/login", method = RequestMethod.GET)
-    public ResponseEntity<Wrapper> checkLogin(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("role") String role) {
-        Wrapper wrapper = new Wrapper(accountServices.checkLogin(username, password, role), HttpStatus.OK.value(), HttpStatus.OK.name());
+    public ResponseEntity<Wrapper> checkLogin(@RequestParam("username") String username, @RequestParam("password") String password) {
+        Wrapper wrapper = new Wrapper(accountServices.checkLogin(username, password), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity<>(wrapper, HttpStatus.OK);
     }
 

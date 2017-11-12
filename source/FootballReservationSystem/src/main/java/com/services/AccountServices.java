@@ -111,9 +111,8 @@ public class AccountServices {
         return accountRepository.findByIdAndRole(id, roleEntity, true);
     }
 
-    public AccountEntity checkLogin(String username, String password, String role) {
-        RoleEntity roleEntity = roleServices.findByRoleName(role);
-        AccountEntity accountEntity = accountRepository.findByUsernamePasswordAndRoleEntity(username, password, roleEntity, true);
+    public AccountEntity checkLogin(String username, String password) {
+        AccountEntity accountEntity = accountRepository.findByUsernameAndPasswordAndStatus(username, password, true);
         if (accountEntity == null) {
             throw new EntityNotFoundException(String.format("Not found account have username: %s and password: %s", username, password));
         }
