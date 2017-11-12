@@ -47,9 +47,6 @@ public class ProfileEntity implements Serializable {
     private Integer ratingScore;
     @Column(name = "bonus_point")
     private Integer bonusPoint;
-    @Basic(optional = false)
-    @Column(name = "num_of_report")
-    private int numOfReport;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "percent_profit")
     private Float percentProfit;
@@ -157,14 +154,6 @@ public class ProfileEntity implements Serializable {
 
     public void setBonusPoint(Integer bonusPoint) {
         this.bonusPoint = bonusPoint;
-    }
-
-    public int getNumOfReport() {
-        return numOfReport;
-    }
-
-    public void setNumOfReport(int numOfReport) {
-        this.numOfReport = numOfReport;
     }
 
     public Float getPercentProfit() {

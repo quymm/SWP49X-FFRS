@@ -3,6 +3,7 @@ package com.utils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * @author MinhQuy
@@ -10,6 +11,7 @@ import java.util.Date;
 public class DateTimeUtils {
     public static Date convertFromStringToTime(String timeString){
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+//        format.setTimeZone(TimeZone.getTimeZone("UTC+7"));
         try {
             Date time = format.parse(timeString);
             return time;
@@ -21,6 +23,7 @@ public class DateTimeUtils {
 
     public static Date convertFromStringToDate(String dateString){
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+//        format.setTimeZone(TimeZone.getTimeZone("UTC+7"));
         try {
             Date date = format.parse(dateString);
             return date;
@@ -32,6 +35,7 @@ public class DateTimeUtils {
 
     public static Date convertFromStringToDateTime(String dateTimeString){
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+//        format.setTimeZone(TimeZone.getTimeZone("UTC+7"));
         try {
             Date dateTime = format.parse(dateTimeString);
             return dateTime;
@@ -43,11 +47,13 @@ public class DateTimeUtils {
 
     public static String formatTime(Date time){
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+//        format.setTimeZone(TimeZone.getTimeZone("UTC+7"));
         return format.format(time);
     }
 
     public static String formatDate(Date date){
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+//        format.setTimeZone(TimeZone.getTimeZone("UTC+7"));
         return format.format(date);
     }
 

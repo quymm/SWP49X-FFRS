@@ -44,7 +44,7 @@ public class AccountController {
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-field-owner", method = RequestMethod.GET)
     public ResponseEntity getFieldOwnerById(@RequestParam("field-owner-id") int fieldOwnerId) {
-        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole()), HttpStatus.OK.value(), HttpStatus.OK.name());
+        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole()), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
@@ -65,14 +65,14 @@ public class AccountController {
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-staff", method = RequestMethod.GET)
     public ResponseEntity getStaffById(@RequestParam("staff-id") int staffId) {
-        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityById(staffId, constant.getStaffRole()), HttpStatus.OK.value(), HttpStatus.OK.name());
+        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityByIdAndRole(staffId, constant.getStaffRole()), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-user", method = RequestMethod.GET)
     public ResponseEntity getUserById(@RequestParam("user-id") int userId) {
-        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityById(userId, constant.getUserRole()), HttpStatus.OK.value(), HttpStatus.OK.name());
+        Wrapper wrapper = new Wrapper(accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole()), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 

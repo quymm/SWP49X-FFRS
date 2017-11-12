@@ -58,17 +58,6 @@ public class BillServices {
                 billEntity.setUserId(tourMatchEntity.getOpponentId());
             }
         }
-        if (inputBillDTO.getVoucherId() != null && inputBillDTO.getVoucherId() != 0) {
-            VoucherEntity voucherEntity = voucherServices.findVoucherEntityById(inputBillDTO.getVoucherId());
-            if (voucherEntity != null) {
-                billEntity.setVoucherId(voucherEntity);
-
-                //tinh gia cho Bill neu co voucher
-                Float voucherValue = voucherEntity.getVoucherValue();
-                price = price - voucherValue;
-            }
-
-        }
 
         billEntity.setPrice(price);
 
@@ -89,7 +78,7 @@ public class BillServices {
     }
 
     public List<BillEntity> findByUserIdIn7Date(int userId){
-        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
         Date now = new Date();
         Date targetDate = new Date(now.getTime() - 7*24*60*60*1000); //7 day
         List<BillEntity> billEntityList = billRepository.findBillWithUserIdAndDateCharge(user, true, targetDate);
@@ -97,7 +86,7 @@ public class BillServices {
     }
 
     public List<BillEntity> findByFieldOwnerIdIn7Date(int fieldOwnerId){
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         Date now = new Date();
         Date targetDate = new Date(now.getTime() - 7*24*60*60*1000);
         List<BillEntity> billEntityList = billRepository.findBillWithFieldOwnerIdAndDateCharge(fieldOwner, targetDate, true);

@@ -3,9 +3,7 @@ package com.controller;
 
 import com.dto.InputVoucherRecordDTO;
 import com.dto.Wrapper;
-import com.entity.VoucherRecordEntity;
 import com.services.VoucherRecordServices;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +17,7 @@ public class VoucherRecordController {
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/voucher/managed-voucher-record", method = RequestMethod.POST)
     public ResponseEntity createNewVoucherRecord(@RequestBody InputVoucherRecordDTO inputVoucherRecordDTO) {
-        Wrapper wrapper = new Wrapper(voucherRecordServices.createNewVoucherRecord(inputVoucherRecordDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+        Wrapper wrapper = new Wrapper(voucherRecordServices.exchangeVoucher(inputVoucherRecordDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 

@@ -4,12 +4,11 @@ import com.config.Constant;
 import com.dto.InputReportFieldDTO;
 import com.dto.InputReportOpponentDTO;
 import com.entity.AccountEntity;
-import com.entity.ReportFieldEntity;
-import com.entity.ReportOpponentEntity;
+import com.entity.ReportEntity;
 import com.entity.TourMatchEntity;
+import com.repository.AccountRepository;
 import com.repository.ProfileRepository;
-import com.repository.ReportFieldRepository;
-import com.repository.ReportOpponentRepository;
+import com.repository.ReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +16,12 @@ import java.util.List;
 
 @Service
 public class ReportServices {
-    @Autowired
-    ReportOpponentRepository reportOpponentRepository;
 
     @Autowired
-    ReportFieldRepository reportFieldRepository;
+    ReportRepository reportRepository;
 
     @Autowired
-    ProfileRepository profileRepository;
+    AccountRepository accountRepository;
 
     @Autowired
     AccountServices accountServices;
@@ -35,62 +32,55 @@ public class ReportServices {
     @Autowired
     Constant constant;
 
-    public ReportOpponentEntity reportOpponent(InputReportOpponentDTO inputReportOpponentDTO){
-        AccountEntity user = accountServices.findAccountEntityById(inputReportOpponentDTO.getUserId(), constant.getUserRole());
-        AccountEntity opponent = accountServices.findAccountEntityById(inputReportOpponentDTO.getUserId(), constant.getUserRole());
+    public ReportEntity reportOpponent(InputReportOpponentDTO inputReportOpponentDTO){
+        AccountEntity accuser = accountServices.findAccountEntityByIdAndRole(inputReportOpponentDTO.getAccusedId(), constant.getUserRole());
+        AccountEntity accused = accountServices.findAccountEntityByIdAndRole(inputReportOpponentDTO.getAccusedId(), constant.getUserRole());
 
         TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(inputReportOpponentDTO.getTourMatchId());
 
         if(inputReportOpponentDTO.getReason().isEmpty()){
             throw new IllegalArgumentException("Report must have reason content!");
         }
-        ReportOpponentEntity reportOpponentEntity = new ReportOpponentEntity();
-        reportOpponentEntity.setUserId(user);
-        reportOpponentEntity.setOpponentId(opponent);
+        ReportEntity reportOpponentEntity = new ReportEntity();
+        reportOpponentEntity.setAccuserId(accuser);
+        reportOpponentEntity.setAccusedId(accused);
         reportOpponentEntity.setTourMatchId(tourMatchEntity);
         reportOpponentEntity.setReason(inputReportOpponentDTO.getReason());
         reportOpponentEntity.setStatus(true);
 
-        ReportOpponentEntity savedReportOpponentEntity = reportOpponentRepository.save(reportOpponentEntity);
+        ReportEntity savedReportOpponentEntity = reportRepository.save(reportOpponentEntity);
         // add thêm 1 lần bị report vào profile của người chơi bị report
-        opponent.getProfileId().setNumOfReport(opponent.getProfileId().getNumOfReport() + 1);
-        profileRepository.save(opponent.getProfileId());
+        accused.setNumOfReport(accused.getNumOfReport() + 1);
+        accountRepository.save(accused);
         return savedReportOpponentEntity;
     }
 
-    public List<ReportOpponentEntity> getReportOfUser(int userId){
-        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
-        return reportOpponentRepository.findByOpponentIdAndStatus(user, true);
+    public List<ReportEntity> getReportOfUser(int userId){
+        AccountEntity accused = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
+        return reportRepository.findByAccusedIdAndStatus(accused, true);
     }
 
-    public ReportFieldEntity reportField(InputReportFieldDTO inputReportFieldDTO){
-        AccountEntity user = accountServices.findAccountEntityById(inputReportFieldDTO.getUserId(), constant.getUserRole());
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(inputReportFieldDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
+    public ReportEntity reportField(InputReportFieldDTO inputReportFieldDTO){
+        AccountEntity accuser = accountServices.findAccountEntityByIdAndRole(inputReportFieldDTO.getAccuserId(), constant.getUserRole());
+        AccountEntity accused = accountServices.findAccountEntityByIdAndRole(inputReportFieldDTO.getAccusedId(), constant.getFieldOwnerRole());
         if(inputReportFieldDTO.getReason().isEmpty()){
             throw new IllegalArgumentException("Report must have reason content!");
         }
-        ReportFieldEntity reportFieldEntity = new ReportFieldEntity();
-        reportFieldEntity.setUserId(user);
-        reportFieldEntity.setFieldOwnerId(fieldOwner);
-        reportFieldEntity.setReason(inputReportFieldDTO.getReason());
-        reportFieldEntity.setStatus(true);
-//        reportFieldEntity.setCreationDate(new Date());
-//        reportFieldEntity.setModificationDate(new Date());
+        ReportEntity reportEntity = new ReportEntity();
+        reportEntity.setAccuserId(accuser);
+        reportEntity.setAccusedId(accused);
+        reportEntity.setReason(inputReportFieldDTO.getReason());
+        reportEntity.setStatus(true);
 
-        ReportFieldEntity savedreportFieldEntity = reportFieldRepository.save(reportFieldEntity);
+        ReportEntity savedreportEntity = reportRepository.save(reportEntity);
         // add thêm 1 lần bị report vào profile của chủ sân bị report
-        fieldOwner.getProfileId().setNumOfReport(fieldOwner.getProfileId().getNumOfReport() + 1);
-        profileRepository.save(fieldOwner.getProfileId());
-
-        return reportFieldRepository.save(reportFieldEntity);
+        accused.setNumOfReport(accused.getNumOfReport() + 1);
+        accountRepository.save(accused);
+        return savedreportEntity;
     }
 
-    public List<ReportFieldEntity> getReportOfFieldOwner(int fieldOwnerId){
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
-        return reportFieldRepository.findByFieldOwnerIdAndStatus(fieldOwner, true);
-    }
-
-    public List<ReportOpponentEntity> getListReportOrderByNumberReport(){
-        return reportOpponentRepository.getListReportOfUser();
+    public List<AccountEntity> getAccountOrderByNumOfReport(){
+        List<AccountEntity> accountEntityList = accountRepository.findAccountEntitiesByStatusOrderByNumOfReportDesc(true);
+        return accountEntityList;
     }
 }

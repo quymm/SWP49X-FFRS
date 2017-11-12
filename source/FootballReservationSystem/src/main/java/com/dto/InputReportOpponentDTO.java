@@ -1,38 +1,38 @@
 package com.dto;
 
 public class InputReportOpponentDTO {
-    private Integer userId;
+    private Integer accuserId;
 
-    private Integer opponentId;
+    private Integer accusedId;
 
     private Integer tourMatchId;
 
     private String reason;
 
-    public InputReportOpponentDTO(Integer userId, Integer opponentId, Integer tourMatchId, String reason) {
-        this.userId = userId;
-        this.opponentId = opponentId;
+    public InputReportOpponentDTO() {
+    }
+
+    public InputReportOpponentDTO(Integer accuserId, Integer accusedId, Integer tourMatchId, String reason) {
+        this.accuserId = accuserId;
+        this.accusedId = accusedId;
         this.tourMatchId = tourMatchId;
         this.reason = reason;
     }
 
-    public InputReportOpponentDTO() {
+    public Integer getAccuserId() {
+        return accuserId;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public void setAccuserId(Integer accuserId) {
+        this.accuserId = accuserId;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public Integer getAccusedId() {
+        return accusedId;
     }
 
-    public Integer getOpponentId() {
-        return opponentId;
-    }
-
-    public void setOpponentId(Integer opponentId) {
-        this.opponentId = opponentId;
+    public void setAccusedId(Integer accusedId) {
+        this.accusedId = accusedId;
     }
 
     public Integer getTourMatchId() {

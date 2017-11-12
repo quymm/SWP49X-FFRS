@@ -16,37 +16,29 @@ public class ReportController {
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/report/report-opponent", method = RequestMethod.POST)
-    public ResponseEntity reportOpponent(@RequestBody InputReportOpponentDTO reportOpponentDTO){
+    public ResponseEntity reportOpponent(@RequestBody InputReportOpponentDTO reportOpponentDTO) {
         Wrapper wrapper = new Wrapper(reportServices.reportOpponent(reportOpponentDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/report/report-opponent", method = RequestMethod.GET)
-    public ResponseEntity getReportOfUser(@RequestParam("user-id") int userId){
+    public ResponseEntity getReportOfUser(@RequestParam("user-id") int userId) {
         Wrapper wrapper = new Wrapper(reportServices.getReportOfUser(userId), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/report/report-field", method = RequestMethod.POST)
-    public ResponseEntity reportField(@RequestBody InputReportFieldDTO reportFieldDTO){
+    public ResponseEntity reportField(@RequestBody InputReportFieldDTO reportFieldDTO) {
         Wrapper wrapper = new Wrapper(reportServices.reportField(reportFieldDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/swp49x-ffrs/report/report-field", method = RequestMethod.GET)
-    public ResponseEntity getReportOfFieldOwner(@RequestParam("field-owner-id") int fieldOwnerId){
-        Wrapper wrapper = new Wrapper(reportServices.getReportOfFieldOwner(fieldOwnerId), HttpStatus.OK.value(), HttpStatus.OK.name());
+    @RequestMapping(value = "/swp49x-ffrs/report/get-all", method = RequestMethod.GET)
+    public ResponseEntity getAllOrderByNumOfReport() {
+        Wrapper wrapper = new Wrapper(reportServices.getAccountOrderByNumOfReport(), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
-
-    @CrossOrigin
-    @RequestMapping(value = "/swp49x-ffrs/report/all-opponent", method = RequestMethod.GET)
-    public ResponseEntity getReportOrderByNumOfReport(){
-        Wrapper wrapper = new Wrapper(reportServices.getListReportOrderByNumberReport(), HttpStatus.OK.value(), HttpStatus.OK.name());
-        return new ResponseEntity(wrapper, HttpStatus.OK);
-    }
-
 }

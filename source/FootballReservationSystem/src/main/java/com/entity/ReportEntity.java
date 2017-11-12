@@ -9,20 +9,23 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "report_field")
-public class ReportFieldEntity implements Serializable {
+@Table(name = "report")
+public class ReportEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "accuser_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private AccountEntity userId;
-    @JoinColumn(name = "field_owner_id", referencedColumnName = "id")
+    private AccountEntity accuserId;
+    @JoinColumn(name = "accused_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private AccountEntity fieldOwnerId;
+    private AccountEntity accusedId;
+    @JoinColumn(name = "tour_match_id", referencedColumnName = "id")
+    @ManyToOne
+    private TourMatchEntity tourMatchId;
     @Basic(optional = false)
     @Column(name = "reason")
     private String reason;
@@ -38,12 +41,13 @@ public class ReportFieldEntity implements Serializable {
     @UpdateTimestamp
     private Date modificationDate;
 
-    public ReportFieldEntity() {
+    public ReportEntity() {
     }
 
-    public ReportFieldEntity(AccountEntity userId, AccountEntity fieldOwnerId, String reason, boolean status) {
-        this.userId = userId;
-        this.fieldOwnerId = fieldOwnerId;
+    public ReportEntity(AccountEntity accuserId, AccountEntity accusedId, TourMatchEntity tourMatchId, String reason, boolean status) {
+        this.accuserId = accuserId;
+        this.accusedId = accusedId;
+        this.tourMatchId = tourMatchId;
         this.reason = reason;
         this.status = status;
     }
@@ -56,20 +60,28 @@ public class ReportFieldEntity implements Serializable {
         this.id = id;
     }
 
-    public AccountEntity getUserId() {
-        return userId;
+    public AccountEntity getAccuserId() {
+        return accuserId;
     }
 
-    public void setUserId(AccountEntity userId) {
-        this.userId = userId;
+    public void setAccuserId(AccountEntity accuserId) {
+        this.accuserId = accuserId;
     }
 
-    public AccountEntity getFieldOwnerId() {
-        return fieldOwnerId;
+    public AccountEntity getAccusedId() {
+        return accusedId;
     }
 
-    public void setFieldOwnerId(AccountEntity fieldOwnerId) {
-        this.fieldOwnerId = fieldOwnerId;
+    public void setAccusedId(AccountEntity accusedId) {
+        this.accusedId = accusedId;
+    }
+
+    public TourMatchEntity getTourMatchId() {
+        return tourMatchId;
+    }
+
+    public void setTourMatchId(TourMatchEntity tourMatchId) {
+        this.tourMatchId = tourMatchId;
     }
 
     public String getReason() {
@@ -80,7 +92,7 @@ public class ReportFieldEntity implements Serializable {
         this.reason = reason;
     }
 
-    public boolean isStatus() {
+    public boolean getStatus() {
         return status;
     }
 
