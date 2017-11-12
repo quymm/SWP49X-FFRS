@@ -47,6 +47,9 @@ public class AccountEntity implements Serializable {
     @Column(name = "lock_status")
     private boolean lockStatus;
     @Basic(optional = false)
+    @Column(name = "num_of_report")
+    private int numOfReport;
+    @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
     @Basic(optional = false)
@@ -111,6 +114,14 @@ public class AccountEntity implements Serializable {
 
     public void setLockStatus(boolean lockStatus) {
         this.lockStatus = lockStatus;
+    }
+
+    public int getNumOfReport() {
+        return numOfReport;
+    }
+
+    public void setNumOfReport(int numOfReport) {
+        this.numOfReport = numOfReport;
     }
 
     public boolean getStatus() {

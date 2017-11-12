@@ -21,8 +21,8 @@ public class BlacklistOpponentServices {
     Constant constant;
 
     public BlacklistOpponentEntity createNewBlackListOpponent(int userId, int opponentId){
-        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
-        AccountEntity opponent = accountServices.findAccountEntityById(opponentId, constant.getUserRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
+        AccountEntity opponent = accountServices.findAccountEntityByIdAndRole(opponentId, constant.getUserRole());
 
         BlacklistOpponentEntity blacklistOpponentEntity = blacklistOpponentRepository.findByUserIdAndOpponentIdAndStatus(user, opponent, false);
         if(blacklistOpponentEntity != null){
@@ -37,7 +37,7 @@ public class BlacklistOpponentServices {
     }
 
     public List<BlacklistOpponentEntity> findBlacklistByUserId(int userId){
-        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
         return blacklistOpponentRepository.findByUserIdAndStatus(user, true);
     }
 
@@ -48,8 +48,8 @@ public class BlacklistOpponentServices {
     }
 
     public BlacklistOpponentEntity findBlacklistByUserIdAndOpponentId(int userId, int opponentId){
-        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
-        AccountEntity opponent = accountServices.findAccountEntityById(opponentId, constant.getUserRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
+        AccountEntity opponent = accountServices.findAccountEntityByIdAndRole(opponentId, constant.getUserRole());
         return blacklistOpponentRepository.findByUserIdAndOpponentIdAndStatus(user, opponent, true);
     }
 

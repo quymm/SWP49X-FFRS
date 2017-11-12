@@ -62,9 +62,12 @@ public class MatchServices {
         return matchingRequestEntity;
     }
 
-    public BillEntity reserveFriendlyMatch(int timeSlotId, int userId, int voucherId) {
-        AccountEntity userEntity = accountServices.findAccountEntityById(userId, constant.getUserRole());
-        TimeSlotEntity timeSlotEntity = timeSlotServices.findById(timeSlotId);
+    public BillEntity reserveFriendlyMatch(InputReserveTimeSlotDTO inputReserveTimeSlotDTO, int userId) {
+        AccountEntity userEntity = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
+        TimeSlotEntity timeSlotEntity = timeSlotServices.reserveTimeSlot(inputReserveTimeSlotDTO);
+        if (timeSlotEntity == null) {
+            return null;
+        }
         if (!timeSlotEntity.getReserveStatus()) {
             throw new IllegalArgumentException("Time slot not yet reserve!");
         }
@@ -81,9 +84,6 @@ public class MatchServices {
 
         InputBillDTO inputBillDTO = new InputBillDTO();
         inputBillDTO.setFriendlyMatchId(savedFriendlyMatchEntity.getId());
-        if (voucherId != 0) {
-            inputBillDTO.setVoucherId(voucherId);
-        }
         return billServices.createBill(inputBillDTO);
     }
 
@@ -98,7 +98,7 @@ public class MatchServices {
     }
 
     public MatchingRequestEntity createNewMatchingRequest(InputMatchingRequestDTO inputMatchingRequestDTO) {
-        AccountEntity user = accountServices.findAccountEntityById(inputMatchingRequestDTO.getUserId(), constant.getUserRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(inputMatchingRequestDTO.getUserId(), constant.getUserRole());
         float maxPrice = constant.getMaxPrice();
         if (user.getProfileId().getBalance() < maxPrice * inputMatchingRequestDTO.getDuration() / 60) {
             throw new IllegalArgumentException(String.format("User not have enough money to create request!"));
@@ -122,7 +122,7 @@ public class MatchServices {
     }
 
     public List<MatchingRequestEntity> suggestOpponent(InputMatchingRequestDTO inputMatchingRequestDTO, int deviationDistance) {
-        AccountEntity user = accountServices.findAccountEntityById(inputMatchingRequestDTO.getUserId(), constant.getUserRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(inputMatchingRequestDTO.getUserId(), constant.getUserRole());
         FieldTypeEntity fieldType = fieldTypeServices.findById(inputMatchingRequestDTO.getFieldTypeId());
 
         Date date = DateTimeUtils.convertFromStringToDate(inputMatchingRequestDTO.getDate());
@@ -158,7 +158,7 @@ public class MatchServices {
         return returnMatchingRequest;
     }
 
-    public TimeSlotEntity chooseSuitableField(InputMatchingRequestDTO inputMatchingRequestDTO, int matchingRequestId, int deviationDistance) {
+    public OutputReserveTimeSlotDTO chooseSuitableField(InputMatchingRequestDTO inputMatchingRequestDTO, int matchingRequestId, int deviationDistance) {
         MatchingRequestEntity opponentMatching = matchingRequestRepository.findByIdAndStatus(matchingRequestId, true);
         // tìm những sân chung trong sở thích của 2 người chơi
         List<AccountEntity> favoritesFieldList = favoritesFieldServices.findFavoritesFieldOf2User(inputMatchingRequestDTO.getUserId(), opponentMatching.getUserId().getId());
@@ -173,11 +173,11 @@ public class MatchServices {
         if (!favoritesFieldList.isEmpty()) {
             for (AccountEntity favoritesField : favoritesFieldList) {
                 inputReservationDTO.setFieldOwnerId(favoritesField.getId());
-                TimeSlotEntity timeSlotEntity = timeSlotServices.reserveTimeSlot(inputReservationDTO);
-                if (timeSlotEntity != null) {
+                OutputReserveTimeSlotDTO outputReserveTimeSlotDTO = timeSlotServices.pickTimeSlot(inputReservationDTO);
+                if (outputReserveTimeSlotDTO != null) {
                     // trả nửa phí tiền sân đối với tour match
-                    timeSlotEntity.setPrice(timeSlotEntity.getPrice() / 2);
-                    return timeSlotEntity;
+                    outputReserveTimeSlotDTO.setPrice(outputReserveTimeSlotDTO.getPrice() / 2);
+                    return outputReserveTimeSlotDTO;
                 }
             }
         }
@@ -204,11 +204,11 @@ public class MatchServices {
 
         for (FieldOwnerAndDistance fieldOwnerAndDistance : fieldOwnerAndDistanceList) {
             inputReservationDTO.setFieldOwnerId(fieldOwnerAndDistance.getFieldOwner().getId());
-            TimeSlotEntity timeSlotEntity = timeSlotServices.reserveTimeSlot(inputReservationDTO);
-            if (timeSlotEntity != null) {
+            OutputReserveTimeSlotDTO outputReserveTimeSlotDTO = timeSlotServices.pickTimeSlot(inputReservationDTO);
+            if (outputReserveTimeSlotDTO != null) {
                 // trả nửa phí tiền sân đối với tour match
-                timeSlotEntity.setPrice(timeSlotEntity.getPrice() / 2);
-                return timeSlotEntity;
+                outputReserveTimeSlotDTO.setPrice(outputReserveTimeSlotDTO.getPrice() / 2);
+                return outputReserveTimeSlotDTO;
             }
         }
         // nếu vẫn ko có sân phù hợp thì trả về null, hệ thống sẽ báo ko tìm được sân phù hợp
@@ -231,14 +231,17 @@ public class MatchServices {
         return arrangeFieldOwnerByDistance(fieldOwnerAndDistanceList);
     }
 
-    public BillEntity reserveTourMatch(int timeSlotId, int matchingRequestId, int userId, int voucherId) {
-        TimeSlotEntity timeSlotEntity = timeSlotServices.findById(timeSlotId);
+    public BillEntity reserveTourMatch(InputReserveTimeSlotDTO inputReserveTimeSlotDTO, int matchingRequestId, int userId) {
+        TimeSlotEntity savedTimeSlotEntity = timeSlotServices.reserveTimeSlot(inputReserveTimeSlotDTO);
+        if(savedTimeSlotEntity == null){
+            return null;
+        }
         MatchingRequestEntity matchingRequestEntity = findMatchingRequestEntityById(matchingRequestId);
-        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
         AccountEntity opponent = matchingRequestEntity.getUserId();
 
         TourMatchEntity tourMatchEntity = new TourMatchEntity();
-        tourMatchEntity.setTimeSlotId(timeSlotEntity);
+        tourMatchEntity.setTimeSlotId(savedTimeSlotEntity);
         tourMatchEntity.setUserId(user);
         tourMatchEntity.setOpponentId(opponent);
         tourMatchEntity.setCompleteStatus(false);
@@ -252,9 +255,6 @@ public class MatchServices {
 
         // create bill of user
         InputBillDTO billOfUser = new InputBillDTO();
-        if (voucherId != 0) {
-            billOfUser.setVoucherId(voucherId);
-        }
         billOfUser.setTourMatchId(savedTourMatchEntity.getId());
         billOfUser.setOpponentPayment(false);
         BillEntity savedBillOfUser = billServices.createBill(billOfUser);
@@ -306,7 +306,7 @@ public class MatchServices {
     }
 
     public List<MatchingRequestEntity> findMatchingRequestByUserId(int userId) {
-        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
         List<MatchingRequestEntity> matchingRequestEntityList = matchingRequestRepository.findByUserIdAndStatus(user, true);
         return matchingRequestEntityList;
     }

@@ -1,35 +1,35 @@
 package com.dto;
 
 public class InputReportFieldDTO {
-    private Integer userId;
+    private Integer accuserId;
 
-    private Integer fieldOwnerId;
+    private Integer accusedId;
 
     private String reason;
-
-    public InputReportFieldDTO(Integer userId, Integer fieldOwnerId, String reason) {
-        this.userId = userId;
-        this.fieldOwnerId = fieldOwnerId;
-        this.reason = reason;
-    }
 
     public InputReportFieldDTO() {
     }
 
-    public Integer getUserId() {
-        return userId;
+    public InputReportFieldDTO(Integer accuserId, Integer accusedId, String reason) {
+        this.accuserId = accuserId;
+        this.accusedId = accusedId;
+        this.reason = reason;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public Integer getAccuserId() {
+        return accuserId;
     }
 
-    public Integer getFieldOwnerId() {
-        return fieldOwnerId;
+    public void setAccuserId(Integer accuserId) {
+        this.accuserId = accuserId;
     }
 
-    public void setFieldOwnerId(Integer fieldOwnerId) {
-        this.fieldOwnerId = fieldOwnerId;
+    public Integer getAccusedId() {
+        return accusedId;
+    }
+
+    public void setAccusedId(Integer accusedId) {
+        this.accusedId = accusedId;
     }
 
     public String getReason() {
