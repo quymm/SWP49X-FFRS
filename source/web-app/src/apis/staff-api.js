@@ -5,12 +5,18 @@ import {
   GET_ALL_REPORT_FIELD_OWNER,
   GET_ALL_VOUCHER,
   ADD_NEW_VOUCHER,
+  GET_ALL_REPORT,
+  BLOCK_ACCOUNT,
 } from './base-URL';
 
 export function fetchGetUserOrFieldOwnerSuggestion(nameSuggest, role) {
   return fetch(
     BASE_URL + GET_USER_SUGGESTION + '?name=' + nameSuggest + '&role=' + role,
   ).then(res => res.json());
+}
+
+export function fetchGetListReport() {
+  return fetch(BASE_URL + GET_ALL_REPORT).then(res => res.json());
 }
 
 export function fetchGetAllReportUser(id) {
@@ -33,8 +39,14 @@ export function fetchAddNewVoucher(point, value) {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
-      "bonusPointTarget": point,
-      "voucherValue": value,
+      bonusPointTarget: point,
+      voucherValue: value,
     }),
   });
+}
+
+export function fetchRequestAccount(id) {
+  return fetch(BASE_URL + BLOCK_ACCOUNT + '?user-id=' + id).then(res =>
+    res.json(),
+  );
 }

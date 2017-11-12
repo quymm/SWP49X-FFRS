@@ -35,11 +35,11 @@ class Login extends Component {
           await this.props.doLoginSuccessful(dataLogin);
           if (dataLogin.roleId.roleName === 'owner') {
             this.props.history.push('/app/index');
+          } else if (dataLogin.roleId.roleName === 'staff') {
+            this.props.history.push('/app/staff-manage-user');
+          } else if (dataLogin.roleId.roleName === 'admin') {
+            this.props.history.push('/app/staff-manage-user');
           }
-        } else if (dataLogin.user.role === 'staff') {
-          this.props.history.push('/staff-manage-user');
-        } else if (dataLogin.user.role === 'admin') {
-          this.props.history.push('/staff-manage-user');
         } else {
           this.props.doLoginError('Sai tên đăng nhập hoặc mật khẩu');
         }
@@ -54,23 +54,33 @@ class Login extends Component {
     const { message } = this.props.auth.user.status;
     console.log(this.props);
     const styleLogo = {
-      width: 200, height: 80
-    }
+      width: 200,
+      height: 80,
+    };
     return (
       <div className="container-fluid backGroundLogin">
-      <div className="neon-text"><img style={styleLogo} src={require('../resource/images/ffrs.png')}></img>Hệ Thống Quản Lý Sân Bóng </div>
+        <div className="neon-text">
+          <img
+            style={styleLogo}
+            src={require('../resource/images/ffrs.png')}
+          />Hệ Thống Quản Lý Sân Bóng{' '}
+        </div>
         <div className="row">
           <div className="col-md-4 col-md-offset-4 login-padding">
             <div className="login-panel panel panel-default">
               <div className="panel-body">
-              <h4 className="text-center loginHeader"><strong>Đăng nhập</strong></h4>
+                <h4 className="text-center loginHeader">
+                  <strong>Đăng nhập</strong>
+                </h4>
                 <form onSubmit={this.handleLogin.bind(this)}>
                   <fieldset>
                     <p className="text-center text-danger">
                       <i>{message === null ? null : message}</i>
                     </p>
                     <div className="form-group">
-                      <label htmlFor="exampleInputEmail1">Tên đăng nhập <span></span></label>
+                      <label htmlFor="exampleInputEmail1">
+                        Tên đăng nhập <span />
+                      </label>
                       <input
                         value={this.state.username}
                         onChange={this.handleUsernameChange.bind(this)}

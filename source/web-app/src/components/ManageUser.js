@@ -11,6 +11,7 @@ import {
   fetchGetUserOrFieldOwnerSuggestion,
   fetchGetAllReportFieldOwner,
   fetchGetAllReportUser,
+  fetchGetListReport,
 } from '../apis/staff-api';
 import moment from 'moment';
 
@@ -70,14 +71,11 @@ class ManageUser extends Component {
     });
   };
   async handelShowModalUser(evt) {
-    if (this.state.userTarget === 'owner') {
-      const data = await fetchGetAllReportFieldOwner(evt.id);
-      this.setState({ listReportWithTargetUser: data.body });
-    } else {
-      const data = await fetchGetAllReportUser(evt.id);
-      debugger;
-      this.setState({ listReportWithTargetUser: data.body });
-    }
+    await this.setState({ userTarget: evt.roleId.roleName });
+    debugger;
+    console.log(this.state);
+    const data = await fetchGetAllReportUser(evt.id);
+    this.setState({ listReportWithTargetUser: data.body });
     this.setState({ showModelUser: true, result: evt });
   }
 
@@ -89,7 +87,7 @@ class ManageUser extends Component {
     const { id } = this.props.auth.user.data;
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
-      debugger;
+
       if (authLocalStorage === null) {
         this.props.doLogout();
         this.props.history.push('/login');
@@ -100,12 +98,14 @@ class ManageUser extends Component {
         } else {
           const idLocal = authLocalStorage.id;
           await this.props.doLoginSuccessful(authLocalStorage);
+          const data = await fetchGetListReport();
+          this.setState({ listReported: data.body });
         }
       }
     } else {
+      const data = await fetchGetListReport();
+      this.setState({ listReported: data.body });
     }
-    // const dataListReported = await fetchGetAllReport();
-    // this.setState({ listReported: dataListReported.body });
   }
   render() {
     const { value, suggestions, result, listReported } = this.state;
@@ -120,6 +120,7 @@ class ManageUser extends Component {
       width: 200,
       height: 200,
     };
+    console.log(this.state.listReported);
     return (
       <div className="main-panel">
         <div className="content">
@@ -178,7 +179,7 @@ class ManageUser extends Component {
                           <tr>
                             <th>Tên đăng nhập</th>
                             <th>Tên đội</th>
-                            {/* <th>Ngày tạo</th> */}
+                            <th>Quyền</th>
                             <th>Trạng thái</th>
                             <th />
                           </tr>
@@ -188,6 +189,11 @@ class ManageUser extends Component {
                             <tr>
                               <td>{this.state.result.username}</td>
                               <td>{this.state.result.profileId.name}</td>
+                              <td>
+                                {this.state.result.roleId.roleName === 'user'
+                                  ? 'Người chơi'
+                                  : 'Chủ sân'}
+                              </td>
                               <td>
                                 {this.state.result.status ? (
                                   <span className="label label-success">
@@ -209,11 +215,16 @@ class ManageUser extends Component {
                                 </button>
                               </td>
                             </tr>
-                          ) : listReported > 0 ? (
-                            listReported.map(reported => (
-                              <tr>
+                          ) : listReported.length > 0 ? (
+                            listReported.map((reported, index) => (
+                              <tr key={index}>
                                 <td>{reported.username}</td>
                                 <td>{reported.profileId.name}</td>
+                                <td>
+                                  {reported.roleId.roleName === 'user'
+                                    ? 'Người chơi'
+                                    : 'Chủ sân'}
+                                </td>
                                 <td>
                                   {reported.status ? (
                                     <span className="label label-success">
@@ -291,6 +302,12 @@ class ManageUser extends Component {
                           </tr>
                           <tr>
                             <td>
+                              <strong>Ngày tạo</strong>
+                            </td>
+                            <td>{moment(result.profileId.creationDate).format('DD [tháng] MM, YYYY HH:mm')}</td>
+                          </tr>
+                          <tr>
+                            <td>
                               <strong>Tiền </strong>
                             </td>
                             <td>
@@ -351,9 +368,9 @@ class ManageUser extends Component {
                             (report, index) => (
                               <tr key={index}>
                                 <td>{index + 1}</td>
-                                <td>{report.userId.username}</td>
+                                <td>{report.accuserId.username}</td>
                                 <td>
-                                  {moment(report.creationDate).format(
+                                  {moment(report.accuserId.creationDate).format(
                                     'DD [tháng] MM, YYYY | HH:mm',
                                   )}
                                 </td>
@@ -390,6 +407,8 @@ class ManageUser extends Component {
 function mapPropsToState(state) {
   return { auth: state.auth };
 }
-export default connect(mapPropsToState, { doLoginSuccessful, accessDenied, doLogout })(
-  ManageUser,
-);
+export default connect(mapPropsToState, {
+  doLoginSuccessful,
+  accessDenied,
+  doLogout,
+})(ManageUser);
