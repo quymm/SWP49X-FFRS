@@ -280,11 +280,12 @@ class Header extends Component {
                 <i className="glyphicon glyphicon-user" />
               </Dropdown.Toggle>
               <Dropdown.Menu className="dropdown-menu-right super-colors">
+              {roleId.roleName === 'owner' ? ( <div>
                 <MenuItem onClick={this.handleUpdateProfile.bind(this)}>
                   {' '}
                   <i className="glyphicon glyphicon-user" /> Cập nhật thông tin
                 </MenuItem>
-                <MenuItem divider />
+              <MenuItem divider /> </div>) : null }
                 <MenuItem onClick={this.handleLogout.bind(this)}>
                   {' '}
                   <i className="glyphicon glyphicon-log-out" /> Đăng xuất
