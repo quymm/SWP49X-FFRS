@@ -51,11 +51,11 @@ public class AccountEntity implements Serializable {
     private boolean status;
     @Basic(optional = false)
     @Column(name = "creation_date")
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date creationDate;
     @Basic(optional = false)
     @Column(name = "modification_date")
-    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
     private Date modificationDate;
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     @ManyToOne(optional = false)

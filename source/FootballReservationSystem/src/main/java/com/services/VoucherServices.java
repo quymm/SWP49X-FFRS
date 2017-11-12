@@ -6,6 +6,8 @@ import com.repository.VoucherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class VoucherServices {
     @Autowired
@@ -33,5 +35,9 @@ public class VoucherServices {
     }
     public VoucherEntity findVoucherEntityById(int voucherId) {
         return voucherRepository.findByIdAndStatus(voucherId, true);
+    }
+
+    public List<VoucherEntity> findAll(){
+        return voucherRepository.findAllByStatus(true);
     }
 }

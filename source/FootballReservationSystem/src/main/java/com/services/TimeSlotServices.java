@@ -188,6 +188,7 @@ public class TimeSlotServices {
         FieldTypeEntity fieldType = fieldTypeServices.findById(fieldTypeId);
         Date targetDate = DateTimeUtils.convertFromStringToDate(dateString);
 
+
         // kiểm tra trong database đã đổ time-slot rảnh cho ngày mới chưa
         if (timeSlotRepository.countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(fieldOwner, fieldType, targetDate, true) == 0) {
             // nếu chưa có thì tạo mới time-slot
@@ -232,6 +233,24 @@ public class TimeSlotServices {
                     }
                 }
             }
+//            List<TimeSlotEntity> returnTimeSlotEntityList = new ArrayList<>();
+//            if (!savedTimeSlotEntityList.isEmpty()) {
+//                Date nowDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
+//                Date nowTime = DateTimeUtils.convertFromStringToTime(DateTimeUtils.formatTime(new Date()));
+//                if (targetDate.equals(nowDate)) {
+//                    for (TimeSlotEntity timeSlotEntity : savedTimeSlotEntityList) {
+//                        if (timeSlotEntity.getEndTime().after(nowTime)) {
+//                            if (timeSlotEntity.getStartTime().before(nowTime)) {
+//                                timeSlotEntity.setStartTime(for);
+//                            }
+//                            returnTimeSlotEntityList.add(timeSlotEntity);
+//                        }
+//                    }
+//                } else {
+//
+//                    returnTimeSlotEntityList.addAll(savedTimeSlotEntityList);
+//                }
+//            }
             return savedTimeSlotEntityList;
         }
     }
@@ -409,15 +428,15 @@ public class TimeSlotServices {
         return true;
     }
 
-    public List<TimeSlotEntity> addTimeSlotWhenCreateNewField(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity){
+    public List<TimeSlotEntity> addTimeSlotWhenCreateNewField(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity) {
         Date targetDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findTimeWhenAddNewField(targetDate, true, fieldOwner, fieldTypeEntity);
         List<TimeSlotEntity> savedTimeSlotEntityList = new ArrayList<>();
-        if(!timeSlotEntityList.isEmpty())
+        if (!timeSlotEntityList.isEmpty())
             for (TimeSlotEntity timeSlot : timeSlotEntityList) {
                 String dayInWeek = DateTimeUtils.returnDayInWeek(timeSlot.getDate());
                 List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDate(fieldOwner, fieldTypeEntity, dayInWeek);
-                if(!timeEnableEntityList.isEmpty()){
+                if (!timeEnableEntityList.isEmpty()) {
 
                     TimeSlotEntity timeSlotEntity = new TimeSlotEntity();
 
@@ -425,7 +444,7 @@ public class TimeSlotServices {
                     timeSlotEntity.setFieldTypeId(fieldTypeEntity);
                     timeSlotEntity.setDate(timeSlot.getDate());
                     timeSlotEntity.setStartTime(timeEnableEntityList.get(0).getStartTime());
-                    timeSlotEntity.setEndTime(timeEnableEntityList.get(timeEnableEntityList.size() -1).getEndTime());
+                    timeSlotEntity.setEndTime(timeEnableEntityList.get(timeEnableEntityList.size() - 1).getEndTime());
                     timeSlotEntity.setReserveStatus(false);
                     timeSlotEntity.setStatus(true);
                     savedTimeSlotEntityList.add(timeSlotRepository.save(timeSlotEntity));

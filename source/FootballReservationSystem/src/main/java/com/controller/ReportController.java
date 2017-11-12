@@ -42,4 +42,11 @@ public class ReportController {
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/report/all-opponent", method = RequestMethod.GET)
+    public ResponseEntity getReportOrderByNumOfReport(){
+        Wrapper wrapper = new Wrapper(reportServices.getListReportOrderByNumberReport(), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
 }
