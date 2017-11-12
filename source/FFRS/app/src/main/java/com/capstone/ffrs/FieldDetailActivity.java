@@ -1,11 +1,14 @@
 package com.capstone.ffrs;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -16,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -34,76 +38,17 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class FieldDetailActivity extends AppCompatActivity {
 
     private String name, address;
-    private Date from, to, date;
+    private Date startTime, endTime, date;
     private int id, price, fieldTypeId;
 
     String hostURL;
-    PendingIntent pendingIntent;
-    boolean isPaused;
-
-    private BroadcastReceiver br = new BroadcastReceiver() {
-        @Override
-        public void onReceive(final Context context, Intent intent) {
-            stopService(new Intent(context, TimerServices.class));
-            Bundle b = getIntent().getExtras();
-            int timeSlotId = b.getInt("time_slot_id");
-            final String status = intent.getExtras().getString("status");
-            String url = hostURL + getResources().getString(R.string.url_cancel_reservation);
-            url = String.format(url, timeSlotId);
-            RequestQueue queue = NetworkController.getInstance(context).getRequestQueue();
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    if (status.equals("running")) {
-                        Toast toast = Toast.makeText(context, "FFR: Đã hết thời gian giữ sân", Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.CENTER, 0, 0);
-                        toast.show();
-                        unregisterReceiver(br);
-                        Intent intent = new Intent(context, SearchActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        pendingIntent =
-                                PendingIntent.getActivity(context, 0, intent, 0);
-                        if (!isPaused) {
-                            try {
-                                pendingIntent.send();
-                            } catch (PendingIntent.CanceledException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    if (status.equals("running")) {
-                        Toast toast = Toast.makeText(context, "FFR: Đã hết thời gian giữ sân", Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.CENTER, 0, 0);
-                        toast.show();
-                        unregisterReceiver(br);
-                        Intent intent = new Intent(context, SearchActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        pendingIntent =
-                                PendingIntent.getActivity(context, 0, intent, 0);
-                        if (!isPaused) {
-                            try {
-                                pendingIntent.send();
-                            } catch (PendingIntent.CanceledException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            });
-            queue.add(request);
-        }
-    };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,9 +56,6 @@ public class FieldDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_field_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        Intent intent = new Intent(this, TimerServices.class);
-        startService(intent);
 
         hostURL = getResources().getString(R.string.local_host);
 
@@ -129,9 +71,8 @@ public class FieldDetailActivity extends AppCompatActivity {
 
         date = (Date) b.getSerializable("date");
 
-        from = (Date) b.get("time_from");
-        Log.d("START", from.toString());
-        to = (Date) b.get("time_to");
+        startTime = (Date) b.get("time_from");
+        endTime = (Date) b.get("time_to");
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm", Locale.US);
 
         id = b.getInt("field_id");
@@ -139,17 +80,17 @@ public class FieldDetailActivity extends AppCompatActivity {
 
         price = b.getInt("price");
 
-        int hours = Double.valueOf(Math.abs(to.getTime() - from.getTime()) / 36e5).intValue();
-        int minutes = Double.valueOf((Math.abs(to.getTime() - from.getTime()) / (60 * 1000)) % 60).intValue();
+        int hours = Double.valueOf(Math.abs(endTime.getTime() - startTime.getTime()) / 36e5).intValue();
+        int minutes = Double.valueOf((Math.abs(endTime.getTime() - startTime.getTime()) / (60 * 1000)) % 60).intValue();
 
         String duration = (hours != 0 ? hours + " tiếng " : "") + (minutes != 0 ? minutes + " phút" : "");
 
         TextView txtDate = (TextView) findViewById(R.id.text_date);
         txtDate.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(date));
         TextView txtFrom = (TextView) findViewById(R.id.text_from);
-        txtFrom.setText(sdf.format(from));
+        txtFrom.setText(sdf.format(startTime));
         TextView txtTo = (TextView) findViewById(R.id.text_to);
-        txtTo.setText(sdf.format(to));
+        txtTo.setText(sdf.format(endTime));
         TextView txtDuration = (TextView) findViewById(R.id.text_duration);
         txtDuration.setText(duration);
 
@@ -185,56 +126,13 @@ public class FieldDetailActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        stopService(new Intent(this, TimerServices.class));
-        try {
-            unregisterReceiver(br);
-        } catch (IllegalArgumentException e) {
-
-        }
-        Bundle b = getIntent().getExtras();
-        int timeSlotId = b.getInt("time_slot_id");
-        String url = hostURL + getResources().getString(R.string.url_cancel_reservation);
-        url = String.format(url, timeSlotId);
-        RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                finish();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                finish();
-            }
-        });
-        queue.add(request);
+        finish();
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        isPaused = false;
-        if (pendingIntent != null) {
-            try {
-                pendingIntent.send();
-            } catch (PendingIntent.CanceledException e) {
-                e.printStackTrace();
-            }
-        } else {
-            registerReceiver(br, new IntentFilter(TimerServices.COUNTDOWN_BR));
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        isPaused = true;
     }
 
     public void onClickGoBackToTime(View view) {
@@ -248,31 +146,27 @@ public class FieldDetailActivity extends AppCompatActivity {
     }
 
     public void onClickReserve(View view) {
-        try {
-            unregisterReceiver(br);
-        } catch (IllegalArgumentException e) {
-
-        }
         final Bundle b = getIntent().getExtras();
         final boolean tourMatchMode = b.getBoolean("tour_match_mode");
         String url;
-        Map<String, Object> params = null;
         if (!tourMatchMode) {
             url = hostURL + getResources().getString(R.string.url_reserve_friendly_match);
-            url = String.format(url, b.getInt("time_slot_id"), b.getInt("user_id"), 0);
+            url = String.format(url, b.getInt("user_id"));
         } else {
             url = hostURL + getResources().getString(R.string.url_reserve_tour_match);
-            url = String.format(url, b.getInt("time_slot_id"), b.getInt("matching_request_id"), b.getInt("user_id"), 0);
+            url = String.format(url, b.getInt("matching_request_id"), b.getInt("user_id"));
         }
 
         RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
 
-        JSONObject jsonParams = null;
-        if (params != null) {
-            jsonParams = new JSONObject(params);
-        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", new SimpleDateFormat("dd-MM-yyyy").format(date));
+        params.put("endTime", new SimpleDateFormat("H:mm").format(endTime));
+        params.put("fieldOwnerId", id);
+        params.put("fieldTypeId", fieldTypeId);
+        params.put("startTime", new SimpleDateFormat("H:mm").format(startTime));
 
-        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, jsonParams,
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -332,7 +226,124 @@ public class FieldDetailActivity extends AppCompatActivity {
                                     Toast.makeText(FieldDetailActivity.this, "Error!", Toast.LENGTH_SHORT).show();
                                 }
                             } else {
+                                if (!tourMatchMode) {
+                                    AlertDialog.Builder builder;
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        builder = new AlertDialog.Builder(FieldDetailActivity.this, android.R.style.Theme_Material_Light_Dialog_Alert);
+                                    } else {
+                                        builder = new AlertDialog.Builder(FieldDetailActivity.this);
+                                    }
+                                    builder.setTitle("Hết sân trống")
+                                            .setMessage("Bạn có muốn chọn giờ khác không?")
+                                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    finish();
+                                                }
+                                            })
+                                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    Intent intent = new Intent(FieldDetailActivity.this, SearchActivity.class);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                                    startActivity(intent);
+                                                }
+                                            })
+                                            .show();
+                                } else {
+                                    AlertDialog.Builder builder;
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        builder = new AlertDialog.Builder(FieldDetailActivity.this, android.R.style.Theme_Material_Light_Dialog_Alert);
+                                    } else {
+                                        builder = new AlertDialog.Builder(FieldDetailActivity.this);
+                                    }
+                                    builder.setTitle("Hết sân trống")
+                                            .setMessage("Bạn có muốn hệ thống chọn sân khác không?")
+                                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    String url = hostURL + getResources().getString(R.string.url_choose_field);
+                                                    url = String.format(url, b.getInt("matching_request_id"), 5);
 
+                                                    RequestQueue queue = NetworkController.getInstance(FieldDetailActivity.this).getRequestQueue();
+
+                                                    final String strDate = b.getString("date");
+
+                                                    Map<String, Object> params = new HashMap<>();
+                                                    params.put("date", strDate);
+                                                    params.put("userId", b.getInt("user_id"));
+                                                    params.put("startTime", new SimpleDateFormat("H:mm").format(startTime));
+                                                    params.put("endTime", new SimpleDateFormat("H:mm").format(endTime));
+                                                    params.put("fieldTypeId", b.getInt("field_type_id"));
+                                                    params.put("latitude", b.getDouble("latitude"));
+                                                    params.put("longitude", b.getDouble("longitude"));
+                                                    params.put("duration", b.getInt("duration"));
+                                                    JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
+                                                            new Response.Listener<JSONObject>() {
+                                                                @Override
+                                                                public void onResponse(JSONObject response) {
+                                                                    try {
+                                                                        if (!response.isNull("body")) {
+                                                                            JSONObject body = response.getJSONObject("body");
+                                                                            if (body != null && body.length() > 0) {
+                                                                                try {
+                                                                                    final Date fromTime = new Date(body.getLong("startTime"));
+                                                                                    final Date toTime = new Date(body.getLong("endTime"));
+                                                                                    Intent intent = new Intent(FieldDetailActivity.this, FieldDetailActivity.class);
+                                                                                    intent.putExtra("field_id", body.getJSONObject("fieldOwnerId").getInt("id"));
+                                                                                    intent.putExtra("field_name", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("name"));
+                                                                                    intent.putExtra("field_address", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("address"));
+                                                                                    intent.putExtra("field_type_id", body.getJSONObject("fieldTypeId").getInt("id"));
+                                                                                    intent.putExtra("date", new Date(Long.parseLong(strDate)));
+                                                                                    intent.putExtra("time_from", fromTime);
+                                                                                    intent.putExtra("time_to", toTime);
+                                                                                    intent.putExtra("price", body.getInt("price"));
+                                                                                    intent.putExtra("user_id", b.getInt("user_id"));
+                                                                                    intent.putExtra("tour_match_mode", true);
+                                                                                    intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
+                                                                                    intent.putExtra("opponent_id", b.getInt("opponent_id"));
+                                                                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                                                                    startActivity(intent);
+                                                                                } catch (Exception e) {
+                                                                                    Log.d("EXCEPTION", e.getMessage());
+                                                                                }
+                                                                            } else {
+                                                                                Toast toast = Toast.makeText(FieldDetailActivity.this, "Không tìm thấy sân phù hợp!", Toast.LENGTH_LONG);
+                                                                                toast.setGravity(Gravity.CENTER, 0, 0);
+                                                                                toast.show();
+                                                                            }
+                                                                        } else {
+                                                                            Toast toast = Toast.makeText(FieldDetailActivity.this, "Không tìm thấy sân phù hợp!", Toast.LENGTH_LONG);
+                                                                            toast.setGravity(Gravity.CENTER, 0, 0);
+                                                                            toast.show();
+                                                                        }
+                                                                    } catch (JSONException e) {
+                                                                        Log.d("ParseException", e.getMessage());
+                                                                    }
+                                                                }
+                                                            },
+                                                            new Response.ErrorListener() {
+                                                                @Override
+                                                                public void onErrorResponse(VolleyError error) {
+                                                                    Log.d("Error.Response", error.toString());
+                                                                }
+                                                            }) {
+                                                        @Override
+                                                        public Map<String, String> getHeaders() throws AuthFailureError {
+                                                            HashMap<String, String> headers = new HashMap<String, String>();
+                                                            headers.put("Content-Type", "application/json; charset=utf-8");
+                                                            return headers;
+                                                        }
+                                                    };
+                                                    queue.add(postRequest);
+                                                }
+                                            })
+                                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    Intent intent = new Intent(FieldDetailActivity.this, MatchResultActivity.class);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                                    startActivity(intent);
+                                                }
+                                            })
+                                            .show();
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -353,8 +364,8 @@ public class FieldDetailActivity extends AppCompatActivity {
                                     intent.putExtra("field_address", address);
                                     intent.putExtra("field_type_id", fieldTypeId);
                                     intent.putExtra("date", date);
-                                    intent.putExtra("time_from", from);
-                                    intent.putExtra("time_to", to);
+                                    intent.putExtra("time_from", startTime);
+                                    intent.putExtra("time_to", endTime);
                                     intent.putExtra("price", price);
                                     intent.putExtra("user_id", b.getInt("user_id"));
                                     intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
@@ -375,29 +386,5 @@ public class FieldDetailActivity extends AppCompatActivity {
                     }
                 });
         queue.add(postRequest);
-
-
-//        Bundle b = getIntent().getExtras();
-//        Intent intent = new Intent(FieldDetailActivity.this, PayPalActivity.class);
-//        intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
-//        intent.putExtra("user_id", b.getInt("user_id"));
-//        intent.putExtra("field_id", id);
-//        intent.putExtra("field_name", name);
-//        intent.putExtra("field_address", address);
-//        intent.putExtra("price", -1 * price);
-//
-//        boolean tourMatchMode = b.getBoolean("tour_match_mode");
-//        if (tourMatchMode) {
-//            intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
-//            intent.putExtra("tour_match_mode", tourMatchMode);
-//            if (b.containsKey("tour_match_id")) {
-//                intent.putExtra("tour_match_id", b.getInt("tour_match_id"));
-//            }
-//            if (b.containsKey("opponent_id")) {
-//                intent.putExtra("opponent_id", b.getInt("opponent_id"));
-//            }
-//        }
-//        unregisterReceiver(br);
-//        startActivity(intent);
     }
 }

@@ -73,7 +73,17 @@ public class MainActivity extends Activity {
                         try {
                             JSONObject body = response.getJSONObject("body");
                             if (body != null && body.length() > 0) {
-                                changeActivity(body);
+                                JSONObject role = body.getJSONObject("roleId");
+                                String roleName = role.getString("roleName");
+                                if (roleName.equals("user")) {
+                                    changeActivity(body);
+                                } else {
+                                    clearSharedPreferences();
+                                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    overridePendingTransition(0, 0);
+                                }
                             } else {
                                 clearSharedPreferences();
                                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
@@ -126,7 +136,6 @@ public class MainActivity extends Activity {
                 editor.putInt("user_id", body.getInt("id"));
                 editor.putString("username", body.getString("username"));
                 editor.putString("password", body.getString("password"));
-
             }
             editor.putString("teamName", body.getJSONObject("profileId").getString("name"));
             editor.putInt("balance", body.getJSONObject("profileId").getInt("balance"));

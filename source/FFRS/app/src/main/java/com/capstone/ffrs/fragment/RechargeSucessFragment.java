@@ -42,7 +42,6 @@ public class RechargeSucessFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -106,7 +105,6 @@ public class RechargeSucessFragment extends Fragment {
                                                     intent.putExtra("time_to", b.getSerializable("time_to"));
                                                     intent.putExtra("price", body.getInt("price"));
                                                     intent.putExtra("user_id", b.getInt("user_id"));
-                                                    intent.putExtra("time_slot_id", body.getInt("id"));
                                                     intent.putExtra("tour_match_mode", b.getBoolean("tour_match_mode"));
                                                     if (b.getBoolean("tour_match_mode")) {
                                                         intent.putExtra("matching_request_id", b.getInt("matching_request_id"));

@@ -118,10 +118,15 @@ public class PayPalActivity extends AppCompatActivity {
                     final Bundle b = getIntent().getExtras();
                     String hostURL = getResources().getString(R.string.local_host);
                     String url = hostURL + getResources().getString(R.string.url_add_to_balance);
-                    url = String.format(url, b.getInt("user_id"), "user", b.getInt("money"));
-                    RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
 
-                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
+                    RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
+                    Map<String, Object> params = new HashMap<>();
+                    params.put("accountId", b.getInt("user_id"));
+                    params.put("role", "user");
+                    params.put("information", "PayPal");
+                    params.put("balance", b.getInt("money"));
+
+                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
                             if (!response.isNull("body")) {
@@ -149,7 +154,7 @@ public class PayPalActivity extends AppCompatActivity {
                                         intent.putExtra("recharge_for_reservation", true);
                                     }
                                     intent.putExtra("payment_result", "Recharged");
-                                    editor.putInt("balance", body.getJSONObject("profileId").getInt("balance"));
+                                    editor.putInt("balance", body.getJSONObject("userId").getJSONObject("profileId").getInt("balance"));
                                     editor.commit();
                                     startActivity(intent);
                                 } catch (JSONException e) {

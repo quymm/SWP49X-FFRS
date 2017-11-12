@@ -44,7 +44,7 @@ import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.capstone.ffrs.CreateMatchingRequestActivity;
+import com.capstone.ffrs.CreateRequestResultActivity;
 import com.capstone.ffrs.MatchResultActivity;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.RechargeActivity;
@@ -421,7 +421,7 @@ public class MatchSearchFragment extends Fragment {
                             new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
-                                    Intent intent = new Intent(getActivity(), CreateMatchingRequestActivity.class);
+                                    Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
                                     intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
                                     startActivity(intent);
                                 }

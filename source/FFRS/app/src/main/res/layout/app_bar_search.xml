@@ -48,6 +48,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_field_suggest" />
+    <include layout="@layout/content_search" />
 
 </android.support.design.widget.CoordinatorLayout>

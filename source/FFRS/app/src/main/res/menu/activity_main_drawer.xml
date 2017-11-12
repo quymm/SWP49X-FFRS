@@ -14,9 +14,11 @@
             android:title="Thông tin tài khoản" />
         <item
             android:id="@+id/nav_favorite_field"
+            android:icon="@drawable/ic_favorite"
             android:title="Sân yêu thích" />
         <item
             android:id="@+id/nav_blacsklist"
+            android:icon="@drawable/ic_block"
             android:title="Đối thủ bị chặn" />
         <item
             android:id="@+id/nav_history"

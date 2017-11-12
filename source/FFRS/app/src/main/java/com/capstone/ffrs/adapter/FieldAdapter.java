@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Created by AndroidNovice on 6/5/2016.
  */
-public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder> {
+public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.FieldViewHolder> {
 
     private List<FieldOwner> fieldOwnerList;
     private Context context;
@@ -40,14 +40,14 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FieldViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View rootView = inflater.inflate(R.layout.field_item, parent, false);
-        return new MyViewHolder(rootView);
+        return new FieldViewHolder(rootView);
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
+    public void onBindViewHolder(FieldViewHolder holder, int position) {
         FieldOwner fieldOwner = fieldOwnerList.get(position);
 
         holder.itemView.setTag(R.id.card_view, fieldOwner.getId());
@@ -94,12 +94,12 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
         return fieldOwnerList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class FieldViewHolder extends RecyclerView.ViewHolder {
 
         private TextView content, title;
         private ImageView imageview;
 
-        public MyViewHolder(final View itemView) {
+        public FieldViewHolder(final View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.title_view);
             content = (TextView) itemView.findViewById(R.id.content_view);

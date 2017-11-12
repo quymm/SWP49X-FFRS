@@ -160,8 +160,8 @@ public class RequestTimeActivity extends AppCompatActivity {
                                 JSONObject body = response.getJSONObject("body");
                                 if (body != null && body.length() > 0) {
                                     try {
-                                        final Date fromTime = new Date(body.getLong("startTime"));
-                                        final Date toTime = new Date(body.getLong("endTime"));
+                                        final Date fromTime = new SimpleDateFormat("H:mm").parse(body.getString("startTime"));
+                                        final Date toTime = new SimpleDateFormat("H:mm").parse(body.getString("endTime"));
                                         Intent intent = new Intent(RequestTimeActivity.this, FieldDetailActivity.class);
                                         intent.putExtra("field_id", body.getJSONObject("fieldOwnerId").getInt("id"));
                                         intent.putExtra("field_name", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("name"));
@@ -172,7 +172,6 @@ public class RequestTimeActivity extends AppCompatActivity {
                                         intent.putExtra("time_to", toTime);
                                         intent.putExtra("price", body.getInt("price"));
                                         intent.putExtra("user_id", userId);
-                                        intent.putExtra("time_slot_id", body.getInt("id"));
                                         intent.putExtra("tour_match_mode", true);
                                         intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
                                         intent.putExtra("opponent_id", opponentId);

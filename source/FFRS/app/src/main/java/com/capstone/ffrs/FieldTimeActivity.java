@@ -91,7 +91,6 @@ public class FieldTimeActivity extends AppCompatActivity {
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             String fromTime = intent.getStringExtra("from");
             String toTime = intent.getStringExtra("to");
             EditText from = (EditText) findViewById(R.id.text_from);
@@ -433,7 +432,6 @@ public class FieldTimeActivity extends AppCompatActivity {
             params.put("fieldOwnerId", id);
             params.put("fieldTypeId", (spinner.getSelectedItemPosition() + 1));
             params.put("startTime", from.getText().toString());
-            params.put("userId", b.getInt("user_id"));
             JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
                     new Response.Listener<JSONObject>() {
                         @Override
@@ -453,7 +451,6 @@ public class FieldTimeActivity extends AppCompatActivity {
                                             intent.putExtra("time_to", toTime);
                                             intent.putExtra("price", body.getInt("price"));
                                             intent.putExtra("user_id", b.getInt("user_id"));
-                                            intent.putExtra("time_slot_id", body.getInt("id"));
                                             intent.putExtra("tour_match_mode", false);
                                             startActivity(intent);
                                         } catch (Exception e) {

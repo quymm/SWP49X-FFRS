@@ -28,7 +28,7 @@ import java.util.List;
  * Created by HuanPMSE61860 on 10/30/2017.
  */
 
-public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.MyViewHolder> {
+public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.PaidRequestViewHolder> {
 
     private List<Object> requestList;
     private Context context;
@@ -42,14 +42,14 @@ public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.
     }
 
     @Override
-    public PaidRequestAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PaidRequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View rootView = inflater.inflate(R.layout.reservation_item, parent, false);
-        return new PaidRequestAdapter.MyViewHolder(rootView);
+        return new PaidRequestAdapter.PaidRequestViewHolder(rootView);
     }
 
     @Override
-    public void onBindViewHolder(final PaidRequestAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(PaidRequestViewHolder holder, int position) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             Object request = requestList.get(position);
@@ -131,12 +131,12 @@ public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.
         return requestList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class PaidRequestViewHolder extends RecyclerView.ViewHolder {
 
         private TextView txtContent, txtField, txtTime, txtDate, txtStatus;
         private RelativeLayout background;
 
-        public MyViewHolder(final View itemView) {
+        public PaidRequestViewHolder(final View itemView) {
             super(itemView);
             txtField = (TextView) itemView.findViewById(R.id.field_view);
             txtContent = (TextView) itemView.findViewById(R.id.content_view);

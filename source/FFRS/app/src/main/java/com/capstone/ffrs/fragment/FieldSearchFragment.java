@@ -215,6 +215,7 @@ public class FieldSearchFragment extends Fragment {
             progressLayout.setVisibility(View.VISIBLE);
             RelativeLayout fieldLayout = (RelativeLayout) mActivity.findViewById(R.id.fields_layout);
             fieldLayout.setVisibility(View.GONE);
+            loadFields(getView());
         }
     }
 
@@ -225,6 +226,10 @@ public class FieldSearchFragment extends Fragment {
     }
 
     public void loadFields(View view) {
+        if (currentLocation == null) {
+            return;
+        }
+
         if (!fieldOwnerList.isEmpty()) {
             fieldOwnerList.clear();
         }

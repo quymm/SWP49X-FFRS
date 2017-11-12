@@ -27,6 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Số dư: "
+                android:textColor="@color/primaryText"
                 android:textSize="18dp" />
 
             <TextView
@@ -35,9 +36,23 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:text="xxx nghìn đồng "
+                android:textColor="@color/primaryText"
                 android:textSize="18dp" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_limit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Số tiền nạp phải từ 50 nghìn đồng đến 5 triệu đồng"
+                android:textSize="14dp" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -50,15 +65,17 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:hint="Số tiền nạp (Tối đa 5000)"
+                android:hint="Số tiền nạp"
                 android:inputType="number"
-                android:maxLength="4" />
+                android:maxLength="4"
+                android:textColor="@color/primaryText" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text=" nghìn đồng"
+                android:textColor="@color/primaryText"
                 android:textSize="18dp" />
         </LinearLayout>
 

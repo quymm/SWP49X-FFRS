@@ -52,12 +52,15 @@ public class RechargeActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 String value = s.toString();
                 if (!value.isEmpty() && !value.equals("0")) {
-                    if (Integer.valueOf(value) > 5000) {
-                        txtMoney.setText("5000");
-                    }
                     Button btRecharge = (Button) findViewById(R.id.btRecharge);
                     btRecharge.setEnabled(true);
                     btRecharge.setBackgroundColor(ContextCompat.getColor(RechargeActivity.this, R.color.green));
+                    if (Integer.valueOf(value) > 5000) {
+                        txtMoney.setText("5000");
+                    } else if (Integer.valueOf(value) < 50) {
+                        btRecharge.setEnabled(false);
+                        btRecharge.setBackgroundColor(ContextCompat.getColor(RechargeActivity.this, R.color.gray));
+                    }
                 } else {
                     if (value.length() > 0 && value.charAt(0) == '0') {
                         txtMoney.setText("");

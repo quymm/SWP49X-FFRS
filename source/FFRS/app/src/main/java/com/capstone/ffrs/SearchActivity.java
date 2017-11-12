@@ -44,7 +44,6 @@ public class SearchActivity extends AppCompatActivity
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(SearchActivity.this);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt("balance", b.getInt("balance"));
-            Log.d("BALANCE", b.getInt("balance") + "");
             editor.commit();
 
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -61,6 +60,7 @@ public class SearchActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerLayout = navigationView.getHeaderView(0);
+
         TextView txtTeamName = (TextView) headerLayout.findViewById(R.id.text_name);
         txtTeamName.setText(preferences.getString("teamName", ""));
 
@@ -97,7 +97,7 @@ public class SearchActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_field_suggest);
+        setContentView(R.layout.activity_search);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -184,6 +184,12 @@ public class SearchActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_history) {
             Intent intent = new Intent(this, HistoryActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_favorite_field) {
+            Intent intent = new Intent(this, FavoriteFieldActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_blacsklist) {
+            Intent intent = new Intent(this, BlacklistActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);

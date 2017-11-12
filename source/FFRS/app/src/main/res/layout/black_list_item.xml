@@ -16,7 +16,7 @@
             android:id="@+id/left_sector"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -27,23 +27,14 @@
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_profile" />
 
-            <TextView
-                android:id="@+id/rating_score"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="2000"
-                android:textAlignment="center"
-                android:textColor="@color/primaryText"
-                android:textSize="16sp"
-                android:textStyle="bold" />
         </LinearLayout>
 
         <RelativeLayout
             android:id="@+id/content_sector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:layout_toRightOf="@id/left_sector">
+            android:layout_toEndOf="@id/left_sector"
+            android:layout_toStartOf="@id/close_sector">
 
             <LinearLayout
                 android:id="@+id/center_sector"
@@ -61,47 +52,33 @@
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/date_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:text="Date"
-                        android:textColor="@color/secondaryText"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=":"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/time_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:text="Start time - end time"
-                        android:textColor="@color/secondaryText"
-                        android:textSize="16sp"
-                        android:textStyle="italic" />
-                </LinearLayout>
-
                 <TextView
-                    android:id="@+id/duration_view"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/rating_score"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Duration"
+                    android:text="Điểm xếp hạng: 2000"
                     android:textColor="@color/secondaryText"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:textStyle="italic" />
             </LinearLayout>
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/close_sector"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btDelete"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/ic_close"
+                android:paddingTop="-20dp" />
+        </RelativeLayout>
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>
