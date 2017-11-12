@@ -22,8 +22,8 @@ public class FavoritesFieldServices {
     Constant constant;
 
     public FavoritesFieldEntity createNewFavoritesField(int userId, int fieldOwnerId) {
-        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         FavoritesFieldEntity favoritesFieldEntity = favoritesFieldRepository.findByUserIdAndFieldOwnerIdAndStatus(user, fieldOwner, false);
         if (favoritesFieldEntity != null) {
             favoritesFieldEntity.setStatus(true);
@@ -37,13 +37,13 @@ public class FavoritesFieldServices {
     }
 
     public List<FavoritesFieldEntity> findFavoritesFieldByUserId(int userId) {
-        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
         return favoritesFieldRepository.findByUserIdAndStatus(user, true);
     }
 
     public FavoritesFieldEntity findFavoritesFieldByUserIdAndFieldOwnerId(int userId, int fieldOwnerId) {
-        AccountEntity user = accountServices.findAccountEntityById(userId, constant.getUserRole());
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         return favoritesFieldRepository.findByUserIdAndFieldOwnerIdAndStatus(user, fieldOwner, true);
     }
 

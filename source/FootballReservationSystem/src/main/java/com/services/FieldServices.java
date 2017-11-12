@@ -33,7 +33,7 @@ public class FieldServices {
 
     public FieldEntity createNewField(InputFieldDTO inputFieldDTO) {
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(inputFieldDTO.getFieldTypeId());
-        AccountEntity accountEntity = accountServices.findAccountEntityById(inputFieldDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
+        AccountEntity accountEntity = accountServices.findAccountEntityByIdAndRole(inputFieldDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
         FieldEntity fieldEntity = fieldRepository.findByFieldOwnerIdAndFieldTypeIdAndNameAndStatus(accountEntity, fieldTypeEntity, inputFieldDTO.getFieldName(), false);
         if (fieldEntity != null) {
             fieldEntity.setStatus(true);
@@ -51,12 +51,12 @@ public class FieldServices {
     }
 
     public List<FieldEntity> findFieldEntityByFieldOwnerId(int fieldOwnerId) {
-        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
+        AccountEntity accountEntity = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         return fieldRepository.findByFieldOwnerIdAndStatus(accountEntity, true);
     }
 
     public FieldEntity findFieldEntityByFieldNameAndFieldOwnerId(String fieldName, int fieldOwnerId) {
-        AccountEntity accountEntity = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
+        AccountEntity accountEntity = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         return fieldRepository.findByFieldOwnerIdAndNameAndStatus(accountEntity, fieldName, true);
     }
 

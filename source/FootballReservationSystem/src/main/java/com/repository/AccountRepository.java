@@ -30,4 +30,6 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Integer>
     AccountEntity findByUsernameAndStatusAndRoleId(String username, boolean status, RoleEntity roleEntity);
 
     AccountEntity findByProfileIdAndRoleIdAndStatus(ProfileEntity profileEntity, RoleEntity roleEntity, boolean status);
+
+    List<AccountEntity> findAccountEntitiesByStatusOrderByNumOfReportDesc(boolean status);
 }

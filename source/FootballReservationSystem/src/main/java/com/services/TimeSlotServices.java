@@ -1,13 +1,10 @@
 package com.services;
 
 import com.config.Constant;
-import com.dto.InputReservationDTO;
-import com.dto.MatchReturnDTO;
-import com.dto.TimeSlotDTO;
+import com.dto.*;
 import com.entity.*;
 import com.repository.TimeSlotRepository;
 import com.utils.DateTimeUtils;
-import org.hibernate.validator.internal.xml.FieldType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +39,7 @@ public class TimeSlotServices {
 
     public List<MatchReturnDTO> findUpcomingReservationByDate(String dateString, int fieldOwnerId) {
         Date targetDate = DateTimeUtils.convertFromStringToDate(dateString);
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndReserveStatusAndDateAndStatus(fieldOwner, true, targetDate, true);
         List<MatchReturnDTO> matchReturnDTOList = new ArrayList<>();
 
@@ -112,25 +109,20 @@ public class TimeSlotServices {
         return savedTimeSlotEntityList;
     }
 
-    public TimeSlotEntity reserveTimeSlot(InputReservationDTO inputReservationDTO) {
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(inputReservationDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
-        FieldTypeEntity fieldType = fieldTypeServices.findById(inputReservationDTO.getFieldTypeId());
-        Date targetDate = DateTimeUtils.convertFromStringToDate(inputReservationDTO.getDate());
-        if (timeSlotRepository.countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(fieldOwner, fieldType, targetDate, true) == 0) {
-            createTimeSlotForDate(targetDate, fieldOwner, fieldType);
-        }
-        Date startTime = DateTimeUtils.convertFromStringToTime(inputReservationDTO.getStartTime());
-
-        Date endTime = DateTimeUtils.convertFromStringToTime(inputReservationDTO.getEndTime());
-
+    public TimeSlotEntity reserveTimeSlot(InputReserveTimeSlotDTO inputReserveTimeSlotDTO) {
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(inputReserveTimeSlotDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
+        FieldTypeEntity fieldType = fieldTypeServices.findById(inputReserveTimeSlotDTO.getFieldTypeId());
+        Date targetDate = DateTimeUtils.convertFromStringToDate(inputReserveTimeSlotDTO.getDate());
+        Date startTime = DateTimeUtils.convertFromStringToTime(inputReserveTimeSlotDTO.getStartTime());
+        Date endTime = DateTimeUtils.convertFromStringToTime(inputReserveTimeSlotDTO.getEndTime());
         int duration = (int) ((endTime.getTime() - startTime.getTime()) / 60000);
         // get tất cả thời gian rảnh theo chủ sân, loại sân và ngày
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(fieldOwner, fieldType, targetDate, false, true);
         for (TimeSlotEntity timeSlotEntity : timeSlotEntityList) {
             boolean checkStart = timeSlotEntity.getStartTime().before(startTime) || timeSlotEntity.getStartTime().equals(startTime);
             boolean checkEnd = timeSlotEntity.getEndTime().after(endTime) || timeSlotEntity.getEndTime().equals(endTime);
+            float price = calculatePriceForTimeSlot(startTime, duration, targetDate, fieldOwner, fieldType);
             if (checkStart && checkEnd) {
-                float price = calculatePriceForTimeSlot(startTime, duration, targetDate, fieldOwner, fieldType);
                 if (timeSlotEntity.getStartTime().before(startTime) && timeSlotEntity.getEndTime().after(endTime)) {
                     // khoảng thời gian trước giờ đặt
                     TimeSlotEntity timeSlotEntity1 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
@@ -183,8 +175,35 @@ public class TimeSlotServices {
         return null;
     }
 
+    public OutputReserveTimeSlotDTO pickTimeSlot(InputReservationDTO inputReservationDTO) {
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(inputReservationDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
+        FieldTypeEntity fieldType = fieldTypeServices.findById(inputReservationDTO.getFieldTypeId());
+        Date targetDate = DateTimeUtils.convertFromStringToDate(inputReservationDTO.getDate());
+        if (timeSlotRepository.countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(fieldOwner, fieldType, targetDate, true) == 0) {
+            createTimeSlotForDate(targetDate, fieldOwner, fieldType);
+        }
+        Date startTime = DateTimeUtils.convertFromStringToTime(inputReservationDTO.getStartTime());
+
+        Date endTime = DateTimeUtils.convertFromStringToTime(inputReservationDTO.getEndTime());
+
+        int duration = (int) ((endTime.getTime() - startTime.getTime()) / 60000);
+        // get tất cả thời gian rảnh theo chủ sân, loại sân và ngày
+        List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(fieldOwner, fieldType, targetDate, false, true);
+        for (TimeSlotEntity timeSlotEntity : timeSlotEntityList) {
+            boolean checkStart = timeSlotEntity.getStartTime().before(startTime) || timeSlotEntity.getStartTime().equals(startTime);
+            boolean checkEnd = timeSlotEntity.getEndTime().after(endTime) || timeSlotEntity.getEndTime().equals(endTime);
+            if (checkStart && checkEnd) {
+                float price = calculatePriceForTimeSlot(startTime, duration, targetDate, fieldOwner, fieldType);
+                OutputReserveTimeSlotDTO reserveTimeSlot = new OutputReserveTimeSlotDTO(fieldOwner, fieldType, DateTimeUtils.formatDate(targetDate),
+                        DateTimeUtils.formatTime(startTime), DateTimeUtils.formatTime(endTime), price);
+                return reserveTimeSlot;
+            }
+        }
+        return null;
+    }
+
     public List<TimeSlotEntity> findFreeTimeByFieldOwnerTypeAndDate(int fieldOwnerId, int fieldTypeId, String dateString) {
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         FieldTypeEntity fieldType = fieldTypeServices.findById(fieldTypeId);
         Date targetDate = DateTimeUtils.convertFromStringToDate(dateString);
 
@@ -288,7 +307,7 @@ public class TimeSlotServices {
     }
 
     public List<FieldEntity> getListFreeFieldAtSpecificTime(String targetDateStr, String targetTimeStr, int fieldOwnerId, int fieldTypeId) {
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         FieldTypeEntity fieldType = fieldTypeServices.findById(fieldTypeId);
         Date targetDate = DateTimeUtils.convertFromStringToDate(targetDateStr);
         Date targetTime = DateTimeUtils.convertFromStringToTime(targetTimeStr);

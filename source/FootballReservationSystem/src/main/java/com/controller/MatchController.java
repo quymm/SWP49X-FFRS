@@ -1,6 +1,8 @@
 package com.controller;
 
 import com.dto.InputMatchingRequestDTO;
+import com.dto.InputReserveTimeSlotDTO;
+import com.dto.OutputReserveTimeSlotDTO;
 import com.dto.Wrapper;
 import com.services.MatchServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,8 @@ public class MatchController {
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/friendly-match", method = RequestMethod.POST)
-    public ResponseEntity reserveFriendlyMatch(@RequestParam("time-slot-id") int timeSlotId, @RequestParam("user-id") int userId, @RequestParam("voucher-id") int voucherId) {
-        Wrapper wrapper = new Wrapper(matchServices.reserveFriendlyMatch(timeSlotId, userId, voucherId), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+    public ResponseEntity reserveFriendlyMatch(@RequestBody InputReserveTimeSlotDTO inputReserveTimeSlotDTO, @RequestParam("user-id") int userId) {
+        Wrapper wrapper = new Wrapper(matchServices.reserveFriendlyMatch(inputReserveTimeSlotDTO, userId), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
@@ -51,9 +53,9 @@ public class MatchController {
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/tour-match", method = RequestMethod.POST)
-    public ResponseEntity reserveTourMatch(@RequestParam("time-slot-id") int timeSlotId, @RequestParam("matching-request-id") int matchingRequestId,
-                                           @RequestParam("opponent-id") int opponentId, @RequestParam("voucher-id") int voucherId) {
-        Wrapper wrapper = new Wrapper(matchServices.reserveTourMatch(timeSlotId, matchingRequestId, opponentId, voucherId), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+    public ResponseEntity reserveTourMatch(@RequestBody InputReserveTimeSlotDTO inputReserveTimeSlotDTO, @RequestParam("matching-request-id") int matchingRequestId,
+                                           @RequestParam("opponent-id") int opponentId) {
+        Wrapper wrapper = new Wrapper(matchServices.reserveTourMatch(inputReserveTimeSlotDTO, matchingRequestId, opponentId), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 

@@ -9,16 +9,14 @@ import java.util.Date;
 public class InputBillDTO {
     private Integer friendlyMatchId;
     private Integer tourMatchId;
-    private Integer voucherId;
     private boolean opponentPayment;
 
     public InputBillDTO() {
     }
 
-    public InputBillDTO(Integer friendlyMatchId, Integer tourMatchId, Integer voucherId) {
+    public InputBillDTO(Integer friendlyMatchId, Integer tourMatchId) {
         this.friendlyMatchId = friendlyMatchId;
         this.tourMatchId = tourMatchId;
-        this.voucherId = voucherId;
     }
 
     public Integer getFriendlyMatchId() {
@@ -35,14 +33,6 @@ public class InputBillDTO {
 
     public void setTourMatchId(Integer tourMatchId) {
         this.tourMatchId = tourMatchId;
-    }
-
-    public Integer getVoucherId() {
-        return voucherId;
-    }
-
-    public void setVoucherId(Integer voucherId) {
-        this.voucherId = voucherId;
     }
 
     public boolean isOpponentPayment() {

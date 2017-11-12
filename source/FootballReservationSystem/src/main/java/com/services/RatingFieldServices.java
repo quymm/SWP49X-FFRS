@@ -26,8 +26,8 @@ public class RatingFieldServices {
     Constant constant;
 
     public RatingFieldEntity ratingField(InputRatingFieldDTO ratingFieldDTO) {
-        AccountEntity user = accountServices.findAccountEntityById(ratingFieldDTO.getUserId(), constant.getUserRole());
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(ratingFieldDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(ratingFieldDTO.getUserId(), constant.getUserRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(ratingFieldDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
 
         RatingFieldEntity ratingFieldEntity = new RatingFieldEntity();
         ratingFieldEntity.setUserId(user);
@@ -41,7 +41,7 @@ public class RatingFieldServices {
     }
 
     public int calculateRatingOfFieldOwnerById(int fieldOwnerId) {
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         List<RatingFieldEntity> ratingFieldEntityList = ratingFieldRepository.findByFieldOwnerIdAndStatus(fieldOwner, true);
         if (!ratingFieldEntityList.isEmpty()) {
             // size = 1: chưa có rating nào trước đây, sẽ lấy bằng mức rating đầu

@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -61,6 +60,7 @@ public class AccountServices {
         accountEntity.setRoleId(roleEntity);
         accountEntity.setStatus(true);
         accountEntity.setLockStatus(false);
+        accountEntity.setNumOfReport(0);
         return accountRepository.save(accountEntity);
     }
 
@@ -98,6 +98,7 @@ public class AccountServices {
         accountEntity.setRoleId(roleEntity);
         accountEntity.setLockStatus(false);
         accountEntity.setStatus(true);
+        accountEntity.setNumOfReport(0);
         return accountRepository.save(accountEntity);
     }
 
@@ -106,9 +107,13 @@ public class AccountServices {
         return accountRepository.findAllByRoleAndStatus(roleEntity, true);
     }
 
-    public AccountEntity findAccountEntityById(int id, String role) {
+    public AccountEntity findAccountEntityByIdAndRole(int id, String role) {
         RoleEntity roleEntity = roleServices.findByRoleName(role);
         return accountRepository.findByIdAndRole(id, roleEntity, true);
+    }
+
+    public AccountEntity findAccountEntityById(int id){
+        return accountRepository.findByIdAndStatus(id, true);
     }
 
     public AccountEntity checkLogin(String username, String password) {
@@ -129,7 +134,6 @@ public class AccountServices {
         profileEntity.setName(inputFieldOwnerDTO.getName());
         profileEntity.setPhone(inputFieldOwnerDTO.getPhone());
         profileEntity.setPercentProfit((float) 0.05);
-        profileEntity.setNumOfReport(0);
         profileEntity.setStatus(true);
         return profileEntity;
     }
@@ -142,7 +146,6 @@ public class AccountServices {
         profileEntity.setAvatarUrl(inputUserDTO.getAvatarUrl());
         profileEntity.setBonusPoint(0);
         profileEntity.setRatingScore(2000);
-        profileEntity.setNumOfReport(0);
         profileEntity.setStatus(true);
         return profileEntity;
     }
@@ -192,7 +195,7 @@ public class AccountServices {
     }
 
     public AccountEntity changeBalance(int accountId, float balanceNumber, String role) {
-        AccountEntity accountEntity = findAccountEntityById(accountId, role);
+        AccountEntity accountEntity = findAccountEntityByIdAndRole(accountId, role);
         ProfileEntity profileEntity = accountEntity.getProfileId();
         if (balanceNumber > 0) {
             profileEntity.setBalance(profileEntity.getBalance() + balanceNumber);
@@ -209,7 +212,7 @@ public class AccountServices {
     }
 
     public DepositHistoryEntity depositMoney(InputDepositHistoryDTO inputDepositHistoryDTO){
-        AccountEntity account = findAccountEntityById(inputDepositHistoryDTO.getAccountId(), inputDepositHistoryDTO.getRole());
+        AccountEntity account = findAccountEntityByIdAndRole(inputDepositHistoryDTO.getAccountId(), inputDepositHistoryDTO.getRole());
         DepositHistoryEntity depositHistoryEntity = new DepositHistoryEntity();
         depositHistoryEntity.setUserId(account);
         depositHistoryEntity.setBalance(inputDepositHistoryDTO.getBalance());
@@ -221,7 +224,7 @@ public class AccountServices {
     }
 
     public List<DepositHistoryEntity> findDepositHistoryByAccountId(int accountId, String role){
-        AccountEntity account = findAccountEntityById(accountId, role);
+        AccountEntity account = findAccountEntityByIdAndRole(accountId, role);
         return depositHistoryRepository.findByUserIdAndStatus(account, true);
     }
 
