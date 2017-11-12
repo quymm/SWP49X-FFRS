@@ -24,6 +24,9 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Integer>
     @Query("SELECT a FROM AccountEntity a WHERE a.username = :username AND a.password = :password AND a.roleId = :roleEntity AND a.status = :status")
     AccountEntity findByUsernamePasswordAndRoleEntity(@Param("username") String username, @Param("password") String password, @Param("roleEntity") RoleEntity roleEntity, @Param("status") boolean status);
 
+    @Query("SELECT a FROM AccountEntity a WHERE a.username = :username AND a.password = :password AND a.status = :status")
+    AccountEntity findByUsernameAndPasswordAndStatus(@Param("username") String username, @Param("password") String password, @Param("status") boolean status);
+
     AccountEntity findByUsernameAndStatusAndRoleId(String username, boolean status, RoleEntity roleEntity);
 
     AccountEntity findByProfileIdAndRoleIdAndStatus(ProfileEntity profileEntity, RoleEntity roleEntity, boolean status);
