@@ -110,6 +110,9 @@ public class TimeSlotServices {
     }
 
     public TimeSlotEntity reserveTimeSlot(InputReserveTimeSlotDTO inputReserveTimeSlotDTO) {
+        // nếu sân chưa có timeslot về thời gian rảnh thì tạo ra
+        findFreeTimeByFieldOwnerTypeAndDate(inputReserveTimeSlotDTO.getFieldOwnerId(), inputReserveTimeSlotDTO.getFieldTypeId(), inputReserveTimeSlotDTO.getDate());
+
         AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(inputReserveTimeSlotDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
         FieldTypeEntity fieldType = fieldTypeServices.findById(inputReserveTimeSlotDTO.getFieldTypeId());
         Date targetDate = DateTimeUtils.convertFromStringToDate(inputReserveTimeSlotDTO.getDate());

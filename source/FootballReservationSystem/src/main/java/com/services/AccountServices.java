@@ -118,10 +118,19 @@ public class AccountServices {
 
     public AccountEntity checkLogin(String username, String password) {
         AccountEntity accountEntity = accountRepository.findByUsernameAndPasswordAndStatus(username, password, true);
+        if(accountEntity.getLockStatus()){
+            throw new IllegalArgumentException(String.format("Account have username: %s is locked!", accountEntity.getUsername()));
+        }
         if (accountEntity == null) {
             throw new EntityNotFoundException(String.format("Not found account have username: %s and password: %s", username, password));
         }
         return accountEntity;
+    }
+
+    public AccountEntity lockAccountById(int id){
+        AccountEntity accountEntity = findAccountEntityById(id);
+        accountEntity.setLockStatus(true);
+        return accountRepository.save(accountEntity);
     }
 
     public ProfileEntity createProfileEntityForFieldOwner(InputFieldOwnerDTO inputFieldOwnerDTO) {

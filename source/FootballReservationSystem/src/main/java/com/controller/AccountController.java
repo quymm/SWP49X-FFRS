@@ -42,6 +42,13 @@ public class AccountController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/account/lock", method = RequestMethod.PUT)
+    public ResponseEntity lockAccount(@RequestParam("account-id") int accountId){
+        Wrapper wrapper = new Wrapper(accountServices.lockAccountById(accountId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-field-owner", method = RequestMethod.GET)
     public ResponseEntity getFieldOwnerById(@RequestParam("field-owner-id") int fieldOwnerId) {
         Wrapper wrapper = new Wrapper(accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole()), HttpStatus.OK.value(), HttpStatus.OK.name());
