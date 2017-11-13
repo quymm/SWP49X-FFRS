@@ -133,14 +133,35 @@ public class MatchServices {
                 NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()));
 
         int ratingScore = user.getProfileId().getRatingScore();
+
         // tìm các request cùng loại sân, thời gian đá dao động trong khoảng trước và sau deviationTime phút, rating score dao động trong khoảng 100 điểm
-        List<MatchingRequestEntity> similarMatchingRequestList = matchingRequestRepository.findSimilarMatchingRequest(fieldType, true, date, startTime, endTime);
+        List<MatchingRequestEntity> similarMatchingRequestList = matchingRequestRepository.findSimilarMatchingRequest(fieldType, true, date, inputMatchingRequestDTO.getDuration(), startTime, endTime);
 
         List<MatchingRequestEntity> returnMatchingRequest = new ArrayList<>();
         if (!similarMatchingRequestList.isEmpty()) {
             for (MatchingRequestEntity matchingRequest : similarMatchingRequestList) {
                 CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(matchingRequest.getLongitude()),
                         NumberUtils.parseFromStringToDouble(matchingRequest.getLatitude()));
+                Date startTimeOfReq = DateTimeUtils.convertFromStringToTime(DateTimeUtils.formatTime(matchingRequest.getStartTime()));
+                Date endTimeOfReq = DateTimeUtils.convertFromStringToTime(DateTimeUtils.formatTime(matchingRequest.getEndTime()));
+                // nếu endtime của matching sau startTime của input 1 khoảng thời gian nhỏ hơn duration
+                // hoặc starttime của matching trước endTime của input 1 khoảng thời gian nhỏ hơn duration
+                // thì matching request đó ko thỏa mãn
+                boolean checkTime = false;
+                if (startTime.before(startTimeOfReq) && endTime.after(startTimeOfReq)) {
+                    int endAfter = (int) (endTime.getTime() - startTimeOfReq.getTime()) / 60000;
+                    if (endAfter >= matchingRequest.getDuration()) {
+                        checkTime = true;
+                    }
+                } else if (startTime.before(endTimeOfReq) && endTime.after(endTimeOfReq)) {
+                    int startBefore = (int) (startTime.getTime() - endTimeOfReq.getTime()) / 60000;
+                    if(startBefore >= matchingRequest.getDuration()){
+                        checkTime = true;
+                    }
+                } else {
+                    checkTime = true;
+                }
+
 
                 double distance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
 
@@ -150,7 +171,7 @@ public class MatchServices {
                 boolean checkBlackList = blacklistOpponentServices.findBlacklistByUserIdAndOpponentId(user.getId(), matchingRequest.getUserId().getId()) == null
                         && blacklistOpponentServices.findBlacklistByUserIdAndOpponentId(matchingRequest.getUserId().getId(), user.getId()) == null ? true : false;
                 // khoảng cách là nhỏ hơn deviation
-                if (matchingRequest.getUserId().getId() != inputMatchingRequestDTO.getUserId() && distance < deviationDistance && checkBlackList && checkRatingScore) {
+                if (matchingRequest.getUserId().getId() != inputMatchingRequestDTO.getUserId() && distance < deviationDistance && checkBlackList && checkRatingScore && checkTime) {
                     returnMatchingRequest.add(matchingRequest);
                 }
             }
@@ -233,7 +254,7 @@ public class MatchServices {
 
     public BillEntity reserveTourMatch(InputReserveTimeSlotDTO inputReserveTimeSlotDTO, int matchingRequestId, int userId) {
         TimeSlotEntity savedTimeSlotEntity = timeSlotServices.reserveTimeSlot(inputReserveTimeSlotDTO);
-        if(savedTimeSlotEntity == null){
+        if (savedTimeSlotEntity == null) {
             return null;
         }
         MatchingRequestEntity matchingRequestEntity = findMatchingRequestEntityById(matchingRequestId);
