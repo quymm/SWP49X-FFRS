@@ -14,9 +14,6 @@ import {
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Link } from 'react-router-dom';
-import TimePicker from 'rc-time-picker';
-import MatchByDate from '../containts/MatchByDate';
 import {
   doLoginSuccessful,
   accessDenied,
@@ -79,7 +76,6 @@ class Home extends Component {
         moment('10-Jan-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
     );
     await this.props.GetMatchByFieldOwnerAndDay(afterSort);
-    
   }
   configTimeDiable() {
     let disableTime = [];
@@ -206,7 +202,6 @@ class Home extends Component {
     const { id } = this.props.auth.user.data;
     evt.preventDefault();
     const {
-      bookMatchMessagem,
       bookMatchEndTime,
       bookMatchFieldType,
       dateSelected,
@@ -263,7 +258,7 @@ class Home extends Component {
   async handelLoadMatchAgain() {
     const { id } = this.props.auth.user.data;
     if (id === undefined) {
-      return <div className="loader"></div>
+      return <div className="loader" />;
     }
     const match = await fetchGetMatchByFieldOwnerAndDay(
       id,
@@ -279,20 +274,12 @@ class Home extends Component {
         moment('10-Jan-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
     );
     await this.props.GetMatchByFieldOwnerAndDay(afterSort);
-    console.log('======================')
+    console.log('======================');
     this.props.setCurrentDaySelected(false);
   }
   render() {
-    const myStyle = { padding: 20 };
     const { listMatch, freeField, currentDaySelected } = this.props;
-    const { isShowUpdateField, filterName, messages } = this.state;
-    console.log(this.props);
-    console.log(this.state.dateSelected.format('DD MM YYYY'));
-
-    if (
-      currentDaySelected
-    ) {
-     
+    if (currentDaySelected) {
       this.handelLoadMatchAgain();
     }
     return (

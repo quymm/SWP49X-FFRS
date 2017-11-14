@@ -60,7 +60,7 @@ class Login extends Component {
     return (
       <div className="container-fluid backGroundLogin">
         <div className="neon-text">
-          <img
+          <img alt="logo"
             style={styleLogo}
             src={require('../resource/images/ffrs.png')}
           />Hệ Thống Quản Lý Sân Bóng{' '}

@@ -171,9 +171,6 @@ class FreeTime extends Component {
     const {
       endTime,
       startTime,
-      messageBookMatch,
-      timeLowerLimit,
-      timeUpperLimit,
     } = this.state;
     
     if (
@@ -213,9 +210,6 @@ class FreeTime extends Component {
   render() {
     const myStyle = { padding: 20 };
     const { freeTime5vs5, freeTime7vs7 } = this.props;
-    const { dateSelected } = this.state;
-    const hours = this.hoursToPick();
-    // console.log(moment('20-10-2017 '+this.state.timeLowerLimit));
     return (
       <div className="main-panel">
         <div className="content">
