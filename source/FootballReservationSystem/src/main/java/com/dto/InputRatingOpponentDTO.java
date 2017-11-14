@@ -6,18 +6,21 @@ public class InputRatingOpponentDTO {
 
     private Integer tourMatchId;
 
-    private Integer ratingScore;
+    private Integer result;
 
-    private boolean win;
+    private Integer ratingLevel;
+
+    private Integer goalsDifference;
 
     public InputRatingOpponentDTO() {
     }
 
-    public InputRatingOpponentDTO(Integer userId, Integer tourMatchId, Integer ratingScore, boolean win) {
+    public InputRatingOpponentDTO(Integer userId, Integer tourMatchId, Integer result, Integer ratingLevel, Integer goalsDifference) {
         this.userId = userId;
         this.tourMatchId = tourMatchId;
-        this.ratingScore = ratingScore;
-        this.win = win;
+        this.result = result;
+        this.ratingLevel = ratingLevel;
+        this.goalsDifference = goalsDifference;
     }
 
     public Integer getUserId() {
@@ -36,19 +39,27 @@ public class InputRatingOpponentDTO {
         this.tourMatchId = tourMatchId;
     }
 
-    public Integer getRatingScore() {
-        return ratingScore;
+    public Integer getResult() {
+        return result;
     }
 
-    public void setRatingScore(Integer ratingScore) {
-        this.ratingScore = ratingScore;
+    public void setResult(Integer result) {
+        this.result = result;
     }
 
-    public boolean isWin() {
-        return win;
+    public Integer getRatingLevel() {
+        return ratingLevel;
     }
 
-    public void setWin(boolean win) {
-        this.win = win;
+    public void setRatingLevel(Integer ratingLevel) {
+        this.ratingLevel = ratingLevel;
+    }
+
+    public Integer getGoalsDifference() {
+        return goalsDifference;
+    }
+
+    public void setGoalsDifference(Integer goalsDifference) {
+        this.goalsDifference = goalsDifference;
     }
 }
