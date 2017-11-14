@@ -56,7 +56,7 @@ public class ReportServices {
     }
 
     public List<ReportEntity> getReportOfUser(int userId){
-        AccountEntity accused = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
+        AccountEntity accused = accountServices.findAccountEntityById(userId);
         return reportRepository.findByAccusedIdAndStatus(accused, true);
     }
 

@@ -1,4 +1,4 @@
-const defaultState = {listMatch: [] };
+const defaultState = {listMatch: []};
 const matchReducer = (state = defaultState, action) => {
   // console.log('state: ',state);
   switch (action.type) {

@@ -10,7 +10,14 @@ import {
   UPDATE_TIME_ENABLE_IN_WEEK,
   GET_FREE_TIME,
   BOOK_MATCH,
-  FREE_FIELD,
+  GET_FREE_FIELD,
+  SET_FIELD,
+  GET_FRIENDLY_MATCH,
+  GET_TOUR_MATCH,
+  GET_OVERCONE,
+  UPDATE_PROFILE,
+  GET_ALL_PROMOTION,
+  ADD_PROMOTION,
 } from './base-URL';
 
 export function fetchGetMatchByFieldOwnerAndDay(
@@ -109,7 +116,7 @@ export function fetchGetFreeTime(fieldownerid, fieldTypeId, argDate) {
       GET_FREE_TIME +
       '?field-owner-id=' +
       fieldownerid +
-      '&field-type-id= ' +
+      '&field-type-id=' +
       fieldTypeId +
       '&date=' +
       argDate,
@@ -139,7 +146,7 @@ export function fetchBookMatch(
 export function fetchGetFreeFieldByTime(fieldownerid, fieldTypeId, date, time) {
   return fetch(
     BASE_URL +
-      FREE_FIELD +
+      GET_FREE_FIELD +
       '?field-owner-id=' +
       fieldownerid +
       '&field-type-id=' +
@@ -150,4 +157,75 @@ export function fetchGetFreeFieldByTime(fieldownerid, fieldTypeId, date, time) {
       time,
   ).then(res => res.json());
 }
+
+export function fetchSetFieldToMatch(timeSlotId, fieldId) {
+  return fetch(
+    BASE_URL +
+      SET_FIELD +
+      '?time-slot-id=' +
+      timeSlotId +
+      '&field-id=' +
+      fieldId,
+    {
+      method: 'PUT',
+    },
+  ).then(res => res.json());
+}
+
+export function fetchGetFriendlyMatch(matchId) {
+  return fetch(
+    BASE_URL + GET_FRIENDLY_MATCH + '?friendly-match-id=' + matchId,
+  ).then(res => res.json());
+}
+
+export function fetchGetTourMatch(matchId) {
+  return fetch(
+    BASE_URL + GET_TOUR_MATCH + '?tour-match-id=' + matchId,
+  ).then(res => res.json());
+}
+
+export function fetchGetOvercome(fieldownerid) {
+  return fetch(
+    BASE_URL + GET_OVERCONE + '?field-owner-id=' + fieldownerid,
+  ).then(res => res.json());
+}
+export function fetchUpdateProfile(id, data) {
+  return fetch(BASE_URL + UPDATE_PROFILE + '?field-owner-id=' + id, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      address: data.address,
+      avatarUrl: data.avatarUrl,
+      creditCard: data.creditCard,
+      latitude: data.latitude,
+      longitute: data.longitude,
+      name: data.fieldName,
+      password: data.password,
+      phone: data.phone,
+      username: data.username,
+    }),
+  }).then(res => res.json());
+}
+export function fetchGetAllPromotion(id) {
+  return fetch(
+    BASE_URL + GET_ALL_PROMOTION + '?field-owner-id=' + id,
+  ).then(res => res.json());
+}
+export function fetchAddPromotion(id, data) {
+  return fetch(BASE_URL + ADD_PROMOTION, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      dateFrom: data.startDate.format('DD-MM-YYYY'),
+      dateTo: data.endDate.format('DD-MM-YYYY'),
+      endTime: data.endTime.format('Hh:mm'),
+      fieldOwnerId: id,
+      fieldTypeId: data.fieldStyle,
+      freeServices: data.decription,
+      saleOff: data.saleOff,
+      startTime: data.startTime.format('Hh:mm')
+    })
+  });
+}
+
 //
