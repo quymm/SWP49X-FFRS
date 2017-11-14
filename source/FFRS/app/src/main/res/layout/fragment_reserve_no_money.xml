@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.ReserveFailFragment">
+    tools:context=".fragment.ReserveSuccessFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
             android:layout_marginBottom="10dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:text="Thanh toán đã bị hủy!\nNhấn OK để tiếp tục."
+            android:text="Tài khoản của bạn không đủ tiền để thanh toán!"
             android:textAlignment="center"
             android:textSize="20dp" />
 
@@ -26,8 +26,19 @@
             android:id="@+id/btHome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:background="#009632"
-            android:text="OK"
+            android:text="HỦY"
+            android:textColor="@android:color/white"
+            android:textSize="18dp" />
+
+        <Button
+            android:id="@+id/btRecharge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="#009632"
+            android:text="Nạp tiền"
             android:textColor="@android:color/white"
             android:textSize="18dp" />
     </LinearLayout>

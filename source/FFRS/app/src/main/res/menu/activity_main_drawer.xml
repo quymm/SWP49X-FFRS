@@ -5,25 +5,37 @@
         android:id="@+id/grp_profile"
         android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_recharge"
+            android:icon="@drawable/ic_recharge"
+            android:title="Nạp tiền" />
+        <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_profile"
             android:title="Thông tin tài khoản" />
         <item
+            android:id="@+id/nav_favorite_field"
+            android:icon="@drawable/ic_favorite"
+            android:title="Sân yêu thích" />
+        <item
+            android:id="@+id/nav_blacsklist"
+            android:icon="@drawable/ic_block"
+            android:title="Đối thủ bị chặn" />
+        <item
             android:id="@+id/nav_history"
             android:icon="@drawable/ic_history"
-            android:title="Lịch sử đặt sân" />
+            android:title="Lịch sử" />
         <item
             android:id="@+id/nav_rewards"
             android:icon="@drawable/ic_reward"
             android:title="Đổi thưởng" />
-        <item
-            android:id="@+id/nav_notifications"
-            android:icon="@drawable/ic_notifications"
-            android:title="Thông báo" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Cài đặt" />
+        <!--<item-->
+        <!--android:id="@+id/nav_notifications"-->
+        <!--android:icon="@drawable/ic_notifications"-->
+        <!--android:title="Thông báo" />-->
+        <!--<item-->
+        <!--android:id="@+id/nav_manage"-->
+        <!--android:icon="@drawable/ic_menu_manage"-->
+        <!--android:title="Cài đặt" />-->
     </group>
     <group
         android:id="@+id/grp_signout"

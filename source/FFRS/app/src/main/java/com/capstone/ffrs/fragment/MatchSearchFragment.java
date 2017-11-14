@@ -1,14 +1,17 @@
 package com.capstone.ffrs.fragment;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -41,18 +44,23 @@ import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.capstone.ffrs.CreateMatchingRequestActivity;
-import com.capstone.ffrs.MatchActivity;
+import com.capstone.ffrs.CreateRequestResultActivity;
+import com.capstone.ffrs.MatchResultActivity;
 import com.capstone.ffrs.R;
+import com.capstone.ffrs.RechargeActivity;
 import com.capstone.ffrs.adapter.PlacesAutoCompleteAdapter;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.utils.TimePickerListener;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -116,6 +124,7 @@ public class MatchSearchFragment extends Fragment {
     };
 
     public void validate() {
+        EditText date = (EditText) getActivity().findViewById(R.id.input_date);
         EditText from = (EditText) getActivity().findViewById(R.id.input_start_time);
         EditText to = (EditText) getActivity().findViewById(R.id.input_end_time);
         if (currentPosition == null && customPosition == null) {
@@ -128,7 +137,7 @@ public class MatchSearchFragment extends Fragment {
             try {
                 Date startTime = sdf.parse(from.getText().toString());
                 Date endTime = sdf.parse(to.getText().toString());
-                if (startTime.compareTo(endTime) < 0) {
+                if (startTime.compareTo(endTime) <= 0) {
                     long duration = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
                     if (duration >= (60 + durationSpinner.getSelectedItemPosition() * 30)) {
                         btFindRequest.setEnabled(true);
@@ -222,9 +231,39 @@ public class MatchSearchFragment extends Fragment {
             }
         }
 
-        TimePickerListener startListener = new TimePickerListener(view.getContext(), from);
+        TimePickerListener startListener = new TimePickerListener(view.getContext(), from) {
+            @Override
+            public void onClick(View v) {
+                LocalDate localDate = LocalDate.parse(mDate.getText().toString(), DateTimeFormat.forPattern("dd/MM/yyyy"));
+                if (localDate.isEqual(LocalDate.now())) {
+                    Calendar calendar = Calendar.getInstance();
+                    int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                    int minutes = calendar.get(Calendar.MINUTE);
+                    if (minutes > 0 && minutes < 30) {
+                        minutes = 30;
+                        calendar.set(Calendar.MINUTE, minutes);
+                    } else if (minutes > 30 && minutes <= 59) {
+                        minutes = 0;
+                        calendar.set(Calendar.MINUTE, minutes);
+                        if (hour < 23) {
+                            hour += 1;
+                            calendar.set(Calendar.HOUR_OF_DAY, hour);
+                        } else {
+                            hour = 0;
+                            calendar.set(Calendar.HOUR_OF_DAY, hour);
+                            calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1);
+                        }
+                    }
+                    setDate(localDate.toDate());
+                    setMinTime(calendar.getTime());
+                } else {
+                    setMinTime(null);
+                }
+                super.onClick(v);
+            }
+        };
         try {
-            startListener.setMaxTime(new SimpleDateFormat("H:mm").parse("23:00"));
+            startListener.setMaxTime(new SimpleDateFormat("H:mm").parse("22:30"));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -239,8 +278,8 @@ public class MatchSearchFragment extends Fragment {
                 if (!from.getText().toString().isEmpty()) {
                     try {
                         SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+                        setDate(new SimpleDateFormat("dd/MM/yyyy").parse(mDate.getText().toString()));
                         setMinTime(new LocalDateTime(sdf.parse(from.getText().toString())).plusMinutes(60 + durationSpinner.getSelectedItemPosition() * 30).toDate());
-
                         super.onClick(v);
                     } catch (ParseException e) {
                         e.printStackTrace();
@@ -287,7 +326,8 @@ public class MatchSearchFragment extends Fragment {
                 return false;
             }
         });
-        txtAddress.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.place_autocomplete_list_item));
+        final PlacesAutoCompleteAdapter adapter = new PlacesAutoCompleteAdapter(getActivity(), R.layout.place_autocomplete_list_item);
+        txtAddress.setAdapter(adapter);
         txtAddress.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -300,6 +340,11 @@ public class MatchSearchFragment extends Fragment {
 
                     addresses = geocoder.getFromLocationName(str, 1);
                     if (!addresses.isEmpty()) {
+                        InputMethodManager inputManager = (InputMethodManager)
+                                getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                                InputMethodManager.HIDE_NOT_ALWAYS);
                         customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
                         Toast.makeText(getActivity(), "Tọa độ: " + addresses.get(0).getLatitude() + ":" + addresses.get(0).getLongitude(), Toast.LENGTH_LONG).show();
                     } else {
@@ -321,7 +366,7 @@ public class MatchSearchFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(v.getContext());
-                Intent intent = new Intent(v.getContext(), MatchActivity.class);
+                Intent intent = new Intent(v.getContext(), MatchResultActivity.class);
                 intent.putExtra("field_type_id", (fieldSpinner.getSelectedItemPosition() + 1));
                 intent.putExtra("field_date", mDate.getText().toString());
                 intent.putExtra("field_start_time", from.getText().toString());
@@ -376,15 +421,42 @@ public class MatchSearchFragment extends Fragment {
                             new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
-                                    Intent intent = new Intent(getActivity(), CreateMatchingRequestActivity.class);
+                                    Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
                                     intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
                                     startActivity(intent);
                                 }
                             }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
-
+                            if (error.networkResponse != null && (error.networkResponse.statusCode == 404 || error.networkResponse.statusCode == 400)) {
+                                try {
+                                    String strResponse = new String(error.networkResponse.data, "UTF-8");
+                                    JSONObject response = new JSONObject(strResponse);
+                                    if (response.getString("message").equals("User not have enough money to create request!")) {
+                                        AlertDialog.Builder builder;
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                            builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_Dialog_Alert);
+                                        } else {
+                                            builder = new AlertDialog.Builder(getContext());
+                                        }
+                                        builder.setTitle("Tài khoản không đủ tiền để tạo yêu cầu.")
+                                                .setPositiveButton("Nạp tiền", new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        Intent intent = new Intent(getContext(), RechargeActivity.class);
+                                                        startActivity(intent);
+                                                    }
+                                                })
+                                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        // do nothing
+                                                    }
+                                                }).show();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                } catch (UnsupportedEncodingException e) {
+                                    e.printStackTrace();
+                                }
                             } else if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                                 Toast.makeText(getContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
                             } else if (error instanceof AuthFailureError) {
@@ -432,7 +504,7 @@ public class MatchSearchFragment extends Fragment {
                 new IntentFilter("location-message"));
 
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(timepickerReceiver,
-                new IntentFilter("timepicker-message"));
+                new IntentFilter("time-picker-message"));
     }
 
     @Override

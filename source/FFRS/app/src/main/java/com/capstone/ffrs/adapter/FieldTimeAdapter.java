@@ -23,7 +23,7 @@ import java.util.Locale;
  * Created by HuanPMSE61860 on 10/2/2017.
  */
 
-public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyViewHolder> {
+public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.FieldTimeViewHolder> {
 
     private List<FieldTime> timeList;
     private Context context;
@@ -37,13 +37,13 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyVi
     }
 
     @Override
-    public FieldTimeAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FieldTimeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rootView = inflater.inflate(R.layout.field_time_item, parent, false);
-        return new FieldTimeAdapter.MyViewHolder(rootView);
+        return new FieldTimeAdapter.FieldTimeViewHolder(rootView);
     }
 
     @Override
-    public void onBindViewHolder(FieldTimeAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(FieldTimeViewHolder holder, int position) {
         FieldTime item = timeList.get(position);
 
         holder.title.setText(item.getFromTime() + " - " + item.getToTime());
@@ -54,11 +54,11 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.MyVi
         return timeList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class FieldTimeViewHolder extends RecyclerView.ViewHolder {
 
         private TextView title;
 
-        public MyViewHolder(final View itemView) {
+        public FieldTimeViewHolder(final View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.time_frame);
             itemView.setOnClickListener(new View.OnClickListener() {

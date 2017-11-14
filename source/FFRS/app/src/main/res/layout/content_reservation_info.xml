@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.capstone.ffrs.ReservationInfoActivity"
+    tools:showIn="@layout/activity_reservation_info">
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/content_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
+
+                <TableLayout
+                    android:id="@+id/table_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp">
+
+                    <TableRow
+                        android:id="@+id/opponent_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5sp">
+
+                        <TextView
+                            android:id="@+id/text_title_opponent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Đối thủ:"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:id="@+id/text_opponent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:text="XYZ"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5sp">
+
+                        <TextView
+                            android:id="@+id/text_title_field_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Sân:"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:id="@+id/text_field_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:text="Sân XXX"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5sp">
+
+                        <TextView
+                            android:id="@+id/text_title_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Ngày:"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:id="@+id/text_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:text="dd/MM/yyyy"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5sp">
+
+                        <TextView
+                            android:id="@+id/text_title_from"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Từ:"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:id="@+id/text_from"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:text="H:mm"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5sp">
+
+                        <TextView
+                            android:id="@+id/text_title_to"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Đến:"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:id="@+id/text_to"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:text="H:mm"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5sp">
+
+                        <TextView
+                            android:id="@+id/text_title_match_mode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Trận đấu:"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:id="@+id/text_match_mode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:text="Đá riêng"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5sp">
+
+                        <TextView
+                            android:id="@+id/text_title_field_type"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Loại sân:"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:id="@+id/text_field_type"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:text="5 vs 5"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5sp">
+
+                        <TextView
+                            android:id="@+id/text_title_duration"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Thời gian đá:"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:id="@+id/text_duration"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:text="x tiếng"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5sp">
+
+                        <TextView
+                            android:id="@+id/text_title_status"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Trạng thái:"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:id="@+id/text_status"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:text="Đá xong"
+                            android:textAlignment="textStart"
+                            android:textColor="@android:color/black"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+                    </TableRow>
+                </TableLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/buttons_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_below="@id/content_layout"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btRatingField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@color/green"
+                    android:onClick="onClickRate"
+                    android:text="Đánh giá sân bóng"
+                    android:textColor="@android:color/white"
+                    android:textSize="18dp" />
+
+                <Button
+                    android:id="@+id/btRatingOpponent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@color/green"
+                    android:onClick="onClickRate"
+                    android:text="Đánh giá đối thủ"
+                    android:textColor="@android:color/white"
+                    android:textSize="18dp" />
+
+                <Button
+                    android:id="@+id/btReport"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@color/yellow"
+                    android:onClick="onClickReport"
+                    android:text="Báo cáo"
+                    android:textColor="@android:color/white"
+                    android:textSize="18dp" />
+
+                <Button
+                    android:id="@+id/btCancel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@color/red"
+                    android:onClick="onClickCancel"
+                    android:text="Hủy"
+                    android:textColor="@android:color/white"
+                    android:textSize="18dp" />
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
+</android.support.constraint.ConstraintLayout>

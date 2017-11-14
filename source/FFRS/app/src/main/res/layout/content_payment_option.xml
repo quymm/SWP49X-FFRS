@@ -22,15 +22,20 @@
             android:layout_above="@id/btPay"
             android:orientation="vertical">
 
-            <RadioGroup
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
+                <RadioGroup
+                    android:id="@+id/rdPaymentOptions"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical">
+                    android:layout_alignParentStart="true"
+                    android:checkedButton="@id/rbtPaypal">
 
                     <RadioButton
                         android:id="@+id/rbtPaypal"
@@ -38,59 +43,60 @@
                         android:layout_height="50dp"
                         android:layout_gravity="center_vertical" />
 
-                    <ImageView
-                        android:layout_width="75dp"
-                        android:layout_height="50dp"
-                        android:layout_toRightOf="@id/rbtPaypal"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/img_paypal_icon" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical">
-
                     <RadioButton
                         android:id="@+id/rbtNganLuong"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp" />
-
-                    <ImageView
-                        android:layout_width="150dp"
-                        android:layout_height="50dp"
-                        android:layout_toRightOf="@id/rbtNganLuong"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/img_nganluong_icon" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical">
 
                     <RadioButton
                         android:id="@+id/rbtCreditCard"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp" />
 
+                    <RadioButton
+                        android:id="@+id/rbtChargeCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp" />
+                </RadioGroup>
+
+                <LinearLayout
+                    android:id="@+id/payment_image_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_toRightOf="@+id/rdPaymentOptions"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="75dp"
+                        android:layout_height="50dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/img_paypal_icon" />
+
+                    <ImageView
+                        android:layout_width="150dp"
+                        android:layout_height="50dp"
+
+                        android:scaleType="fitXY"
+                        android:src="@drawable/img_nganluong_icon" />
+
                     <ImageView
                         android:layout_width="250dp"
                         android:layout_height="50dp"
-                        android:layout_toRightOf="@id/rbtCreditCard"
+
                         android:scaleType="fitXY"
                         android:src="@drawable/img_credit_cards_icon" />
-                </RelativeLayout>
 
-                <RadioButton
-                    android:id="@+id/rbtChargeCard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Thẻ cào"
-                    android:textSize="18dp" />
-            </RadioGroup>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:gravity="center_vertical"
+                        android:text="Thẻ cào"
+                        android:textColor="@android:color/black"
+                        android:textSize="18dp" />
+                </LinearLayout>
+            </RelativeLayout>
+
         </LinearLayout>
 
         <Button
@@ -98,7 +104,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_margin="5dp"
             android:background="@color/green"
+            android:onClick="onClickChoosePayment"
             android:text="Thanh toán"
             android:textColor="@android:color/white"
             android:textSize="18dp" />

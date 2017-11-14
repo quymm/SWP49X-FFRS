@@ -29,6 +29,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.adapter.PaidRequestAdapter;
 import com.capstone.ffrs.controller.NetworkController;
+import com.capstone.ffrs.entity.FieldTime;
 import com.capstone.ffrs.entity.PaidFriendlyMatchRequest;
 import com.capstone.ffrs.entity.PaidTourMatchRequest;
 
@@ -37,7 +38,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class PaidMatchFragment extends Fragment {
@@ -83,6 +89,7 @@ public class PaidMatchFragment extends Fragment {
                 loadPaidMatches(view);
             }
         });
+        swipeRefreshLayout.setRefreshing(true);
         return view;
     }
 
@@ -109,7 +116,7 @@ public class PaidMatchFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    if (response != null) {
+                    if (!response.isNull("body")) {
                         JSONArray body = response.getJSONArray("body");
                         if (body != null && body.length() > 0) {
                             for (int i = 0; i < body.length(); i++) {
@@ -156,7 +163,44 @@ public class PaidMatchFragment extends Fragment {
                                 } catch (Exception e) {
                                     Log.d("EXCEPTION", e.getMessage());
                                 } finally {
-                                    //Notify adapter about data changes
+                                    //Notify adapter about data changes\
+                                    Collections.sort(requestList, new Comparator<Object>() {
+                                        @Override
+                                        public int compare(Object o1, Object o2) {
+                                            try {
+                                                SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+                                                String strFirstTime = getStringDate(o1) + " " + getStringStartTime(o1);
+                                                String strSecondTime = getStringDate(o2) + " " + getStringStartTime(o2);
+                                                sdf = new SimpleDateFormat("dd/MM/yyyy H:mm");
+                                                Date startDate = sdf.parse(strFirstTime);
+                                                Date endDate = sdf.parse(strSecondTime);
+                                                return endDate.compareTo(startDate);
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                            return 0;
+                                        }
+
+                                        public String getStringDate(Object o) {
+                                            if (o instanceof PaidFriendlyMatchRequest) {
+                                                Date date = new Date(Long.valueOf(((PaidFriendlyMatchRequest) o).getDate()));
+                                                return new SimpleDateFormat("dd/MM/yyyy").format(date);
+                                            } else if (o instanceof PaidTourMatchRequest) {
+                                                Date date = new Date(Long.valueOf(((PaidTourMatchRequest) o).getDate()));
+                                                return new SimpleDateFormat("dd/MM/yyyy").format(date);
+                                            }
+                                            return "";
+                                        }
+
+                                        public String getStringStartTime(Object o) {
+                                            if (o instanceof PaidFriendlyMatchRequest) {
+                                                return ((PaidFriendlyMatchRequest) o).getStartTime();
+                                            } else if (o instanceof PaidTourMatchRequest) {
+                                                return ((PaidTourMatchRequest) o).getStartTime();
+                                            }
+                                            return "";
+                                        }
+                                    });
                                     adapter.notifyItemChanged(i);
                                 }
                             }
@@ -164,6 +208,8 @@ public class PaidMatchFragment extends Fragment {
                         } else {
                             txtNotFound.setVisibility(View.VISIBLE);
                         }
+                    } else {
+                        txtNotFound.setVisibility(View.VISIBLE);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

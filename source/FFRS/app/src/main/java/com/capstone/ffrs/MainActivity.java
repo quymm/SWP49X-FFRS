@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -27,14 +26,6 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.capstone.ffrs.service.FirebaseNotificationServices;
-import com.capstone.ffrs.utils.GPSLocationListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.squareup.okhttp.internal.http.HttpMethod;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,7 +73,17 @@ public class MainActivity extends Activity {
                         try {
                             JSONObject body = response.getJSONObject("body");
                             if (body != null && body.length() > 0) {
-                                changeActivity(body);
+                                JSONObject role = body.getJSONObject("roleId");
+                                String roleName = role.getString("roleName");
+                                if (roleName.equals("user")) {
+                                    changeActivity(body);
+                                } else {
+                                    clearSharedPreferences();
+                                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    overridePendingTransition(0, 0);
+                                }
                             } else {
                                 clearSharedPreferences();
                                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
@@ -122,13 +123,12 @@ public class MainActivity extends Activity {
                             }
                         }
                     }
-                }) {
-        };
+                });
         queue.add(getRequest);
     }
 
     public void changeActivity(JSONObject body) {
-        Intent intent = new Intent(this, FieldSuggestActivity.class);
+        Intent intent = new Intent(this, SearchActivity.class);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         try {
@@ -136,7 +136,6 @@ public class MainActivity extends Activity {
                 editor.putInt("user_id", body.getInt("id"));
                 editor.putString("username", body.getString("username"));
                 editor.putString("password", body.getString("password"));
-
             }
             editor.putString("teamName", body.getJSONObject("profileId").getString("name"));
             editor.putInt("balance", body.getJSONObject("profileId").getInt("balance"));

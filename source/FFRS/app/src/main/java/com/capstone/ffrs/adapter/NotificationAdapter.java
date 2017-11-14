@@ -40,7 +40,7 @@ import org.joda.time.LocalTime;
  * Created by HuanPMSE61860 on 10/16/2017.
  */
 
-public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.MyViewHolder> {
+public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder> {
 
     private List<Object> notificationList;
     private Context context;
@@ -58,10 +58,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public NotificationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View rootView = inflater.inflate(R.layout.notification_item, parent, false);
-        return new NotificationAdapter.MyViewHolder(rootView);
+        return new NotificationAdapter.NotificationViewHolder(rootView);
     }
 
     public void setUserId(int userId) {
@@ -69,13 +69,13 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(NotificationViewHolder holder, int position) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Object item = notificationList.get(position);
         if (item instanceof NotificationRequest) {
             NotificationRequest request = (NotificationRequest) item;
             holder.itemView.setTag(R.id.card_view, item);
-            holder.notificationText.setText(request.getTeamName() + " đã yêu cầu chơi với bạn");
+            holder.notificationText.setText(request.getTeamName() + " đã yêu cầu đá với bạn");
 
             holder.date.setText("Ngày: " + sdf.format(request.getDate()));
 
@@ -101,11 +101,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         return notificationList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class NotificationViewHolder extends RecyclerView.ViewHolder {
 
         private TextView notificationText, subText, time, date;
 
-        public MyViewHolder(final View itemView) {
+        public NotificationViewHolder(final View itemView) {
             super(itemView);
             notificationText = (TextView) itemView.findViewById(R.id.notification_text);
             subText = (TextView) itemView.findViewById(R.id.notification_sub_text);

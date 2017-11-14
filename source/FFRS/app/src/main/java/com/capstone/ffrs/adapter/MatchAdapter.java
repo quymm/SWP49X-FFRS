@@ -33,7 +33,7 @@ import java.util.List;
  * Created by HuanPMSE61860 on 10/11/2017.
  */
 
-public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MyViewHolder> {
+public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHolder> {
 
     private List<MatchRequest> matchList;
     private Context context;
@@ -46,13 +46,13 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MyViewHolder
     }
 
     @Override
-    public MatchAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MatchViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rootView = inflater.inflate(R.layout.match_item, parent, false);
-        return new MatchAdapter.MyViewHolder(rootView);
+        return new MatchAdapter.MatchViewHolder(rootView);
     }
 
     @Override
-    public void onBindViewHolder(final MatchAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(MatchViewHolder holder, int position) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             MatchRequest item = matchList.get(position);
@@ -93,11 +93,11 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MyViewHolder
         return matchList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MatchViewHolder extends RecyclerView.ViewHolder {
 
         private TextView teamName, time, date, duration, ratingScore;
 
-        public MyViewHolder(final View itemView) {
+        public MatchViewHolder(final View itemView) {
             super(itemView);
             teamName = (TextView) itemView.findViewById(R.id.team_view);
             time = (TextView) itemView.findViewById(R.id.time_view);

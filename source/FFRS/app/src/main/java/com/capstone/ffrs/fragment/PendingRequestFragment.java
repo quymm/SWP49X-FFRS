@@ -84,6 +84,7 @@ public class PendingRequestFragment extends Fragment {
                 loadPendingRequests(view);
             }
         });
+        swipeRefreshLayout.setRefreshing(true);
         return view;
     }
 
@@ -110,7 +111,7 @@ public class PendingRequestFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    if (response != null) {
+                    if (!response.isNull("body")) {
                         JSONArray body = response.getJSONArray("body");
                         if (body != null && body.length() > 0) {
                             for (int i = 0; i < body.length(); i++) {
@@ -134,6 +135,8 @@ public class PendingRequestFragment extends Fragment {
                         } else {
                             txtNotFound.setVisibility(View.VISIBLE);
                         }
+                    } else {
+                        txtNotFound.setVisibility(View.VISIBLE);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
