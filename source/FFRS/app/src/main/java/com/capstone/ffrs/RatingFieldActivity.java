@@ -1,13 +1,16 @@
 package com.capstone.ffrs;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -20,6 +23,9 @@ import com.capstone.ffrs.controller.NetworkController;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RatingFieldActivity extends AppCompatActivity {
     private String hostURL, url;
@@ -85,6 +91,38 @@ public class RatingFieldActivity extends AppCompatActivity {
                 queue.add(request);
             }
         }
+
+        url = hostURL + getResources().getString(R.string.url_send_rating_field);
+
+        TextView txtComment = (TextView) findViewById(R.id.txtComment);
+        RatingBar ratingBar = (RatingBar) findViewById(R.id.rating_bar);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("comment", txtComment.getText().toString());
+        params.put("fieldOwnerId", b.getInt("field_id"));
+        params.put("ratingScore", ratingBar.getRating());
+        params.put("userId", b.getInt("user_id"));
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+                Intent intent = new Intent(RatingFieldActivity.this, SearchActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                Toast.makeText(RatingFieldActivity.this, "Cảm ơn bạn đã tham gia đánh giá.", Toast.LENGTH_LONG).show();
+                startActivity(intent);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        queue.add(request);
     }
 
     public void checkFavoriteField() {

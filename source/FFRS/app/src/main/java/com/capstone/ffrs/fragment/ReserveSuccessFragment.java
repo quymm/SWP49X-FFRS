@@ -1,8 +1,6 @@
 package com.capstone.ffrs.fragment;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.capstone.ffrs.FieldSuggestActivity;
 import com.capstone.ffrs.FieldTimeActivity;
+import com.capstone.ffrs.HistoryActivity;
 import com.capstone.ffrs.R;
 
 public class ReserveSuccessFragment extends Fragment {
@@ -38,9 +36,17 @@ public class ReserveSuccessFragment extends Fragment {
         btHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), FieldSuggestActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                Bundle b = getActivity().getIntent().getExtras();
+                boolean tourMatchMode = b.getBoolean("tour_match_mode");
+                if (!tourMatchMode) {
+                    Intent intent = new Intent(getContext(), FieldTimeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(getContext(), HistoryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
             }
         });
 

@@ -1,34 +1,30 @@
 package com.capstone.ffrs.fragment;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.capstone.ffrs.FieldSuggestActivity;
-import com.capstone.ffrs.PayPalActivity;
+import com.capstone.ffrs.SearchActivity;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.controller.NetworkController;
 
 import org.json.JSONObject;
 
-public class ReserveFailFragment extends Fragment {
+public class RechargeFailFragment extends Fragment {
 
     private Button btHome, btRetry;
     private String hostURL;
 
-    public ReserveFailFragment() {
+    public RechargeFailFragment() {
         // Required empty public constructor
     }
 
@@ -43,7 +39,7 @@ public class ReserveFailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_reserve_fail, container, false);
+        View view = inflater.inflate(R.layout.fragment_recharge_fail, container, false);
         final Bundle b = getActivity().getIntent().getExtras();
         int timeSlotId = b.getInt("time_slot_id");
         String url = hostURL + getResources().getString(R.string.url_cancel_reservation);
@@ -64,7 +60,7 @@ public class ReserveFailFragment extends Fragment {
         btHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), FieldSuggestActivity.class);
+                Intent intent = new Intent(getContext(), SearchActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }

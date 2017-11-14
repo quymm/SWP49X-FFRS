@@ -6,8 +6,6 @@ import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.capstone.ffrs.FieldSuggestActivity;
-
 /**
  * Created by HuanPMSE61860 on 10/29/2017.
  */

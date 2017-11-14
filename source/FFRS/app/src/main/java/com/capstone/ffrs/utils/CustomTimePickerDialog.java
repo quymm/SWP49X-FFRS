@@ -76,7 +76,7 @@ public class CustomTimePickerDialog extends TimePickerDialog {
                 if (mTimeSetListener != null) {
                     mTimeSetListener.onTimeSet(mTimePicker, mTimePicker.getCurrentHour(),
                             mTimePicker.getCurrentMinute() * TIME_PICKER_INTERVAL);
-                    Intent intent = new Intent("timepicker-message");
+                    Intent intent = new Intent("time-picker-message");
                     LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
                 }
                 break;
@@ -138,7 +138,7 @@ public class CustomTimePickerDialog extends TimePickerDialog {
     }
 
     public void validateTimePicker(TimePicker view, int hourOfDay) {
-        if (minTime != null && hourOfDay == minTime.getHours()) {
+        if (minTime != null && hourOfDay <= minTime.getHours()) {
             if (minTime.getMinutes() == 0) {
                 setMinutePicker(false, false);
                 return;
@@ -149,7 +149,7 @@ public class CustomTimePickerDialog extends TimePickerDialog {
                 return;
             }
         }
-        if (maxTime != null && hourOfDay == maxTime.getHours()) {
+        if (maxTime != null && hourOfDay >= maxTime.getHours()) {
             if (maxTime.getMinutes() == 0) {
                 lastSavedMinute = 0;
                 view.setCurrentMinute(0);

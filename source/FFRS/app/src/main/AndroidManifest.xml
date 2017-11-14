@@ -34,7 +34,7 @@
         <service android:name=".service.TimerServices" />
 
         <activity
-            android:name=".FieldSuggestActivity"
+            android:name=".SearchActivity"
             android:configChanges="orientation"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -100,7 +100,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".MatchActivity"
+            android:name=".MatchResultActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_match"
             android:screenOrientation="portrait"
@@ -112,7 +112,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".CreateMatchingRequestActivity"
+            android:name=".CreateRequestResultActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -157,16 +157,52 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ProfileActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RegisterActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_register"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RequestTimeActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_request_time"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".RechargeActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_recharge"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ReservationInfoActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_reservation_info"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ScrollingActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_scrolling"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FavoriteFieldActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_favorite_field"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".BlacklistActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_blacklist"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

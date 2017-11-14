@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.capstone.ffrs.CreateMatchingRequestActivity"
-    tools:showIn="@layout/activity_create_matching_request">
+    tools:context="com.capstone.ffrs.CreateRequestResultActivity"
+    tools:showIn="@layout/activity_create_request_result">
 
     <LinearLayout
         android:layout_width="0dp"
