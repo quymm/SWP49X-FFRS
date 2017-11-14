@@ -13,11 +13,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RatingOpponentRepository extends JpaRepository<RatingOpponentEntity, Integer> {
     List<RatingOpponentEntity> findByUserIdAndStatus(AccountEntity accountEntity, boolean status);
 
-    List<RatingOpponentEntity> findByOpponentIdAndStatus(AccountEntity accountEntity, boolean status);
-
     List<RatingOpponentEntity> findByTourMatchIdAndStatus(TourMatchEntity tourMatchEntity, boolean status);
 
-    RatingOpponentEntity findByUserIdAndOpponentIdAndTourMatchIdAndStatus(AccountEntity userAccountEntity, AccountEntity opponentAccountEntity, TourMatchEntity tourMatchEntity, boolean status);
+    RatingOpponentEntity findByUserIdAndTourMatchIdAndStatus(AccountEntity userAccountEntity, TourMatchEntity tourMatchEntity, boolean status);
 
     RatingOpponentEntity findByIdAndStatus(int id, boolean status);
 }
