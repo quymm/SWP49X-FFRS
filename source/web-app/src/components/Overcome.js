@@ -139,7 +139,7 @@ class OverCome extends Component {
             <div className="col-sm-12 text-center">
               <Pagination
                 bsSize="medium"
-                items={this.state.itemSize < 1 ? 0 : this.state.itemSize}
+                items={this.state.itemSize <= 1 ? 0 : this.state.itemSize}
                 activePage={this.state.activePage}
                 onSelect={this.handleSelectPage.bind(this)}
               />

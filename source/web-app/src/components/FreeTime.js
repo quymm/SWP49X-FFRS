@@ -203,7 +203,7 @@ class FreeTime extends Component {
         await this.props.getAllFreeTime7vs7(data7vs7.body);
       } else {
         this.setState({ isShowBookMatch: false });
-        toast.error('Đặt sân thất bại!');
+        toast.error('Đặt sân không thành công!');
       }
     } else {
       this.setState({ messageBookMatch: 'Thời gian không hợp lệ' });

@@ -116,9 +116,9 @@
 .opacityLogin {
   opacity: 0.9
 }
-.activeLink {
+/* :active {
   background-color: green;
-}
+} */
 .padding-top-bot-none {
   padding-top: 0;
   padding-bottom: 0;
@@ -130,7 +130,7 @@
   background-color: #d4e8b1;
 }
 .tourMatch {
-  background-color: #07b7bf;
+  background-color: #d3f3f5;
 }
 .navbar.navbar-default .navbar-brand {
   padding: 10px 15px;

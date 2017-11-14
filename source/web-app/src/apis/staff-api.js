@@ -42,11 +42,12 @@ export function fetchAddNewVoucher(point, value) {
       bonusPointTarget: point,
       voucherValue: value,
     }),
-  });
+  }).then(res => res.json());
 }
 
-export function fetchRequestAccount(id) {
-  return fetch(BASE_URL + BLOCK_ACCOUNT + '?user-id=' + id).then(res =>
-    res.json(),
-  );
+export function fetchRequestLockAccount(id) {
+  return fetch(BASE_URL + BLOCK_ACCOUNT + '?account-id=' + id, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+  }).then(res => res.json());
 }

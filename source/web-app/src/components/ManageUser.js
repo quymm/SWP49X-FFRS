@@ -12,8 +12,10 @@ import {
   fetchGetAllReportFieldOwner,
   fetchGetAllReportUser,
   fetchGetListReport,
+  fetchRequestLockAccount
 } from '../apis/staff-api';
 import moment from 'moment';
+import { toast } from 'react-toastify';
 
 const getSuggestionValue = suggestion => suggestion.profileId.name;
 const renderSuggestion = suggestion => <div>{suggestion.profileId.name}</div>;
@@ -25,6 +27,7 @@ class ManageUser extends Component {
       suggestions: [],
       showModelUser: false,
       result: undefined,
+      isSearch: false,
       listReported: [],
       userTarget: 'user',
       listReportWithTargetUser: [],
@@ -50,7 +53,7 @@ class ManageUser extends Component {
         this.state.userTarget,
       );
       this.setState({
-        suggestions: dataUser.body,
+        suggestions: dataUser.body, isSearch: true
       });
     }
   };
@@ -67,12 +70,11 @@ class ManageUser extends Component {
       await this.setState({ result: undefined });
     }
     this.setState({
-      suggestions: [],
+      suggestions: [], isSearch: false
     });
   };
   async handelShowModalUser(evt) {
     await this.setState({ userTarget: evt.roleId.roleName });
-    debugger;
     console.log(this.state);
     const data = await fetchGetAllReportUser(evt.id);
     this.setState({ listReportWithTargetUser: data.body });
@@ -107,6 +109,17 @@ class ManageUser extends Component {
       this.setState({ listReported: data.body });
     }
   }
+  async handelLockAccount(evt){
+    evt.preventDefault();
+    const resLock = await fetchRequestLockAccount(this.state.result.id);
+    if (resLock.status === 200) {
+      toast.success('Khoá tài khoản thành công!');
+    } else {
+      toast.error('Khoá tài khoản thất bại')
+    }
+    const data = await fetchGetListReport();
+    this.setState({ listReported: data.body, showModelUser: false });
+  }
   render() {
     const { value, suggestions, result, listReported } = this.state;
     console.log(this.state.listReportWithTargetUser);
@@ -120,7 +133,7 @@ class ManageUser extends Component {
       width: 200,
       height: 200,
     };
-    console.log(this.state.listReported);
+    console.log(this.state.isSearch);
     return (
       <div className="main-panel">
         <div className="content">
@@ -150,12 +163,6 @@ class ManageUser extends Component {
                       </div>
                       <div className="col-sm-5">
                         <div className="form-group">
-                          {/* <label
-                            htmlFor="sel1"
-                            className="col-sm-3 control-label padding-top-12px "
-                          >
-                            Theo
-                          </label> */}
                           <div className="col-sm-9">
                             <select
                               value={this.state.target}
@@ -226,7 +233,7 @@ class ManageUser extends Component {
                                     : 'Chủ sân'}
                                 </td>
                                 <td>
-                                  {reported.status ? (
+                                  {!reported.lockStatus ? (
                                     <span className="label label-success">
                                       Đang hoạt động
                                     </span>
@@ -252,12 +259,12 @@ class ManageUser extends Component {
                       </table>
                     </div>
                     <div className="col-sm-12 text-center">
-              <Pagination
+              {/* <Pagination
                 bsSize="medium"
                 items={10}
                 activePage={1}
 
-              />
+              /> */}
             </div>
                   </div>
                 </div>
@@ -354,7 +361,7 @@ class ManageUser extends Component {
                   </div>
                   <div className="col-sm-4">
                     <p>
-                      <button className="btn btn-warning">
+                      <button onClick={this.handelLockAccount.bind(this)} className="btn btn-warning">
                         <i className="pe-7s-lock" /> Yêu cầu khoá tài khoản
                       </button>
                     </p>

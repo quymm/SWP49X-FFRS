@@ -35,25 +35,25 @@ export class Navigation extends Component {
           {roleId.roleName === 'owner'? (
             <ul className="nav">
               <li>
-                <NavLink to="/app/index" activeClassName="active">
+                <NavLink to="/app/index" activeClassName="activeLink">
                   <i className="glyphicon glyphicon-calendar" />{' '}
                   <strong>Trận trong ngày</strong>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/app/free-time" activeClassName="active">
+                <NavLink to="/app/free-time" activeClassName="activeLink">
                   <i className="glyphicon glyphicon-time" />{' '}
                   <strong>Đặt sân</strong>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/app/field" activeClassName="active">
+                <NavLink to="/app/field" activeClassName="activeLink">
                   <i className="glyphicon glyphicon-list-alt" />{' '}
                   <strong>Quản lý sân</strong>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/app/setting-time" activeClassName="active">
+                <NavLink to="/app/setting-time" activeClassName="activeLink">
                   <i className="pe-7s-alarm" /> <strong>Thiết lập giờ</strong>
                 </NavLink>
               </li>

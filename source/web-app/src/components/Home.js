@@ -72,11 +72,14 @@ class Home extends Component {
     );
     const afterSort = match.body.sort(
       (a, b) =>
-        moment('10-Jan-2017 ' + a.timeSlotEntity.startTime) -
-        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime),
+        moment(
+          '10-Jan-2017 ' + a.timeSlotEntity.startTime,
+          'DD-MM-YYYY HH:mm',
+        ) -
+        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
     );
     await this.props.GetMatchByFieldOwnerAndDay(afterSort);
-    this.props.setCurrentDaySelected(this.state.dateSelected);
+    
   }
   configTimeDiable() {
     let disableTime = [];
@@ -93,13 +96,11 @@ class Home extends Component {
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
       if (authLocalStorage === null) {
-        debugger
+        debugger;
         this.props.doLogout();
         this.props.history.push('/login');
       } else {
-        if (
-          authLocalStorage.roleId.roleName !== 'owner'
-        ) {
+        if (authLocalStorage.roleId.roleName !== 'owner') {
           this.props.accessDenied();
           this.props.history.push('/login');
         } else {
@@ -113,10 +114,16 @@ class Home extends Component {
             );
             const afterSort = match.body.sort(
               (a, b) =>
-                moment('10-Jan-2017 ' + a.timeSlotEntity.startTime) -
-                moment('10-Jan-2017 ' + b.timeSlotEntity.startTime),
+                moment(
+                  '10-Jan-2017 ' + a.timeSlotEntity.startTime,
+                  'DD-MM-YYYY HH:mm',
+                ) -
+                moment(
+                  '10-Jan-2017 ' + b.timeSlotEntity.startTime,
+                  'DD-MM-YYYY HH:mm',
+                ),
             );
-            debugger;
+
             await this.props.GetMatchByFieldOwnerAndDay(afterSort);
           } catch (error) {
             console.log('error: ', error);
@@ -132,8 +139,14 @@ class Home extends Component {
         );
         const afterSort = match.body.sort(
           (a, b) =>
-            moment('10-Jan-2017 ' + a.timeSlotEntity.startTime) -
-            moment('10-Jan-2017 ' + b.timeSlotEntity.startTime),
+            moment(
+              '10-Jan-2017 ' + a.timeSlotEntity.startTime,
+              'DD-MM-YYYY HH:mm',
+            ) -
+            moment(
+              '10-Jan-2017 ' + b.timeSlotEntity.startTime,
+              'DD-MM-YYYY HH:mm',
+            ),
         );
         await this.props.GetMatchByFieldOwnerAndDay(afterSort);
       } catch (error) {
@@ -230,8 +243,11 @@ class Home extends Component {
     );
     const afterSort = match.body.sort(
       (a, b) =>
-        moment('10-Jan-2017 ' + a.timeSlotEntity.startTime) -
-        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime),
+        moment(
+          '10-Jan-2017 ' + a.timeSlotEntity.startTime,
+          'DD-MM-YYYY HH:mm',
+        ) -
+        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
     );
     await this.props.GetMatchByFieldOwnerAndDay(afterSort);
   }
@@ -244,12 +260,41 @@ class Home extends Component {
     await this.setState({ [name]: value });
     console.log(this.state);
   }
-
+  async handelLoadMatchAgain() {
+    const { id } = this.props.auth.user.data;
+    if (id === undefined) {
+      return <div className="loader"></div>
+    }
+    const match = await fetchGetMatchByFieldOwnerAndDay(
+      id,
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      1,
+    );
+    const afterSort = match.body.sort(
+      (a, b) =>
+        moment(
+          '10-Jan-2017 ' + a.timeSlotEntity.startTime,
+          'DD-MM-YYYY HH:mm',
+        ) -
+        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
+    );
+    await this.props.GetMatchByFieldOwnerAndDay(afterSort);
+    console.log('======================')
+    this.props.setCurrentDaySelected(false);
+  }
   render() {
     const myStyle = { padding: 20 };
-    const { listMatch, freeField } = this.props;
+    const { listMatch, freeField, currentDaySelected } = this.props;
     const { isShowUpdateField, filterName, messages } = this.state;
-    console.log(this.listMatch);
+    console.log(this.props);
+    console.log(this.state.dateSelected.format('DD MM YYYY'));
+
+    if (
+      currentDaySelected
+    ) {
+     
+      this.handelLoadMatchAgain();
+    }
     return (
       <div className="main-panel">
         <div className="content">
@@ -328,7 +373,7 @@ class Home extends Component {
                                 </div>
                                 <div className="col-md-6">
                                   <div
-                                    className={`alert ${!listMatch.user
+                                    className={`alert ${listMatch.user
                                       .username === listMatch.opponent.username
                                       ? 'tourMatch'
                                       : 'friendlyMatch'} margin-bot-none`}
@@ -337,7 +382,8 @@ class Home extends Component {
                                       <strong>
                                         {moment(
                                           '10-10-2017 ' +
-                                            listMatch.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'
+                                            listMatch.timeSlotEntity.startTime,
+                                          'DD-MM-YYYY HH:mm',
                                         ).format('HH:mm')}
                                       </strong>{' '}
                                     </h3>
@@ -345,23 +391,27 @@ class Home extends Component {
                                       <strong>
                                         {moment(
                                           '10-10-2017 ' +
-                                            listMatch.timeSlotEntity.endTime
-                                        ,'DD-MM-YYYY HH:mm').hour() *
+                                            listMatch.timeSlotEntity.endTime,
+                                          'DD-MM-YYYY HH:mm',
+                                        ).hour() *
                                           60 +
                                           moment(
                                             '10-10-2017 ' +
-                                              listMatch.timeSlotEntity.endTime
-                                          ,'DD-MM-YYYY HH:mm').minute() -
+                                              listMatch.timeSlotEntity.endTime,
+                                            'DD-MM-YYYY HH:mm',
+                                          ).minute() -
                                           (moment(
                                             '10-10-2017 ' +
                                               listMatch.timeSlotEntity
-                                                .startTime,'DD-MM-YYYY HH:mm'
+                                                .startTime,
+                                            'DD-MM-YYYY HH:mm',
                                           ).hour() *
                                             60 +
                                             moment(
                                               '10-10-2017 ' +
                                                 listMatch.timeSlotEntity
-                                                  .startTime,'DD-MM-YYYY HH:mm'
+                                                  .startTime,
+                                              'DD-MM-YYYY HH:mm',
                                             ).minute())}{' '}
                                         phút
                                       </strong>
@@ -488,6 +538,7 @@ function mapStateToProps(state) {
     auth: state.auth,
     freeField: state.freeField.freeField,
     notify: state.notify,
+    currentDaySelected: state.currentDaySelected.currentDaySelected,
   };
 }
 

@@ -196,7 +196,7 @@ class Promotion extends Component {
           dialogClassName="custom-modal"
         >
           <Modal.Header>
-            <Modal.Title>Thêm mới khuyễn mãi</Modal.Title>
+            <Modal.Title>Thêm mới khuyến mãi</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <form className="form-horizontal">
@@ -263,7 +263,7 @@ class Promotion extends Component {
 
               <div className="form-group">
                 <label htmlFor="inputEmail3" className="col-sm-3 control-label">
-                  Khuyễn mãi
+                Khuyến mãi
                 </label>
                 <div className="col-sm-9">
                   <div className="row">

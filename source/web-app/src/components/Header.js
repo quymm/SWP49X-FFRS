@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { doLogout } from '../redux/guest/guest-action-creators';
+import { setCurrentDaySelected } from '../redux/field-owner/field-owner-action-creator';
 import { Dropdown, MenuItem } from 'react-bootstrap';
 import fire from '../services/firebase';
 import { Modal } from 'react-bootstrap';
@@ -33,7 +34,6 @@ class Header extends Component {
     evt.preventDefault();
     const { menuOpened } = this.state;
     this.setState({ menuOpened: !menuOpened });
-    // document.getElementsByTagName('html')[0].className =!menuOpened?'nav-open':'';
   }
 
   componentDidMount() {
@@ -55,8 +55,17 @@ class Header extends Component {
               id: snapshot.key,
               tourMatch: false,
             };
+            if (
+              moment(message.text.playTime, 'MM-DD-YYYY HH:mm') >=
+              this.state.currentDaySelected
+            ) {
+              this.props.setCurrentDaySelected(true);
+            }
             !message.text.isShowed
-              ? (toast.info(message.text.username + ' đã đặt sân của bạn'),
+              ? (moment(message.text.time, 'MM-DD-YYYY HH:mm') >=
+                this.state.currentDaySelected
+                  ? toast.info(message.text.username + ' đã đặt sân của bạn')
+                  : null,
                 messagesRef
                   .child(`friendlyMatch/${message.id}/isShowed`)
                   .set(1))
@@ -64,7 +73,6 @@ class Header extends Component {
             !message.text.isRead
               ? this.setState({ count: this.state.count + 1 })
               : null;
-
             this.setState({
               messages: [message].concat(this.state.messages),
               tourMatch: true,
@@ -77,8 +85,17 @@ class Header extends Component {
               id: snapshot.key,
               tourMatch: true,
             };
+            if (
+              moment(message.text.playTime, 'MM-DD-YYYY HH:mm') >=
+              this.state.currentDaySelected
+            ) {
+              this.props.setCurrentDaySelected(true);
+            }
             !message.text.isShowed
-              ? (toast.info('Hệ thống đã chọn sân của bạn'),
+              ? (moment(message.text.time, 'MM-DD-YYYY HH:mm') >=
+                this.state.currentDaySelected
+                  ? toast.info('Hệ thống đã chọn sân của bạn')
+                  : null,
                 messagesRef.child(`tourMatch/${message.id}/isShowed`).set(1))
               : null;
             !message.text.isRead
@@ -100,8 +117,17 @@ class Header extends Component {
             id: snapshot.key,
             tourMatch: false,
           };
+          if (
+            moment(message.text.playTime, 'MM-DD-YYYY HH:mm') >=
+            this.state.currentDaySelected
+          ) {
+            this.props.setCurrentDaySelected(true);
+          }
           !message.text.isShowed
-            ? (toast.info(message.text.username + ' đã đặt sân của bạn'),
+            ? (moment(message.text.time, 'MM-DD-YYYY HH:mm') >=
+            this.state.currentDaySelected
+              ? toast.info(message.text.username + ' đã đặt sân của bạn')
+              : null,
               messagesRef.child(`friendlyMatch/${message.id}/isShowed`).set(1))
             : null;
           !message.text.isRead
@@ -119,8 +145,17 @@ class Header extends Component {
             id: snapshot.key,
             tourMatch: true,
           };
+          if (
+            moment(message.text.playTime, 'MM-DD-YYYY HH:mm') >=
+            this.state.currentDaySelected
+          ) {
+            this.props.setCurrentDaySelected(true);
+          }
           !message.text.isShowed
-            ? (toast.info('Hệ thống đã chọn sân của bạn'),
+            ? (moment(message.text.time, 'MM-DD-YYYY HH:mm') >=
+            this.state.currentDaySelected
+              ? toast.info('Hệ thống đã chọn sân của bạn')
+              : null,
               messagesRef.child(`tourMatch/${message.id}/isShowed`).set(1))
             : null;
           !message.text.isRead
@@ -190,6 +225,7 @@ class Header extends Component {
       );
       messages.reverse();
     }
+
     return (
       <nav
         className={`navbar navbar-default ${this.state.menuOpened
@@ -378,4 +414,6 @@ function mapPropsToState(state) {
   };
 }
 
-export default withRouter(connect(mapPropsToState, { doLogout })(Header));
+export default withRouter(
+  connect(mapPropsToState, { doLogout, setCurrentDaySelected })(Header),
+);
