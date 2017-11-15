@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.RatingFieldActivity;
 import com.capstone.ffrs.RatingOpponentActivity;
+import com.capstone.ffrs.ReservationInfoActivity;
 import com.capstone.ffrs.entity.PaidFriendlyMatchRequest;
 import com.capstone.ffrs.entity.PaidTourMatchRequest;
 
@@ -27,7 +28,7 @@ import java.util.List;
  * Created by HuanPMSE61860 on 10/30/2017.
  */
 
-public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.MyViewHolder> {
+public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.PaidRequestViewHolder> {
 
     private List<Object> requestList;
     private Context context;
@@ -41,14 +42,14 @@ public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.
     }
 
     @Override
-    public PaidRequestAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PaidRequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View rootView = inflater.inflate(R.layout.reservation_item, parent, false);
-        return new PaidRequestAdapter.MyViewHolder(rootView);
+        return new PaidRequestAdapter.PaidRequestViewHolder(rootView);
     }
 
     @Override
-    public void onBindViewHolder(final PaidRequestAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(PaidRequestViewHolder holder, int position) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             Object request = requestList.get(position);
@@ -77,14 +78,14 @@ public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.
                 Date currentDate = new Date();
 
                 if (currentDate.compareTo(startDate) < 0) {
+                    holder.txtStatus.setText("Sắp tới");
                     holder.background.setBackgroundColor(context.getResources().getColor(R.color.red));
-                    holder.txtStatus.setText("Sắp đá");
-                } else if (currentDate.compareTo(startDate) >= 0 && currentDate.compareTo(endDate) <= 0) {
-                    holder.background.setBackgroundColor(context.getResources().getColor(R.color.yellow));
+                } else if (currentDate.compareTo(startDate) >= 0 && currentDate.compareTo(endDate) < 0) {
                     holder.txtStatus.setText("Đang diễn ra");
-                } else if (currentDate.compareTo(endDate) > 0) {
-                    holder.background.setBackgroundColor(context.getResources().getColor(R.color.green));
+                    holder.background.setBackgroundColor(context.getResources().getColor(R.color.yellow));
+                } else if (currentDate.compareTo(endDate) >= 0) {
                     holder.txtStatus.setText("Đã xong");
+                    holder.background.setBackgroundColor(context.getResources().getColor(R.color.green));
                 }
             } else if (request instanceof PaidTourMatchRequest) {
                 PaidTourMatchRequest tourMatchRequest = (PaidTourMatchRequest) request;
@@ -110,14 +111,14 @@ public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.
                 Date currentDate = new Date();
 
                 if (currentDate.compareTo(startDate) < 0) {
+                    holder.txtStatus.setText("Sắp tới");
                     holder.background.setBackgroundColor(context.getResources().getColor(R.color.red));
-                    holder.txtStatus.setText("Sắp đá");
-                } else if (currentDate.compareTo(startDate) >= 0 && currentDate.compareTo(endDate) <= 0) {
-                    holder.background.setBackgroundColor(context.getResources().getColor(R.color.yellow));
+                } else if (currentDate.compareTo(startDate) >= 0 && currentDate.compareTo(endDate) < 0) {
                     holder.txtStatus.setText("Đang diễn ra");
-                } else if (currentDate.compareTo(endDate) > 0) {
-                    holder.background.setBackgroundColor(context.getResources().getColor(R.color.green));
+                    holder.background.setBackgroundColor(context.getResources().getColor(R.color.yellow));
+                } else if (currentDate.compareTo(endDate) >= 0) {
                     holder.txtStatus.setText("Đã xong");
+                    holder.background.setBackgroundColor(context.getResources().getColor(R.color.green));
                 }
             }
         } catch (ParseException e) {
@@ -130,12 +131,12 @@ public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.
         return requestList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class PaidRequestViewHolder extends RecyclerView.ViewHolder {
 
         private TextView txtContent, txtField, txtTime, txtDate, txtStatus;
         private RelativeLayout background;
 
-        public MyViewHolder(final View itemView) {
+        public PaidRequestViewHolder(final View itemView) {
             super(itemView);
             txtField = (TextView) itemView.findViewById(R.id.field_view);
             txtContent = (TextView) itemView.findViewById(R.id.content_view);
@@ -147,35 +148,36 @@ public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (txtStatus.getText().toString().equals("Đã xong")) {
-                        Object request = itemView.getTag(R.id.card_view);
-                        if (request instanceof PaidFriendlyMatchRequest) {
-                            Intent intent = new Intent(context, RatingFieldActivity.class);
-                            PaidFriendlyMatchRequest friendlyMatchRequest = (PaidFriendlyMatchRequest) request;
-                            intent.putExtra("id", friendlyMatchRequest.getId());
-                            intent.putExtra("user_id", friendlyMatchRequest.getUserId());
-                            intent.putExtra("field_id", friendlyMatchRequest.getFieldId());
-                            intent.putExtra("date", friendlyMatchRequest.getDate());
-                            intent.putExtra("start_time", friendlyMatchRequest.getStartTime());
-                            intent.putExtra("end_time", friendlyMatchRequest.getEndTime());
-                            intent.putExtra("field_name", friendlyMatchRequest.getFieldName());
-                            context.startActivity(intent);
-                        } else if (request instanceof PaidTourMatchRequest) {
-                            Intent intent = new Intent(context, RatingOpponentActivity.class);
-                            PaidTourMatchRequest tourMatchRequest = (PaidTourMatchRequest) request;
-                            intent.putExtra("id", tourMatchRequest.getId());
-                            intent.putExtra("user_id", tourMatchRequest.getUserId());
-                            intent.putExtra("opponent_id", tourMatchRequest.getOpponentId());
-                            intent.putExtra("field_id", tourMatchRequest.getFieldId());
-                            intent.putExtra("tour_match_id", tourMatchRequest.getTourMatchId());
-                            intent.putExtra("date", tourMatchRequest.getDate());
-                            intent.putExtra("start_time", tourMatchRequest.getStartTime());
-                            intent.putExtra("end_time", tourMatchRequest.getEndTime());
-                            intent.putExtra("opponent_team_name", tourMatchRequest.getTeamName());
-                            intent.putExtra("field_name", tourMatchRequest.getFieldName());
-                            context.startActivity(intent);
-                        }
-
+                    Object request = itemView.getTag(R.id.card_view);
+                    if (request instanceof PaidFriendlyMatchRequest) {
+                        Intent intent = new Intent(context, ReservationInfoActivity.class);
+                        PaidFriendlyMatchRequest friendlyMatchRequest = (PaidFriendlyMatchRequest) request;
+                        intent.putExtra("id", friendlyMatchRequest.getId());
+                        intent.putExtra("user_id", friendlyMatchRequest.getUserId());
+                        intent.putExtra("field_id", friendlyMatchRequest.getFieldId());
+                        intent.putExtra("date", friendlyMatchRequest.getDate());
+                        intent.putExtra("start_time", friendlyMatchRequest.getStartTime());
+                        intent.putExtra("end_time", friendlyMatchRequest.getEndTime());
+                        intent.putExtra("field_name", friendlyMatchRequest.getFieldName());
+                        intent.putExtra("tour_match_mode", false);
+                        intent.putExtra("status", txtStatus.getText().toString());
+                        context.startActivity(intent);
+                    } else if (request instanceof PaidTourMatchRequest) {
+                        Intent intent = new Intent(context, ReservationInfoActivity.class);
+                        PaidTourMatchRequest tourMatchRequest = (PaidTourMatchRequest) request;
+                        intent.putExtra("id", tourMatchRequest.getId());
+                        intent.putExtra("user_id", tourMatchRequest.getUserId());
+                        intent.putExtra("opponent_id", tourMatchRequest.getOpponentId());
+                        intent.putExtra("field_id", tourMatchRequest.getFieldId());
+                        intent.putExtra("tour_match_id", tourMatchRequest.getTourMatchId());
+                        intent.putExtra("date", tourMatchRequest.getDate());
+                        intent.putExtra("start_time", tourMatchRequest.getStartTime());
+                        intent.putExtra("end_time", tourMatchRequest.getEndTime());
+                        intent.putExtra("opponent_team_name", tourMatchRequest.getTeamName());
+                        intent.putExtra("field_name", tourMatchRequest.getFieldName());
+                        intent.putExtra("tour_match_mode", true);
+                        intent.putExtra("status", txtStatus.getText().toString());
+                        context.startActivity(intent);
                     }
                 }
             });

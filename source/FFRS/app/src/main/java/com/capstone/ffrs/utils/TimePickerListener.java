@@ -26,7 +26,7 @@ public class TimePickerListener implements View.OnClickListener {
 
     private Context context;
     private EditText edit;
-    private Date minTime, maxTime;
+    private Date minTime, maxTime, date;
 
     public TimePickerListener(Context context, EditText edit) {
         this.context = context;
@@ -49,6 +49,14 @@ public class TimePickerListener implements View.OnClickListener {
         this.maxTime = maxTime;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     @Override
     public void onClick(View v) {
         CustomTimePickerDialog mTimePickerDialog;
@@ -64,34 +72,37 @@ public class TimePickerListener implements View.OnClickListener {
                 Log.d("Exception", e.getMessage());
             }
             mCurrentTime.setTime(time);
-        }
-        if (minTime != null || maxTime != null) {
-            LocalTime time = LocalTime.now();
-            if (minTime != null) {
-                LocalTime minLocalTime = LocalDateTime.fromDateFields(minTime).toLocalTime();
-                if (time.isBefore(minLocalTime)) {
-                    hour = minTime.getHours();
-                    minute = minTime.getMinutes();
-                } else {
-                    hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
-                    minute = mCurrentTime.get(Calendar.MINUTE);
-                }
-            }
-            if (maxTime != null) {
-                LocalTime maxLocalTime = LocalDateTime.fromDateFields(maxTime).toLocalTime();
-                if (time.isAfter(maxLocalTime)) {
-                    hour = maxTime.getHours();
-                    minute = maxTime.getMinutes();
-                } else {
-                    hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
-                    minute = mCurrentTime.get(Calendar.MINUTE);
-                }
-            }
-        } else {
             hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
             minute = mCurrentTime.get(Calendar.MINUTE);
         }
-
+        if (date != null && date.getDate() == new Date().getDate()) {
+            if (minTime != null || maxTime != null) {
+                LocalTime time = LocalTime.now();
+                if (minTime != null) {
+                    LocalTime minLocalTime = LocalDateTime.fromDateFields(minTime).toLocalTime();
+                    if (time.isBefore(minLocalTime)) {
+                        hour = minTime.getHours();
+                        minute = minTime.getMinutes();
+                    } else {
+                        hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+                        minute = mCurrentTime.get(Calendar.MINUTE);
+                    }
+                }
+                if (maxTime != null) {
+                    LocalTime maxLocalTime = LocalDateTime.fromDateFields(maxTime).toLocalTime();
+                    if (time.isAfter(maxLocalTime)) {
+                        hour = maxTime.getHours();
+                        minute = maxTime.getMinutes();
+                    } else {
+                        hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+                        minute = mCurrentTime.get(Calendar.MINUTE);
+                    }
+                }
+            } else {
+                hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+                minute = mCurrentTime.get(Calendar.MINUTE);
+            }
+        }
         mTimePickerDialog = new CustomTimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {

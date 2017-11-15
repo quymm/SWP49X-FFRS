@@ -17,6 +17,7 @@ import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.ServerError;
@@ -41,7 +42,7 @@ import java.util.List;
  * Created by HuanPMSE61860 on 11/4/2017.
  */
 
-public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAdapter.MyViewHolder> {
+public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAdapter.PendingRequestViewHolder> {
     private List<PendingRequest> requestList;
     private Context context;
     private LayoutInflater inflater;
@@ -53,13 +54,13 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
     }
 
     @Override
-    public PendingRequestAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PendingRequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rootView = inflater.inflate(R.layout.pending_request_item, parent, false);
-        return new PendingRequestAdapter.MyViewHolder(rootView);
+        return new PendingRequestAdapter.PendingRequestViewHolder(rootView);
     }
 
     @Override
-    public void onBindViewHolder(final PendingRequestAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(PendingRequestViewHolder holder, int position) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             PendingRequest request = requestList.get(position);
@@ -95,13 +96,13 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
         return requestList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class PendingRequestViewHolder extends RecyclerView.ViewHolder {
 
         private TextView txtTime, txtDate, txtDuration;
 
         private Button btClose;
 
-        public MyViewHolder(final View itemView) {
+        public PendingRequestViewHolder(final View itemView) {
             super(itemView);
             txtTime = (TextView) itemView.findViewById(R.id.time_view);
             txtDate = (TextView) itemView.findViewById(R.id.date_view);
@@ -113,7 +114,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                            public void onClick(View v) {
                                                AlertDialog.Builder builder;
                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                                   builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
+                                                   builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
                                                } else {
                                                    builder = new AlertDialog.Builder(context);
                                                }
@@ -124,7 +125,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                                                // continue with delete
                                                                RequestQueue queue = NetworkController.getInstance(context).getRequestQueue();
                                                                String url = context.getResources().getString(R.string.local_host) + context.getResources().getString(R.string.url_cancel_matching_request);
-                                                               JsonObjectRequest request = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
+                                                               JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
                                                                    @Override
                                                                    public void onResponse(JSONObject response) {
                                                                        Toast.makeText(context, "Bạn đã hủy yêu cầu đá chung", Toast.LENGTH_SHORT).show();
@@ -169,7 +170,6 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                                                // do nothing
                                                            }
                                                        })
-                                                       .setIcon(android.R.drawable.ic_dialog_alert)
                                                        .show();
                                            }
                                        }

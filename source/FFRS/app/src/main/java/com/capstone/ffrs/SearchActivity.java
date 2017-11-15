@@ -6,10 +6,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,32 +24,59 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.capstone.ffrs.adapter.FieldSuggestPagerAdapter;
+import com.capstone.ffrs.adapter.SearchPagerAdapter;
 import com.capstone.ffrs.service.FirebaseNotificationServices;
 import com.capstone.ffrs.utils.GPSLocationListener;
 
-import java.util.Date;
-import java.util.Calendar;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-
-public class FieldSuggestActivity extends AppCompatActivity
+public class SearchActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private Boolean exit = false;
 
     //provides gps location updates
     private GPSLocationListener gpsLocationListener;
-    private BroadcastReceiver mReceiver;
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle b = intent.getExtras();
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(SearchActivity.this);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("balance", b.getInt("balance"));
+            editor.commit();
+
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            View headerLayout = navigationView.getHeaderView(0);
+            TextView txtBalance = (TextView) headerLayout.findViewById(R.id.text_balance);
+            txtBalance.setText("Tiền còn lại: " + sharedPreferences.getInt("balance", 0) + "K đồng");
+        }
+    };
 
     @Override
     public void onResume() {
         super.onResume();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerLayout = navigationView.getHeaderView(0);
+
+        TextView txtTeamName = (TextView) headerLayout.findViewById(R.id.text_name);
+        txtTeamName.setText(preferences.getString("teamName", ""));
+
+        TextView txtPoints = (TextView) headerLayout.findViewById(R.id.text_points);
+        txtPoints.setText("Điểm đổi thưởng: " + preferences.getInt("points", 0));
+
+        TextView txtBalance = (TextView) headerLayout.findViewById(R.id.text_balance);
+        txtBalance.setText("Tiền còn lại: " + preferences.getInt("balance", 0) + "K đồng");
+
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         //call to location listener to start location updates when activity gets started
         if (gpsLocationListener != null && pm.isInteractive()) {
             gpsLocationListener.onStart();
         }
-
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver,
+                new IntentFilter("balance-message"));
     }
 
     @Override
@@ -57,13 +86,18 @@ public class FieldSuggestActivity extends AppCompatActivity
         if (gpsLocationListener != null) {
             gpsLocationListener.onStop();
         }
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_field_suggest);
+        setContentView(R.layout.activity_search);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -84,7 +118,7 @@ public class FieldSuggestActivity extends AppCompatActivity
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         // Create an adapter that knows which fragment should be shown on each page
-        FieldSuggestPagerAdapter pagerAdapter = new FieldSuggestPagerAdapter(this, getSupportFragmentManager());
+        SearchPagerAdapter pagerAdapter = new SearchPagerAdapter(this, getSupportFragmentManager());
 
         // Set the adapter onto the view pager
         viewPager.setAdapter(pagerAdapter);
@@ -109,18 +143,6 @@ public class FieldSuggestActivity extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        View headerLayout = navigationView.getHeaderView(0);
-        TextView txtTeamName = (TextView) headerLayout.findViewById(R.id.text_name);
-        txtTeamName.setText(preferences.getString("teamName", ""));
-
-        TextView txtPoints = (TextView) headerLayout.findViewById(R.id.text_points);
-        txtPoints.setText("Điểm đổi thưởng: " + preferences.getInt("points", 0));
-
-        TextView txtBalance = (TextView) headerLayout.findViewById(R.id.text_balance);
-        txtBalance.setText("Tiền còn lại: " + preferences.getInt("balance", 0) + "K đồng");
-
         gpsLocationListener = new GPSLocationListener(this);
     }
 
@@ -130,7 +152,19 @@ public class FieldSuggestActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (exit) {
+                super.onBackPressed(); // finish activity
+            } else {
+                Toast.makeText(this, "Bấm Back lần nữa để thoát ứng dụng.", 2 * 1000).show();
+                exit = true;
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        exit = false;
+                    }
+                }, 2 * 1000);
+
+            }
         }
     }
 
@@ -139,15 +173,23 @@ public class FieldSuggestActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_rewards) {
+        if (id == R.id.nav_recharge) {
+            Intent intent = new Intent(this, RechargeActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_profile) {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_rewards) {
             Intent intent = new Intent(this, RewardActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_history) {
             Intent intent = new Intent(this, HistoryActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_notifications) {
-            Intent intent = new Intent(this, NotificationActivity.class);
+        } else if (id == R.id.nav_favorite_field) {
+            Intent intent = new Intent(this, FavoriteFieldActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_blacsklist) {
+            Intent intent = new Intent(this, BlacklistActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -164,14 +206,6 @@ public class FieldSuggestActivity extends AppCompatActivity
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mReceiver != null) {
-            unregisterReceiver(mReceiver);
-        }
+        return false;
     }
 }

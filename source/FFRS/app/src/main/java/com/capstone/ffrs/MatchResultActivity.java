@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -54,6 +55,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
@@ -65,7 +67,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-public class MatchActivity extends AppCompatActivity {
+public class MatchResultActivity extends AppCompatActivity {
     private String url;
 
     private RecyclerView recyclerView;
@@ -73,6 +75,8 @@ public class MatchActivity extends AppCompatActivity {
     private List<MatchRequest> opponentList = new ArrayList<MatchRequest>();
     private MatchAdapter adapter;
     private String hostURL;
+
+    private TextView txtNotFound;
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -106,6 +110,8 @@ public class MatchActivity extends AppCompatActivity {
 
         loadMatches();
 
+        txtNotFound = (TextView) findViewById(R.id.text_not_found);
+
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -113,6 +119,7 @@ public class MatchActivity extends AppCompatActivity {
                 loadMatches();
             }
         });
+        swipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
@@ -174,33 +181,43 @@ public class MatchActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONArray body = response.getJSONArray("body");
-                    for (int i = 0; i < body.length(); i++) {
-                        try {
-                            JSONObject obj = body.getJSONObject(i);
-                            MatchRequest match = new MatchRequest();
-                            match.setId(obj.getInt("id"));
-                            match.setTeamName(obj.getJSONObject("userId").getJSONObject("profileId").getString("name"));
-                            match.setUserId(obj.getJSONObject("userId").getInt("id"));
-                            match.setDate(obj.getString("date"));
-                            match.setStartTime(obj.getString("startTime"));
-                            match.setEndTime(obj.getString("endTime"));
-                            match.setRatingScore(obj.getJSONObject("userId").getJSONObject("profileId").getInt("ratingScore"));
-                            // adding movie to movies array
-                            opponentList.add(match);
+                    if (!response.isNull("body")) {
+                        JSONArray body = response.getJSONArray("body");
+                        if (body != null && body.length() > 0) {
+                            for (int i = 0; i < body.length(); i++) {
+                                try {
+                                    JSONObject obj = body.getJSONObject(i);
+                                    MatchRequest match = new MatchRequest();
+                                    match.setId(obj.getInt("id"));
+                                    match.setTeamName(obj.getJSONObject("userId").getJSONObject("profileId").getString("name"));
+                                    match.setUserId(obj.getJSONObject("userId").getInt("id"));
+                                    match.setDate(obj.getString("date"));
+                                    match.setStartTime(obj.getString("startTime"));
+                                    match.setEndTime(obj.getString("endTime"));
+                                    match.setRatingScore(obj.getJSONObject("userId").getJSONObject("profileId").getInt("ratingScore"));
+                                    // adding movie to movies array
+                                    opponentList.add(match);
 
-                        } catch (Exception e) {
-                            Log.d("EXCEPTION", e.getMessage());
-                        } finally {
-                            //Notify adapter about data changes
-                            adapter.notifyItemChanged(i);
+                                } catch (Exception e) {
+                                    Log.d("EXCEPTION", e.getMessage());
+                                } finally {
+                                    //Notify adapter about data changes
+                                    adapter.notifyItemChanged(i);
+                                }
+                            }
+                            txtNotFound.setVisibility(View.GONE);
+                        } else {
+                            txtNotFound.setVisibility(View.VISIBLE);
                         }
+                    } else {
+                        txtNotFound.setVisibility(View.VISIBLE);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
                     swipeRefreshLayout.setRefreshing(false);
                 }
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -237,9 +254,4 @@ public class MatchActivity extends AppCompatActivity {
         //Adding JsonArrayRequest to Request Queue
         queue.add(newsReq);
     }
-
-    public void onClickSendRequest(View view) {
-
-    }
-
 }

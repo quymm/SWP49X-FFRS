@@ -2,27 +2,26 @@ package com.capstone.ffrs.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.capstone.ffrs.FieldTimeActivity;
 import com.capstone.ffrs.entity.FieldOwner;
 import com.capstone.ffrs.R;
-import com.capstone.ffrs.controller.NetworkController;
 
 import java.util.List;
 
 /**
  * Created by AndroidNovice on 6/5/2016.
  */
-public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder> {
+public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.FieldViewHolder> {
 
     private List<FieldOwner> fieldOwnerList;
     private Context context;
@@ -41,47 +40,53 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FieldViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View rootView = inflater.inflate(R.layout.field_item, parent, false);
-        return new MyViewHolder(rootView);
+        return new FieldViewHolder(rootView);
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
+    public void onBindViewHolder(FieldViewHolder holder, int position) {
         FieldOwner fieldOwner = fieldOwnerList.get(position);
 
         holder.itemView.setTag(R.id.card_view, fieldOwner.getId());
         holder.title.setText(fieldOwner.getFieldName());
         holder.content.setText(fieldOwner.getAddress());
-        holder.progressBar.setVisibility(View.VISIBLE);
-        holder.imageview.setVisibility(View.GONE);
-        holder.imageview.setDefaultImageResId(R.drawable.img_placeholder);
-        holder.imageview.setErrorImageResId(R.drawable.img_broken);
+//        holder.imageview.setVisibility(View.GONE);
+//        holder.imageview.setDefaultImageResId(R.drawable.img_placeholder);
+//        holder.imageview.setErrorImageResId(R.drawable.img_placeholder);
+
+//        ImageLoader imageLoader = NetworkController.getInstance(context).getImageLoader();
+//        imageLoader.get(url, new ImageLoader.ImageListener() {
+//
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                holder.progressBar.setVisibility(View.GONE);
+//                holder.imageview.setVisibility(View.VISIBLE);
+//            }
+//
+//            @Override
+//            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+//                if (response.getBitmap() != null) {
+//                    holder.progressBar.setVisibility(View.GONE);
+//                    holder.imageview.setImageBitmap(response.getBitmap());
+//                    holder.imageview.setVisibility(View.VISIBLE);
+//                } else {
+//                    holder.progressBar.setVisibility(View.GONE);
+//                    holder.imageview.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        });
+//        holder.imageview.setImageUrl(url, imageLoader);
         String url = fieldOwner.getImgURL();
-        ImageLoader imageLoader = NetworkController.getInstance(context).getImageLoader();
-        imageLoader.get(url, new ImageLoader.ImageListener() {
+        loadImageWithGlide(holder.imageview, url);
+    }
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                holder.progressBar.setVisibility(View.GONE);
-                holder.imageview.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-                if (response.getBitmap() != null) {
-                    holder.progressBar.setVisibility(View.GONE);
-                    holder.imageview.setImageBitmap(response.getBitmap());
-                    holder.imageview.setVisibility(View.VISIBLE);
-                } else {
-                    holder.progressBar.setVisibility(View.GONE);
-                    holder.imageview.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-        holder.imageview.setImageUrl(url, imageLoader);
-
+    public void loadImageWithGlide(ImageView imageView, String url) {
+        RequestBuilder<Drawable> requestBuilder = Glide.with(context).load(url);
+        requestBuilder.error(Glide.with(context).load(context.getResources().getDrawable(R.drawable.img_placeholder)));
+        requestBuilder.into(imageView);
     }
 
     @Override
@@ -89,19 +94,16 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.MyViewHolder
         return fieldOwnerList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class FieldViewHolder extends RecyclerView.ViewHolder {
 
         private TextView content, title;
-        private NetworkImageView imageview;
-        private ProgressBar progressBar;
+        private ImageView imageview;
 
-        public MyViewHolder(final View itemView) {
+        public FieldViewHolder(final View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.title_view);
             content = (TextView) itemView.findViewById(R.id.content_view);
-            // Volley's NetworkImageView which will load Image from URL
-            imageview = (NetworkImageView) itemView.findViewById(R.id.thumbnail);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
+            imageview = (ImageView) itemView.findViewById(R.id.thumbnail);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -8,7 +8,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.capstone.ffrs.fragment.ReserveFailFragment;
+import com.capstone.ffrs.fragment.RechargeSucessFragment;
+import com.capstone.ffrs.fragment.RechargeFailFragment;
+import com.capstone.ffrs.fragment.ReserveNoMoneyFragment;
 import com.capstone.ffrs.fragment.ReserveSuccessFragment;
 
 public class ReservationResultActivity extends AppCompatActivity {
@@ -27,13 +29,19 @@ public class ReservationResultActivity extends AppCompatActivity {
                 mFragment = new ReserveSuccessFragment();
                 break;
             case "Cancelled":
-                mFragment = new ReserveFailFragment();
+                mFragment = new RechargeFailFragment();
                 break;
             case "Invalid configuration":
-                mFragment = new ReserveFailFragment();
+                mFragment = new RechargeFailFragment();
+                break;
+            case "No Money":
+                mFragment = new ReserveNoMoneyFragment();
+                break;
+            case "Recharged":
+                mFragment = new RechargeSucessFragment();
                 break;
             default:
-                mFragment = new ReserveFailFragment();
+                mFragment = new RechargeFailFragment();
                 break;
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -47,7 +55,7 @@ public class ReservationResultActivity extends AppCompatActivity {
     public void onBackPressed() {
         Bundle b = getIntent().getExtras();
 
-        Intent intent = new Intent(this, FieldSuggestActivity.class);
+        Intent intent = new Intent(this, SearchActivity.class);
         intent.putExtra("user_id", b.getInt("user_id"));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

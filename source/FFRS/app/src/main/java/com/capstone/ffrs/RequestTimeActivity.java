@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -79,12 +80,16 @@ public class RequestTimeActivity extends AppCompatActivity {
         txtStartTime.setText(localStartTime.toString(dtf));
         txtEndTime.setText(localEndTime.toString(dtf));
 
+        TextView txtDate = (TextView) findViewById(R.id.date_view);
+        txtDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date(Long.parseLong(b.getString("date")))));
+
         TimePickerListener startListener = new TimePickerListener(this, txtStartTime);
         try {
             dtf = DateTimeFormat.forPattern("H:mm:ss");
             LocalTime localMaxStartTime = LocalTime.parse(b.getString("field_end_time"), dtf).minusMinutes(duration);
             dtf = DateTimeFormat.forPattern("H:mm");
             Date maxStartTime = new SimpleDateFormat("H:mm").parse(localMaxStartTime.toString(dtf));
+            startListener.setDate(new Date(Long.parseLong(b.getString("date"))));
             startListener.setMinTime(new SimpleDateFormat("H:mm:ss").parse(b.getString("field_start_time")));
             startListener.setMaxTime(maxStartTime);
         } catch (ParseException e) {
@@ -125,6 +130,9 @@ public class RequestTimeActivity extends AppCompatActivity {
         final int userId = sharedPreferences.getInt("user_id", -1);
         final Bundle b = getIntent().getExtras();
 
+        final EditText txtStartTime = (EditText) findViewById(R.id.input_start_time);
+        final EditText txtEndTime = (EditText) findViewById(R.id.input_end_time);
+
         final int opponentId = b.getInt("opponent_id");
 
         String url = hostURL + getResources().getString(R.string.url_choose_field);
@@ -137,8 +145,8 @@ public class RequestTimeActivity extends AppCompatActivity {
         Map<String, Object> params = new HashMap<>();
         params.put("date", strDate);
         params.put("userId", userId);
-        params.put("startTime", b.getString("field_start_time"));
-        params.put("endTime", b.getString("field_end_time"));
+        params.put("startTime", txtStartTime.getText().toString());
+        params.put("endTime", txtEndTime.getText().toString());
         params.put("fieldTypeId", b.getInt("field_type_id"));
         params.put("latitude", b.getDouble("latitude"));
         params.put("longitude", b.getDouble("longitude"));
@@ -152,20 +160,18 @@ public class RequestTimeActivity extends AppCompatActivity {
                                 JSONObject body = response.getJSONObject("body");
                                 if (body != null && body.length() > 0) {
                                     try {
-                                        final Date fromTime = new Date(body.getLong("startTime"));
-                                        final Date toTime = new Date(body.getLong("endTime"));
+                                        final Date fromTime = new SimpleDateFormat("H:mm").parse(body.getString("startTime"));
+                                        final Date toTime = new SimpleDateFormat("H:mm").parse(body.getString("endTime"));
                                         Intent intent = new Intent(RequestTimeActivity.this, FieldDetailActivity.class);
                                         intent.putExtra("field_id", body.getJSONObject("fieldOwnerId").getInt("id"));
                                         intent.putExtra("field_name", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("name"));
                                         intent.putExtra("field_address", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("address"));
                                         intent.putExtra("field_type_id", body.getJSONObject("fieldTypeId").getInt("id"));
-                                        intent.putExtra("image_url", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("avatarUrl"));
                                         intent.putExtra("date", new Date(Long.parseLong(strDate)));
                                         intent.putExtra("time_from", fromTime);
                                         intent.putExtra("time_to", toTime);
                                         intent.putExtra("price", body.getInt("price"));
                                         intent.putExtra("user_id", userId);
-                                        intent.putExtra("time_slot_id", body.getInt("id"));
                                         intent.putExtra("tour_match_mode", true);
                                         intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
                                         intent.putExtra("opponent_id", opponentId);
@@ -174,10 +180,14 @@ public class RequestTimeActivity extends AppCompatActivity {
                                         Log.d("EXCEPTION", e.getMessage());
                                     }
                                 } else {
-                                    Toast.makeText(RequestTimeActivity.this, "Không tìm thấy sân phù hợp!", Toast.LENGTH_SHORT).show();
+                                    Toast toast = Toast.makeText(RequestTimeActivity.this, "Không tìm thấy sân phù hợp!", Toast.LENGTH_LONG);
+                                    toast.setGravity(Gravity.CENTER, 0, 0);
+                                    toast.show();
                                 }
                             } else {
-                                Toast.makeText(RequestTimeActivity.this, "Không tìm thấy sân phù hợp!", Toast.LENGTH_SHORT).show();
+                                Toast toast = Toast.makeText(RequestTimeActivity.this, "Không tìm thấy sân phù hợp!", Toast.LENGTH_LONG);
+                                toast.setGravity(Gravity.CENTER, 0, 0);
+                                toast.show();
                             }
                         } catch (JSONException e) {
                             Log.d("ParseException", e.getMessage());

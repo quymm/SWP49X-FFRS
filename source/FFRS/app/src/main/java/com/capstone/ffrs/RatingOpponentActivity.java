@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -88,7 +87,7 @@ public class RatingOpponentActivity extends AppCompatActivity {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Intent intent = new Intent(RatingOpponentActivity.this, FieldSuggestActivity.class);
+                Intent intent = new Intent(RatingOpponentActivity.this, SearchActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 Toast.makeText(RatingOpponentActivity.this, "Cảm ơn bạn đã tham gia đánh giá đối thủ.", Toast.LENGTH_LONG).show();
                 startActivity(intent);

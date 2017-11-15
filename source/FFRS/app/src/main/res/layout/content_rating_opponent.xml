@@ -33,7 +33,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
-                        android:text="Đội giành chiến thắng là: *" />
+                        android:text="Đội giành chiến thắng trận đấu này là: *" />
                 </TableRow>
 
                 <TableRow
@@ -78,7 +78,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="2"
-                            android:text="Đối thủ bạn đá chung như thế nào? *" />
+                            android:text="Đối thủ của bạn đá như thế nào? *" />
 
                         <RadioGroup
                             android:id="@+id/rdSkill"
@@ -110,29 +110,29 @@
                 </TableRow>
 
                 <!--<TableRow-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content">-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
 
-                    <!--<LinearLayout-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_weight="2"-->
-                        <!--android:orientation="vertical">-->
+                <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="2"-->
+                <!--android:orientation="vertical">-->
 
-                        <!--<TextView-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:layout_weight="2"-->
-                            <!--android:text="Nhận xét khác:" />-->
+                <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="2"-->
+                <!--android:text="Nhận xét khác:" />-->
 
-                        <!--<EditText-->
-                            <!--android:id="@+id/editText1"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="match_parent"-->
-                            <!--android:ems="10"-->
-                            <!--android:gravity="left|top"-->
-                            <!--android:inputType="textMultiLine" />-->
-                    <!--</LinearLayout>-->
+                <!--<EditText-->
+                <!--android:id="@+id/editText1"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:ems="10"-->
+                <!--android:gravity="left|top"-->
+                <!--android:inputType="textMultiLine" />-->
+                <!--</LinearLayout>-->
                 <!--</TableRow>-->
             </TableLayout>
         </ScrollView>
@@ -157,6 +157,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
+                android:layout_margin="5dp"
                 android:background="#197a35"
                 android:onClick="onClickSendRating"
                 android:text="OK"

@@ -27,6 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_margin="5dp"
             android:gravity="bottom"
             android:orientation="horizontal"
             android:weightSum="2">
@@ -35,6 +36,7 @@
                 android:id="@+id/btPayment"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
+                android:layout_marginEnd="2.5dp"
                 android:layout_weight="1"
                 android:background="#197a35"
                 android:onClick="onClickReserve"
@@ -46,6 +48,7 @@
                 android:id="@+id/btCancel"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
+                android:layout_marginStart="2.5dp"
                 android:layout_weight="1"
                 android:background="#af0000"
                 android:onClick="onClickGoBackToTime"
@@ -129,13 +132,13 @@
 
                         <TableRow
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="5sp">
 
                             <TextView
                                 android:id="@+id/text_title_date"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="5sp"
                                 android:layout_weight="1"
                                 android:text="Ngày:"
                                 android:textAlignment="textStart"
@@ -146,7 +149,6 @@
                                 android:id="@+id/text_date"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="5sp"
                                 android:layout_weight="1"
                                 android:text="dd/MM/yyyy"
                                 android:textAlignment="textStart"
@@ -156,13 +158,13 @@
 
                         <TableRow
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="5sp">
 
                             <TextView
                                 android:id="@+id/text_title_from"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="5sp"
                                 android:layout_weight="1"
                                 android:text="Từ:"
                                 android:textAlignment="textStart"
@@ -173,7 +175,6 @@
                                 android:id="@+id/text_from"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="5sp"
                                 android:layout_weight="1"
                                 android:text="H:mm"
                                 android:textAlignment="textStart"
@@ -183,13 +184,13 @@
 
                         <TableRow
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="5sp">
 
                             <TextView
                                 android:id="@+id/text_title_to"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="5sp"
                                 android:layout_weight="1"
                                 android:text="Đến:"
                                 android:textAlignment="textStart"
@@ -200,7 +201,6 @@
                                 android:id="@+id/text_to"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="5sp"
                                 android:layout_weight="1"
                                 android:text="H:mm"
                                 android:textAlignment="textStart"
@@ -210,13 +210,13 @@
 
                         <TableRow
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="5sp">
 
                             <TextView
                                 android:id="@+id/text_title_field_type"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="5sp"
                                 android:layout_weight="1"
                                 android:text="Loại sân:"
                                 android:textAlignment="textStart"
@@ -227,7 +227,6 @@
                                 android:id="@+id/text_field_type"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="5sp"
                                 android:layout_weight="1"
                                 android:text="5 vs 5"
                                 android:textAlignment="textStart"
@@ -237,15 +236,15 @@
 
                         <TableRow
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="5sp">
 
                             <TextView
                                 android:id="@+id/text_title_duration"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="5sp"
                                 android:layout_weight="1"
-                                android:text="Thời gian chơi:"
+                                android:text="Thời gian đá:"
                                 android:textAlignment="textStart"
                                 android:textColor="@android:color/black"
                                 android:textSize="22sp" />
@@ -254,7 +253,6 @@
                                 android:id="@+id/text_duration"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="5sp"
                                 android:layout_weight="1"
                                 android:text="x tiếng"
                                 android:textAlignment="textStart"
@@ -264,7 +262,8 @@
 
                         <TableRow
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="5sp">
 
                             <TextView
                                 android:id="@+id/text_title_total_price"
@@ -283,46 +282,43 @@
                                 android:layout_weight="1"
                                 android:text="xyz,000 đồng"
                                 android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp"
+                                android:textStyle="bold" />
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:id="@+id/text_title_price"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Giá phải trả:"
+                                android:textAlignment="textStart"
+                                android:textColor="@android:color/black"
+                                android:textSize="22sp" />
+
+                            <TextView
+                                android:id="@+id/text_price"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="xyz,000 đồng"
+                                android:textAlignment="textStart"
                                 android:textColor="#ff1400"
                                 android:textSize="22sp"
-                                android:textStyle="bold"/>
+                                android:textStyle="bold" />
                         </TableRow>
                     </TableLayout>
-
-
-                    <!--<LinearLayout-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginBottom="5sp"-->
-                    <!--android:gravity="center_vertical"-->
-                    <!--android:orientation="horizontal">-->
-
-                    <!--<TextView-->
-                    <!--android:id="@+id/textView5"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="Rating:"-->
-                    <!--android:textAlignment="textStart"-->
-                    <!--android:textColor="@android:color/black"-->
-                    <!--android:textSize="22sp"-->
-                    <!--android:textStyle="bold" />-->
-
-                    <!--<RatingBar-->
-                    <!--android:id="@+id/ratingBar"-->
-                    <!--style="@style/Widget.AppCompat.RatingBar.Indicator"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:isIndicator="true"-->
-                    <!--android:numStars="5"-->
-                    <!--android:rating="5" />-->
-                    <!--</LinearLayout>-->
 
                 </LinearLayout>
 
             </LinearLayout>
 
         </ScrollView>
-
 
     </RelativeLayout>
 

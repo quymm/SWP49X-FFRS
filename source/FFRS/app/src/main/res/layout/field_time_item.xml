@@ -4,8 +4,8 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
     android:background="#63b75b"
-    android:paddingLeft="5dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingLeft="5dp">
 
     <TextView
         android:id="@+id/time_frame"
@@ -16,20 +16,8 @@
         android:padding="10dp"
         android:text="From - To"
         android:textColor="@android:color/black"
+        android:drawableRight="@drawable/ic_arrow_downward"
         android:textSize="22dp"
         android:textStyle="bold" />
 
-    <!--<TextView-->
-    <!--android:id="@+id/hour_price"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:layout_weight="3"-->
-
-    <!--android:gravity="center_vertical"-->
-    <!--android:padding="5dp"-->
-    <!--android:text="Price (đ/h)"-->
-    <!--android:textAlignment="textEnd"-->
-    <!--android:textColor="@android:color/black"-->
-    <!--android:textSize="18sp"-->
-    <!--android:textStyle="bold" />-->
 </LinearLayout>

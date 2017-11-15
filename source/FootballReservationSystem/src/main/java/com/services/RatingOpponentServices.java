@@ -41,21 +41,15 @@ public class RatingOpponentServices {
         return ratingOpponentRepository.findByUserIdAndStatus(accountEntity, true);
     }
 
-    public List<RatingOpponentEntity> findByOpponentId(int opponentId) {
-        AccountEntity accountEntity = accountServices.findAccountEntityByIdAndRole(opponentId, constant.getUserRole());
-        return ratingOpponentRepository.findByOpponentIdAndStatus(accountEntity, true);
-    }
-
     public List<RatingOpponentEntity> findBytourMatchId(int tourMatchId) {
         TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(tourMatchId);
         return ratingOpponentRepository.findByTourMatchIdAndStatus(tourMatchEntity, true);
     }
 
-    public RatingOpponentEntity findByUserIdAndOpponentIdAndTourMatchIdAndStatus(int userId, int opponentId, int tourMatchId) {
+    public RatingOpponentEntity findByUserIdAndTourMatchId(int userId, int tourMatchId) {
         AccountEntity userAccountEntity = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
-        AccountEntity opponentAccountEntity = accountServices.findAccountEntityByIdAndRole(opponentId, constant.getUserRole());
         TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(tourMatchId);
-        return ratingOpponentRepository.findByUserIdAndOpponentIdAndTourMatchIdAndStatus(userAccountEntity, opponentAccountEntity, tourMatchEntity, true);
+        return ratingOpponentRepository.findByUserIdAndTourMatchIdAndStatus(userAccountEntity, tourMatchEntity, true);
     }
 
     public RatingOpponentEntity findById(int ratingId) {
@@ -72,14 +66,12 @@ public class RatingOpponentServices {
 
         AccountEntity user = accountServices.findAccountEntityByIdAndRole(inputRatingOpponentDTO.getUserId(), constant.getUserRole());
         ratingOpponentEntity.setUserId(user);
-        if (user.getId() == tourMatchEntity.getUserId().getId()) {
-            ratingOpponentEntity.setOpponentId(tourMatchEntity.getOpponentId());
-        } else {
-            ratingOpponentEntity.setOpponentId(tourMatchEntity.getUserId());
-        }
         ratingOpponentEntity.setTourMatchId(tourMatchEntity);
-        ratingOpponentEntity.setRatingScore(inputRatingOpponentDTO.getRatingScore());
-        ratingOpponentEntity.setWin(inputRatingOpponentDTO.isWin());
+        ratingOpponentEntity.setRatingLevel(inputRatingOpponentDTO.getRatingLevel());
+        ratingOpponentEntity.setResult(inputRatingOpponentDTO.getResult());
+        if (inputRatingOpponentDTO.getGoalsDifference() != null) {
+            ratingOpponentEntity.setGoalsDifference(inputRatingOpponentDTO.getGoalsDifference());
+        }
         ratingOpponentEntity.setStatus(true);
         RatingOpponentEntity savedRatingOpponentEntity = ratingOpponentRepository.save(ratingOpponentEntity);
 
@@ -88,39 +80,68 @@ public class RatingOpponentServices {
                 && findBytourMatchId(tourMatchEntity.getId()).size() == 2) {
             tourMatchEntity.setCompleteStatus(true);
             tourMatchRepository.save(tourMatchEntity);
-            calculateRatingPointAndBonusPoint(tourMatchEntity.getId());
+            calculateRatingPointAndBonusPoint(tourMatchEntity);
         }
         return savedRatingOpponentEntity;
     }
 
-    public void calculateRatingPointAndBonusPoint(int tourMatchId) {
-        TourMatchEntity tourMatchEntity = matchServices.findTourMatchEntityById(tourMatchId);
+    public void calculateRatingPointAndBonusPoint(TourMatchEntity tourMatchEntity) {
         AccountEntity user = tourMatchEntity.getUserId();
         AccountEntity opponent = tourMatchEntity.getOpponentId();
         ProfileEntity userProfile = user.getProfileId();
         ProfileEntity opponentProfile = opponent.getProfileId();
         if (tourMatchEntity.getCompleteStatus()) {
-            RatingOpponentEntity ratingOpponent = findByUserIdAndOpponentIdAndTourMatchIdAndStatus(user.getId(), opponent.getId(), tourMatchEntity.getId());
-            RatingOpponentEntity ratingUser = findByUserIdAndOpponentIdAndTourMatchIdAndStatus(opponent.getId(), user.getId(), tourMatchEntity.getId());
-            // kết quả đánh giá đối lập nhau
-            if (ratingOpponent.getWin() != ratingUser.getWin()) {
-                if (ratingOpponent.getWin()) {
-                    // user la nguoi thang
-                    userProfile.setRatingScore(user.getProfileId().getRatingScore() + 20);
-                    opponentProfile.setRatingScore(opponent.getProfileId().getRatingScore() - 20);
+            RatingOpponentEntity ratingOpponent = findByUserIdAndTourMatchId(user.getId(), tourMatchEntity.getId());
+            RatingOpponentEntity ratingUser = findByUserIdAndTourMatchId(opponent.getId(), tourMatchEntity.getId());
+            // Kiểm tra người dùng gửi về kết quả có khớp với nhau hay ko?
+            boolean ratingRight = false;
+            int bonusRatingScore = 0; // nếu đánh giá về tỉ số đúng thì sẽ được 2đ bonus point
 
-                } else {
-                    // user la nguoi thua
-                    userProfile.setRatingScore(user.getProfileId().getRatingScore() - 20);
-                    opponentProfile.setRatingScore(opponent.getProfileId().getRatingScore() + 20);
-
-                }
-                // duoc cong diem bonus point
-                userProfile.setBonusPoint(user.getProfileId().getBonusPoint() + 10);
-                opponentProfile.setBonusPoint(user.getProfileId().getBonusPoint() + 10);
-                profileRepository.save(userProfile);
-                profileRepository.save(opponentProfile);
+            int goalsDifference = 0; // hiệu số bàn thắng bại
+            // nếu đánh giá của 2 đối thủ về hiệu số bàn thắng bại là giống nhau thì sẽ ảnh hưởng điểm ranking
+            if (ratingUser.getGoalsDifference() != null && ratingOpponent.getGoalsDifference() != null
+                    && ratingUser.getGoalsDifference() == ratingOpponent.getGoalsDifference()) {
+                goalsDifference = ratingUser.getGoalsDifference();
+                bonusRatingScore = 3;
             }
+            // rating level
+            // 0: đá tệ
+            // 2: đá bình thường
+            // 4: đá hay
+            if (ratingUser.getResult() == 1 && ratingOpponent.getResult() == 1) {
+                // Trận đấu có kết quả hòa
+                userProfile.setRatingScore(userProfile.getRatingScore() + 10 + ratingUser.getRatingLevel());
+                opponentProfile.setRatingScore(opponentProfile.getRatingScore() + 10 + ratingOpponent.getRatingLevel());
+                ratingRight = true;
+            } else if (ratingUser.getResult() == 3 && ratingOpponent.getResult() == 0) {
+                // User là người thắng
+                userProfile.setRatingScore(userProfile.getRatingScore() + 30 + goalsDifference + ratingUser.getRatingLevel());
+                if (opponentProfile.getRatingScore() + ratingOpponent.getRatingLevel() >= goalsDifference) {
+                    opponentProfile.setRatingScore(opponentProfile.getRatingScore() - goalsDifference + ratingOpponent.getRatingLevel());
+                } else {
+                    opponentProfile.setRatingScore(0);
+                }
+                ratingRight = true;
+            } else if (ratingUser.getResult() == 1 && ratingOpponent.getResult() == 3) {
+                // Opponent là người thắng
+                if (userProfile.getRatingScore() + ratingUser.getRatingLevel() >= goalsDifference) {
+                    userProfile.setRatingScore(user.getProfileId().getRatingScore() - goalsDifference + ratingUser.getRatingLevel());
+                } else {
+                    userProfile.setRatingScore(0);
+                }
+                opponentProfile.setRatingScore(opponent.getProfileId().getRatingScore() + 30 + goalsDifference);
+                ratingRight = true;
+            } else {
+                userProfile.setRatingScore(userProfile.getRatingScore() + ratingUser.getRatingLevel());
+                opponentProfile.setRatingScore(opponentProfile.getRatingScore() + ratingOpponent.getRatingLevel());
+            }
+            // duoc cong diem bonus point nếu kết quả đánh giá khớp
+            if (ratingRight) {
+                userProfile.setBonusPoint(userProfile.getBonusPoint() + 10 + bonusRatingScore);
+                opponentProfile.setBonusPoint(opponentProfile.getBonusPoint() + 10 + bonusRatingScore);
+            }
+            profileRepository.save(userProfile);
+            profileRepository.save(opponentProfile);
         } else {
             throw new IllegalArgumentException(String.format("Tour Match have id = %s is not complete! No result to calculate rating", tourMatchEntity.getId()));
         }

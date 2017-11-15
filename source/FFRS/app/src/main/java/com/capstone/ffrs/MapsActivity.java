@@ -287,7 +287,7 @@ public class MapsActivity extends AppCompatActivity implements
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if (response != null && response.length() > 0) {
+                        if (!response.isNull("body") && response.length() > 0) {
                             try {
                                 JSONObject body = response.getJSONObject("body");
                                 JSONObject profile = body.getJSONObject("profileId");

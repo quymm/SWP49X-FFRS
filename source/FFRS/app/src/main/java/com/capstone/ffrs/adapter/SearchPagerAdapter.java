@@ -8,11 +8,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import com.capstone.ffrs.fragment.FieldSearchFragment;
 import com.capstone.ffrs.fragment.MatchSearchFragment;
 
-public class FieldSuggestPagerAdapter extends FragmentPagerAdapter {
+public class SearchPagerAdapter extends FragmentPagerAdapter {
 
     private Context mContext;
 
-    public FieldSuggestPagerAdapter(Context context, FragmentManager fm) {
+    public SearchPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
     }
