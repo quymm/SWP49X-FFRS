@@ -306,12 +306,14 @@ class SettingTime extends Component {
     }
     const popoverRightIdle = (
       <Popover id="popover-positioned-right" title="Giờ thấp điểm">
-        <strong>Holy guacamole!</strong> Check this info.
+      Giờ cao điểm sẽ sau
+        <strong> 17:00</strong> đến giờ đóng cửa
       </Popover>
     );
     const popoverRightPeak = (
       <Popover id="popover-positioned-right" title="Giờ cao điểm">
-        <strong>Holy guacamole!</strong> Check this info.
+        Giờ thấp điểm sẽ từ lúc mở cửa tới
+        <strong> 17:00</strong>
       </Popover>
     );
     return (

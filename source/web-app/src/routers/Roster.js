@@ -16,6 +16,7 @@ import ManageOvercome from '../components/ManageOvercome';
 import ManagePrice from '../components/ManagePrice';
 import ManageUser from '../components/ManageUser';
 import ManageVoucher from '../components/ManageVoucher';
+import AdminPage from '../components/AdminPage';
 // import PageNotFound from '../components/PageNotFound';
 
 const Roster = ({ match }) => (
@@ -46,6 +47,7 @@ const Roster = ({ match }) => (
         <Route path={`${match.url}/staff-manage-price`} component={ManagePrice} />
         <Route path={`${match.url}/staff-manage-voucher`} component={ManageVoucher} />
         <Route path={`${match.url}/staff-manage-field-owner`} component={ManageFieldOwner} />
+        <Route path={`${match.url}/admin-manage-account`} component={AdminPage} />
       </Switch>
     </div>
   </div>

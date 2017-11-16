@@ -69,7 +69,7 @@ export class Navigation extends Component {
                 </NavLink>
               </li>
             </ul>
-          ) : (
+          ) : (roleId.roleName === 'staff'?(
             <ul className="nav">
               <li>
                 <NavLink to="/app/staff-manage-user" activeClassName="active">
@@ -109,7 +109,14 @@ export class Navigation extends Component {
                 </NavLink>
               </li>
             </ul>
-          )}
+          ) : <ul className="nav">
+          <li>
+            <NavLink to="/app/admin-manage-account" activeClassName="active">
+              <i className="pe-7s-home" />{' '}
+              <strong>Trang chủ</strong>
+            </NavLink>
+          </li>
+        </ul>)}
         </div>
       </div>
     );
