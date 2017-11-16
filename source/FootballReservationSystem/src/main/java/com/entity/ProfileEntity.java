@@ -41,6 +41,9 @@ public class ProfileEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "balance")
     private float balance;
+    @Basic(optional = false)
+    @Column(name = "account_payable")
+    private float accountPayable;
     @Column(name = "avatar_url")
     private String avatarUrl;
     @Column(name = "rating_score")
@@ -130,6 +133,14 @@ public class ProfileEntity implements Serializable {
 
     public void setBalance(float balance) {
         this.balance = balance;
+    }
+
+    public float getAccountPayable() {
+        return accountPayable;
+    }
+
+    public void setAccountPayable(float accountPayable) {
+        this.accountPayable = accountPayable;
     }
 
     public String getAvatarUrl() {

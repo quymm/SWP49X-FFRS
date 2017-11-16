@@ -95,7 +95,7 @@ public class RatingOpponentServices {
             RatingOpponentEntity ratingUser = findByUserIdAndTourMatchId(opponent.getId(), tourMatchEntity.getId());
             // Kiểm tra người dùng gửi về kết quả có khớp với nhau hay ko?
             boolean ratingRight = false;
-            int bonusRatingScore = 0; // nếu đánh giá về tỉ số đúng thì sẽ được 2đ bonus point
+            int bonusRatingScore = 0; // nếu đánh giá về tỉ số đúng thì sẽ được 3đ bonus point
 
             int goalsDifference = 0; // hiệu số bàn thắng bại
             // nếu đánh giá của 2 đối thủ về hiệu số bàn thắng bại là giống nhau thì sẽ ảnh hưởng điểm ranking

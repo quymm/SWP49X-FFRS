@@ -19,6 +19,8 @@ public class InputMatchingRequestDTO {
 
     private Integer duration;
 
+    private Integer expectedDistance;
+
     public InputMatchingRequestDTO() {
     }
 
@@ -95,5 +97,13 @@ public class InputMatchingRequestDTO {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public Integer getExpectedDistance() {
+        return expectedDistance;
+    }
+
+    public void setExpectedDistance(Integer expectedDistance) {
+        this.expectedDistance = expectedDistance;
     }
 }
