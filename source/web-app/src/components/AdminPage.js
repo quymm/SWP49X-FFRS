@@ -1,14 +1,26 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { doLoginSuccessful, accessDenied, doLogout } from '../redux/guest/guest-action-creators';
+import {
+  doLoginSuccessful,
+  accessDenied,
+  doLogout,
+} from '../redux/guest/guest-action-creators';
 import { Modal, Pagination } from 'react-bootstrap';
-import moment from 'moment';
+import moment, { locale } from 'moment';
+import {
+  fetchAcceptLockAccount,
+  fetchGetAllRequestedLock,
+} from '../apis/admin-api';
+import { toast } from 'react-toastify';
 class AdminPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       handleHideModalAccept: false,
+      listRequestedLockAccount: [],
+      accountNeededLock: undefined,
     };
+    this.handleHideModalAccept = this.handleShowModalAccept.bind(this)
   }
   async componentDidMount() {
     const { id } = this.props.auth.user.data;
@@ -25,23 +37,36 @@ class AdminPage extends Component {
         } else {
           const idLocal = authLocalStorage.id;
           await this.props.doLoginSuccessful(authLocalStorage);
+          const listLock = await fetchGetAllRequestedLock();
+          this.setState({ listRequestedLockAccount: listLock.body });
         }
       }
-    }
-    else {
-
+    } else {
+      const listLock = await fetchGetAllRequestedLock();
+      this.setState({ listRequestedLockAccount: listLock.body });
     }
   }
-  handleShowModalAccept(evt) {
-    evt.preventDefault();
-    this.setState({ isShowModalAccept: true });
+  handleShowModalAccept(lock) {
+    
+    this.setState({ isShowModalAccept: true, accountNeededLock: lock });
   }
   handleHideModalAccept(evt) {
     evt.preventDefault();
     this.setState({ isShowModalAccept: false });
   }
-
+  async handAcceptLock(evt){
+    evt.preventDefault();
+    const lockRes = await fetchAcceptLockAccount(this.state.accountNeededLock.id)
+    if (lockRes.status === 200) {
+      toast.success('Khoá tài khoản thành công');
+    } else {
+      toast.success('Khoá tài khoản thất bại');
+    }
+    const listLock = await fetchGetAllRequestedLock();
+    this.setState({ listRequestedLockAccount: listLock.body , isShowModalAccept: false});
+  }
   render() {
+    console.log(this.state.listRequestedLockAccount);
     return (
       <div className="main-panel">
         <div className="content">
@@ -64,7 +89,17 @@ class AdminPage extends Component {
                         <th />
                       </tr>
                     </thead>
-                    <tbody />
+                    <tbody>
+                      {this.state.listRequestedLockAccount.length > 0 ? (this.state.listRequestedLockAccount.map((lock, index) => 
+                        <tr key={index}>
+                          <td> {index + 1}</td>
+                          <td> {lock.profileId.name}</td>
+                          <td> {lock.profileId.name}</td>
+                          <td> {moment(lock.modificationDate).format('DD [tháng] MM, YYYY')}</td>
+                          <td><button onClick={() => this.handleHideModalAccept(lock)} className="btn btn-primary">Khoá tài khoản</button></td>
+                        </tr>
+                      )) : null}
+                    </tbody>
                   </table>
                 </div>
               </div>
@@ -80,10 +115,9 @@ class AdminPage extends Component {
           <Modal.Header>
             <Modal.Title>Bạn có chắc muốn khoá tài khoản này</Modal.Title>
           </Modal.Header>
-          >
           <Modal.Footer>
             <button
-              onClick={this.handleHideModalAccept.bind(this)}
+              onClick={this.handAcceptLock.bind(this)}
               className="btn btn-primary"
             >
               Xác nhận
@@ -103,4 +137,8 @@ class AdminPage extends Component {
 function mapPropsToState(state) {
   return { auth: state.auth };
 }
-export default connect(mapPropsToState, { doLoginSuccessful, accessDenied, doLogout })(AdminPage);
+export default connect(mapPropsToState, {
+  doLoginSuccessful,
+  accessDenied,
+  doLogout,
+})(AdminPage);

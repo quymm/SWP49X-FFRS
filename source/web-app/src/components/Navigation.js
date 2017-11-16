@@ -77,14 +77,7 @@ export class Navigation extends Component {
                   <strong>Quản lý người dùng</strong>
                 </NavLink>
               </li>
-              <li>
-                <NavLink
-                  to="/app/staff-manage-field-owner"
-                  activeClassName="active"
-                >
-                  <i className="pe-7s-user" /> <strong>Quản lý chủ sân</strong>
-                </NavLink>
-              </li>
+      
               <li>
                 <NavLink
                   to="/app/staff-manage-overcome"

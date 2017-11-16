@@ -110,11 +110,12 @@ class ManageUser extends Component {
   }
   async handelLockAccount(evt){
     evt.preventDefault();
-    const resLock = await fetchRequestLockAccount(this.state.result.id);
+    const { id } = this.props.auth.user.data;
+    const resLock = await fetchRequestLockAccount(this.state.result.id, id);
     if (resLock.status === 200) {
-      toast.success('Khoá tài khoản thành công!');
+      toast.success('Gửi yêu cầu thành công!');
     } else {
-      toast.error('Khoá tài khoản thất bại')
+      toast.error('Gửi yêu cầu thất bại')
     }
     const data = await fetchGetListReport();
     this.setState({ listReported: data.body, showModelUser: false });
@@ -207,7 +208,7 @@ class ManageUser extends Component {
                                   </span>
                                 ) : (
                                   <span className="label label-danger">
-                                    Bị khoá
+                                    Đã khoá
                                   </span>
                                 )}
                               </td>

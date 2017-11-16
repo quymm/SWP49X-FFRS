@@ -45,9 +45,11 @@ export function fetchAddNewVoucher(point, value) {
   }).then(res => res.json());
 }
 
-export function fetchRequestLockAccount(id) {
-  return fetch(BASE_URL + BLOCK_ACCOUNT + '?account-id=' + id, {
+export function fetchRequestLockAccount(id, staffId) {
+  return fetch(BASE_URL + BLOCK_ACCOUNT + '?user-id=' + id + '&staff-id='+ staffId, {
     method: 'PUT',
     headers: { 'content-type': 'application/json' },
   }).then(res => res.json());
 }
+
+
