@@ -97,6 +97,24 @@ public class MatchServices {
         return tourMatchRepository.findByTimeSlotIdAndStatus(timeSlotEntity, true);
     }
 
+//    public float getMaxPriceWithTimeAndDistance(RequestReservateDTO requestReservateDTO){
+//        CordinationPoint cordinationPoint = new CordinationPoint(NumberUtils.parseFromStringToDouble(requestReservateDTO.getLongitude()),
+//                NumberUtils.parseFromStringToDouble(requestReservateDTO.getLatitude()));
+//
+//        List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPoint, requestReservateDTO.getExpectedDistance());
+//        Date rushHour = DateTimeUtils.convertFromStringToTime(constant.getRushHour());
+//        Date beginTime = DateTimeUtils.convertFromStringToTime(requestReservateDTO.getBeginTime());
+//        Date endTime = DateTimeUtils.convertFromStringToTime(requestReservateDTO.getEndTime());
+//
+//        // nếu end time ko nằm trước giờ cao điểm
+//        if(endTime.after(rushHour)){
+//            int fromRushHourToEnd = (int) ((endTime.getTime() - rushHour.getTime())/60000);
+//            int fromBeginToRush = requestReservateDTO.getDuration() - fromRushHourToEnd;
+//        }
+//    }
+
+
+
     public MatchingRequestEntity createNewMatchingRequest(InputMatchingRequestDTO inputMatchingRequestDTO) {
         AccountEntity user = accountServices.findAccountEntityByIdAndRole(inputMatchingRequestDTO.getUserId(), constant.getUserRole());
         float maxPrice = constant.getMaxPrice();
@@ -115,6 +133,7 @@ public class MatchServices {
         matchingRequestEntity.setStartTime(startTime);
         matchingRequestEntity.setEndTime(endTime);
         matchingRequestEntity.setDuration(inputMatchingRequestDTO.getDuration());
+        matchingRequestEntity.setExpectedDistance(inputMatchingRequestDTO.getExpectedDistance());
         matchingRequestEntity.setLongitude(inputMatchingRequestDTO.getLongitude());
         matchingRequestEntity.setLatitude(inputMatchingRequestDTO.getLatitude());
         matchingRequestEntity.setStatus(true);
