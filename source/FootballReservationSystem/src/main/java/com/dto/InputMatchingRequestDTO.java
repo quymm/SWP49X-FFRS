@@ -11,6 +11,8 @@ public class InputMatchingRequestDTO {
 
     private String latitude;
 
+    private String address;
+
     private String date;
 
     private String startTime;
@@ -65,6 +67,14 @@ public class InputMatchingRequestDTO {
 
     public void setLatitude(String latitude) {
         this.latitude = latitude;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public Integer getDuration() {

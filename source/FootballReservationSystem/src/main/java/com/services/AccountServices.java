@@ -136,6 +136,15 @@ public class AccountServices {
         return accountRepository.save(accountEntity);
     }
 
+    public AccountEntity unLockAccountById(int id){
+        AccountEntity accountEntity = findAccountEntityById(id);
+        if(accountEntity.getLockStatus()){
+            accountEntity.setLockStatus(false);
+            accountEntity.setRequestLock(false);
+        }
+        return accountRepository.save(accountEntity);
+    }
+
     public AccountEntity requestLockAccountById(int userId, int staffId){
         AccountEntity staffEntity = findAccountEntityByIdAndRole(staffId, constant.getStaffRole());
         AccountEntity userEntity = findAccountEntityByIdAndRole(userId, constant.getUserRole());
@@ -159,8 +168,8 @@ public class AccountServices {
         return profileEntity;
     }
 
-    public List<AccountEntity> findAllAccountAreRequestedLock(){
-        return accountRepository.findAccountEntitiesByLockStatusAndRequestLockAndStatus(false, true, true);
+    public List<AccountEntity> findAllAccountWithLockStatus(boolean lockStatus, boolean requestLock){
+        return accountRepository.findAccountEntitiesByLockStatusAndRequestLockAndStatus(lockStatus, requestLock, true);
     }
 
     public ProfileEntity createProfileEntityForUser(InputUserDTO inputUserDTO) {

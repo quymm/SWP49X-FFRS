@@ -622,18 +622,26 @@ DROP TABLE IF EXISTS `capstone_project`.`standard_price` ;
 CREATE TABLE IF NOT EXISTS `capstone_project`.`standard_price` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `staff_id` INT NOT NULL,
+  `field_type_id` INT NOT NULL,
   `date_from` DATE NOT NULL,
   `date_to` DATE NOT NULL,
   `rush_hour` TINYINT(1) NOT NULL,
   `max_price` FLOAT NOT NULL,
   `min_price` FLOAT NOT NULL,
+  `status` TINYINT(1) NOT NULL DEFAULT 1,
   `creation_date` DATETIME NOT NULL DEFAULT NOW(),
   `modification_date` DATETIME NOT NULL DEFAULT NOW() ON UPDATE NOW(),
   PRIMARY KEY (`id`),
   INDEX `standard_price_ref_account_idx` (`staff_id` ASC),
+  INDEX `standard_price_ref_field_type_idx` (`field_type_id` ASC),
   CONSTRAINT `standard_price_ref_account`
     FOREIGN KEY (`staff_id`)
     REFERENCES `capstone_project`.`account` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `standard_price_ref_field_type`
+    FOREIGN KEY (`field_type_id`)
+    REFERENCES `capstone_project`.`field_type` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

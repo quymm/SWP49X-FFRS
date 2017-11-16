@@ -40,7 +40,7 @@ INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `balance`) VALU
 INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `balance`) VALUES ('Hieu Manucians', 'Tân Kỳ Tân Quý, Tân Bình, Hồ Chí Minh', '0951151049', '2000', 0);
 INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `balance`) VALUES ('Sai Gon Pro', 'Cây Trâm, Gò Vấp, Hồ Chí Minh', '0932137455', '2000', 0);
 INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `balance`) VALUES ('RMIT FC', 'Nguyễn Văn Linh, Quận 7, Hồ Chí Minh', '0913131215', '2000', 0);
-INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `balance`) VALUES ('Hiep Pig', 'Chu Văn An, Bình Thạnh, Hồ Chí Minh', '0914151049', '2000', 0)
+INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `balance`) VALUES ('Hiep Pig', 'Chu Văn An, Bình Thạnh, Hồ Chí Minh', '0914151049', '2000', 0);
 INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `balance`) VALUES ('Thiện Buffalo', 'Gò Dưa, Tân Phú, Hồ Chí Minh', '0999999999', '2000', 0);
 INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `balance`) VALUES ('Khánh KT', 'Cầu Bình Triệu, Bình Thạnh, Hồ Chí Minh', '012345678', '2000', 0);
 INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `balance`) VALUES ('Tín PT', 'Cây Trâm, Gò Vấp, Hồ Chí Minh', '0913311514', '2000', 0);

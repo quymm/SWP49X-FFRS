@@ -97,7 +97,7 @@ public class MatchServices {
         return tourMatchRepository.findByTimeSlotIdAndStatus(timeSlotEntity, true);
     }
 
-//    public float getMaxPriceWithTimeAndDistance(RequestReservateDTO requestReservateDTO){
+//    public float getMaxPriceWith(RequestReservateDTO requestReservateDTO){
 //        CordinationPoint cordinationPoint = new CordinationPoint(NumberUtils.parseFromStringToDouble(requestReservateDTO.getLongitude()),
 //                NumberUtils.parseFromStringToDouble(requestReservateDTO.getLatitude()));
 //
@@ -136,6 +136,7 @@ public class MatchServices {
         matchingRequestEntity.setExpectedDistance(inputMatchingRequestDTO.getExpectedDistance());
         matchingRequestEntity.setLongitude(inputMatchingRequestDTO.getLongitude());
         matchingRequestEntity.setLatitude(inputMatchingRequestDTO.getLatitude());
+        matchingRequestEntity.setAddress(inputMatchingRequestDTO.getAddress());
         matchingRequestEntity.setStatus(true);
         return matchingRequestRepository.save(matchingRequestEntity);
     }
