@@ -60,6 +60,18 @@ public class MatchingRequestEntity implements Serializable {
     @Column(name = "duration")
     private Integer duration;
     @Basic(optional = false)
+    @Column(name = "address")
+    private String address;
+    @Basic(optional = false)
+    @Column(name = "expected_price")
+    private float expectedPrice;
+    @Basic(optional = false)
+    @Column(name = "expected_distance")
+    private int expectedDistance;
+    @Basic(optional = false)
+    @Column(name = "priority_field")
+    private boolean priorityField;
+    @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
     @Basic(optional = false)
@@ -155,7 +167,39 @@ public class MatchingRequestEntity implements Serializable {
         this.duration = duration;
     }
 
-    public boolean isStatus() {
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public float getExpectedPrice() {
+        return expectedPrice;
+    }
+
+    public void setExpectedPrice(float expectedPrice) {
+        this.expectedPrice = expectedPrice;
+    }
+
+    public int getExpectedDistance() {
+        return expectedDistance;
+    }
+
+    public void setExpectedDistance(int expectedDistance) {
+        this.expectedDistance = expectedDistance;
+    }
+
+    public boolean getPriorityField() {
+        return priorityField;
+    }
+
+    public void setPriorityField(boolean priorityField) {
+        this.priorityField = priorityField;
+    }
+
+    public boolean getStatus() {
         return status;
     }
 

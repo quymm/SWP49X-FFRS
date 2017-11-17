@@ -39,6 +39,9 @@ public class Constant {
     @Value("${percent.profit}")
     private Float percentProfit;
 
+    @Value("${rush.hour}")
+    private String rushHour;
+
     public String getFieldOwnerRole() {
         return fieldOwnerRole;
     }
@@ -77,5 +80,9 @@ public class Constant {
 
     public Float getPercentProfit() {
         return percentProfit;
+    }
+
+    public String getRushHour() {
+        return rushHour;
     }
 }

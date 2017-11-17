@@ -4,7 +4,7 @@ const defaultState = {
   user: {
     data: {   
     },
-    role: 1,
+    role: undefined,
     // isFetched: false,
     status: {
       ok: false,
@@ -33,7 +33,7 @@ export const guestReducer = (state = defaultState, action) => {
     case 'LOGIN_ERROR':
       return {
         user: {
-          data: null,
+          data: {id: undefined},
           role: 1,
           status: {
             ok: false,
@@ -43,17 +43,30 @@ export const guestReducer = (state = defaultState, action) => {
         },
       };
     case 'ACCESS_DENIED':
+    localStorage.removeItem('auth');
       return {user: {
-        data: null,
+        data: {id : undefined},
         role: 0,
         status: {
           ok: false,
-          erro: true,
-          message: 'Access Denied, Please Login',
+          error: true,
+          message: 'Truy cập bị từ chối',
         }
       }};
-      // case REHYDRATE:
-      // return { ...state, ...action.payload.user };
+      case 'LOG_OUT': 
+        localStorage.removeItem('auth');
+        return {
+          user: {
+            data: {id: undefined},
+            role: 0,
+            status: {
+              ok: false,
+              error: true,
+              message: undefined,
+            }
+          }
+          
+        }
     default:
       return state;
   }

@@ -47,6 +47,9 @@ public class AccountEntity implements Serializable {
     @Column(name = "lock_status")
     private boolean lockStatus;
     @Basic(optional = false)
+    @Column(name = "request_lock")
+    private boolean requestLock;
+    @Basic(optional = false)
     @Column(name = "num_of_report")
     private int numOfReport;
     @Basic(optional = false)
@@ -63,6 +66,9 @@ public class AccountEntity implements Serializable {
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ProfileEntity profileId;
+    @JoinColumn(name = "staff_request_id", referencedColumnName = "id")
+    @ManyToOne
+    private AccountEntity staffRequestId;
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private RoleEntity roleId;
@@ -116,6 +122,14 @@ public class AccountEntity implements Serializable {
         this.lockStatus = lockStatus;
     }
 
+    public boolean getRequestLock() {
+        return requestLock;
+    }
+
+    public void setRequestLock(boolean requestLock) {
+        this.requestLock = requestLock;
+    }
+
     public int getNumOfReport() {
         return numOfReport;
     }
@@ -162,6 +176,14 @@ public class AccountEntity implements Serializable {
 
     public void setRoleId(RoleEntity roleId) {
         this.roleId = roleId;
+    }
+
+    public AccountEntity getStaffRequestId() {
+        return staffRequestId;
+    }
+
+    public void setStaffRequestId(AccountEntity staffRequestId) {
+        this.staffRequestId = staffRequestId;
     }
 
     @Override

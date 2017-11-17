@@ -41,6 +41,17 @@ public class FavoritesFieldServices {
         return favoritesFieldRepository.findByUserIdAndStatus(user, true);
     }
 
+    public List<AccountEntity> findFavoritesFieldListByUserId(int userId){
+        List<FavoritesFieldEntity> favoritesFieldEntityList = findFavoritesFieldByUserId(userId);
+        List<AccountEntity> favoritesFieldList = new ArrayList<>();
+        if(!favoritesFieldEntityList.isEmpty()){
+            for (FavoritesFieldEntity favoritesFieldEntity : favoritesFieldEntityList) {
+                favoritesFieldList.add(favoritesFieldEntity.getFieldOwnerId());
+            }
+        }
+        return favoritesFieldList;
+    }
+
     public FavoritesFieldEntity findFavoritesFieldByUserIdAndFieldOwnerId(int userId, int fieldOwnerId) {
         AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
         AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());

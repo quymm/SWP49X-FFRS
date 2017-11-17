@@ -5,27 +5,21 @@ import fieldOwnerStore from '../redux/field-owner/field-owner-store';
 import Login from '../components/Login';
 import Register from '../components/Register';
 import Roster from './Roster';
-// import { persistStore } from 'redux-persist';
-
+import PageNotFound from '../components/PageNotFound';
 //import Store from '../redux/store';
 // import { BASE_URL, LOGIN } from '../apis/base-URL'
-
 class App extends Component {
   render() {
-    // persistStore(fieldOwnerStore);
-    // persistStore(fieldOwnerStore, {blacklist: ['someTransientReducer']}, () => {
-    //   console.log('rehydration complete')
-    // })
     return (
       <Provider store={fieldOwnerStore}>
         <div>
           <Router>
             <Switch>
               <Route path="/login" component={Login} />
+              <Route exact path="/" component={Login} />
               <Route path="/register" component={Register} />
-              <Route path="/update" component={Register} />
-              {/* <Route path="/register" component={} />> */}
               <Route path="/app" component={Roster} />
+              <Route component={PageNotFound} />
             </Switch>
           </Router>
         </div>

@@ -49,6 +49,34 @@ public class AccountController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/account/unlock", method = RequestMethod.PUT)
+    public ResponseEntity unLockAccount(@RequestParam("account-id") int accountId){
+        Wrapper wrapper = new Wrapper(accountServices.unLockAccountById(accountId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/account/request-lock", method = RequestMethod.PUT)
+    public ResponseEntity requestLock(@RequestParam("user-id") int accountId, @RequestParam("staff-id") int staffId){
+        Wrapper wrapper = new Wrapper(accountServices.requestLockAccountById(accountId, staffId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/account/lock", method = RequestMethod.GET)
+    public ResponseEntity getAccountAreRequestedLock(){
+        Wrapper wrapper = new Wrapper(accountServices.findAllAccountWithLockStatus(false, true), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/account/unlock", method = RequestMethod.GET)
+    public ResponseEntity getAccountLocked(){
+        Wrapper wrapper = new Wrapper(accountServices.findAllAccountWithLockStatus(true, true), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/account/managed-field-owner", method = RequestMethod.GET)
     public ResponseEntity getFieldOwnerById(@RequestParam("field-owner-id") int fieldOwnerId) {
         Wrapper wrapper = new Wrapper(accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole()), HttpStatus.OK.value(), HttpStatus.OK.name());
