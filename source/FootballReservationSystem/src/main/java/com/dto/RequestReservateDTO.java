@@ -1,10 +1,6 @@
 package com.dto;
 
-public class InputReserveTimeSlotDTO {
-    private Integer userId;
-
-    private Integer fieldOwnerId;
-
+public class RequestReservateDTO {
     private Integer fieldTypeId;
 
     private String date;
@@ -13,31 +9,17 @@ public class InputReserveTimeSlotDTO {
 
     private String endTime;
 
-    public InputReserveTimeSlotDTO(Integer fieldOwnerId, Integer fieldTypeId, String date, String startTime, String endTime) {
-        this.fieldOwnerId = fieldOwnerId;
+    private int duration;
+
+    public RequestReservateDTO(Integer fieldTypeId, String date, String startTime, String endTime, int duration) {
         this.fieldTypeId = fieldTypeId;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.duration = duration;
     }
 
-    public InputReserveTimeSlotDTO() {
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Integer getFieldOwnerId() {
-        return fieldOwnerId;
-    }
-
-    public void setFieldOwnerId(Integer fieldOwnerId) {
-        this.fieldOwnerId = fieldOwnerId;
+    public RequestReservateDTO() {
     }
 
     public Integer getFieldTypeId() {
@@ -72,4 +54,11 @@ public class InputReserveTimeSlotDTO {
         this.endTime = endTime;
     }
 
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
 }

@@ -11,6 +11,8 @@ public class InputMatchingRequestDTO {
 
     private String latitude;
 
+    private String address;
+
     private String date;
 
     private String startTime;
@@ -20,6 +22,8 @@ public class InputMatchingRequestDTO {
     private Integer duration;
 
     private Integer expectedDistance;
+
+    private boolean priorityField;
 
     public InputMatchingRequestDTO() {
     }
@@ -67,6 +71,14 @@ public class InputMatchingRequestDTO {
         this.latitude = latitude;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public Integer getDuration() {
         return duration;
     }
@@ -105,5 +117,13 @@ public class InputMatchingRequestDTO {
 
     public void setExpectedDistance(Integer expectedDistance) {
         this.expectedDistance = expectedDistance;
+    }
+
+    public boolean getPriorityField() {
+        return priorityField;
+    }
+
+    public void setPriorityField(boolean priorityField) {
+        this.priorityField = priorityField;
     }
 }

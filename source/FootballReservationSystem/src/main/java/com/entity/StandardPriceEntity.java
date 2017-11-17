@@ -34,6 +34,9 @@ public class StandardPriceEntity {
     @Column(name = "min_price")
     private Float minPrice;
     @Basic(optional = false)
+    @Column(name = "status")
+    private boolean status;
+    @Basic(optional = false)
     @Column(name = "creation_date")
     @CreationTimestamp
     private Date creationDate;
@@ -44,6 +47,9 @@ public class StandardPriceEntity {
     @JoinColumn(name = "staff_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private AccountEntity staffId;
+    @JoinColumn(name = "field_type_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private FieldTypeEntity fieldTypeId;
 
     public StandardPriceEntity(Date dateFrom, Date dateTo, boolean rushHour, Float maxPrice, Float minPrice, Date creationDate, Date modificationDate, AccountEntity staffId) {
         this.dateFrom = dateFrom;
@@ -107,6 +113,14 @@ public class StandardPriceEntity {
         this.minPrice = minPrice;
     }
 
+    public boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
     public Date getCreationDate() {
         return creationDate;
     }
@@ -129,6 +143,14 @@ public class StandardPriceEntity {
 
     public void setStaffId(AccountEntity staffId) {
         this.staffId = staffId;
+    }
+
+    public FieldTypeEntity getFieldTypeId() {
+        return fieldTypeId;
+    }
+
+    public void setFieldTypeId(FieldTypeEntity fieldTypeId) {
+        this.fieldTypeId = fieldTypeId;
     }
 
     @Override
