@@ -266,6 +266,7 @@ CREATE TABLE IF NOT EXISTS `capstone_project`.`matching_request` (
   `address` VARCHAR(500) NOT NULL,
   `expected_price` FLOAT NOT NULL,
   `expected_distance` INT NOT NULL,
+  `priority_field` TINYINT(1) NOT NULL,
   `status` TINYINT(1) NOT NULL DEFAULT 1,
   `creation_date` DATETIME NOT NULL DEFAULT NOW(),
   `modification_date` DATETIME NOT NULL DEFAULT NOW() ON UPDATE NOW(),

@@ -1,6 +1,8 @@
 package com.dto;
 
 public class InputReserveTimeSlotDTO {
+    private Integer userId;
+
     private Integer fieldOwnerId;
 
     private Integer fieldTypeId;
@@ -20,6 +22,14 @@ public class InputReserveTimeSlotDTO {
     }
 
     public InputReserveTimeSlotDTO() {
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Integer getFieldOwnerId() {

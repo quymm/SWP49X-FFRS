@@ -69,6 +69,9 @@ public class MatchingRequestEntity implements Serializable {
     @Column(name = "expected_distance")
     private int expectedDistance;
     @Basic(optional = false)
+    @Column(name = "priority_field")
+    private boolean priorityField;
+    @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
     @Basic(optional = false)
@@ -186,6 +189,14 @@ public class MatchingRequestEntity implements Serializable {
 
     public void setExpectedDistance(int expectedDistance) {
         this.expectedDistance = expectedDistance;
+    }
+
+    public boolean getPriorityField() {
+        return priorityField;
+    }
+
+    public void setPriorityField(boolean priorityField) {
+        this.priorityField = priorityField;
     }
 
     public boolean getStatus() {

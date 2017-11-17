@@ -5,6 +5,7 @@ import com.dto.*;
 import com.entity.*;
 import com.repository.FriendlyMatchRepository;
 import com.repository.MatchingRequestRepository;
+import com.repository.ProfileRepository;
 import com.repository.TourMatchRepository;
 import com.utils.DateTimeUtils;
 import com.utils.MapUtils;
@@ -31,6 +32,9 @@ public class MatchServices {
     MatchingRequestRepository matchingRequestRepository;
 
     @Autowired
+    ProfileRepository profileRepository;
+
+    @Autowired
     TimeSlotServices timeSlotServices;
 
     @Autowired
@@ -52,6 +56,9 @@ public class MatchServices {
     BillServices billServices;
 
     @Autowired
+    StandardPriceServices standardPriceServices;
+
+    @Autowired
     Constant constant;
 
     public MatchingRequestEntity findMatchingRequestEntityById(int id) {
@@ -71,7 +78,7 @@ public class MatchServices {
         if (!timeSlotEntity.getReserveStatus()) {
             throw new IllegalArgumentException("Time slot not yet reserve!");
         }
-        if (userEntity.getProfileId().getBalance() < timeSlotEntity.getPrice()) {
+        if ((userEntity.getProfileId().getBalance() - userEntity.getProfileId().getAccountPayable()) < timeSlotEntity.getPrice()) {
             timeSlotServices.cancelReservationTimeSlot(timeSlotEntity.getId());
             throw new IllegalArgumentException("Not enough money to reserve field");
         }
@@ -79,7 +86,6 @@ public class MatchServices {
         friendlyMatchEntity.setTimeSlotId(timeSlotEntity);
         friendlyMatchEntity.setUserId(userEntity);
         friendlyMatchEntity.setStatus(true);
-
         FriendlyMatchEntity savedFriendlyMatchEntity = friendlyMatchRepository.save(friendlyMatchEntity);
 
         InputBillDTO inputBillDTO = new InputBillDTO();
@@ -97,28 +103,38 @@ public class MatchServices {
         return tourMatchRepository.findByTimeSlotIdAndStatus(timeSlotEntity, true);
     }
 
-//    public float getMaxPriceWith(RequestReservateDTO requestReservateDTO){
-//        CordinationPoint cordinationPoint = new CordinationPoint(NumberUtils.parseFromStringToDouble(requestReservateDTO.getLongitude()),
-//                NumberUtils.parseFromStringToDouble(requestReservateDTO.getLatitude()));
-//
-//        List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPoint, requestReservateDTO.getExpectedDistance());
-//        Date rushHour = DateTimeUtils.convertFromStringToTime(constant.getRushHour());
-//        Date beginTime = DateTimeUtils.convertFromStringToTime(requestReservateDTO.getBeginTime());
-//        Date endTime = DateTimeUtils.convertFromStringToTime(requestReservateDTO.getEndTime());
-//
-//        // nếu end time ko nằm trước giờ cao điểm
-//        if(endTime.after(rushHour)){
-//            int fromRushHourToEnd = (int) ((endTime.getTime() - rushHour.getTime())/60000);
-//            int fromBeginToRush = requestReservateDTO.getDuration() - fromRushHourToEnd;
-//        }
-//    }
-
-
+    public String warningAboutDistanceOfFavoritesField(int userId, String longitude, String latitude, int expectedDistance) {
+        CordinationPoint cordinationPoint = new CordinationPoint();
+        cordinationPoint.setLongitude(NumberUtils.parseFromStringToDouble(longitude));
+        cordinationPoint.setLatitude(NumberUtils.parseFromStringToDouble(latitude));
+        List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPoint, userId, true);
+        if (!fieldOwnerAndDistanceList.isEmpty()) {
+            if (fieldOwnerAndDistanceList.get(fieldOwnerAndDistanceList.size()).getDistance() > expectedDistance) {
+                return String.format("Sân ưa thích: %s có khoảng cách với bạn là: %s. Bạn có muốn tiếp tục ưu tiên không?",
+                        fieldOwnerAndDistanceList.get(fieldOwnerAndDistanceList.size()).getFieldOwner().getProfileId().getName(),
+                        fieldOwnerAndDistanceList.get(fieldOwnerAndDistanceList.size()).getDistance());
+            } else {
+                return null;
+            }
+        } else {
+            return "Bạn không có sân ưa thích nào!";
+        }
+    }
 
     public MatchingRequestEntity createNewMatchingRequest(InputMatchingRequestDTO inputMatchingRequestDTO) {
         AccountEntity user = accountServices.findAccountEntityByIdAndRole(inputMatchingRequestDTO.getUserId(), constant.getUserRole());
-        float maxPrice = constant.getMaxPrice();
-        if (user.getProfileId().getBalance() < maxPrice * inputMatchingRequestDTO.getDuration() / 60) {
+
+        RequestReservateDTO requestReservateDTO = new RequestReservateDTO();
+        requestReservateDTO.setDate(inputMatchingRequestDTO.getDate());
+        requestReservateDTO.setStartTime(inputMatchingRequestDTO.getStartTime());
+        requestReservateDTO.setEndTime(inputMatchingRequestDTO.getEndTime());
+        requestReservateDTO.setDuration(inputMatchingRequestDTO.getDuration());
+        requestReservateDTO.setFieldTypeId(inputMatchingRequestDTO.getFieldTypeId());
+
+        // lấy giá cao nhất của khung giờ yêu cầu
+        float maxPrice = standardPriceServices.getMaxPriceWithRequestReservationDTO(requestReservateDTO);
+
+        if ((user.getProfileId().getBalance() - user.getProfileId().getAccountPayable()) < maxPrice) {
             throw new IllegalArgumentException(String.format("User not have enough money to create request!"));
         }
         FieldTypeEntity fieldType = fieldTypeServices.findById(inputMatchingRequestDTO.getFieldTypeId());
@@ -137,11 +153,18 @@ public class MatchServices {
         matchingRequestEntity.setLongitude(inputMatchingRequestDTO.getLongitude());
         matchingRequestEntity.setLatitude(inputMatchingRequestDTO.getLatitude());
         matchingRequestEntity.setAddress(inputMatchingRequestDTO.getAddress());
+        matchingRequestEntity.setPriorityField(inputMatchingRequestDTO.getPriorityField());
+        matchingRequestEntity.setExpectedPrice(maxPrice/2);
         matchingRequestEntity.setStatus(true);
+
+        // ghi nợ cho người chơi
+        user.getProfileId().setAccountPayable(user.getProfileId().getAccountPayable() + maxPrice/2);
+        profileRepository.save(user.getProfileId());
+
         return matchingRequestRepository.save(matchingRequestEntity);
     }
 
-    public List<MatchingRequestEntity> suggestOpponent(InputMatchingRequestDTO inputMatchingRequestDTO, int deviationDistance) {
+    public List<MatchingRequestEntity> suggestOpponent(InputMatchingRequestDTO inputMatchingRequestDTO) {
         AccountEntity user = accountServices.findAccountEntityByIdAndRole(inputMatchingRequestDTO.getUserId(), constant.getUserRole());
         FieldTypeEntity fieldType = fieldTypeServices.findById(inputMatchingRequestDTO.getFieldTypeId());
 
@@ -174,8 +197,8 @@ public class MatchServices {
                         checkTime = true;
                     }
                 } else if (startTime.before(endTimeOfReq) && endTime.after(endTimeOfReq)) {
-                    int startBefore = (int) (startTime.getTime() - endTimeOfReq.getTime()) / 60000;
-                    if(startBefore >= matchingRequest.getDuration()){
+                    int startBefore = (int) (endTimeOfReq.getTime() - startTime.getTime()) / 60000;
+                    if (startBefore >= matchingRequest.getDuration()) {
                         checkTime = true;
                     }
                 } else {
@@ -185,13 +208,15 @@ public class MatchServices {
 
                 double distance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
 
-                boolean checkRatingScore = matchingRequest.getUserId().getProfileId().getRatingScore() > (ratingScore - 100)
-                        && matchingRequest.getUserId().getProfileId().getRatingScore() < (ratingScore + 100);
+                boolean checkRatingScore = matchingRequest.getUserId().getProfileId().getRatingScore() > (ratingScore - 50)
+                        && matchingRequest.getUserId().getProfileId().getRatingScore() < (ratingScore + 50);
 
                 boolean checkBlackList = blacklistOpponentServices.findBlacklistByUserIdAndOpponentId(user.getId(), matchingRequest.getUserId().getId()) == null
                         && blacklistOpponentServices.findBlacklistByUserIdAndOpponentId(matchingRequest.getUserId().getId(), user.getId()) == null ? true : false;
-                // khoảng cách là nhỏ hơn deviation
-                if (matchingRequest.getUserId().getId() != inputMatchingRequestDTO.getUserId() && distance < deviationDistance && checkBlackList && checkRatingScore && checkTime) {
+
+                // khoảng cách là dựa vào người có yêu cầu khoảng cách ngắn hơn
+                int expectedDistance = matchingRequest.getExpectedDistance() < inputMatchingRequestDTO.getExpectedDistance() ? matchingRequest.getExpectedDistance() : inputMatchingRequestDTO.getExpectedDistance();
+                if (matchingRequest.getUserId().getId() != inputMatchingRequestDTO.getUserId() && distance <= expectedDistance && checkBlackList && checkRatingScore && checkTime) {
                     returnMatchingRequest.add(matchingRequest);
                 }
             }
@@ -199,7 +224,7 @@ public class MatchServices {
         return returnMatchingRequest;
     }
 
-    public OutputReserveTimeSlotDTO chooseSuitableField(InputMatchingRequestDTO inputMatchingRequestDTO, int matchingRequestId, int deviationDistance) {
+    public OutputReserveTimeSlotDTO chooseSuitableField(InputMatchingRequestDTO inputMatchingRequestDTO, int matchingRequestId) {
         MatchingRequestEntity opponentMatching = matchingRequestRepository.findByIdAndStatus(matchingRequestId, true);
         // tìm những sân chung trong sở thích của 2 người chơi
         List<AccountEntity> favoritesFieldList = favoritesFieldServices.findFavoritesFieldOf2User(inputMatchingRequestDTO.getUserId(), opponentMatching.getUserId().getId());
@@ -229,8 +254,8 @@ public class MatchServices {
                 NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()));
         CordinationPoint cordinationPointOpponent = new CordinationPoint(NumberUtils.parseFromStringToDouble(opponentMatching.getLongitude()),
                 NumberUtils.parseFromStringToDouble(opponentMatching.getLatitude()));
-        List<FieldOwnerAndDistance> fieldOwnerAndDistanceListFromUser = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPointUser, deviationDistance);
-        List<FieldOwnerAndDistance> fieldOwnerAndDistanceListFromOpponent = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPointOpponent, deviationDistance);
+        List<FieldOwnerAndDistance> fieldOwnerAndDistanceListFromUser = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPointUser, inputMatchingRequestDTO.getExpectedDistance(), false);
+        List<FieldOwnerAndDistance> fieldOwnerAndDistanceListFromOpponent = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPointOpponent, opponentMatching.getExpectedDistance(), false);
         List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
 
         // tìm những sân chung trong danh sách
@@ -256,15 +281,25 @@ public class MatchServices {
         return null;
     }
 
-    private List<FieldOwnerAndDistance> getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(CordinationPoint cordinationPointA, int deviationDistance) {
+    private List<FieldOwnerAndDistance> getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(CordinationPoint cordinationPointA, int deviationOrUserId, boolean favoritesField) {
         List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
-        List<AccountEntity> allfieldOwnerList = accountServices.findAccountByRole(constant.getFieldOwnerRole());
+        List<AccountEntity> allfieldOwnerList = new ArrayList<>();
+        if (favoritesField) {
+            allfieldOwnerList = favoritesFieldServices.findFavoritesFieldListByUserId(deviationOrUserId);
+        } else {
+            allfieldOwnerList = accountServices.findAccountByRole(constant.getFieldOwnerRole());
+        }
 
         for (AccountEntity accountEntity : allfieldOwnerList) {
             CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(accountEntity.getProfileId().getLongitude()),
                     NumberUtils.parseFromStringToDouble(accountEntity.getProfileId().getLatitude()));
             double distance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
-            if (distance <= deviationDistance) {
+            if (deviationOrUserId > 0) {
+                if (distance <= deviationOrUserId) {
+                    FieldOwnerAndDistance fieldOwnerAndDistance = new FieldOwnerAndDistance(accountEntity, distance);
+                    fieldOwnerAndDistanceList.add(fieldOwnerAndDistance);
+                }
+            } else {
                 FieldOwnerAndDistance fieldOwnerAndDistance = new FieldOwnerAndDistance(accountEntity, distance);
                 fieldOwnerAndDistanceList.add(fieldOwnerAndDistance);
             }
@@ -272,13 +307,16 @@ public class MatchServices {
         return arrangeFieldOwnerByDistance(fieldOwnerAndDistanceList);
     }
 
-    public BillEntity reserveTourMatch(InputReserveTimeSlotDTO inputReserveTimeSlotDTO, int matchingRequestId, int userId) {
+    public BillEntity reserveTourMatch(InputReserveTimeSlotDTO inputReserveTimeSlotDTO, int matchingRequestId) {
         TimeSlotEntity savedTimeSlotEntity = timeSlotServices.reserveTimeSlot(inputReserveTimeSlotDTO);
         if (savedTimeSlotEntity == null) {
             return null;
         }
         MatchingRequestEntity matchingRequestEntity = findMatchingRequestEntityById(matchingRequestId);
-        AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
+        AccountEntity user = accountServices.findAccountEntityByIdAndRole(inputReserveTimeSlotDTO.getUserId(), constant.getUserRole());
+        if((user.getProfileId().getBalance() - user.getProfileId().getAccountPayable()) < (savedTimeSlotEntity.getPrice()/2)) {
+            throw new IllegalArgumentException("Not enough available balances to reserve field!");
+        }
         AccountEntity opponent = matchingRequestEntity.getUserId();
 
         TourMatchEntity tourMatchEntity = new TourMatchEntity();
@@ -290,7 +328,9 @@ public class MatchServices {
 
         TourMatchEntity savedTourMatchEntity = tourMatchRepository.save(tourMatchEntity);
 
-        // xóa matching request
+        // xóa matching request và hoàn tiền đã chiếm của matching request cho người dùng
+        opponent.getProfileId().setAccountPayable(opponent.getProfileId().getAccountPayable() - matchingRequestEntity.getExpectedPrice());
+        profileRepository.save(opponent.getProfileId());
         matchingRequestEntity.setStatus(false);
         matchingRequestRepository.save(matchingRequestEntity);
 
@@ -350,6 +390,16 @@ public class MatchServices {
         AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
         List<MatchingRequestEntity> matchingRequestEntityList = matchingRequestRepository.findByUserIdAndStatus(user, true);
         return matchingRequestEntityList;
+    }
+
+    public boolean cancelMatchingRequest(int matchingRequestId){
+        MatchingRequestEntity matchingRequestEntity = matchingRequestRepository.findByIdAndStatus(matchingRequestId, true);
+        // hoàn tiền đã chiếm trong matching request cho người dùng
+        ProfileEntity profileOfUser = matchingRequestEntity.getUserId().getProfileId();
+        profileOfUser.setAccountPayable(profileOfUser.getAccountPayable() - matchingRequestEntity.getExpectedPrice());
+        profileRepository.save(profileOfUser);
+        matchingRequestRepository.save(matchingRequestEntity);
+        return true;
     }
 
 
