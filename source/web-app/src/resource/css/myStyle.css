@@ -267,7 +267,7 @@ button.next-left:hover {
 }
 
 .react-autosuggest__input {
-  width: 400px;
+  width: 286px;
   height: 41px;
   padding: 10px 20px;
   font-family: Helvetica, sans-serif;
@@ -362,4 +362,8 @@ button.next-left:hover {
 .question-mark-style-div {
   padding-left: 0;
   padding-top: 2px;
+}
+.search-user {
+  padding-left: 49px;
+  padding-top: 8px;
 }

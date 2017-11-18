@@ -16,11 +16,11 @@ class AdminPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      handleHideModalAccept: false,
+      isShowModalAccept: false,
       listRequestedLockAccount: [],
       accountNeededLock: undefined,
     };
-    this.handleHideModalAccept = this.handleShowModalAccept.bind(this)
+    this.handleShowModalAccept = this.handleShowModalAccept.bind(this)
   }
   async componentDidMount() {
     const { id } = this.props.auth.user.data;
@@ -95,8 +95,8 @@ class AdminPage extends Component {
                           <td> {index + 1}</td>
                           <td> {lock.profileId.name}</td>
                           <td> {lock.profileId.name}</td>
-                          <td> {moment(lock.modificationDate).format('DD [tháng] MM, YYYY')}</td>
-                          <td><button onClick={() => this.handleHideModalAccept(lock)} className="btn btn-primary">Khoá tài khoản</button></td>
+                          <td> {moment(lock.modificationDate).format('DD [tháng] MM, YYYY | HH:mm')}</td>
+                          <td><button onClick={() => this.handleShowModalAccept(lock)} className="btn btn-primary">Khoá tài khoản</button></td>
                         </tr>
                       )) : null}
                     </tbody>

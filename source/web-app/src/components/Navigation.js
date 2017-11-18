@@ -22,7 +22,7 @@ export class Navigation extends Component {
     return (
       <div
         className="sidebar"
-        data-color="green"
+        data-color={roleId.roleName === 'owner'? 'green' : 'yellow'}
         data-image={require('../resource/images/sidebar-5.jpg')}
         style={backGround}
       >
@@ -32,7 +32,7 @@ export class Navigation extends Component {
               <i className="glyphicon glyphicon-user" /> {username}
             </a>
           </div>
-          {roleId.roleName === 'owner'? (
+          {roleId.roleName === 'owner' ? (
             <ul className="nav">
               <li>
                 <NavLink to="/app/index" activeClassName="activeLink">
@@ -69,7 +69,7 @@ export class Navigation extends Component {
                 </NavLink>
               </li>
             </ul>
-          ) : (roleId.roleName === 'staff'?(
+          ) : roleId.roleName === 'staff' ? (
             <ul className="nav">
               <li>
                 <NavLink to="/app/staff-manage-user" activeClassName="active">
@@ -77,7 +77,6 @@ export class Navigation extends Component {
                   <strong>Quản lý người dùng</strong>
                 </NavLink>
               </li>
-      
               <li>
                 <NavLink
                   to="/app/staff-manage-overcome"
@@ -102,14 +101,18 @@ export class Navigation extends Component {
                 </NavLink>
               </li>
             </ul>
-          ) : <ul className="nav">
-          <li>
-            <NavLink to="/app/admin-manage-account" activeClassName="active">
-              <i className="pe-7s-home" />{' '}
-              <strong>Trang chủ</strong>
-            </NavLink>
-          </li>
-        </ul>)}
+          ) : (
+            <ul className="nav">
+              <li>
+                <NavLink
+                  to="/app/admin-manage-account"
+                  activeClassName="active"
+                >
+                  <i className="pe-7s-home" /> <strong>Trang chủ</strong>
+                </NavLink>
+              </li>
+            </ul>
+          )}
         </div>
       </div>
     );

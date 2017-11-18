@@ -289,10 +289,7 @@ class SettingTime extends Component {
 
   render() {
     const { timeEnable } = this.props.timeEnable;
-    const {
-      daySelected,
-      fieldType,
-    } = this.state;
+    const { daySelected, fieldType } = this.state;
     const dayAfterFilter =
       timeEnable &&
       timeEnable.filter(
@@ -304,13 +301,13 @@ class SettingTime extends Component {
     if (!dayAfterFilter) {
       return <div className="loader" />;
     }
-    const popoverRightIdle = (
+    const popoverRightPeak = (
       <Popover id="popover-positioned-right" title="Giờ thấp điểm">
-      Giờ cao điểm sẽ sau
+        Giờ cao điểm sẽ sau
         <strong> 17:00</strong> đến giờ đóng cửa
       </Popover>
     );
-    const popoverRightPeak = (
+    const popoverRightIdle = (
       <Popover id="popover-positioned-right" title="Giờ cao điểm">
         Giờ thấp điểm sẽ từ lúc mở cửa tới
         <strong> 17:00</strong>
@@ -497,9 +494,9 @@ class SettingTime extends Component {
                         placement="right"
                         overlay={popoverRightPeak}
                       >
-                        <button className="btn btn-sm btn-default">
+                        <label className="btn btn-sm btn-default">
                           <i className="glyphicon glyphicon-question-sign question-mark-style-i " />
-                        </button>
+                        </label>
                       </OverlayTrigger>
                     </div>
                   </div>
@@ -530,9 +527,9 @@ class SettingTime extends Component {
                         placement="right"
                         overlay={popoverRightIdle}
                       >
-                        <button className="btn btn-sm btn-default">
+                        <label className="btn btn-sm btn-default">
                           <i className="glyphicon glyphicon-question-sign question-mark-style-i " />
-                        </button>
+                        </label>
                       </OverlayTrigger>
                     </div>
                   </div>
