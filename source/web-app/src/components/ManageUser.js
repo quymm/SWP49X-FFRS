@@ -302,7 +302,7 @@ class ManageUser extends Component {
                     <div className="col-sm-12 text-center">
                       <Pagination
                         bsSize="medium"
-                        items={pageSize <= 1 ? 0 : pageSize}
+                        items={result? 0 : pageSize <= 1 ? 0 : pageSize}
                         activePage={this.state.pageActive}
                         onSelect={this.handleSelectPage.bind(this)}
                       />
@@ -417,7 +417,11 @@ class ManageUser extends Component {
                             <td>
                               <strong>Điểm thưởng </strong>
                             </td>
-                            <td>{result? result.profileId.bonusPoint : this.state.isSearch.profileId.bonusPoint}</td>
+                            <td>
+                              {result
+                                ? result.profileId.bonusPoint
+                                : this.state.isSearch.profileId.bonusPoint}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -425,12 +429,23 @@ class ManageUser extends Component {
                   </div>
                   <div className="col-sm-4">
                     <p>
-                      <button
-                        onClick={this.handelLockAccount.bind(this)}
-                        className="btn btn-warning"
-                      >
-                        <i className="pe-7s-lock" /> Yêu cầu khoá tài khoản
-                      </button>
+                      {result ? (
+                        !result.requestLock ? (
+                          <button
+                            onClick={this.handelLockAccount.bind(this)}
+                            className="btn btn-warning"
+                          >
+                            <i className="pe-7s-lock" /> Yêu cầu khoá tài khoản
+                          </button>
+                        ) : null
+                      ) : !this.state.isSearch.requestLock ? (
+                        <button
+                          onClick={this.handelLockAccount.bind(this)}
+                          className="btn btn-warning"
+                        >
+                          <i className="pe-7s-lock" /> Yêu cầu khoá tài khoản
+                        </button>
+                      ) : null}
                     </p>
                   </div>
                 </div>

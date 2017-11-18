@@ -656,7 +656,7 @@ body > .navbar-collapse {
   font-size: 12px;
   text-transform: uppercase;
   color: #000000;
-  font-weight: 400;
+  font-weight: bold;
   padding-bottom: 5px; }
 .table .td-actions .btn {
   opacity: 0.36;

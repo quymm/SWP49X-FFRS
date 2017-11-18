@@ -33,7 +33,7 @@ class SettingTime extends Component {
       minimumPriceIdel: 100,
       isOptimze: true,
       optimizeTime: 1.5,
-      optimizeNumOfMatch: 2,
+      optimizeNumOfMatch: 3,
       endTimeWithOptize: moment('10-10-2017 21:30', 'DD-MM-YYYY HH:mm'),
       buttonGroupDayInWeek: [
         {
@@ -211,7 +211,6 @@ class SettingTime extends Component {
     const { buttonGroupDayInWeek } = this.state;
     const tmpButtonGroupDayInWeek = buttonGroupDayInWeek;
     for (let i = 0; i < tmpButtonGroupDayInWeek.length; i++) {
-      debugger;
       const filterDay = timeEnable.filter(
         day => day.dateInWeek === tmpButtonGroupDayInWeek[i].value,
       );
@@ -265,14 +264,57 @@ class SettingTime extends Component {
                 idelPrice,
                 fieldTypeId,
               );
-              await fetchUpdateTimeEnableInWeek(
-                id,
-                dayAdd[i].value,
-                '17:00',
-                endDay.format('HH:mm'),
-                peakPrice,
-                fieldTypeId,
-              );
+              if (this.state.isOptimze) {
+                await fetchUpdateTimeEnableInWeek(
+                  id,
+                  dayAdd[i].value,
+                  '17:00',
+                  `${Math.floor(17 + this.state.optimizeTime)}:${this.state
+                    .optimizeTime %
+                    2 ===
+                  0
+                    ? '00'
+                    : '30'}`,
+                  peakPrice,
+                  fieldTypeId,
+                );
+                for (
+                  let j = 0;
+                  j < this.state.optimizeNumOfMatch * 2;
+                  j += this.state.optimizeTime
+                ) {
+                  debugger;
+                  await fetchUpdateTimeEnableInWeek(
+                    id,
+                    dayAdd[i].value,
+                    `${Math.floor(17 + this.state.optimizeTime + j)}:${(this
+                      .state.optimizeTime *
+                      (j + 1)) %
+                      2 ===
+                    0
+                      ? '0'
+                      : '30'}`,
+                    `${Math.floor(17 + (this.state.optimizeTime + j) * 2)}:${(
+                      
+                      this.state.optimizeTime * (j + 2)) %
+                      2 ===
+                    0
+                      ? '0'
+                      : '30'}`,
+                    peakPrice,
+                    fieldTypeId,
+                  );
+                }
+              } else {
+                await fetchUpdateTimeEnableInWeek(
+                  id,
+                  dayAdd[i].value,
+                  '17:00',
+                  endDay.format('HH:mm'),
+                  peakPrice,
+                  fieldTypeId,
+                );
+              }
             }
             await this.setState({ isShowAddTime: !isShowAddTime });
             const data = await fetchGetTimeEnableInWeek(id);
@@ -296,10 +338,17 @@ class SettingTime extends Component {
     this.setState({ isOptimze: !isOptimze });
   }
 
-  handleSelectChange(evt) {
+  async handleSelectChange(evt) {
     const value = evt.target.value;
     const name = evt.target.name;
-    this.setState({ [name]: parseInt(value) });
+    await this.setState({ [name]: parseInt(value) });
+    const { optimizeNumOfMatch, optimizeTime, endTimeWithOptize } = this.state;
+
+    this.setState({
+      endTimeWithOptize: moment()
+        .hours(17 + optimizeNumOfMatch * optimizeTime)
+        .minutes((optimizeNumOfMatch * optimizeTime) % 2 === 0 ? 0 : 30),
+    });
   }
 
   render() {
@@ -328,6 +377,7 @@ class SettingTime extends Component {
         <strong> 17:00</strong>
       </Popover>
     );
+    console.log(this.state);
     return (
       <div className="main-panel">
         <div className="content">
@@ -580,6 +630,7 @@ class SettingTime extends Component {
                             onChange={this.handleSelectChange.bind(this)}
                             className="form-control"
                             id="sel1"
+                            name="optimizeTime"
                           >
                             <option value="1">1 tiếng</option>
                             <option value="1.5">1.5 tiếng</option>
@@ -604,6 +655,7 @@ class SettingTime extends Component {
                             onChange={this.handleSelectChange.bind(this)}
                             className="form-control"
                             id="sel1"
+                            name="optimizeNumOfMatch"
                           >
                             <option value="1">1 trận</option>
                             <option value="2">2 trận</option>
@@ -618,7 +670,9 @@ class SettingTime extends Component {
                   <div className="col-sm-12 text-center">
                     <h4>
                       Thời gian đóng cửa lúc{' '}
-                      {this.state.endTimeWithOptize.format('HH:mm')}
+                      <strong>
+                        {this.state.endTimeWithOptize.format('HH:mm')}
+                      </strong>
                     </h4>
                   </div>
                 </div>
