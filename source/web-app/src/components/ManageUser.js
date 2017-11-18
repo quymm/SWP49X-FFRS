@@ -27,7 +27,7 @@ class ManageUser extends Component {
       suggestions: [],
       showModelUser: false,
       result: undefined,
-      isSearch: false,
+      isSearch: undefined,
       listReported: [],
       userTarget: 'user',
       listReportWithTargetUser: [],
@@ -55,7 +55,6 @@ class ManageUser extends Component {
       );
       this.setState({
         suggestions: dataUser.body,
-        isSearch: true,
       });
     }
   };
@@ -73,15 +72,12 @@ class ManageUser extends Component {
     }
     this.setState({
       suggestions: [],
-      isSearch: false,
     });
   };
   async handelShowModalUser(evt) {
-    await this.setState({ userTarget: evt.roleId.roleName });
-    console.log(this.state);
     const data = await fetchGetAllReportUser(evt.id);
     this.setState({ listReportWithTargetUser: data.body });
-    this.setState({ showModelUser: true, result: evt });
+    this.setState({ showModelUser: true, isSearch: evt });
   }
 
   handelHideModalUser(evt) {
@@ -273,7 +269,8 @@ class ManageUser extends Component {
                                       : 'Chủ sân'}
                                   </td>
                                   <td>
-                                    {reported.requestLock && !reported.lockStatus ? (
+                                    {reported.requestLock &&
+                                    !reported.lockStatus ? (
                                       <span className="label label-warning">
                                         Đang chờ khoá
                                       </span>
@@ -330,15 +327,19 @@ class ManageUser extends Component {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {result ? (
+            {result !== undefined || this.state.isSearch !== undefined ? (
               <div>
                 <div className="row">
                   <div className="col-sm-3">
                     <img
                       src={
-                        result.profileId.avatarUrl
+                        result !== undefined
                           ? result.profileId.avatarUrl
-                          : require('../resource/images/user.png')
+                            ? result.profileId.avatarUrl
+                            : require('../resource/images/user.png')
+                          : this.state.isSearch.profileId.avatarUrl
+                            ? this.state.isSearch.profileId.profileId.avatarUrl
+                            : require('../resource/images/user.png')
                       }
                       style={imgStyle}
                     />
@@ -351,22 +352,32 @@ class ManageUser extends Component {
                             <td>
                               <strong>Tên đăng nhập</strong>
                             </td>
-                            <td>{result.username}</td>
+                            <td>
+                              {result
+                                ? result.username
+                                : this.state.isSearch.username}
+                            </td>
                           </tr>
                           <tr>
                             <td>
                               <strong>Tên đội</strong>
                             </td>
-                            <td>{result.profileId.name}</td>
+                            <td>
+                              {result
+                                ? result.profileId.name
+                                : this.state.isSearch.profileId.name}
+                            </td>
                           </tr>
                           <tr>
                             <td>
                               <strong>Ngày tạo</strong>
                             </td>
                             <td>
-                              {moment(result.profileId.creationDate).format(
-                                'DD [tháng] MM, YYYY HH:mm',
-                              )}
+                              {moment(
+                                result
+                                  ? result.profileId.creationDate
+                                  : this.state.isSearch.profileId.creationDate,
+                              ).format('DD [tháng] MM, YYYY HH:mm')}
                             </td>
                           </tr>
                           <tr>
@@ -374,30 +385,39 @@ class ManageUser extends Component {
                               <strong>Tiền </strong>
                             </td>
                             <td>
-                              {(result.profileId.balance * 1000).toLocaleString(
-                                'vi',
-                              ) + ' VND'}
+                              {(result
+                                ? result.profileId.balance
+                                : this.state.isSearch.profileId.balance * 1000
+                              ).toLocaleString('vi') + ' VND'}
                             </td>
                           </tr>
                           <tr>
                             <td>
                               <strong>Số điện thoại </strong>
                             </td>
-                            <td>{result.profileId.phone}</td>
+                            <td>
+                              {result
+                                ? result.profileId.phone
+                                : this.state.isSearch.profileId.phone}
+                            </td>
                           </tr>
                           {this.state.userTarget === 'user' ? (
                             <tr>
                               <td>
                                 <strong>Điểm đội </strong>
                               </td>
-                              <td>{result.profileId.ratingScore}</td>
+                              <td>
+                                {result
+                                  ? result.profileId.ratingScore
+                                  : this.state.isSearch.profileId.ratingScore}
+                              </td>
                             </tr>
                           ) : null}
                           <tr>
                             <td>
                               <strong>Điểm thưởng </strong>
                             </td>
-                            <td>{result.profileId.bonusPoint}</td>
+                            <td>{result? result.profileId.bonusPoint : this.state.isSearch.profileId.bonusPoint}</td>
                           </tr>
                         </tbody>
                       </table>

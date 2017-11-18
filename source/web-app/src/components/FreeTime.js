@@ -186,22 +186,23 @@ class FreeTime extends Component {
       if (bookMatchRes.status === 201 && bookMatchRes.body !== null) {
         this.setState({ isShowBookMatch: false });
         toast.success('Đặt sân thành công!');
-        const data5vs5 = await fetchGetFreeTime(
-          id,
-          1,
-          this.state.dateSelected.format('DD-MM-YYYY'),
-        );
-        const data7vs7 = await fetchGetFreeTime(
-          id,
-          2,
-          this.state.dateSelected.format('DD-MM-YYYY'),
-        );
-        await this.props.getAllFreeTime5vs5(data5vs5.body);
-        await this.props.getAllFreeTime7vs7(data7vs7.body);
+        
       } else {
         this.setState({ isShowBookMatch: false });
         toast.error('Đặt sân không thành công!');
       }
+      const data5vs5 = await fetchGetFreeTime(
+        id,
+        1,
+        this.state.dateSelected.format('DD-MM-YYYY'),
+      );
+      const data7vs7 = await fetchGetFreeTime(
+        id,
+        2,
+        this.state.dateSelected.format('DD-MM-YYYY'),
+      );
+      await this.props.getAllFreeTime5vs5(data5vs5.body);
+      await this.props.getAllFreeTime7vs7(data7vs7.body);
     } else {
       this.setState({ messageBookMatch: 'Thời gian không hợp lệ' });
     }

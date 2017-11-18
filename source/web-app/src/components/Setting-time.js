@@ -31,6 +31,10 @@ class SettingTime extends Component {
       minimumPricePeak: 200,
       maximumPriceIdel: 300,
       minimumPriceIdel: 100,
+      isOptimze: true,
+      optimizeTime: 1.5,
+      optimizeNumOfMatch: 2,
+      endTimeWithOptize: moment('10-10-2017 21:30', 'DD-MM-YYYY HH:mm'),
       buttonGroupDayInWeek: [
         {
           id: 0,
@@ -287,6 +291,17 @@ class SettingTime extends Component {
     }
   }
 
+  handleOptimizeClick() {
+    const { isOptimze } = this.state;
+    this.setState({ isOptimze: !isOptimze });
+  }
+
+  handleSelectChange(evt) {
+    const value = evt.target.value;
+    const name = evt.target.name;
+    this.setState({ [name]: parseInt(value) });
+  }
+
   render() {
     const { timeEnable } = this.props.timeEnable;
     const { daySelected, fieldType } = this.state;
@@ -450,25 +465,6 @@ class SettingTime extends Component {
                   </div>
                 </div>
               </div>
-
-              <div className="form-group">
-                <label htmlFor="inputEmail3" className="col-sm-4 control-label">
-                  Giờ đóng cửa
-                </label>
-                <div className="col-sm-8">
-                  <div className="row">
-                    <div className="col-sm-6">
-                      <TimePicker
-                        showSecond={false}
-                        name="endDay"
-                        defaultValue={this.state.endDay}
-                        onChange={this.handelTimeEndDayInputChange.bind(this)}
-                        disabledMinutes={this.configTimeDiable.bind(this)}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
               <div className="form-group">
                 <label htmlFor="inputEmail3" className="col-sm-4 control-label">
                   Giá giờ cao điểm
@@ -535,6 +531,99 @@ class SettingTime extends Component {
                   </div>
                 </div>
               </div>
+              <div className="col-sm-offset-4">
+                <label className="checkbox-inline optimize-time">
+                  <input
+                    type="checkbox"
+                    checked={this.state.isOptimze}
+                    onChange={this.handleOptimizeClick.bind(this)}
+                  />
+                  <strong>Tối ưu giờ cao điểm</strong>
+                </label>
+              </div>
+              {!this.state.isOptimze ? (
+                <div className="form-group">
+                  <label
+                    htmlFor="inputEmail3"
+                    className="col-sm-4 control-label"
+                  >
+                    Giờ đóng cửa
+                  </label>
+                  <div className="col-sm-8">
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <TimePicker
+                          showSecond={false}
+                          name="endDay"
+                          defaultValue={this.state.endDay}
+                          onChange={this.handelTimeEndDayInputChange.bind(this)}
+                          disabledMinutes={this.configTimeDiable.bind(this)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="form-group">
+                    <label
+                      htmlFor="inputEmail3"
+                      className="col-sm-4 control-label"
+                    >
+                      Thời gian đá bắt buộc
+                    </label>
+                    <div className="col-sm-8">
+                      <div className="row">
+                        <div className="col-sm-6">
+                          <select
+                            value={this.state.optimizeTime}
+                            onChange={this.handleSelectChange.bind(this)}
+                            className="form-control"
+                            id="sel1"
+                          >
+                            <option value="1">1 tiếng</option>
+                            <option value="1.5">1.5 tiếng</option>
+                            <option value="2">2 tiếng</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label
+                      htmlFor="inputEmail3"
+                      className="col-sm-4 control-label"
+                    >
+                      Số trận có thể đá ở 1 sân
+                    </label>
+                    <div className="col-sm-8">
+                      <div className="row">
+                        <div className="col-sm-6">
+                          <select
+                            value={this.state.optimizeNumOfMatch}
+                            onChange={this.handleSelectChange.bind(this)}
+                            className="form-control"
+                            id="sel1"
+                          >
+                            <option value="1">1 trận</option>
+                            <option value="2">2 trận</option>
+                            <option value="3">3 trận</option>
+                            <option value="4">4 trận</option>
+                            <option value="5">5 trận</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-sm-12 text-center">
+                    <h4>
+                      Thời gian đóng cửa lúc{' '}
+                      {this.state.endTimeWithOptize.format('HH:mm')}
+                    </h4>
+                  </div>
+                </div>
+              )}
+
               {this.state.buttonGroupDayInWeek.map(day => (
                 <label className="checkbox-inline" key={day.id}>
                   <input
