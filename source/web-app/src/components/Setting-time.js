@@ -265,45 +265,43 @@ class SettingTime extends Component {
                 fieldTypeId,
               );
               if (this.state.isOptimze) {
-                await fetchUpdateTimeEnableInWeek(
-                  id,
-                  dayAdd[i].value,
-                  '17:00',
-                  `${Math.floor(17 + this.state.optimizeTime)}:${this.state
-                    .optimizeTime %
-                    2 ===
-                  0
-                    ? '00'
-                    : '30'}`,
-                  peakPrice,
-                  fieldTypeId,
-                );
-                for (
-                  let j = 0;
-                  j < this.state.optimizeNumOfMatch * 2;
-                  j += this.state.optimizeTime
-                ) {
-                  debugger;
+                // await fetchUpdateTimeEnableInWeek(
+                //   id,
+                //   dayAdd[i].value,
+                //   '17:00',
+                //   `${Math.floor(17 + this.state.optimizeTime)}:${this.state
+                //     .optimizeTime %
+                //     2 ===
+                //   0
+                //     ? '00'
+                //     : '30'}`,
+                //   peakPrice,
+                //   fieldTypeId,
+                // );
+                let startTimeTmp = '17:00';
+                // const endTimeTmp = '00:00';
+                for (let j = 1; j <= this.state.optimizeNumOfMatch; j++) {
                   await fetchUpdateTimeEnableInWeek(
                     id,
                     dayAdd[i].value,
-                    `${Math.floor(17 + this.state.optimizeTime + j)}:${(this
-                      .state.optimizeTime *
-                      (j + 1)) %
-                      2 ===
+                    startTimeTmp,
+                    `${Math.floor(17 + this.state.optimizeTime * j)}:${17 +
+                      this.state.optimizeTime * j -
+                      Math.floor(17 + this.state.optimizeTime * j) >
                     0
-                      ? '0'
-                      : '30'}`,
-                    `${Math.floor(17 + (this.state.optimizeTime + j) * 2)}:${(
-                      
-                      this.state.optimizeTime * (j + 2)) %
-                      2 ===
-                    0
-                      ? '0'
-                      : '30'}`,
+                      ? '30'
+                      : '00'}`,
                     peakPrice,
                     fieldTypeId,
                   );
+                  startTimeTmp = `${Math.floor(
+                    17 + this.state.optimizeTime * j,
+                  )}:${17 +
+                    this.state.optimizeTime * j -
+                    Math.floor(17 + this.state.optimizeTime * j) >
+                  0
+                    ? '30'
+                    : '00'}`;
                 }
               } else {
                 await fetchUpdateTimeEnableInWeek(

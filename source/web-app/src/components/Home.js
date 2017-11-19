@@ -285,6 +285,17 @@ class Home extends Component {
     return (
       <div className="main-panel">
         <div className="content">
+          <button className="next-left"
+              onClick={this.handelPreviousDay.bind(this)}
+            >
+              {' '}
+              <i className="glyphicon glyphicon-chevron-left" />
+          </button>
+          <button className="next-right"
+            onClick={this.handelNextDay.bind(this)}
+            >
+            <i className="glyphicon glyphicon-chevron-right" />
+          </button>
           <div className="container-fluid">
             <div className="row">
               <div className="row">
@@ -328,19 +339,6 @@ class Home extends Component {
                 </div> */}
               </div>
               <div className="col-md-12 match-padding ">
-                <button
-                  className="next-left"
-                  onClick={this.handelPreviousDay.bind(this)}
-                >
-                  {' '}
-                  <i className="glyphicon glyphicon-chevron-left" />
-                </button>
-                <button
-                  className="next-right"
-                  onClick={this.handelNextDay.bind(this)}
-                >
-                  <i className="glyphicon glyphicon-chevron-right" />
-                </button>
                 <div className="row">
                   {listMatch.length > 0
                     ? listMatch.map(listMatch => (

@@ -34,36 +34,37 @@ export class Navigation extends Component {
           </div>
           {roleId.roleName === 'owner' ? (
             <ul className="nav">
+            
               <li>
-                <NavLink to="/app/index" activeClassName="activeLink">
+                <NavLink exact  to="/app/index" activeClassName="activeLink">
                   <i className="glyphicon glyphicon-calendar" />{' '}
                   <strong>Trận trong ngày</strong>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/app/free-time" activeClassName="activeLink">
+                <NavLink exact to="/app/free-time" activeClassName="activeLink">
                   <i className="glyphicon glyphicon-time" />{' '}
                   <strong>Đặt sân</strong>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/app/field" activeClassName="activeLink">
+                <NavLink exact to="/app/field" activeClassName="activeLink">
                   <i className="glyphicon glyphicon-list-alt" />{' '}
                   <strong>Quản lý sân</strong>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/app/setting-time" activeClassName="activeLink">
+                <NavLink exact to="/app/setting-time" activeClassName="activeLink">
                   <i className="pe-7s-alarm" /> <strong>Thiết lập giờ</strong>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/app/income" activeClassName="active">
+                <NavLink exact to="/app/income" activeClassName="active">
                   <i className="pe-7s-news-paper" /> <strong>Thu nhập</strong>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/app/promotion" activeClassName="active">
+                <NavLink exact to="/app/promotion" activeClassName="active">
                   <i className="glyphicon glyphicon-gift" />{' '}
                   <strong>Khuyến mãi</strong>
                 </NavLink>
