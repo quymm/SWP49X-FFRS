@@ -66,12 +66,12 @@ class Register extends Component {
       username,
       password,
       address,
-      creditCard,
+
       latitude,
       longitude,
       name,
       phone,
-      message,
+
       confirmPassword,
     } = this.state;
     if (

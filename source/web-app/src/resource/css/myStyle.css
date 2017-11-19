@@ -374,7 +374,7 @@ button.next-left:hover {
   padding-top: 2px;
 }
 .search-user {
-  padding-left: 49px;
+  padding-left: 45px;
   padding-top: 8px;
 }
 .optimize-time {
@@ -399,3 +399,7 @@ button.next-left:hover {
 .react-datepicker .react-datepicker__today-button{
   font-size: 14px;
 }
+@media (min-width: 992px){
+.navbar-nav > li.open > .dropdown-menu, .dropdown.open .dropdown-menu {
+  margin-right: 10px;
+ }}

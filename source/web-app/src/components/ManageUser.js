@@ -9,7 +9,6 @@ import Autosuggest from 'react-autosuggest';
 import { Modal, Pagination } from 'react-bootstrap';
 import {
   fetchGetUserOrFieldOwnerSuggestion,
-  fetchGetAllReportFieldOwner,
   fetchGetAllReportUser,
   fetchGetListReport,
   fetchRequestLockAccount,
@@ -302,7 +301,7 @@ class ManageUser extends Component {
                     <div className="col-sm-12 text-center">
                       <Pagination
                         bsSize="medium"
-                        items={result? 0 : pageSize <= 1 ? 0 : pageSize}
+                        items={result ? 0 : pageSize <= 1 ? 0 : pageSize}
                         activePage={this.state.pageActive}
                         onSelect={this.handleSelectPage.bind(this)}
                       />
@@ -437,6 +436,13 @@ class ManageUser extends Component {
                           >
                             <i className="pe-7s-lock" /> Yêu cầu khoá tài khoản
                           </button>
+                        ) : result.lockStatus ? (
+                          <button
+                            onClick={this.handelLockAccount.bind(this)}
+                            className="btn btn-primary"
+                          >
+                            <i className="pe-7s-unlock" /> Yêu cầu mở tài khoản
+                          </button>
                         ) : null
                       ) : !this.state.isSearch.requestLock ? (
                         <button
@@ -444,6 +450,13 @@ class ManageUser extends Component {
                           className="btn btn-warning"
                         >
                           <i className="pe-7s-lock" /> Yêu cầu khoá tài khoản
+                        </button>
+                      ) : this.state.isSearch.lockStatus ? (
+                        <button
+                          onClick={this.handelLockAccount.bind(this)}
+                          className="btn btn-primary"
+                        >
+                          <i className="pe-7s-unlock" /> Yêu cầu mở tài khoản
                         </button>
                       ) : null}
                     </p>

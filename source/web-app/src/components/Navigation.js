@@ -80,11 +80,11 @@ export class Navigation extends Component {
               </li>
               <li>
                 <NavLink
-                  to="/app/staff-manage-overcome"
+                  to="/app/staff-manage-field-owner"
                   activeClassName="active"
                 >
                   <i className="pe-7s-note2" />{' '}
-                  <strong>Quản lý thu nhập</strong>
+                  <strong>Yêu cầu thành chủ sân</strong>
                 </NavLink>
               </li>
               <li>
