@@ -74,6 +74,7 @@ class ManageUser extends Component {
     });
   };
   async handelShowModalUser(evt) {
+    debugger
     const data = await fetchGetAllReportUser(evt.id);
     this.setState({ listReportWithTargetUser: data.body });
     this.setState({ showModelUser: true, isSearch: evt });
@@ -337,7 +338,7 @@ class ManageUser extends Component {
                             ? result.profileId.avatarUrl
                             : require('../resource/images/user.png')
                           : this.state.isSearch.profileId.avatarUrl
-                            ? this.state.isSearch.profileId.profileId.avatarUrl
+                            ? this.state.isSearch.profileId.avatarUrl
                             : require('../resource/images/user.png')
                       }
                       style={imgStyle}

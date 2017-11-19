@@ -263,21 +263,10 @@ class SettingTime extends Component {
                 '17:00',
                 idelPrice,
                 fieldTypeId,
+                false
               );
               if (this.state.isOptimze) {
-                // await fetchUpdateTimeEnableInWeek(
-                //   id,
-                //   dayAdd[i].value,
-                //   '17:00',
-                //   `${Math.floor(17 + this.state.optimizeTime)}:${this.state
-                //     .optimizeTime %
-                //     2 ===
-                //   0
-                //     ? '00'
-                //     : '30'}`,
-                //   peakPrice,
-                //   fieldTypeId,
-                // );
+                
                 let startTimeTmp = '17:00';
                 // const endTimeTmp = '00:00';
                 for (let j = 1; j <= this.state.optimizeNumOfMatch; j++) {
@@ -293,6 +282,7 @@ class SettingTime extends Component {
                       : '00'}`,
                     peakPrice,
                     fieldTypeId,
+                    true
                   );
                   startTimeTmp = `${Math.floor(
                     17 + this.state.optimizeTime * j,
@@ -311,6 +301,7 @@ class SettingTime extends Component {
                   endDay.format('HH:mm'),
                   peakPrice,
                   fieldTypeId,
+                  false
                 );
               }
             }
@@ -406,7 +397,6 @@ class SettingTime extends Component {
                         ))}
                       </select>
                     </div>
-
                     <div className="col-sm-6">
                       <select
                         className="form-control"
@@ -444,7 +434,7 @@ class SettingTime extends Component {
                         <th>Từ</th>
                         <th>Đến</th>
                         <th>Giá</th>
-                        <th />
+                        <th>Trạng thái</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -464,11 +454,49 @@ class SettingTime extends Component {
                             ).format('HH:mm')}
                           </td>
                           <td>{data.price} nghìn đồng</td>
+                          <td>{data.price} nghìn đồng</td>
                         </tr>
                       ))}
+                        {/* {dayAfterFilter.length > 0? (<div><tr>
+                          <td>1</td>
+                          <td>
+                            {moment(
+                              '10-10-2017 ' + dayAfterFilter[0].startTime,
+                              'DD-MM-YYYY HH:mm',
+                            ).format('HH:mm')}
+                          </td>
+                          <td>
+                            {moment(
+                              '10-10-2017 ' + dayAfterFilter[0].endTime,
+                              'DD-MM-YYYY HH:mm',
+                            ).format('HH:mm')}
+                          </td>
+                          <td>{dayAfterFilter[0].price} nghìn đồng</td>
+                          <td></td>
+                        </tr> 
+                        <tr>
+                          <td>2</td>
+                          <td>
+                            {moment(
+                              '10-10-2017 ' + dayAfterFilter[1].startTime,
+                              'DD-MM-YYYY HH:mm',
+                            ).format('HH:mm')}
+                          </td>
+                          <td>
+                            {moment(
+                              '10-10-2017 ' + dayAfterFilter[dayAfterFilter.length - 1].endTime,
+                              'DD-MM-YYYY HH:mm',
+                            ).format('HH:mm')}
+                          </td>
+                          <td>{dayAfterFilter[1].price} nghìn đồng</td>
+                          <td> nghìn đồng</td>
+                        </tr></div>)
+                        : null} */}
+                      
                     </tbody>
                   </table>
                 </div>
+                <div className="col-sm-12"><div className="col-sm-4 col-sm-offset-4"><button className="btn btn-danger btn-block">Xoá ngày này</button></div></div>
               </div>
             </div>
           </div>

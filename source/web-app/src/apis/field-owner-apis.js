@@ -93,6 +93,7 @@ export function fetchUpdateTimeEnableInWeek(
   endDay,
   paramPrice,
   paramFieldTypeId,
+  optimize
 ) {
   return fetch(BASE_URL + UPDATE_TIME_ENABLE_IN_WEEK, {
     method: 'POST',
@@ -105,6 +106,7 @@ export function fetchUpdateTimeEnableInWeek(
         fieldTypeId: paramFieldTypeId,
         price: paramPrice,
         startTime: startday,
+        optimal: optimize
       },
     ]),
   }).then(res => res.json());

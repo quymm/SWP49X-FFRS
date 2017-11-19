@@ -90,8 +90,12 @@ class FreeTime extends Component {
               2,
               this.state.dateSelected.format('DD-MM-YYYY'),
             );
-            await this.props.getAllFreeTime5vs5(data5vs5.body);
-            await this.props.getAllFreeTime7vs7(data7vs7.body);
+            if (data5vs5.status === 200) {
+              await this.props.getAllFreeTime5vs5(data5vs5.body);
+            }
+            if (data7vs7.status === 200) {
+              await this.props.getAllFreeTime7vs7(data7vs7.body);
+            }
           } catch (error) {
             console.log('error: ', error);
           }
@@ -109,8 +113,12 @@ class FreeTime extends Component {
           2,
           this.state.dateSelected.format('DD-MM-YYYY'),
         );
-        await this.props.getAllFreeTime5vs5(data5vs5.body);
-        await this.props.getAllFreeTime7vs7(data7vs7.body);
+        if (data5vs5.status === 200) {
+          await this.props.getAllFreeTime5vs5(data5vs5.body);
+        }
+        if (data7vs7.status === 200) {
+          await this.props.getAllFreeTime7vs7(data7vs7.body);
+        }
       } catch (error) {
         console.log('error: ', error);
       }
@@ -151,8 +159,12 @@ class FreeTime extends Component {
       2,
       this.state.dateSelected.format('DD-MM-YYYY'),
     );
-    await this.props.getAllFreeTime5vs5(data5vs5.body);
-    await this.props.getAllFreeTime7vs7(data7vs7.body);
+    if (data5vs5.status === 200) {
+      await this.props.getAllFreeTime5vs5(data5vs5.body);
+    }
+    if (data7vs7.status === 200) {
+      await this.props.getAllFreeTime7vs7(data7vs7.body);
+    }
   }
 
   async handelEndTimeInputChange(evt) {
@@ -201,8 +213,13 @@ class FreeTime extends Component {
         2,
         this.state.dateSelected.format('DD-MM-YYYY'),
       );
-      await this.props.getAllFreeTime5vs5(data5vs5.body);
-      await this.props.getAllFreeTime7vs7(data7vs7.body);
+      if (data5vs5.status === 200) {
+        await this.props.getAllFreeTime5vs5(data5vs5.body);
+      }
+      if (data7vs7.status === 200) {
+        await this.props.getAllFreeTime7vs7(data7vs7.body);
+      }
+      
     } else {
       this.setState({ messageBookMatch: 'Thời gian không hợp lệ' });
     }

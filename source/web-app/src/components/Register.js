@@ -45,7 +45,7 @@ class Register extends Component {
     const target = evt.target;
     const value = target.value;
     const name = target.name;
-    await this.setState({ [name]: value });
+    await this.setState({ name: value });
     console.log(this.state);
   }
 

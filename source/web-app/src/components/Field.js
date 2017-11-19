@@ -69,13 +69,13 @@ class Field extends Component {
                 <td>{listField.name}</td>
                 <td>{listField.fieldTypeId.name}</td>
                 <td>
-                  <button
+                  {/* <button
                     value={listField.id}
                     onClick={this.deleteField.bind(this)}
                     className="btn btn-danger"
                   >
                     Xoá
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             );

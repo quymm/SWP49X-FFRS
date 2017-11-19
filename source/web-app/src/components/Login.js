@@ -28,6 +28,7 @@ class Login extends Component {
     const { username, password } = this.state;
     if (username !== undefined && password !== undefined) {
       const loginRes = await fetchLogin(username, password);
+      debugger
       if (loginRes.status === 200) {
         const dataLogin = loginRes.body;
         if (dataLogin !== null) {
