@@ -15,10 +15,14 @@
         <item>3 tiếng</item>
     </string-array>
 
+    <string-array name="distance_types">
+        <item>4 km</item>
+        <item>6 km</item>
+        <item>8 km</item>
+        <item>10 km</item>
+    </string-array>
 
     <!-- URLs -->
-    <string name="local_host">http://192.168.1.15:8080</string>
-
     //// Users
     <string name="url_login">/swp49x-ffrs/account/login?username=%s&amp;password=%s</string>
     <string name="url_get_user_by_id">/swp49x-ffrs/account/managed-user?user-id=%s</string>
@@ -28,7 +32,7 @@
     <string name="url_get_field">/swp49x-ffrs/account/top-10-field-owner?longitude=%s&amp;latitude=%s</string>
     <string name="url_get_field_by_name">/swp49x-ffrs/account/name?name=%s&amp;role=%s</string>
     <string name="url_get_field_by_id">/swp49x-ffrs/account/managed-field-owner?field-owner-id=%s</string>
-    <string name="url_choose_field">"/swp49x-ffrs/match/choose-field?matching-request-id=%s&amp;deviation-distance=%s</string>
+    <string name="url_choose_field">"/swp49x-ffrs/match/choose-field?matching-request-id=%s</string>
 
     //// Field Times
     <string name="url_get_free_time">/swp49x-ffrs/match/free-time?field-owner-id=%s&amp;field-type-id=%s&amp;date=%s</string>
@@ -38,16 +42,16 @@
     <string name="url_cancel_reservation">/swp49x-ffrs/match/cancel-reservation?time-slot-id=%s</string>
 
     //// Reservation
-    <string name="url_reserve_friendly_match">/swp49x-ffrs/match/friendly-match?user-id=%s</string>
-    <string name="url_reserve_tour_match">/swp49x-ffrs/match/tour-match?matching-request-id=%s&amp;opponent-id=%s</string>
+    <string name="url_reserve_friendly_match">/swp49x-ffrs/match/friendly-match</string>
+    <string name="url_reserve_tour_match">/swp49x-ffrs/match/tour-match?matching-request-id=%s</string>
     <string name="url_add_bill">/swp49x-ffrs/bill/managed-bill</string>
     <string name="url_cancel_friendly_match"></string>
 
     //// Matching request
-    <string name="url_get_matching_requests">/swp49x-ffrs/match/suggest-opponent?deviation-distance=%s</string>
+    <string name="url_get_matching_requests">/swp49x-ffrs/match/suggest-opponent</string>
     <string name="url_get_matching_request_by_id">/swp49x-ffrs/match/matching-request?matching-request-id=%s</string>
     <string name="url_create_matching_request">/swp49x-ffrs/match/matching-request</string>
-    <string name="url_cancel_matching_request"></string>
+    <string name="url_cancel_matching_request">/swp49x-ffrs/match/matching-request?matching-request-id=%s</string>
 
     //// Match
     <string name="url_get_tour_match_by_id">/swp49x-ffrs/match/tour-match?tour-match-id=%s</string>
@@ -60,6 +64,9 @@
     <string name="url_send_rating_opponent">/swp49x-ffrs/rating/rating-opponent</string>
     <string name="url_send_rating_field">/swp49x-ffrs/rating/rating-field</string>
 
+    //// Report
+    <string name="url_send_report_opponent">/swp49x-ffrs/report/report-opponent</string>
+
     //// Blacklist
     <string name="url_add_black_list">/swp49x-ffrs/blacklist/managed-blacklist?user-id=%s&amp;opponent-id=%s</string>
     <string name="url_get_black_list">/swp49x-ffrs/blacklist/managed-blacklist?user-id=%s</string>
@@ -68,6 +75,7 @@
     ////Favorite field
     <string name="url_add_favorite_field">/swp49x-ffrs/favorites/managed-favorites?user-id=%s&amp;field-owner-id=%s</string>
     <string name="url_get_favorite_fields">/swp49x-ffrs/favorites/managed-favorites?user-id=%s</string>
+    <string name="url_get_favorite_field_with_id_and_field_id">/swp49x-ffrs/favorites/managed-favorites?user-id=%s&amp;field-owner-id=%s</string>
     <string name="url_remove_favorite_field">/swp49x-ffrs/favorites/managed-favorites?id=%s</string>
 
     ////Balance
@@ -97,7 +105,7 @@
     <string name="title_activity_history">Lịch sử</string>
     <string name="title_activity_payment_option">Phương thức thanh toán</string>
     <string name="title_activity_rating_field">Đánh giá sân bóng</string>
-    <string name="title_activity_report_opponent">Báo cáo đối thủ</string>
+    <string name="title_activity_report_opponent">Tố cáo đối thủ</string>
     <string name="title_activity_rating_opponent">Đánh giá đối thủ</string>
     <string name="title_activity_profile">Thông tin tài khoản</string>
     <string name="title_activity_register">Đăng ký</string>
@@ -107,4 +115,6 @@
     <string name="title_activity_scrolling">Thông tin tài khoản</string>
     <string name="title_activity_favorite_field">Sân yêu thích</string>
     <string name="title_activity_blacklist">Đối thủ bị chặn</string>
+    <string name="title_activity_dummy">Dummy</string>
+    <string name="title_activity_request_info">Thông tin yêu cầu</string>
 </resources>

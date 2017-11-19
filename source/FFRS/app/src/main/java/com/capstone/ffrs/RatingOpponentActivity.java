@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -15,6 +16,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.controller.NetworkController;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONObject;
 
@@ -32,7 +34,7 @@ public class RatingOpponentActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(this).getHostURL();
     }
 
     public void onClickSendRating(View view) {
@@ -65,24 +67,37 @@ public class RatingOpponentActivity extends AppCompatActivity {
         int ratingScore = 2;
         switch (radioBtnId) {
             case R.id.rbtGood:
-                ratingScore = 3;
+                ratingScore = 4;
                 break;
             case R.id.rbtNormal:
                 ratingScore = 2;
                 break;
             case R.id.rbtNotGood:
-                ratingScore = 1;
+                ratingScore = 0;
                 break;
         }
+        radioBtnId = rdWinnerGroup.getCheckedRadioButtonId();
+        int winPoints = 3;
+        switch (radioBtnId) {
+            case R.id.rbtYourTeam:
+                winPoints = 3;
+                break;
+            case R.id.rbtDraw:
+                winPoints = 1;
+                break;
+            case R.id.rbtOpponent:
+                winPoints = 0;
+                break;
+        }
+
         Map<String, Object> params = new HashMap<>();
-        params.put("ratingScore", ratingScore);
+        params.put("ratingLevel", ratingScore);
         params.put("tourMatchId", b.getInt("tour_match_id"));
         params.put("userId", b.getInt("user_id"));
-
-        if (rdWinnerGroup.getCheckedRadioButtonId() == R.id.rbtYourTeam) {
-            params.put("win", true);
-        } else {
-            params.put("win", false);
+        params.put("result", winPoints);
+        EditText txtGD = (EditText) findViewById(R.id.text_goal_difference);
+        if (txtGD.getText() != null && !txtGD.getText().toString().isEmpty()) {
+            params.put("goalsDifference", Integer.valueOf(txtGD.getText().toString()));
         }
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override

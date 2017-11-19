@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 public class CreateRequestResultActivity extends AppCompatActivity {
 
@@ -14,6 +17,12 @@ public class CreateRequestResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_request_result);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Bundle b = getIntent().getExtras();
+        String resultMsg = b.getString("message");
+
+        TextView txtResult = (TextView) findViewById(R.id.text_result);
+        txtResult.setText(resultMsg);
     }
 
     @Override

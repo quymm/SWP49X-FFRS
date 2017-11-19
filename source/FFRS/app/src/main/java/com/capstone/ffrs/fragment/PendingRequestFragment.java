@@ -1,8 +1,6 @@
 package com.capstone.ffrs.fragment;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -29,10 +27,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.R;
-import com.capstone.ffrs.adapter.PaidRequestAdapter;
 import com.capstone.ffrs.adapter.PendingRequestAdapter;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.PendingRequest;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,11 +69,17 @@ public class PendingRequestFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_pending_request, container, false);
 
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(getContext()).getHostURL();
+
+        //Initialize RecyclerView
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        adapter = new PendingRequestAdapter(this.getContext(), requestList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
 
         loadPendingRequests(view);
 
-        txtNotFound = (TextView) view.findViewById(R.id.text_not_found);
+        txtNotFound = (TextView) view.findViewById(R.id.text_not_found_pending_request);
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -97,11 +101,6 @@ public class PendingRequestFragment extends Fragment {
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
         }
 
-        //Initialize RecyclerView
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        adapter = new PendingRequestAdapter(this.getContext(), requestList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
         url = hostURL + getResources().getString(R.string.url_get_pending_match_by_id);
         url = String.format(url, sharedPreferences.getInt("user_id", -1));
         //Getting Instance of Volley Request Queue
@@ -119,10 +118,14 @@ public class PendingRequestFragment extends Fragment {
                                     JSONObject obj = body.getJSONObject(i);
                                     PendingRequest request = new PendingRequest();
                                     request.setMatchingRequestId(obj.getInt("id"));
+                                    request.setFieldTypeId(obj.getJSONObject("fieldTypeId").getInt("id"));
                                     request.setDate(obj.getString("date"));
                                     request.setStartTime(obj.getString("startTime"));
                                     request.setEndTime(obj.getString("endTime"));
+                                    request.setLatitude(obj.getDouble("latitude"));
+                                    request.setLongitude(obj.getDouble("longitude"));
                                     request.setDuration(obj.getInt("duration"));
+                                    request.setAddress(obj.getString("address"));
                                     requestList.add(request);
                                 } catch (Exception e) {
                                     Log.d("EXCEPTION", e.getMessage());

@@ -2,32 +2,27 @@ package com.capstone.ffrs.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.RequestTimeActivity;
-import com.capstone.ffrs.entity.FirebaseUserInfo;
 import com.capstone.ffrs.entity.MatchRequest;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by HuanPMSE61860 on 10/11/2017.
@@ -83,6 +78,10 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
                 strDuration += " " + (duration % 60) + " phút";
             }
             holder.duration.setText(strDuration);
+
+            RequestBuilder<Drawable> drawable = Glide.with(context).load(item.getImageURL());
+            drawable.error(Glide.with(context).load(context.getResources().getDrawable(R.drawable.people)));
+            drawable.into(holder.imageView);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -96,6 +95,7 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
     public class MatchViewHolder extends RecyclerView.ViewHolder {
 
         private TextView teamName, time, date, duration, ratingScore;
+        private CircleImageView imageView;
 
         public MatchViewHolder(final View itemView) {
             super(itemView);
@@ -104,6 +104,7 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
             date = (TextView) itemView.findViewById(R.id.date_view);
             duration = (TextView) itemView.findViewById(R.id.duration_view);
             ratingScore = (TextView) itemView.findViewById(R.id.rating_score);
+            imageView = (CircleImageView) itemView.findViewById(R.id.thumbnail);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -123,17 +124,39 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
 //                        info.setLatitude(b.getDouble("latitude"));
 //                        info.setLongitude(b.getDouble("longitude"));
 //                        myRef.child("request").child(request.getUserId() + "").child(request.getId() + "").child(userId.toString()).setValue(info);
-                        Intent intent = new Intent(context, RequestTimeActivity.class);
-                        intent.putExtra("field_type_id", b.getInt("field_type_id"));
-                        intent.putExtra("field_start_time", request.getStartTime());
-                        intent.putExtra("field_end_time", request.getEndTime());
-                        intent.putExtra("latitude", b.getDouble("latitude"));
-                        intent.putExtra("longitude", b.getDouble("longitude"));
-                        intent.putExtra("date", request.getDate());
-                        intent.putExtra("matching_request_id", request.getId());
-                        intent.putExtra("opponent_id", request.getUserId());
-                        intent.putExtra("duration", b.getInt("duration"));
-                        context.startActivity(intent);
+
+                        try {
+                            Date requestStartTime = new SimpleDateFormat("H:mm:ss").parse(request.getStartTime());
+                            Date requestEndTime = new SimpleDateFormat("H:mm:ss").parse(request.getEndTime());
+                            Date sendStartTime = new SimpleDateFormat("H:mm").parse(b.getString("field_start_time"));
+                            Date sendEndTime = new SimpleDateFormat("H:mm").parse(b.getString("field_end_time"));
+
+                            String strStartTime = request.getStartTime();
+                            String strEndTime = request.getEndTime();
+
+                            if (sendStartTime.getTime() - requestStartTime.getTime() > 0) {
+                                strStartTime = b.getString("field_start_time") + ":00";
+                            }
+                            if (sendEndTime.getTime() - requestEndTime.getTime() < 0) {
+                                strEndTime = b.getString("field_end_time") + ":00";
+                            }
+                            Intent intent = new Intent(context, RequestTimeActivity.class);
+                            intent.putExtra("field_type_id", b.getInt("field_type_id"));
+                            intent.putExtra("field_start_time", strStartTime);
+                            intent.putExtra("field_end_time", strEndTime);
+                            intent.putExtra("latitude", b.getDouble("latitude"));
+                            intent.putExtra("longitude", b.getDouble("longitude"));
+                            intent.putExtra("date", request.getDate());
+                            intent.putExtra("matching_request_id", request.getId());
+                            intent.putExtra("opponent_id", request.getUserId());
+                            intent.putExtra("duration", b.getInt("duration"));
+                            intent.putExtra("distance", b.getInt("distance"));
+                            intent.putExtra("priorityField", b.getBoolean("priorityField"));
+                            context.startActivity(intent);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
             });

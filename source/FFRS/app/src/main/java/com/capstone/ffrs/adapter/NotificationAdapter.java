@@ -23,6 +23,7 @@ import com.capstone.ffrs.R;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.NotificationRequest;
 import com.capstone.ffrs.entity.NotificationResponse;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,9 +33,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 
 /**
  * Created by HuanPMSE61860 on 10/16/2017.
@@ -54,7 +52,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         this.context = context;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        hostURL = context.getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(context).getHostURL();
     }
 
     @Override
@@ -162,7 +160,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                                                         intent.putExtra("time_to", toTime);
                                                         intent.putExtra("price", body.getInt("price"));
                                                         intent.putExtra("user_id", userId);
-                                                        intent.putExtra("time_slot_id", body.getInt("id"));
                                                         intent.putExtra("tour_match_mode", true);
                                                         intent.putExtra("matching_request_id", request.getRequestId());
                                                         intent.putExtra("opponent_id", opponentId);
@@ -205,7 +202,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                             intent.putExtra("time_to", response.getEndTime());
                             intent.putExtra("price", response.getPrice());
                             intent.putExtra("user_id", response.getUserId());
-                            intent.putExtra("time_slot_id", response.getTimeSlotId());
                             intent.putExtra("tour_match_id", response.getTourMatchId());
                             intent.putExtra("tour_match_mode", true);
 

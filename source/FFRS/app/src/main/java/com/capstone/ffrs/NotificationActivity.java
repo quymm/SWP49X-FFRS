@@ -1,6 +1,5 @@
 package com.capstone.ffrs;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -30,6 +29,7 @@ import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.FirebaseUserInfo;
 import com.capstone.ffrs.entity.NotificationRequest;
 import com.capstone.ffrs.entity.NotificationResponse;
+import com.capstone.ffrs.utils.HostURLUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,7 +45,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 public class NotificationActivity extends AppCompatActivity {
     private FirebaseDatabase database;
@@ -68,7 +67,7 @@ public class NotificationActivity extends AppCompatActivity {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         final int userId = sharedPreferences.getInt("user_id", -1);
 
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(this).getHostURL();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

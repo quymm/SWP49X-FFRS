@@ -27,11 +27,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.R;
-import com.capstone.ffrs.adapter.PaidRequestAdapter;
+import com.capstone.ffrs.adapter.PaidMatchAdapter;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.FieldTime;
-import com.capstone.ffrs.entity.PaidFriendlyMatchRequest;
-import com.capstone.ffrs.entity.PaidTourMatchRequest;
+import com.capstone.ffrs.entity.PaidFriendlyMatch;
+import com.capstone.ffrs.entity.PaidTourMatch;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,7 +54,7 @@ public class PaidMatchFragment extends Fragment {
     private RecyclerView recyclerView;
     private RequestQueue queue;
     private List<Object> requestList = new ArrayList<>();
-    private PaidRequestAdapter adapter;
+    private PaidMatchAdapter adapter;
     private TextView txtNotFound;
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -76,11 +76,11 @@ public class PaidMatchFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_paid_match, container, false);
 
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(getContext()).getHostURL();
 
         loadPaidMatches(view);
 
-        txtNotFound = (TextView) view.findViewById(R.id.text_not_found);
+        txtNotFound = (TextView) view.findViewById(R.id.text_not_found_paid_request);
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -104,7 +104,7 @@ public class PaidMatchFragment extends Fragment {
 
         //Initialize RecyclerView
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        adapter = new PaidRequestAdapter(this.getContext(), requestList);
+        adapter = new PaidMatchAdapter(this.getContext(), requestList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
         url = hostURL + getResources().getString(R.string.url_get_paid_match_by_id);
@@ -123,21 +123,23 @@ public class PaidMatchFragment extends Fragment {
                                 try {
                                     JSONObject obj = body.getJSONObject(i);
                                     if (!obj.isNull("friendlyMatchId")) {
-                                        PaidFriendlyMatchRequest request = new PaidFriendlyMatchRequest();
+                                        PaidFriendlyMatch request = new PaidFriendlyMatch();
                                         request.setId(obj.getInt("id"));
 
                                         request.setUserId(obj.getJSONObject("userId").getInt("id"));
                                         request.setFieldId(obj.getJSONObject("fieldOwnerId").getInt("id"));
+
                                         request.setFieldName(obj.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("name"));
 
                                         JSONObject friendlyMatch = obj.getJSONObject("friendlyMatchId");
+                                        request.setFieldTypeId(friendlyMatch.getJSONObject("timeSlotId").getJSONObject("fieldTypeId").getInt("id"));
                                         request.setDate(friendlyMatch.getJSONObject("timeSlotId").getString("date"));
                                         request.setStartTime(friendlyMatch.getJSONObject("timeSlotId").getString("startTime"));
                                         request.setEndTime(friendlyMatch.getJSONObject("timeSlotId").getString("endTime"));
                                         requestList.add(request);
                                     }
                                     if (!obj.isNull("tourMatchId")) {
-                                        PaidTourMatchRequest request = new PaidTourMatchRequest();
+                                        PaidTourMatch request = new PaidTourMatch();
                                         int userId = obj.getJSONObject("userId").getInt("id");
                                         request.setId(obj.getInt("id"));
                                         request.setUserId(userId);
@@ -145,6 +147,7 @@ public class PaidMatchFragment extends Fragment {
                                         request.setFieldName(obj.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("name"));
 
                                         JSONObject tourMatch = obj.getJSONObject("tourMatchId");
+                                        request.setFieldTypeId(tourMatch.getJSONObject("timeSlotId").getJSONObject("fieldTypeId").getInt("id"));
                                         int tourUserId = tourMatch.getJSONObject("userId").getInt("id");
                                         int tourOpponentId = tourMatch.getJSONObject("opponentId").getInt("id");
                                         if (userId == tourUserId) {
@@ -182,21 +185,21 @@ public class PaidMatchFragment extends Fragment {
                                         }
 
                                         public String getStringDate(Object o) {
-                                            if (o instanceof PaidFriendlyMatchRequest) {
-                                                Date date = new Date(Long.valueOf(((PaidFriendlyMatchRequest) o).getDate()));
+                                            if (o instanceof PaidFriendlyMatch) {
+                                                Date date = new Date(Long.valueOf(((PaidFriendlyMatch) o).getDate()));
                                                 return new SimpleDateFormat("dd/MM/yyyy").format(date);
-                                            } else if (o instanceof PaidTourMatchRequest) {
-                                                Date date = new Date(Long.valueOf(((PaidTourMatchRequest) o).getDate()));
+                                            } else if (o instanceof PaidTourMatch) {
+                                                Date date = new Date(Long.valueOf(((PaidTourMatch) o).getDate()));
                                                 return new SimpleDateFormat("dd/MM/yyyy").format(date);
                                             }
                                             return "";
                                         }
 
                                         public String getStringStartTime(Object o) {
-                                            if (o instanceof PaidFriendlyMatchRequest) {
-                                                return ((PaidFriendlyMatchRequest) o).getStartTime();
-                                            } else if (o instanceof PaidTourMatchRequest) {
-                                                return ((PaidTourMatchRequest) o).getStartTime();
+                                            if (o instanceof PaidFriendlyMatch) {
+                                                return ((PaidFriendlyMatch) o).getStartTime();
+                                            } else if (o instanceof PaidTourMatch) {
+                                                return ((PaidTourMatch) o).getStartTime();
                                             }
                                             return "";
                                         }

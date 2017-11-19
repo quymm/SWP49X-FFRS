@@ -5,8 +5,9 @@ package com.capstone.ffrs.entity;
  */
 
 public class PendingRequest {
-    private int matchingRequestId;
-    private String date, startTime, endTime;
+    private int matchingRequestId, fieldTypeId;
+    private String date, startTime, endTime, address;
+    private double latitude, longitude;
     private int duration;
 
     public PendingRequest() {
@@ -18,6 +19,14 @@ public class PendingRequest {
 
     public void setMatchingRequestId(int matchingRequestId) {
         this.matchingRequestId = matchingRequestId;
+    }
+
+    public int getFieldTypeId() {
+        return fieldTypeId;
+    }
+
+    public void setFieldTypeId(int fieldTypeId) {
+        this.fieldTypeId = fieldTypeId;
     }
 
     public String getDate() {
@@ -50,5 +59,29 @@ public class PendingRequest {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

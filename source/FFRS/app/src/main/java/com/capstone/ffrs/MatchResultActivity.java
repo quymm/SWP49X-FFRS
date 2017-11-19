@@ -1,13 +1,14 @@
 package com.capstone.ffrs;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -32,30 +33,15 @@ import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.capstone.ffrs.adapter.MatchAdapter;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.FirebaseUserInfo;
 import com.capstone.ffrs.entity.MatchRequest;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
@@ -63,7 +49,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -83,21 +68,21 @@ public class MatchResultActivity extends AppCompatActivity {
     private String displayDateFormat = "dd/MM/yyyy";
     private String serverDateFormat = "dd-MM-yyyy";
 
-    private BroadcastReceiver mRequestReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean flag = intent.getBooleanExtra("isChecked", false);
-            if (flag) {
-                Button btSendRequest = (Button) findViewById(R.id.btRequest);
-                btSendRequest.setEnabled(true);
-                btSendRequest.setBackgroundColor(Color.parseColor("#009632"));
-            } else {
-                Button btSendRequest = (Button) findViewById(R.id.btRequest);
-                btSendRequest.setEnabled(false);
-                btSendRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
-            }
-        }
-    };
+//    private BroadcastReceiver mRequestReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            boolean flag = intent.getBooleanExtra("isChecked", false);
+//            if (flag) {
+//                Button btSendRequest = (Button) findViewById(R.id.btRequest);
+//                btSendRequest.setEnabled(true);
+//                btSendRequest.setBackgroundColor(Color.parseColor("#009632"));
+//            } else {
+//                Button btSendRequest = (Button) findViewById(R.id.btRequest);
+//                btSendRequest.setEnabled(false);
+//                btSendRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
+//            }
+//        }
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +91,7 @@ public class MatchResultActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(this).getHostURL();
 
         loadMatches();
 
@@ -122,18 +107,18 @@ public class MatchResultActivity extends AppCompatActivity {
         swipeRefreshLayout.setRefreshing(true);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(mRequestReceiver,
-                new IntentFilter("RequestButton-Message"));
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRequestReceiver);
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        LocalBroadcastManager.getInstance(this).registerReceiver(mRequestReceiver,
+//                new IntentFilter("RequestButton-Message"));
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRequestReceiver);
+//    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -153,7 +138,6 @@ public class MatchResultActivity extends AppCompatActivity {
             sdf = new SimpleDateFormat(serverDateFormat);
             strDate = sdf.format(date);
             url = hostURL + getResources().getString(R.string.url_get_matching_requests);
-            url = String.format(url, 5);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -171,7 +155,10 @@ public class MatchResultActivity extends AppCompatActivity {
         params.put("longitude", b.getDouble("longitude"));
         params.put("startTime", b.getString("field_start_time"));
         params.put("endTime", b.getString("field_end_time"));
+        params.put("expectedDistance", b.getInt("distance"));
         params.put("date", strDate);
+        params.put("address", b.getString("address"));
+        params.put("priorityField", b.getBoolean("priorityField"));
         params.put("duration", b.getInt("duration"));
 
         //Getting Instance of Volley Request Queue
@@ -190,6 +177,7 @@ public class MatchResultActivity extends AppCompatActivity {
                                     MatchRequest match = new MatchRequest();
                                     match.setId(obj.getInt("id"));
                                     match.setTeamName(obj.getJSONObject("userId").getJSONObject("profileId").getString("name"));
+                                    match.setImageURL(obj.getJSONObject("userId").getJSONObject("profileId").getString("avatarUrl"));
                                     match.setUserId(obj.getJSONObject("userId").getInt("id"));
                                     match.setDate(obj.getString("date"));
                                     match.setStartTime(obj.getString("startTime"));
@@ -254,4 +242,41 @@ public class MatchResultActivity extends AppCompatActivity {
         //Adding JsonArrayRequest to Request Queue
         queue.add(newsReq);
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        final Bundle b = getIntent().getExtras();
+        boolean createMode = b.getBoolean("createMode");
+
+        if (createMode) {
+            Intent intent = new Intent(MatchResultActivity.this, CreateRequestResultActivity.class);
+            intent.putExtra("user_id", b.getInt("user_id"));
+            intent.putExtra("message", "Hệ thống đã để lại yêu cầu của bạn cho đối thủ phù hợp hơn!");
+            startActivity(intent);
+
+//            AlertDialog.Builder builder;
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
+//            } else {
+//                builder = new AlertDialog.Builder(this);
+//            }
+//            builder.setTitle("Bạn có muốn để lại yều cầu của bạn không?")
+//                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            Intent intent = new Intent(MatchResultActivity.this, CreateRequestResultActivity.class);
+//                            intent.putExtra("user_id", b.getInt("user_id"));
+//                            intent.putExtra("message", "Hệ thống đã để lại yêu cầu của bạn cho đối thủ phù hợp hơn!");
+//                            startActivity(intent);
+//                        }
+//                    })
+//                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                        }
+//                    }).show();
+        } else {
+            finish();
+        }
+    }
+
 }

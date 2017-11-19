@@ -6,7 +6,7 @@ package com.capstone.ffrs.entity;
 
 public class FieldOwnerTourNotification {
     private int isRead, isShowed;
-    private String time;
+    private String time, playTime;
 
     public FieldOwnerTourNotification() {
     }
@@ -33,5 +33,13 @@ public class FieldOwnerTourNotification {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getPlayTime() {
+        return playTime;
+    }
+
+    public void setPlayTime(String playTime) {
+        this.playTime = playTime;
     }
 }

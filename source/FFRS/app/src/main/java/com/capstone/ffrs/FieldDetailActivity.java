@@ -1,21 +1,20 @@
 package com.capstone.ffrs;
 
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +27,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.FieldOwnerFriendlyNotification;
 import com.capstone.ffrs.entity.FieldOwnerTourNotification;
-import com.capstone.ffrs.service.TimerServices;
+import com.capstone.ffrs.utils.HostURLUtils;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -57,7 +56,7 @@ public class FieldDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(this).getHostURL();
 
         Bundle b = getIntent().getExtras();
 
@@ -71,8 +70,8 @@ public class FieldDetailActivity extends AppCompatActivity {
 
         date = (Date) b.getSerializable("date");
 
-        startTime = (Date) b.get("time_from");
-        endTime = (Date) b.get("time_to");
+        startTime = (Date) b.getSerializable("time_from");
+        endTime = (Date) b.getSerializable("time_to");
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm", Locale.US);
 
         id = b.getInt("field_id");
@@ -151,10 +150,9 @@ public class FieldDetailActivity extends AppCompatActivity {
         String url;
         if (!tourMatchMode) {
             url = hostURL + getResources().getString(R.string.url_reserve_friendly_match);
-            url = String.format(url, b.getInt("user_id"));
         } else {
             url = hostURL + getResources().getString(R.string.url_reserve_tour_match);
-            url = String.format(url, b.getInt("matching_request_id"), b.getInt("user_id"));
+            url = String.format(url, b.getInt("matching_request_id"));
         }
 
         RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
@@ -165,7 +163,7 @@ public class FieldDetailActivity extends AppCompatActivity {
         params.put("fieldOwnerId", id);
         params.put("fieldTypeId", fieldTypeId);
         params.put("startTime", new SimpleDateFormat("H:mm").format(startTime));
-
+        params.put("userId", b.getInt("user_id"));
         JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -184,7 +182,7 @@ public class FieldDetailActivity extends AppCompatActivity {
                                             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(FieldDetailActivity.this);
                                             SharedPreferences.Editor editor = sharedPreferences.edit();
                                             editor.putInt("balance", body.getJSONObject("userId").getJSONObject("profileId").getInt("balance"));
-                                            editor.commit();
+                                            editor.apply();
 
                                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                                             DatabaseReference ref = database.getReference();
@@ -193,6 +191,7 @@ public class FieldDetailActivity extends AppCompatActivity {
                                             FieldOwnerFriendlyNotification notification = new FieldOwnerFriendlyNotification();
                                             notification.setIsRead(0);
                                             notification.setIsShowed(0);
+                                            notification.setPlayTime(new SimpleDateFormat("MM-dd-yyyy").format(date) + " " + new SimpleDateFormat("H:mm").format(startTime));
                                             notification.setTime(new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(new Date()));
                                             notification.setUsername(body.getJSONObject("userId").getJSONObject("profileId").getString("name"));
                                             friendlyRef.setValue(notification);
@@ -202,7 +201,7 @@ public class FieldDetailActivity extends AppCompatActivity {
                                             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(FieldDetailActivity.this);
                                             SharedPreferences.Editor editor = sharedPreferences.edit();
                                             editor.putInt("balance", body.getJSONObject("userId").getJSONObject("profileId").getInt("balance"));
-                                            editor.commit();
+                                            editor.apply();
 
                                             if (!b.containsKey("tour_match_id")) {
                                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -213,6 +212,7 @@ public class FieldDetailActivity extends AppCompatActivity {
                                                 FieldOwnerTourNotification notification = new FieldOwnerTourNotification();
                                                 notification.setIsRead(0);
                                                 notification.setIsShowed(0);
+                                                notification.setPlayTime(new SimpleDateFormat("dd-MM-yyyy").format(date) + " " + new SimpleDateFormat("H:mm").format(startTime));
                                                 notification.setTime(new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(new Date()));
                                                 tourRef.setValue(notification);
                                             }
@@ -220,7 +220,8 @@ public class FieldDetailActivity extends AppCompatActivity {
                                         intent.putExtra("tour_match_mode", tourMatchMode);
                                         startActivity(intent);
                                     } catch (Exception e) {
-                                        Log.d("EXCEPTION", e.getMessage());
+//                                        Log.d("EXCEPTION", e.getMessage());\
+                                        e.printStackTrace();
                                     }
                                 } else {
                                     Toast.makeText(FieldDetailActivity.this, "Error!", Toast.LENGTH_SHORT).show();
@@ -368,7 +369,6 @@ public class FieldDetailActivity extends AppCompatActivity {
                                     intent.putExtra("time_to", endTime);
                                     intent.putExtra("price", price);
                                     intent.putExtra("user_id", b.getInt("user_id"));
-                                    intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
                                     intent.putExtra("tour_match_mode", tourMatchMode);
                                     if (tourMatchMode) {
                                         intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
@@ -386,5 +386,11 @@ public class FieldDetailActivity extends AppCompatActivity {
                     }
                 });
         queue.add(postRequest);
+    }
+
+    public void onClickGoBackToHome(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
     }
 }

@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -46,7 +44,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
                     intent.putExtra("time_to", b.getSerializable("time_to"));
                     intent.putExtra("price", b.getInt("price"));
                     intent.putExtra("user_id", b.getInt("user_id"));
-                    intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
                     intent.putExtra("tour_match_mode", b.getBoolean("tour_match_mode"));
                     if (b.getBoolean("tour_match_mode")) {
                         intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
@@ -64,5 +61,11 @@ public class PaymentOptionActivity extends AppCompatActivity {
                 Toast.makeText(this, "Phương thức thanh toán đang trong quá trình thử nghiệm", Toast.LENGTH_LONG).show();
                 break;
         }
+    }
+
+    public void onClickGoBackToHome(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
     }
 }

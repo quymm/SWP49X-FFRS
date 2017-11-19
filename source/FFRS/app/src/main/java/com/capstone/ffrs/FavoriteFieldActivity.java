@@ -7,8 +7,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -27,30 +24,22 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.adapter.FavoriteFieldAdapter;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.FieldOwner;
+import com.capstone.ffrs.entity.FavoriteField;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FavoriteFieldActivity extends AppCompatActivity {
     private String url, hostURL;
-    private List<FieldOwner> fieldOwnerList = new ArrayList<FieldOwner>();
+    private List<FavoriteField> fieldOwnerList = new ArrayList<FavoriteField>();
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView txtNotFound;
-
-    private BroadcastReceiver mRemoveReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            swipeRefreshLayout.setRefreshing(true);
-            loadFavoriteField();
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +48,7 @@ public class FavoriteFieldActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(this).getHostURL();
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -80,15 +69,11 @@ public class FavoriteFieldActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mRemoveReceiver,
-                new IntentFilter("remove-message"));
         swipeRefreshLayout.setRefreshing(true);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRemoveReceiver);
+        if (!fieldOwnerList.isEmpty()) {
+            fieldOwnerList.clear();
+            loadFavoriteField();
+        }
     }
 
     @Override
@@ -121,7 +106,8 @@ public class FavoriteFieldActivity extends AppCompatActivity {
                                 try {
                                     JSONObject obj = body.getJSONObject(i);
                                     JSONObject profile = obj.getJSONObject("fieldOwnerId").getJSONObject("profileId");
-                                    FieldOwner fieldOwner = new FieldOwner(obj.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
+                                    FavoriteField fieldOwner = new FavoriteField(obj.getInt("id"), profile.getString("name"), profile.getString("address"), profile.getString("avatarUrl"));
+                                    fieldOwner.setFieldId(obj.getJSONObject("fieldOwnerId").getInt("id"));
 
                                     // adding movie to movies array
                                     fieldOwnerList.add(fieldOwner);

@@ -7,17 +7,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import com.capstone.ffrs.FieldTimeActivity;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.entity.FieldTime;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by HuanPMSE61860 on 10/2/2017.

@@ -8,44 +8,63 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id='@+id/progress_layout'
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical">
+        <!--<LinearLayout-->
+        <!--android:id='@+id/progress_layout'-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:gravity="center"-->
+        <!--android:orientation="vertical">-->
 
-            <ProgressBar
-                android:id="@+id/progressBar2"
-                style="?android:attr/progressBarStyleLarge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:indeterminate="true"
-                android:indeterminateTint="#009632"
-                android:indeterminateTintMode="src_in" />
+        <!--<ProgressBar-->
+        <!--android:id="@+id/progressBar2"-->
+        <!--style="?android:attr/progressBarStyleLarge"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--android:indeterminate="true"-->
+        <!--android:indeterminateTint="#009632"-->
+        <!--android:indeterminateTintMode="src_in" />-->
 
-            <TextView
-                android:id="@+id/text_progress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Đang lấy vị trí"
-                android:textAlignment="center"
-                android:textSize="24dp" />
-        </LinearLayout>
+        <!--<TextView-->
+        <!--android:id="@+id/text_progress"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Đang lấy vị trí"-->
+        <!--android:textAlignment="center"-->
+        <!--android:textSize="24dp" />-->
+        <!--</LinearLayout>-->
 
         <RelativeLayout
             android:id="@+id/fields_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#dbdbdb"
+            android:background="@color/gray"
             android:visibility="visible">
 
             <RelativeLayout
                 android:id="@+id/search_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white">
+                android:background="@color/gray"
+                android:paddingBottom="3dp"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
+                android:paddingTop="3dp">
+
+                <EditText
+                    android:id="@+id/edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_alignParentStart="true"
+                    android:background="@drawable/search_text"
+                    android:drawablePadding="5dp"
+                    android:drawableStart="@drawable/ic_search"
+                    android:ems="10"
+                    android:hint="Tìm kiếm sân"
+                    android:inputType="text"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="40dp"
+                    android:textSize="16dp" />
 
                 <ImageView
                     android:id="@+id/btSearchClose"
@@ -53,26 +72,11 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="5dp"
+                    android:layout_marginEnd="7dp"
+                    android:background="@android:color/white"
                     android:src="@drawable/ic_close" />
 
-                <EditText
-                    android:id="@+id/edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_toLeftOf="@id/btSearchClose"
-                    android:background="@android:color/white"
-                    android:drawableLeft="@drawable/ic_search"
-                    android:drawablePadding="5dp"
-                    android:ems="10"
-                    android:hint="Tìm kiếm sân"
-                    android:inputType="text"
-                    android:paddingLeft="10dp"
-                    android:textSize="16dp" />
-
             </RelativeLayout>
-
 
             <android.support.v4.widget.SwipeRefreshLayout
                 android:id="@+id/swipe_refresh_layout"

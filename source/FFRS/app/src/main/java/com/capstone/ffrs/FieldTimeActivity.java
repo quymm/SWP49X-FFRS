@@ -7,20 +7,22 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -38,16 +40,16 @@ import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.NetworkImageView;
 import com.capstone.ffrs.adapter.FieldTimeAdapter;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.FieldTime;
+import com.capstone.ffrs.utils.HostURLUtils;
 import com.capstone.ffrs.utils.TimePickerListener;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -76,7 +78,7 @@ public class FieldTimeActivity extends AppCompatActivity {
     private FieldTimeAdapter adapter;
 
     private String name, address;
-    int id;
+    int id, favoriteFieldId;
 
     private String displayFormat = "dd/MM/yyyy";
     private String serverFormat = "dd-MM-yyyy";
@@ -87,6 +89,8 @@ public class FieldTimeActivity extends AppCompatActivity {
     private Button date;
     private TimePickerListener startTimeListener, endTimeListener;
     private SwipeRefreshLayout swipeRefreshLayout;
+
+    boolean isEnable = false;
 
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -201,7 +205,7 @@ public class FieldTimeActivity extends AppCompatActivity {
 
         txtNotFound = (TextView) findViewById(R.id.text_no_free_time);
 
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(this).getHostURL();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -321,14 +325,60 @@ public class FieldTimeActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (!fieldTimeList.isEmpty()) {
-                    clearData();
-                } else {
+                if (fieldTimeList.isEmpty()) {
                     txtNotFound.setVisibility(View.GONE);
                 }
                 loadFieldTimes();
             }
         });
+
+        final ImageButton ButtonStar = (ImageButton) findViewById(R.id.favorite);
+        ButtonStar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Bundle b = getIntent().getExtras();
+                if (isEnable) {
+                    url = hostURL + getResources().getString(R.string.url_remove_favorite_field);
+                    url = String.format(url, favoriteFieldId);
+                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            ButtonStar.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_star_off));
+                            Toast.makeText(FieldTimeActivity.this, "Bạn đã xóa sân ra khỏi danh sách yêu thích", Toast.LENGTH_LONG).show();
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
+                    });
+                    queue.add(request);
+                } else {
+                    url = hostURL + getResources().getString(R.string.url_add_favorite_field);
+                    url = String.format(url, b.getInt("user_id"), b.getInt("field_id"));
+                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                favoriteFieldId = response.getJSONObject("body").getInt("id");
+                                ButtonStar.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_star_on));
+                                Toast.makeText(FieldTimeActivity.this, "Bạn đã thêm sân vào danh sách yêu thích", Toast.LENGTH_LONG).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
+                    });
+                    queue.add(request);
+                }
+                isEnable = !isEnable;
+            }
+        });
+        checkFavoriteField();
     }
 
     @Override
@@ -356,8 +406,6 @@ public class FieldTimeActivity extends AppCompatActivity {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(timeReceiver,
                 new IntentFilter("time-picker-message"));
-
-        loadFieldTimes();
     }
 
     @Override
@@ -533,10 +581,46 @@ public class FieldTimeActivity extends AppCompatActivity {
                                 try {
                                     JSONObject obj = body.getJSONObject(i);
 
-                                    FieldTime fieldTime = new FieldTime(sdf.format(sdf.parse(obj.getString("startTime"))), sdf.format(sdf.parse(obj.getString("endTime"))));
+                                    Date startTime = sdf.parse(obj.getString("startTime"));
+                                    LocalDate localDate = LocalDate.parse(date.getText().toString(), DateTimeFormat.forPattern("dd/MM/yyyy"));
+                                    if (localDate.isEqual(LocalDate.now())) {
+                                        Calendar calendar = Calendar.getInstance();
+                                        calendar.set(Calendar.SECOND, 0);
+                                        calendar.set(Calendar.MILLISECOND, 0);
+                                        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                                        int minutes = calendar.get(Calendar.MINUTE);
+                                        if (minutes > 0 && minutes < 30) {
+                                            minutes = 30;
+                                            calendar.set(Calendar.MINUTE, minutes);
+                                        } else if (minutes > 30 && minutes <= 59) {
+                                            minutes = 0;
+                                            calendar.set(Calendar.MINUTE, minutes);
+                                            if (hour < 23) {
+                                                hour += 1;
+                                                calendar.set(Calendar.HOUR_OF_DAY, hour);
+                                            } else {
+                                                hour = 0;
+                                                calendar.set(Calendar.HOUR_OF_DAY, hour);
+                                                calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1);
+                                            }
+                                        }
+                                        LocalTime localStartTime = LocalTime.fromDateFields(startTime);
+                                        LocalTime localEndTime = LocalTime.fromDateFields(sdf.parse(obj.getString("endTime")));
+                                        LocalTime localCurrentTime = LocalTime.fromCalendarFields(calendar);
+                                        if (localCurrentTime.isAfter(localStartTime)) {
+                                            startTime = localCurrentTime.toDateTimeToday().toDate();
+                                        }
 
-                                    // adding movie to movies array
-                                    fieldTimeList.add(fieldTime);
+                                        if (localEndTime.toDateTimeToday().getMillis() - localCurrentTime.toDateTimeToday().getMillis() >= (60 * 60 * 1000)) {
+                                            FieldTime fieldTime = new FieldTime(sdf.format(startTime), sdf.format(localEndTime.toDateTimeToday().toDate()));
+                                            // adding movie to movies array
+                                            fieldTimeList.add(fieldTime);
+                                        }
+                                    } else {
+                                        FieldTime fieldTime = new FieldTime(sdf.format(startTime), sdf.format(sdf.parse(obj.getString("endTime"))));
+                                        // adding movie to movies array
+                                        fieldTimeList.add(fieldTime);
+                                    }
 
                                 } catch (Exception e) {
                                     Log.d("EXCEPTION", e.getMessage());
@@ -565,6 +649,12 @@ public class FieldTimeActivity extends AppCompatActivity {
                                 startTimeListener.setMaxTime(endFrame);
                                 final EditText from = (EditText) findViewById(R.id.text_from);
                                 from.setOnClickListener(startTimeListener);
+                            } else {
+                                txtNotFound.setVisibility(View.VISIBLE);
+                                final EditText from = (EditText) findViewById(R.id.text_from);
+                                final EditText to = (EditText) findViewById(R.id.text_to);
+                                from.setOnClickListener(null);
+                                to.setOnClickListener(null);
                             }
                         } else {
                             txtNotFound.setVisibility(View.VISIBLE);
@@ -616,5 +706,47 @@ public class FieldTimeActivity extends AppCompatActivity {
         };
         //Adding JsonArrayRequest to Request Queue
         queue.add(newsReq);
+    }
+
+    public void onClickGoBackToHome(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+    }
+
+    public void checkFavoriteField() {
+        final Bundle b = getIntent().getExtras();
+        RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
+        final ImageButton ButtonStar = (ImageButton) findViewById(R.id.favorite);
+        url = hostURL + getResources().getString(R.string.url_get_favorite_fields);
+        url = String.format(url, b.getInt("user_id"));
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (!response.isNull("body")) {
+                        JSONArray body = response.getJSONArray("body");
+                        for (int i = 0; i < body.length(); i++) {
+                            JSONObject item = body.getJSONObject(i);
+                            int fieldId = item.getJSONObject("fieldOwnerId").getInt("id");
+                            if (fieldId == b.getInt("field_id")) {
+                                ButtonStar.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_star_on));
+                                isEnable = true;
+                                favoriteFieldId = item.getInt("id");
+                                break;
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        queue.add(request);
     }
 }

@@ -28,7 +28,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Lý do bạn báo cáo đội này: *" />
+                    android:text="Lý do bạn tố cáo đội này: *" />
 
                 <CheckBox
                     android:id="@+id/checkBox1"
@@ -65,7 +65,7 @@
                         android:text="Nhận xét khác:" />
 
                     <EditText
-                        android:id="@+id/editText1"
+                        android:id="@+id/text_content"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:ems="10"
@@ -83,8 +83,8 @@
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"
             android:background="#197a35"
-
-            android:text="OK"
+            android:onClick="onClickSendReport"
+            android:text="Gửi tố cáo"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 

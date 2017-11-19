@@ -38,4 +38,12 @@
         <item name="colorAccent">#009632</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
+
+
+    <style name="SplashTheme" parent="AppTheme">
+
+        <item name="android:windowBackground">@drawable/logo</item>
+
+    </style>
+
 </resources>

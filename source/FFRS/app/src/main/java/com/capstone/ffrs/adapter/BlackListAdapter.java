@@ -1,10 +1,10 @@
 package com.capstone.ffrs.adapter;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,13 +29,10 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestBuilder;
-import com.capstone.ffrs.FieldTimeActivity;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.FieldOwner;
 import com.capstone.ffrs.entity.OpponentInfo;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,17 +49,12 @@ public class BlackListAdapter extends RecyclerView.Adapter<BlackListAdapter.Blac
     private List<OpponentInfo> blackList;
     private Context context;
     private LayoutInflater inflater;
-    private int userId;
 
     public BlackListAdapter(Context context, List<OpponentInfo> blackList) {
 
         this.context = context;
         this.blackList = blackList;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     @Override
@@ -75,7 +67,7 @@ public class BlackListAdapter extends RecyclerView.Adapter<BlackListAdapter.Blac
     @Override
     public void onBindViewHolder(BlackListViewHolder holder, int position) {
         OpponentInfo info = blackList.get(position);
-        holder.itemView.setTag(R.id.card_view, info.getId());
+        holder.itemView.setTag(R.id.card_view, info);
         holder.txtTeamName.setText(info.getName());
         holder.txtRatingScore.setText("Điểm xếp hạng: " + info.getRatingScore());
     }
@@ -100,7 +92,7 @@ public class BlackListAdapter extends RecyclerView.Adapter<BlackListAdapter.Blac
             btDelete.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
-                                                final int blackListId = (int) itemView.getTag(R.id.card_view);
+                                                final OpponentInfo info = (OpponentInfo) itemView.getTag(R.id.card_view);
                                                 AlertDialog.Builder builder;
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                                     builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
@@ -113,15 +105,18 @@ public class BlackListAdapter extends RecyclerView.Adapter<BlackListAdapter.Blac
                                                             public void onClick(DialogInterface dialog, int which) {
                                                                 // continue with delete
                                                                 RequestQueue queue = NetworkController.getInstance(context).getRequestQueue();
-                                                                String url = context.getResources().getString(R.string.local_host) + context.getResources().getString(R.string.url_remove_black_list);
-                                                                url = String.format(url, blackListId);
+                                                                String url = HostURLUtils.getInstance(context).getHostURL() + context.getResources().getString(R.string.url_remove_black_list);
+                                                                url = String.format(url, info.getId());
                                                                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
                                                                     @Override
                                                                     public void onResponse(JSONObject response) {
                                                                         Toast.makeText(context, "Bạn đã xóa đối thủ khỏi danh sách", Toast.LENGTH_SHORT).show();
-                                                                        // trigger reload BroadcastReceiver
-                                                                        Intent intent = new Intent("remove-message");
-                                                                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                                                                        blackList.remove(info);
+                                                                        notifyDataSetChanged();
+                                                                        if (blackList.isEmpty()) {
+                                                                            TextView txtNotFound = (TextView) ((Activity) context).findViewById(R.id.text_not_found);
+                                                                            txtNotFound.setVisibility(View.VISIBLE);
+                                                                        }
                                                                     }
                                                                 }, new Response.ErrorListener() {
                                                                     @Override

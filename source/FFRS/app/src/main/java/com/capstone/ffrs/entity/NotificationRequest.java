@@ -1,11 +1,6 @@
 package com.capstone.ffrs.entity;
 
-import com.google.firebase.database.Exclude;
-import com.google.firebase.database.ServerValue;
-
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by HuanPMSE61860 on 10/17/2017.

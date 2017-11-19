@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -18,16 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.MatchRequest;
-import com.capstone.ffrs.entity.NotificationRequest;
-import com.capstone.ffrs.entity.NotificationResponse;
+import com.capstone.ffrs.utils.HostURLUtils;
 import com.capstone.ffrs.utils.TimePickerListener;
 
 import org.joda.time.LocalDateTime;
@@ -39,7 +34,6 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +50,7 @@ public class RequestTimeActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(this).getHostURL();
 
         Bundle b = getIntent().getExtras();
         duration = b.getInt("duration");
@@ -88,10 +82,15 @@ public class RequestTimeActivity extends AppCompatActivity {
             dtf = DateTimeFormat.forPattern("H:mm:ss");
             LocalTime localMaxStartTime = LocalTime.parse(b.getString("field_end_time"), dtf).minusMinutes(duration);
             dtf = DateTimeFormat.forPattern("H:mm");
+            Date minStartTime = new SimpleDateFormat("H:mm:ss").parse(b.getString("field_start_time"));
             Date maxStartTime = new SimpleDateFormat("H:mm").parse(localMaxStartTime.toString(dtf));
-            startListener.setDate(new Date(Long.parseLong(b.getString("date"))));
-            startListener.setMinTime(new SimpleDateFormat("H:mm:ss").parse(b.getString("field_start_time")));
-            startListener.setMaxTime(maxStartTime);
+            if (maxStartTime.getTime() - minStartTime.getTime() == 0) {
+                chooseField();
+            } else {
+                startListener.setDate(new Date(Long.parseLong(b.getString("date"))));
+                startListener.setMinTime(minStartTime);
+                startListener.setMaxTime(maxStartTime);
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -126,6 +125,10 @@ public class RequestTimeActivity extends AppCompatActivity {
     }
 
     public void onClickChooseField(View v) {
+        chooseField();
+    }
+
+    public void chooseField() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         final int userId = sharedPreferences.getInt("user_id", -1);
         final Bundle b = getIntent().getExtras();
@@ -143,6 +146,10 @@ public class RequestTimeActivity extends AppCompatActivity {
         final String strDate = b.getString("date");
 
         Map<String, Object> params = new HashMap<>();
+        params.put("expectedDistance", b.getInt("distance"));
+        params.put("address", b.getString("address"));
+        params.put("priorityField", b.getBoolean("priorityField"));
+        params.put("duration", b.getInt("duration"));
         params.put("date", strDate);
         params.put("userId", userId);
         params.put("startTime", txtStartTime.getText().toString());
@@ -181,13 +188,13 @@ public class RequestTimeActivity extends AppCompatActivity {
                                     }
                                 } else {
                                     Toast toast = Toast.makeText(RequestTimeActivity.this, "Không tìm thấy sân phù hợp!", Toast.LENGTH_LONG);
-                                    toast.setGravity(Gravity.CENTER, 0, 0);
                                     toast.show();
+                                    finish();
                                 }
                             } else {
                                 Toast toast = Toast.makeText(RequestTimeActivity.this, "Không tìm thấy sân phù hợp!", Toast.LENGTH_LONG);
-                                toast.setGravity(Gravity.CENTER, 0, 0);
                                 toast.show();
+                                finish();
                             }
                         } catch (JSONException e) {
                             Log.d("ParseException", e.getMessage());

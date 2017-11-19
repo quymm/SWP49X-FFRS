@@ -1,16 +1,12 @@
 package com.capstone.ffrs;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -21,12 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.FieldOwnerFriendlyNotification;
-import com.capstone.ffrs.entity.FieldOwnerTourNotification;
-import com.capstone.ffrs.service.TimerServices;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.capstone.ffrs.utils.HostURLUtils;
 import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
@@ -39,8 +30,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,8 +72,6 @@ public class PayPalActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay_pal);
 
-        stopService(new Intent(this, TimerServices.class));
-
         Bundle b = getIntent().getExtras();
 
         Intent intent = new Intent(this, PayPalService.class);
@@ -116,7 +103,7 @@ public class PayPalActivity extends AppCompatActivity {
                         .getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
                 if (confirm != null) {
                     final Bundle b = getIntent().getExtras();
-                    String hostURL = getResources().getString(R.string.local_host);
+                    String hostURL = HostURLUtils.getInstance(this).getHostURL();
                     String url = hostURL + getResources().getString(R.string.url_add_to_balance);
 
                     RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
@@ -145,7 +132,6 @@ public class PayPalActivity extends AppCompatActivity {
                                         intent.putExtra("time_to", b.getSerializable("time_to"));
                                         intent.putExtra("price", b.getInt("price"));
                                         intent.putExtra("user_id", b.getInt("user_id"));
-                                        intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
                                         intent.putExtra("tour_match_mode", b.getBoolean("tour_match_mode"));
                                         if (b.getBoolean("tour_match_mode")) {
                                             intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
@@ -155,7 +141,7 @@ public class PayPalActivity extends AppCompatActivity {
                                     }
                                     intent.putExtra("payment_result", "Recharged");
                                     editor.putInt("balance", body.getJSONObject("userId").getJSONObject("profileId").getInt("balance"));
-                                    editor.commit();
+                                    editor.apply();
                                     startActivity(intent);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
