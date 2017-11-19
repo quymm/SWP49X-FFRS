@@ -121,7 +121,7 @@ public class MatchServices {
 //        }
 //    }
 
-    public List<OutputMatchingRequestDTO> createNewMatchingRequest(InputMatchingRequestDTO inputMatchingRequestDTO) {
+    public List<MatchingRequestEntity> createNewMatchingRequest(InputMatchingRequestDTO inputMatchingRequestDTO) {
         AccountEntity user = accountServices.findAccountEntityByIdAndRole(inputMatchingRequestDTO.getUserId(), constant.getUserRole());
 
         RequestReservateDTO requestReservateDTO = new RequestReservateDTO();
@@ -154,25 +154,16 @@ public class MatchServices {
         matchingRequestEntity.setLatitude(inputMatchingRequestDTO.getLatitude());
         matchingRequestEntity.setAddress(inputMatchingRequestDTO.getAddress());
         matchingRequestEntity.setPriorityField(inputMatchingRequestDTO.getPriorityField());
-        matchingRequestEntity.setExpectedPrice(maxPrice/2);
+        matchingRequestEntity.setExpectedPrice(maxPrice / 2);
         matchingRequestEntity.setStatus(true);
 
         // ghi nợ cho người chơi
-        user.getProfileId().setAccountPayable(user.getProfileId().getAccountPayable() + maxPrice/2);
+        user.getProfileId().setAccountPayable(user.getProfileId().getAccountPayable() + maxPrice / 2);
         profileRepository.save(user.getProfileId());
-        MatchingRequestEntity savedMatchingRequestEntity = matchingRequestRepository.save(matchingRequestEntity);
+        List<MatchingRequestEntity> returnMatchingRequestList = suggestOpponent(inputMatchingRequestDTO);
+        matchingRequestRepository.save(matchingRequestEntity);
 
-        List<MatchingRequestEntity> similarMatchingRequestList = suggestOpponent(inputMatchingRequestDTO);
-        List<OutputMatchingRequestDTO> outputMatchingRequestDTOList = new ArrayList<>();
-        if(similarMatchingRequestList.size() > 1){
-            for (MatchingRequestEntity similarMatchingRequest : similarMatchingRequestList) {
-                OutputMatchingRequestDTO outputMatchingRequestDTO = new OutputMatchingRequestDTO();
-                outputMatchingRequestDTO.setMatchingRequestId(similarMatchingRequest.getId());
-                outputMatchingRequestDTO.setUserId(similarMatchingRequest.getUserId().getId());
-                outputMatchingRequestDTOList.add(outputMatchingRequestDTO);
-            }
-        }
-        return outputMatchingRequestDTOList;
+        return returnMatchingRequestList;
     }
 
     public List<MatchingRequestEntity> suggestOpponent(InputMatchingRequestDTO inputMatchingRequestDTO) {
@@ -325,7 +316,7 @@ public class MatchServices {
         }
         MatchingRequestEntity matchingRequestEntity = findMatchingRequestEntityById(matchingRequestId);
         AccountEntity user = accountServices.findAccountEntityByIdAndRole(inputReserveTimeSlotDTO.getUserId(), constant.getUserRole());
-        if((user.getProfileId().getBalance() - user.getProfileId().getAccountPayable()) < (savedTimeSlotEntity.getPrice()/2)) {
+        if ((user.getProfileId().getBalance() - user.getProfileId().getAccountPayable()) < (savedTimeSlotEntity.getPrice() / 2)) {
             throw new IllegalArgumentException("Not enough available balances to reserve field!");
         }
         AccountEntity opponent = matchingRequestEntity.getUserId();
@@ -403,7 +394,7 @@ public class MatchServices {
         return matchingRequestEntityList;
     }
 
-    public boolean cancelMatchingRequest(int matchingRequestId){
+    public boolean cancelMatchingRequest(int matchingRequestId) {
         MatchingRequestEntity matchingRequestEntity = matchingRequestRepository.findByIdAndStatus(matchingRequestId, true);
         matchingRequestEntity.setStatus(false);
         // hoàn tiền đã chiếm trong matching request cho người dùng

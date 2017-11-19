@@ -44,8 +44,8 @@ INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `bonus_point`, 
 INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `bonus_point`, `balance`, `account_payable`) VALUES ('RMIT FC', 'Nguyễn Văn Linh, Quận 7, Hồ Chí Minh', '0913131215', '2000', 0, 500, 0);
 INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `bonus_point`, `balance`, `account_payable`) VALUES ('Hiệp Pig', 'Chu Văn An, Bình Thạnh, Hồ Chí Minh', '0914151049', '2000', 0, 500, 0);
 INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `bonus_point`, `balance`, `account_payable`) VALUES ('Thiện Buffalo', 'Gò Dưa, Tân Phú, Hồ Chí Minh', '0999999999', '2000', 0, 500, 0);
-INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `bonus_point`, `balance`, `account_payable`) VALUES ('Khánh KT', 'Cầu Bình Triệu, Bình Thạnh, Hồ Chí Minh', '012345678', '2000', 500, 0);
-INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `bonus_point`, `balance`, `account_payable`) VALUES ('Tín PT', 'Cây Trâm, Gò Vấp, Hồ Chí Minh', '0913311514', '2000', 500, 0);
+INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `bonus_point`, `balance`, `account_payable`) VALUES ('Khánh KT', 'Cầu Bình Triệu, Bình Thạnh, Hồ Chí Minh', '012345678', '2000', 0, 500, 0);
+INSERT INTO profile (`name`, `address`, `phone`, `rating_score`, `bonus_point`, `balance`, `account_payable`) VALUES ('Tín PT', 'Cây Trâm, Gò Vấp, Hồ Chí Minh', '0913311514', '2000', 0, 500, 0);
 
 -- tạo account cho người dùng
 INSERT INTO account (`username`, `password`, `profile_id`, `role_id`, `num_of_report`) VALUES('quymm', '123456', '23', '1', 0);
@@ -89,12 +89,12 @@ INSERT INTO profile (`name`, `address`, `phone`) VALUES ('Nhân viên Thành', '
 INSERT INTO profile (`name`, `address`, `phone`) VALUES ('Nhân viên Hiếu', 'Chợ Cầu, quận Gò Vấp', '0912411344');
 
 -- tạo account cho staff
-INSERT INTO account (`username`, `password`, `profile_id`, `role_id`, `num_of_report`) VALUES('thanhbcs', '123456', '33', '3', 0);
-INSERT INTO account (`username`, `password`, `profile_id`, `role_id`, `num_of_report`) VALUES('hieubae', '123456', '34', '3', 0);
+INSERT INTO account (`username`, `password`, `profile_id`, `role_id`, `num_of_report`) VALUES('thanh', '123456', '33', '3', 0);
+INSERT INTO account (`username`, `password`, `profile_id`, `role_id`, `num_of_report`) VALUES('hieu', '123456', '34', '3', 0);
 
 -- tạo mức giá max min hệ thống
 INSERT INTO standard_price (`staff_id`, `field_type_id`, `date_from`, `date_to`, `rush_hour`, `max_price`, `min_price`) VALUES (33, 1, '2017-10-11', '2018-01-01', 1, 300, 150);
-INSERT INTO standard_price (`staff_id`, `field_type_id`, `date_from`, `date_to`, `rush_hour`, `max_price`, `min_price`) VALUES (33, 1, '2017-10-11', '2018-01-01', 1, 200, 80);
+INSERT INTO standard_price (`staff_id`, `field_type_id`, `date_from`, `date_to`, `rush_hour`, `max_price`, `min_price`) VALUES (33, 0, '2017-10-11', '2018-01-01', 1, 200, 80);
 
 -- tạo sân cho chủ sân
 INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Sân 1', 11, 1);
