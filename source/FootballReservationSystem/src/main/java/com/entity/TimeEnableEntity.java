@@ -51,6 +51,9 @@ public class TimeEnableEntity implements Serializable {
     @Column(name = "price")
     private float price;
     @Basic(optional = false)
+    @Column(name = "optimal")
+    private boolean optimal;
+    @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
     @Basic(optional = false)
@@ -122,6 +125,14 @@ public class TimeEnableEntity implements Serializable {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public boolean isOptimal() {
+        return optimal;
+    }
+
+    public void setOptimal(boolean optimal) {
+        this.optimal = optimal;
     }
 
     public boolean getStatus() {

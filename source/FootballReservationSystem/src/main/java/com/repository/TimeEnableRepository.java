@@ -20,7 +20,13 @@ public interface TimeEnableRepository extends JpaRepository<TimeEnableEntity, In
     List<TimeEnableEntity> findByDateInWeekAndStatus(String dateInWeek, boolean status);
 
     @Query("SELECT t FROM TimeEnableEntity t WHERE t.fieldOwnerId = :accountEntity AND t.fieldTypeId = :fieldTypeEntity AND t.dateInWeek = :dateInWeek" +
+            " AND t.optimal = :optimal AND t.status = :status ORDER BY t.startTime")
+    List<TimeEnableEntity> findByFieldOwnerAndTypeAndDateAndDateInWeekAndOptimalOrderByStartTime(@Param("accountEntity") AccountEntity accountEntity, @Param("fieldTypeEntity") FieldTypeEntity fieldTypeEntity,
+                                                                                       @Param("dateInWeek") String dateInWeek, @Param("optimal") boolean optimal, @Param("status") boolean status);
+
+    @Query("SELECT t FROM TimeEnableEntity t WHERE t.fieldOwnerId = :accountEntity AND t.fieldTypeId = :fieldTypeEntity AND t.dateInWeek = :dateInWeek" +
             " AND t.status = :status ORDER BY t.startTime")
-    List<TimeEnableEntity> findByFieldOwnerAndTypeAndDateAndDateInWeekOrderByStartTime(@Param("accountEntity") AccountEntity accountEntity, @Param("fieldTypeEntity") FieldTypeEntity fieldTypeEntity,
-                                                                                       @Param("dateInWeek") String dateInWeek, @Param("status") boolean status);
+    List<TimeEnableEntity> findByFieldOwnerAndTypeAndDateInWeekOrderByStartTime(@Param("accountEntity") AccountEntity accountEntity, @Param("fieldTypeEntity") FieldTypeEntity fieldTypeEntity,
+                                                                                @Param("dateInWeek") String dateInWeek, @Param("status") boolean status);
+
 }

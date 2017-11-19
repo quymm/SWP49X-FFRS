@@ -62,11 +62,16 @@ public class TimeEnableServices {
         timeEnableEntity.setStartTime(DateTimeUtils.convertFromStringToTime(inputTimeEnableDTO.getStartTime()));
         timeEnableEntity.setEndTime(DateTimeUtils.convertFromStringToTime(inputTimeEnableDTO.getEndTime()));
         timeEnableEntity.setPrice(Float.parseFloat(inputTimeEnableDTO.getPrice()));
+        timeEnableEntity.setOptimal(inputTimeEnableDTO.isOptimal());
         timeEnableEntity.setStatus(true);
         return timeEnableEntity;
     }
 
-    public List<TimeEnableEntity> findTimeEnableByFieldOwnerTypeAndDate(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity, String dateInWeek) {
-        return timeEnableRepository.findByFieldOwnerAndTypeAndDateAndDateInWeekOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, true);
+    public List<TimeEnableEntity> findTimeEnableByFieldOwnerTypeAndDate(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity, String dateInWeek, Boolean optimal) {
+        if (optimal != null) {
+            return timeEnableRepository.findByFieldOwnerAndTypeAndDateAndDateInWeekAndOptimalOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, optimal, true);
+        } else {
+            return timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, true);
+        }
     }
 }

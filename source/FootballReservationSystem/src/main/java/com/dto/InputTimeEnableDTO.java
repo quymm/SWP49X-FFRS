@@ -18,6 +18,8 @@ public class InputTimeEnableDTO {
 
     private String price;
 
+    private boolean optimal;
+
     public InputTimeEnableDTO() {
     }
 
@@ -67,5 +69,13 @@ public class InputTimeEnableDTO {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public boolean isOptimal() {
+        return optimal;
+    }
+
+    public void setOptimal(boolean optimal) {
+        this.optimal = optimal;
     }
 }
