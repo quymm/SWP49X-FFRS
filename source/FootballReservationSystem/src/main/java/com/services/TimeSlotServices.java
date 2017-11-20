@@ -92,7 +92,7 @@ public class TimeSlotServices {
                     timeSlotEntity.setFieldOwnerId(fieldOwnerEntity);
                     timeSlotEntity.setFieldTypeId(fieldTypeEntity);
                     timeSlotEntity.setStartTime(timeEnableEntityList.get(0).getStartTime());
-                    timeSlotEntity.setEndTime(timeEnableEntityList.get(timeEnableEntityList.size()).getEndTime());
+                    timeSlotEntity.setEndTime(timeEnableEntityList.get(timeEnableEntityList.size()-1).getEndTime());
                     timeSlotEntity.setReserveStatus(false);
                     timeSlotEntity.setOptimal(false);
                     timeSlotEntity.setStatus(true);

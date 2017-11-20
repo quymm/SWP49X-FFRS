@@ -1,13 +1,17 @@
 package com.dto;
 
+import com.entity.MatchingRequestEntity;
+
+import java.util.List;
+
 public class OutputMatchingRequestDTO {
     private Integer matchingRequestId;
 
-    private Integer userId;
+    private List<MatchingRequestEntity> similarMatchingRequestList;
 
-    public OutputMatchingRequestDTO(Integer matchingRequestId, Integer userId) {
+    public OutputMatchingRequestDTO(Integer matchingRequestId, List<MatchingRequestEntity> similarMatchingRequestList) {
         this.matchingRequestId = matchingRequestId;
-        this.userId = userId;
+        this.similarMatchingRequestList = similarMatchingRequestList;
     }
 
     public OutputMatchingRequestDTO() {
@@ -21,11 +25,11 @@ public class OutputMatchingRequestDTO {
         this.matchingRequestId = matchingRequestId;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public List<MatchingRequestEntity> getSimilarMatchingRequestList() {
+        return similarMatchingRequestList;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setSimilarMatchingRequestList(List<MatchingRequestEntity> similarMatchingRequestList) {
+        this.similarMatchingRequestList = similarMatchingRequestList;
     }
 }

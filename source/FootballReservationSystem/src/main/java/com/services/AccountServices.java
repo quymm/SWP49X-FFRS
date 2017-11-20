@@ -119,11 +119,11 @@ public class AccountServices {
 
     public AccountEntity checkLogin(String username, String password) {
         AccountEntity accountEntity = accountRepository.findByUsernameAndPasswordAndStatus(username, password, true);
-        if (accountEntity.getLockStatus()) {
-            throw new IllegalArgumentException(String.format("Account have username: %s is locked!", accountEntity.getUsername()));
-        }
         if (accountEntity == null) {
             throw new EntityNotFoundException(String.format("Not found account have username: %s and password: %s", username, password));
+        }
+        if (accountEntity.getLockStatus()) {
+            throw new IllegalArgumentException(String.format("Account have username: %s is locked!", accountEntity.getUsername()));
         }
         return accountEntity;
     }
