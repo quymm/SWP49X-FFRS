@@ -121,7 +121,7 @@ public class MatchServices {
 //        }
 //    }
 
-    public List<MatchingRequestEntity> createNewMatchingRequest(InputMatchingRequestDTO inputMatchingRequestDTO) {
+    public OutputMatchingRequestDTO createNewMatchingRequest(InputMatchingRequestDTO inputMatchingRequestDTO) {
         AccountEntity user = accountServices.findAccountEntityByIdAndRole(inputMatchingRequestDTO.getUserId(), constant.getUserRole());
 
         RequestReservateDTO requestReservateDTO = new RequestReservateDTO();
@@ -160,10 +160,14 @@ public class MatchServices {
         // ghi nợ cho người chơi
         user.getProfileId().setAccountPayable(user.getProfileId().getAccountPayable() + maxPrice / 2);
         profileRepository.save(user.getProfileId());
-        List<MatchingRequestEntity> returnMatchingRequestList = suggestOpponent(inputMatchingRequestDTO);
-        matchingRequestRepository.save(matchingRequestEntity);
+        List<MatchingRequestEntity> similarMatchingRequestList = suggestOpponent(inputMatchingRequestDTO);
+        MatchingRequestEntity savedMatchingRequestEntity = matchingRequestRepository.save(matchingRequestEntity);
 
-        return returnMatchingRequestList;
+        OutputMatchingRequestDTO outputMatchingRequestDTO = new OutputMatchingRequestDTO();
+        outputMatchingRequestDTO.setMatchingRequestId(savedMatchingRequestEntity.getId());
+        outputMatchingRequestDTO.setSimilarMatchingRequestList(similarMatchingRequestList);
+
+        return outputMatchingRequestDTO;
     }
 
     public List<MatchingRequestEntity> suggestOpponent(InputMatchingRequestDTO inputMatchingRequestDTO) {
