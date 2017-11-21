@@ -1,24 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.*;
 
 /**
  *
  * @author MinhQuy
  */
 @Entity
-@Table(name = "field")
-public class FieldEntity implements Serializable {
+@Table(name = "tour_match")
+public class NormalMatchEntity implements Serializable{
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -27,12 +22,11 @@ public class FieldEntity implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "name")
-    private String name;
+    @Column(name = "player_name")
+    private String playerName;
     @Basic(optional = false)
-    @Column(name = "expiration_date")
-    @Temporal(TemporalType.DATE)
-    private Date expirationDate;
+    @Column(name = "phone")
+    private String phone;
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
@@ -44,24 +38,24 @@ public class FieldEntity implements Serializable {
     @Column(name = "modification_date")
     @UpdateTimestamp
     private Date modificationDate;
+    @JoinColumn(name = "time_slot_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private TimeSlotEntity timeSlotId;
     @JoinColumn(name = "field_owner_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private AccountEntity fieldOwnerId;
-    @JoinColumn(name = "field_type_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private FieldTypeEntity fieldTypeId;
 
-    public FieldEntity() {
-    }
-
-    public FieldEntity(Integer id) {
-        this.id = id;
-    }
-
-    public FieldEntity(Integer id, String name, boolean status) {
-        this.id = id;
-        this.name = name;
+    public NormalMatchEntity(String playerName, String phone, boolean status, Date creationDate, Date modificationDate, TimeSlotEntity timeSlotId, AccountEntity fieldOwnerId) {
+        this.playerName = playerName;
+        this.phone = phone;
         this.status = status;
+        this.creationDate = creationDate;
+        this.modificationDate = modificationDate;
+        this.timeSlotId = timeSlotId;
+        this.fieldOwnerId = fieldOwnerId;
+    }
+
+    public NormalMatchEntity() {
     }
 
     public Integer getId() {
@@ -72,20 +66,20 @@ public class FieldEntity implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getPlayerName() {
+        return playerName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 
-    public Date getExpirationDate() {
-        return expirationDate;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setExpirationDate(Date expirationDate) {
-        this.expirationDate = expirationDate;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public boolean getStatus() {
@@ -112,20 +106,20 @@ public class FieldEntity implements Serializable {
         this.modificationDate = modificationDate;
     }
 
+    public TimeSlotEntity getTimeSlotId() {
+        return timeSlotId;
+    }
+
+    public void setTimeSlotId(TimeSlotEntity timeSlotId) {
+        this.timeSlotId = timeSlotId;
+    }
+
     public AccountEntity getFieldOwnerId() {
         return fieldOwnerId;
     }
 
     public void setFieldOwnerId(AccountEntity fieldOwnerId) {
         this.fieldOwnerId = fieldOwnerId;
-    }
-
-    public FieldTypeEntity getFieldTypeId() {
-        return fieldTypeId;
-    }
-
-    public void setFieldTypeId(FieldTypeEntity fieldTypeId) {
-        this.fieldTypeId = fieldTypeId;
     }
 
     @Override
@@ -138,10 +132,10 @@ public class FieldEntity implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof FieldEntity)) {
+        if (!(object instanceof NormalMatchEntity)) {
             return false;
         }
-        FieldEntity other = (FieldEntity) object;
+        NormalMatchEntity other = (NormalMatchEntity) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -150,7 +144,6 @@ public class FieldEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "com.entity.FieldEntity[ id=" + id + " ]";
+        return "com.entity.NormalMatchEntity[ id=" + id + " ]";
     }
-    
 }

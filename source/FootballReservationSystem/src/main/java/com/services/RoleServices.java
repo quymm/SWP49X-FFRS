@@ -21,6 +21,8 @@ public class RoleServices {
                 newRoleEntity.setRoleName(roleName);
                 newRoleEntity.setStatus(true);
                 return roleRepository.save(newRoleEntity);
+            } else{
+                throw new IllegalArgumentException("There was role in database!");
             }
         }
         return null;

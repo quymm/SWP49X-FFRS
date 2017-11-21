@@ -17,8 +17,8 @@ public class MatchController {
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/friendly-match", method = RequestMethod.POST)
-    public synchronized ResponseEntity reserveFriendlyMatch(@RequestBody InputReserveTimeSlotDTO inputReserveTimeSlotDTO, @RequestParam("user-id") int userId) {
-        Wrapper wrapper = new Wrapper(matchServices.reserveFriendlyMatch(inputReserveTimeSlotDTO, userId), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+    public synchronized ResponseEntity reserveFriendlyMatch(@RequestBody InputReserveTimeSlotDTO inputReserveTimeSlotDTO) {
+        Wrapper wrapper = new Wrapper(matchServices.reserveFriendlyMatch(inputReserveTimeSlotDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
@@ -68,14 +68,6 @@ public class MatchController {
     @RequestMapping(value = "/swp49x-ffrs/match/tour-match", method = RequestMethod.GET)
     public ResponseEntity findTourMatchById(@RequestParam("tour-match-id") int tourMatchId){
         Wrapper wrapper = new Wrapper(matchServices.findTourMatchEntityById(tourMatchId), HttpStatus.OK.value(), HttpStatus.OK.name());
-        return new ResponseEntity(wrapper, HttpStatus.OK);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/swp49x-ffrs/match/warning-field", method = RequestMethod.GET)
-    public ResponseEntity warningAboutPriorityFavoritesField(@RequestParam("user-id") int userId, @RequestParam("longitude") String longitude,
-                                                             @RequestParam("latitude") String latitude, @RequestParam("expected-distance") int expectedDistance){
-        Wrapper wrapper = new Wrapper(matchServices.warningAboutDistanceOfFavoritesField(userId, longitude, latitude, expectedDistance), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 

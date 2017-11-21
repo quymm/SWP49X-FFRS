@@ -2,13 +2,13 @@ package com.services;
 
 import com.config.Constant;
 import com.dto.InputFieldDTO;
-import com.entity.AccountEntity;
-import com.entity.FieldEntity;
-import com.entity.FieldTypeEntity;
+import com.entity.*;
 import com.repository.FieldRepository;
+import com.utils.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,6 +27,9 @@ public class FieldServices {
 
     @Autowired
     TimeSlotServices timeSlotServices;
+
+    @Autowired
+    TimeEnableServices timeEnableServices;
 
     @Autowired
     Constant constant;
@@ -66,15 +69,46 @@ public class FieldServices {
 
     public FieldEntity deleteFieldEntity(int fieldId) {
         FieldEntity fieldEntity = findFieldEntityById(fieldId);
-        fieldEntity.setStatus(false);
+        AccountEntity fieldOwner = fieldEntity.getFieldOwnerId();
+        FieldTypeEntity fieldType = fieldEntity.getFieldTypeId();
+        String dateNow = DateTimeUtils.formatDate(new Date());
+        int numDateFromNow = 0;
+        // kiểm tra trong 6 ngày tới, ngày nào thời gian rảnh bằng đúng time enable 1 ngày thì ngày đó là ngày xóa được
+        // trả về i, tức là ngày đó cách hiện tại bao lâu
+        for (int i = 0; i < 7; i++) {
+            boolean checkEqual = true;
+            // bắt đầu từ ngày hiện tại với i = 0;
+            String targetDate = DateTimeUtils.getDateAfter(dateNow, i);
+            // kiểm tra hôm đó là thứ mấy trong tuần
+            String dateInWeek = DateTimeUtils.returnDayInWeek(DateTimeUtils.convertFromStringToDate(targetDate));
+            // get list thời gian hoạt động mà chủ sân đưa ra ứng cho ngày hôm đó
+            List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDate(fieldOwner, fieldType, dateInWeek, null);
+            // thời gian rảnh của chủ sân tại ngày hôm đó
+            List<TimeSlotEntity> freeTimeSlotList = timeSlotServices.findFreeTimeByFieldOwnerTypeAndDate(fieldOwner.getId(), fieldType.getId(), targetDate);
+
+            // nếu thời gian rảnh đúng bằng thời gian hoạt động của 1 ngày
+            for (int j = 0; j < (timeEnableEntityList.size() < freeTimeSlotList.size() ? timeEnableEntityList.size() : freeTimeSlotList.size()); j++){
+                if(!timeEnableEntityList.get(j).getStartTime().equals(freeTimeSlotList.get(j).getStartTime())
+                        || !timeEnableEntityList.get(j).getEndTime().equals(freeTimeSlotList.get(j).getEndTime())){
+                    checkEqual = false;
+                    break;
+                }
+            }
+            if(checkEqual){
+                numDateFromNow = i;
+                break;
+            }
+        }
+
+        fieldEntity.setExpirationDate(DateTimeUtils.convertFromStringToDate(DateTimeUtils.getDateAfter(dateNow, numDateFromNow)));
         return fieldRepository.save(fieldEntity);
     }
 
-    public List<FieldEntity> findFieldEntityByFieldOwnerAndFieldType(AccountEntity fieldOwner, FieldTypeEntity fieldType){
+    public List<FieldEntity> findFieldEntityByFieldOwnerAndFieldType(AccountEntity fieldOwner, FieldTypeEntity fieldType) {
         return fieldRepository.findByFieldOwnerIdAndFieldTypeIdAndStatus(fieldOwner, fieldType, true);
     }
 
-    public Integer countNumberOfFieldByFieldOwnerAndFieldType(AccountEntity fieldOwner, FieldTypeEntity fieldType){
+    public Integer countNumberOfFieldByFieldOwnerAndFieldType(AccountEntity fieldOwner, FieldTypeEntity fieldType) {
         return fieldRepository.countByFieldOwnerIdAndAndFieldTypeIdAndStatus(fieldOwner, fieldType, true);
     }
 
