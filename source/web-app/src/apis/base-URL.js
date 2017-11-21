@@ -1,7 +1,7 @@
 export const GOOGLE_MAP_KEY = "AIzaSyBHg0iReiIw8DpfaSaPxeaDRrJVP0FWs9A";
 export const GOOGLE_MAP_URL = "https://maps.googleapis.com/maps/api/geocode/json?";
 
-// export const BASE_URL = "http://192.168.43.253:8080/swp49x-ffrs";
+// export const BASE_URL = "http://192.168.43.93:8080/swp49x-ffrs";
 export const BASE_URL = "http://localhost:8080/swp49x-ffrs";
 export const LOGIN = "/account/login";
 export const REGISTER = "/account/managed-field-owner";

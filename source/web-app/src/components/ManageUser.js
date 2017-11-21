@@ -74,7 +74,7 @@ class ManageUser extends Component {
     });
   };
   async handelShowModalUser(evt) {
-    debugger
+    debugger;
     const data = await fetchGetAllReportUser(evt.id);
     this.setState({ listReportWithTargetUser: data.body });
     this.setState({ showModelUser: true, isSearch: evt });
@@ -110,7 +110,11 @@ class ManageUser extends Component {
   async handelLockAccount(evt) {
     evt.preventDefault();
     const { id } = this.props.auth.user.data;
-    const resLock = await fetchRequestLockAccount(this.state.result.id, id);
+
+    const resLock = await fetchRequestLockAccount(
+      this.state.result ? this.state.result.id : this.state.isSearch.id,
+      id,
+    );
     if (resLock.status === 200) {
       toast.success('Gửi yêu cầu thành công!');
     } else {
@@ -126,7 +130,7 @@ class ManageUser extends Component {
 
   render() {
     const { value, suggestions, result, listReported } = this.state;
-    console.log(this.state.listReportWithTargetUser);
+    
     // Autosuggest will pass through all these props to the input.
     const inputProps = {
       placeholder: 'Tìm kiếm theo tên',
@@ -137,7 +141,7 @@ class ManageUser extends Component {
       width: 200,
       height: 200,
     };
-    console.log(listReported);
+   
     let afterFilterUser = [];
     let pageSize = 1;
     if (this.state.userTarget === 'user') {
@@ -151,7 +155,6 @@ class ManageUser extends Component {
       );
       pageSize = Math.ceil(afterFilterUser.length / 10);
     }
-    console.log(listReported);
 
     return (
       <div className="main-panel">

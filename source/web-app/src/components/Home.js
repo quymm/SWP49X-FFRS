@@ -194,7 +194,7 @@ class Home extends Component {
     this.setState({ isShowUpdateField: true });
   }
   handleHideModalField(evt) {
-    evt.preventDefault();
+    // evt.preventDefault();
     this.setState({ isShowUpdateField: false });
   }
 
@@ -448,7 +448,7 @@ class Home extends Component {
               <Modal
                 /* {...this.props} */
                 show={this.state.isShowUpdateField}
-                onHide={this.hideModal}
+                onHide={this.handleHideModalField.bind(this)}
                 dialogClassName="custom-modal"
               >
                 <Modal.Header>

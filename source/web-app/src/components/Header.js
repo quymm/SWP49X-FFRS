@@ -202,7 +202,7 @@ class Header extends Component {
     }
   }
   handleHideModalField(evt) {
-    evt.preventDefault();
+    // evt.preventDefault();
     this.setState({ isShowUpdateField: false });
   }
   handleUpdateProfile(evt) {
@@ -335,7 +335,7 @@ class Header extends Component {
         <Modal
           /* {...this.props} */
           show={this.state.isShowUpdateField}
-          onHide={this.hideModal}
+          onHide={this.handleHideModalField.bind(this)}
           dialogClassName="custom-modal"
         >
           <Modal.Header>
