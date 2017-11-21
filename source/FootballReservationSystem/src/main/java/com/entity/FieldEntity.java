@@ -29,7 +29,6 @@ public class FieldEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "name")
     private String name;
-    @Basic(optional = false)
     @Column(name = "expiration_date")
     @Temporal(TemporalType.DATE)
     private Date expirationDate;
