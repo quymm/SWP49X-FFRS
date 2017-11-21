@@ -51,7 +51,7 @@ public class TimeEnableServices {
 //        return savedTimeEnableEntity;
 //    }
 
-    public List<TimeEnableEntity> updateNewTimeEnable(List<InputTimeEnableDTO> inputTimeEnableDTOList) {
+    public List<TimeEnableEntity> setUpTimeEnable(List<InputTimeEnableDTO> inputTimeEnableDTOList) {
         int fieldOwnerId = inputTimeEnableDTOList.get(0).getFieldOwnerId();
         int fieldTypeId = inputTimeEnableDTOList.get(0).getFieldTypeId();
         AccountEntity fieldOwnerEntity = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
@@ -68,16 +68,16 @@ public class TimeEnableServices {
         Date targetDate = DateTimeUtils.convertFromStringToDate(stargetDate);
         boolean check = true;
 
-        while ((check) && count > 0){
+        while ((check) && count > 0) {
 //            tim ngay targetdate xem co time slot nao dc dat chua
             List<TimeSlotEntity> listReservedTimeSlotEntity = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(
                     fieldOwnerEntity, fieldTypeEntity, targetDate, true, true);
 
-            if (listReservedTimeSlotEntity.isEmpty()){
+            if (listReservedTimeSlotEntity.isEmpty()) {
                 List<TimeSlotEntity> listNotReserveTimeSlotEntity = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(
                         fieldOwnerEntity, fieldTypeEntity, targetDate, false, true);
                 timeSlotServices.deleteTimeSlotInList(listNotReserveTimeSlotEntity);
-                count --;
+                count--;
                 stargetDate = DateTimeUtils.getDateAfter(sCurrDate, count);
                 targetDate = DateTimeUtils.convertFromStringToDate(stargetDate);
             } else {
@@ -85,6 +85,12 @@ public class TimeEnableServices {
             }
         }
 
+        String dateInWeekOfTargetDate = DateTimeUtils.returnDayInWeek(targetDate);
+        List<TimeEnableEntity> timeEnableEntityListInDb = timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekAndEffectiveDateOrderByStartTime(fieldOwnerEntity, fieldTypeEntity, dateInWeekOfTargetDate, true, targetDate);
+        // xóa hết những time enable cũ trong database nếu có
+        if (!timeEnableEntityListInDb.isEmpty()) {
+            timeEnableRepository.delete(timeEnableEntityListInDb);
+        }
 
         List<TimeEnableEntity> savedTimeEnableEntity = new ArrayList<>();
         for (InputTimeEnableDTO inputTimeEnableDTO : inputTimeEnableDTOList) {
@@ -136,9 +142,22 @@ public class TimeEnableServices {
 
     public List<TimeEnableEntity> findTimeEnableByFieldOwnerTypeAndDate(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity, String dateInWeek, Boolean optimal) {
         if (optimal != null) {
-            return timeEnableRepository.findByFieldOwnerAndTypeAndDateAndDateInWeekAndOptimalOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, optimal, true);
+            return timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekAndOptimalOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, optimal, true);
         } else {
             return timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, true);
         }
     }
+
+    public Date getEffectiveDate(Date targetDate) {
+        return timeEnableRepository.getMaxEffectiveDate(targetDate);
+    }
+
+    public List<TimeEnableEntity> findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity, String dateInWeek, Date effectiveDate, Boolean optimal) {
+        if (optimal != null) {
+            return timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndEffectiveDateOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, optimal, true, effectiveDate);
+        } else {
+            return timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekAndEffectiveDateOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, true, effectiveDate);
+        }
+    }
+
 }

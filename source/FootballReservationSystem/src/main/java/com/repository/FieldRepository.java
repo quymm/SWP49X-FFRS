@@ -4,7 +4,10 @@ import com.entity.AccountEntity;
 import com.entity.FieldEntity;
 import com.entity.FieldTypeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,5 +21,7 @@ public interface FieldRepository extends JpaRepository<FieldEntity, Integer> {
     List<FieldEntity> findByFieldOwnerIdAndFieldTypeIdAndStatus(AccountEntity fieldOwnerId, FieldTypeEntity fieldTypeId, boolean status);
     FieldEntity findByFieldOwnerIdAndFieldTypeIdAndNameAndStatus(AccountEntity fieldOwnerId, FieldTypeEntity fieldTypeId, String name, boolean status);
 
-    Integer countByFieldOwnerIdAndAndFieldTypeIdAndStatus(AccountEntity fieldOwnerEntity, FieldTypeEntity fieldTypeEntity, boolean status);
+    @Query("SELECT f FROM FieldEntity f WHERE f.fieldOwnerId = :fieldOwner AND f.fieldTypeId = :fieldType AND f.status = :status")
+    List<FieldEntity> getListFieldWithFieldOwnerTypeExpirationAndStatus(@Param("fieldOwner") AccountEntity fieldOwner, @Param("fieldType") FieldTypeEntity fieldType, @Param("status") boolean status);
+
 }
