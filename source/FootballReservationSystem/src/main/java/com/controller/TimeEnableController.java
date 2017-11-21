@@ -20,7 +20,7 @@ public class TimeEnableController {
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/time-enable/managed-time-enable", method = RequestMethod.POST)
     public ResponseEntity setUpTimeEnable(@RequestBody List<InputTimeEnableDTO> inputTimeEnableDTOList){
-        Wrapper wrapper = new Wrapper(timeEnableServices.setUpTimeEnable(inputTimeEnableDTOList), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+        Wrapper wrapper = new Wrapper(timeEnableServices.updateNewTimeEnable(inputTimeEnableDTOList), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
