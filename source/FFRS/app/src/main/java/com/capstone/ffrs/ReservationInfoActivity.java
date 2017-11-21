@@ -2,20 +2,12 @@ package com.capstone.ffrs;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
-import com.capstone.ffrs.entity.PaidFriendlyMatchRequest;
-import com.capstone.ffrs.entity.PaidTourMatchRequest;
-
-import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,7 +41,7 @@ public class ReservationInfoActivity extends AppCompatActivity {
             txtMatchMode.setText("Đá riêng");
 
             switch (status) {
-                case "Sắp đá":
+                case "Sắp tới":
                     txtStatus.setTextColor(getResources().getColor(R.color.red));
                     btRatingField.setVisibility(View.GONE);
                     break;
@@ -114,7 +106,7 @@ public class ReservationInfoActivity extends AppCompatActivity {
         txtDate.setText(strDate);
 
         TextView txtFieldType = (TextView) findViewById(R.id.text_field_type);
-        txtFieldType.setText("5 vs 5");
+        txtFieldType.setText(getResources().getStringArray(R.array.field_types)[b.getInt("field_type_id") - 1]);
 
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
         try {
@@ -162,34 +154,35 @@ public class ReservationInfoActivity extends AppCompatActivity {
         return true;
     }
 
-    public void onClickRate(View view) {
+    public void onClickRateField(View view) {
         Bundle b = getIntent().getExtras();
-        boolean tourMatchMode = b.getBoolean("tour_match_mode");
-        if (!tourMatchMode) {
-            Intent intent = new Intent(this, RatingFieldActivity.class);
-            intent.putExtra("id", b.getInt("id"));
-            intent.putExtra("user_id", b.getInt("user_id"));
-            intent.putExtra("field_id", b.getInt("field_id"));
-            intent.putExtra("date", b.getString("date"));
-            intent.putExtra("start_time", b.getString("start_time"));
-            intent.putExtra("end_time", b.getString("end_time"));
-            intent.putExtra("field_name", b.getString("field_name"));
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(this, RatingOpponentActivity.class);
-            intent.putExtra("id", b.getInt("id"));
-            intent.putExtra("user_id", b.getInt("user_id"));
-            intent.putExtra("opponent_id", b.getInt("opponent_id"));
-            intent.putExtra("field_id", b.getInt("field_id"));
-            intent.putExtra("tour_match_id", b.getInt("tour_match_id"));
-            intent.putExtra("date", b.getString("date"));
-            intent.putExtra("start_time", b.getString("start_time"));
-            intent.putExtra("end_time", b.getString("end_time"));
-            intent.putExtra("opponent_team_name", b.getInt("opponent_team_name"));
-            intent.putExtra("field_name", b.getString("field_name"));
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, RatingFieldActivity.class);
+        intent.putExtra("id", b.getInt("id"));
+        intent.putExtra("user_id", b.getInt("user_id"));
+        intent.putExtra("field_id", b.getInt("field_id"));
+        intent.putExtra("date", b.getString("date"));
+        intent.putExtra("start_time", b.getString("start_time"));
+        intent.putExtra("end_time", b.getString("end_time"));
+        intent.putExtra("field_name", b.getString("field_name"));
+        startActivity(intent);
     }
+
+    public void onClickRateOpponent(View view) {
+        Bundle b = getIntent().getExtras();
+        Intent intent = new Intent(this, RatingOpponentActivity.class);
+        intent.putExtra("id", b.getInt("id"));
+        intent.putExtra("user_id", b.getInt("user_id"));
+        intent.putExtra("opponent_id", b.getInt("opponent_id"));
+        intent.putExtra("field_id", b.getInt("field_id"));
+        intent.putExtra("tour_match_id", b.getInt("tour_match_id"));
+        intent.putExtra("date", b.getString("date"));
+        intent.putExtra("start_time", b.getString("start_time"));
+        intent.putExtra("end_time", b.getString("end_time"));
+        intent.putExtra("opponent_team_name", b.getString("opponent_team_name"));
+        intent.putExtra("field_name", b.getString("field_name"));
+        startActivity(intent);
+    }
+
 
     public void onClickReport(View view) {
         Bundle b = getIntent().getExtras();

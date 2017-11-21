@@ -3,7 +3,6 @@ package com.capstone.ffrs.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +10,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.capstone.ffrs.R;
-import com.capstone.ffrs.RatingFieldActivity;
-import com.capstone.ffrs.RatingOpponentActivity;
 import com.capstone.ffrs.ReservationInfoActivity;
-import com.capstone.ffrs.entity.PaidFriendlyMatchRequest;
-import com.capstone.ffrs.entity.PaidTourMatchRequest;
-
-import org.w3c.dom.Text;
+import com.capstone.ffrs.entity.PaidFriendlyMatch;
+import com.capstone.ffrs.entity.PaidTourMatch;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,13 +23,13 @@ import java.util.List;
  * Created by HuanPMSE61860 on 10/30/2017.
  */
 
-public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.PaidRequestViewHolder> {
+public class PaidMatchAdapter extends RecyclerView.Adapter<PaidMatchAdapter.PaidRequestViewHolder> {
 
     private List<Object> requestList;
     private Context context;
     private LayoutInflater inflater;
 
-    public PaidRequestAdapter(Context context, List<Object> requestList) {
+    public PaidMatchAdapter(Context context, List<Object> requestList) {
 
         this.context = context;
         this.requestList = requestList;
@@ -44,8 +39,8 @@ public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.
     @Override
     public PaidRequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View rootView = inflater.inflate(R.layout.reservation_item, parent, false);
-        return new PaidRequestAdapter.PaidRequestViewHolder(rootView);
+        View rootView = inflater.inflate(R.layout.paid_match_item, parent, false);
+        return new PaidMatchAdapter.PaidRequestViewHolder(rootView);
     }
 
     @Override
@@ -54,8 +49,8 @@ public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             Object request = requestList.get(position);
             holder.itemView.setTag(R.id.card_view, request);
-            if (request instanceof PaidFriendlyMatchRequest) {
-                PaidFriendlyMatchRequest friendlyMatchRequest = (PaidFriendlyMatchRequest) request;
+            if (request instanceof PaidFriendlyMatch) {
+                PaidFriendlyMatch friendlyMatchRequest = (PaidFriendlyMatch) request;
                 holder.txtContent.setText("Đặt sân đá riêng");
                 holder.txtField.setText(friendlyMatchRequest.getFieldName());
 
@@ -87,8 +82,8 @@ public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.
                     holder.txtStatus.setText("Đã xong");
                     holder.background.setBackgroundColor(context.getResources().getColor(R.color.green));
                 }
-            } else if (request instanceof PaidTourMatchRequest) {
-                PaidTourMatchRequest tourMatchRequest = (PaidTourMatchRequest) request;
+            } else if (request instanceof PaidTourMatch) {
+                PaidTourMatch tourMatchRequest = (PaidTourMatch) request;
                 holder.txtContent.setText("Đá với đội " + tourMatchRequest.getTeamName());
                 holder.txtField.setText(tourMatchRequest.getFieldName());
 
@@ -149,12 +144,13 @@ public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.
                 @Override
                 public void onClick(View v) {
                     Object request = itemView.getTag(R.id.card_view);
-                    if (request instanceof PaidFriendlyMatchRequest) {
+                    if (request instanceof PaidFriendlyMatch) {
                         Intent intent = new Intent(context, ReservationInfoActivity.class);
-                        PaidFriendlyMatchRequest friendlyMatchRequest = (PaidFriendlyMatchRequest) request;
+                        PaidFriendlyMatch friendlyMatchRequest = (PaidFriendlyMatch) request;
                         intent.putExtra("id", friendlyMatchRequest.getId());
                         intent.putExtra("user_id", friendlyMatchRequest.getUserId());
                         intent.putExtra("field_id", friendlyMatchRequest.getFieldId());
+                        intent.putExtra("field_type_id", friendlyMatchRequest.getFieldTypeId());
                         intent.putExtra("date", friendlyMatchRequest.getDate());
                         intent.putExtra("start_time", friendlyMatchRequest.getStartTime());
                         intent.putExtra("end_time", friendlyMatchRequest.getEndTime());
@@ -162,13 +158,14 @@ public class PaidRequestAdapter extends RecyclerView.Adapter<PaidRequestAdapter.
                         intent.putExtra("tour_match_mode", false);
                         intent.putExtra("status", txtStatus.getText().toString());
                         context.startActivity(intent);
-                    } else if (request instanceof PaidTourMatchRequest) {
+                    } else if (request instanceof PaidTourMatch) {
                         Intent intent = new Intent(context, ReservationInfoActivity.class);
-                        PaidTourMatchRequest tourMatchRequest = (PaidTourMatchRequest) request;
+                        PaidTourMatch tourMatchRequest = (PaidTourMatch) request;
                         intent.putExtra("id", tourMatchRequest.getId());
                         intent.putExtra("user_id", tourMatchRequest.getUserId());
                         intent.putExtra("opponent_id", tourMatchRequest.getOpponentId());
                         intent.putExtra("field_id", tourMatchRequest.getFieldId());
+                        intent.putExtra("field_type_id", tourMatchRequest.getFieldTypeId());
                         intent.putExtra("tour_match_id", tourMatchRequest.getTourMatchId());
                         intent.putExtra("date", tourMatchRequest.getDate());
                         intent.putExtra("start_time", tourMatchRequest.getStartTime());

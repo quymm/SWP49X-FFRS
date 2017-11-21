@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/grp_balance"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_profile"
+            android:title="Tài khoản" />
 
+    </group>
     <group
         android:id="@+id/grp_profile"
         android:checkableBehavior="single">
+
         <item
             android:id="@+id/nav_recharge"
             android:icon="@drawable/ic_recharge"
             android:title="Nạp tiền" />
-        <item
-            android:id="@+id/nav_profile"
-            android:icon="@drawable/ic_profile"
-            android:title="Thông tin tài khoản" />
         <item
             android:id="@+id/nav_favorite_field"
             android:icon="@drawable/ic_favorite"
@@ -27,7 +32,7 @@
         <item
             android:id="@+id/nav_rewards"
             android:icon="@drawable/ic_reward"
-            android:title="Đổi thưởng" />
+            android:title="Đổi voucher" />
         <!--<item-->
         <!--android:id="@+id/nav_notifications"-->
         <!--android:icon="@drawable/ic_notifications"-->
@@ -38,7 +43,7 @@
         <!--android:title="Cài đặt" />-->
     </group>
     <group
-        android:id="@+id/grp_signout"
+        android:id="@+id/grp_sign_out"
         android:checkableBehavior="single">
         <item
             android:id="@+id/nav_logout"

@@ -4,194 +4,229 @@
     android:layout_height="match_parent"
     tools:context=".fragment.MatchSearchFragment">
 
-    <RelativeLayout
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp">
+        android:layout_height="wrap_content">
 
-        <AutoCompleteTextView
-            android:id="@+id/input_address"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:ems="10"
-            android:hint="Địa chỉ"
-            android:inputType="text" />
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp">
 
-        <TableLayout
-            android:id="@+id/table_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/input_address"
-            android:layout_marginBottom="10dp">
-
-            <!--<TableRow-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent">-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/text_address"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="Địa chỉ: * " />-->
-            <!---->
-            <!--<AutoCompleteTextView-->
-            <!--android:id="@+id/input_address"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignParentTop="true"-->
-            <!--android:ems="10"-->
-            <!--android:hint="Địa chỉ (Tùy chọn)"-->
-            <!--android:inputType="text" />-->
-
-            <!--</TableRow>-->
-
-            <TableRow
+            <AutoCompleteTextView
+                android:id="@+id/input_address"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginBottom="5dp"
+                android:ems="10"
+                android:hint="Địa chỉ"
+                android:inputType="text" />
 
-                <TextView
-                    android:id="@+id/text_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Ngày đá:" />
-
-                <EditText
-                    android:id="@+id/input_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:focusable="false"
-                    android:hint="Ngày đá"
-                    android:inputType="none" />
-
-            </TableRow>
-
-            <TableRow
+            <TableLayout
+                android:id="@+id/table_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_below="@id/input_address"
+                android:layout_marginBottom="10dp">
 
-                <TextView
-                    android:id="@+id/text_duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:text="Khoảng giờ đá:" />
+                <!--<TableRow-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent">-->
 
-                <Spinner
-                    android:id="@+id/spDuration"
+                <!--<TextView-->
+                <!--android:id="@+id/text_address"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1"-->
+                <!--android:text="Địa chỉ: * " />-->
+                <!---->
+                <!--<AutoCompleteTextView-->
+                <!--android:id="@+id/input_address"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentTop="true"-->
+                <!--android:ems="10"-->
+                <!--android:hint="Địa chỉ (Tùy chọn)"-->
+                <!--android:inputType="text" />-->
+
+                <!--</TableRow>-->
+
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/spinner_border"
-                    android:popupBackground="@drawable/popup_spinner" />
-            </TableRow>
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp">
 
-            <TableRow
+                    <TextView
+                        android:id="@+id/text_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Ngày đá:" />
+
+                    <EditText
+                        android:id="@+id/input_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:focusable="false"
+                        android:hint="Ngày đá"
+                        android:inputType="none" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp">
+
+                    <TextView
+                        android:id="@+id/text_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:text="Khoảng giờ đá:" />
+
+                    <Spinner
+                        android:id="@+id/spDuration"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/spinner_border"
+                        android:popupBackground="@drawable/popup_spinner" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/text_distance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:text="Bán kính tìm kiếm:" />
+
+                    <Spinner
+                        android:id="@+id/spDistance"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/spinner_border"
+                        android:popupBackground="@drawable/popup_spinner" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp">
+
+                    <TextView
+                        android:id="@+id/text_start_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Bắt đầu:" />
+
+                    <EditText
+                        android:id="@+id/input_start_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:focusable="false"
+                        android:hint="Thời gian bắt đầu"
+                        android:inputType="none" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp">
+
+                    <TextView
+                        android:id="@+id/text_end_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Kết thúc:" />
+
+                    <EditText
+                        android:id="@+id/input_end_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:focusable="false"
+                        android:hint="Thời gian kết thúc"
+                        android:inputType="none" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp">
+
+                    <TextView
+                        android:id="@+id/text_field_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:text="Loại sân:" />
+
+                    <Spinner
+                        android:id="@+id/spField"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/spinner_border"
+                        android:popupBackground="@drawable/popup_spinner" />
+
+                </TableRow>
+
+                <!--<TableRow-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent">-->
+
+                <!--<TextView-->
+                <!--android:id="@+id/text_option_search"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1"-->
+                <!--android:text="Tìm kiếm nâng cao" />-->
+
+                <!--</TableRow>-->
+            </TableLayout>
+
+            <Button
+                android:id="@+id/btFindRequest"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/table_layout"
+                android:layout_marginBottom="5dp"
+                android:background="#009632"
+                android:text="Tìm đối thủ"
+                android:textColor="@android:color/white"
+                android:textSize="18dp" />
 
-                <TextView
-                    android:id="@+id/text_start_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Bắt đầu:" />
-
-                <EditText
-                    android:id="@+id/input_start_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:focusable="false"
-                    android:hint="Thời gian bắt đầu"
-                    android:inputType="none" />
-
-            </TableRow>
-
-            <TableRow
+            <Button
+                android:id="@+id/btCreateRequest"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/text_end_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Kết thúc:" />
-
-                <EditText
-                    android:id="@+id/input_end_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:focusable="false"
-                    android:hint="Thời gian kết thúc"
-                    android:inputType="none" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/text_field_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:text="Loại sân:" />
-
-                <Spinner
-                    android:id="@+id/spField"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/spinner_border"
-                    android:popupBackground="@drawable/popup_spinner"/>
-
-            </TableRow>
-            <!--<TableRow-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent">-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/text_option_search"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="Tìm kiếm nâng cao" />-->
-
-            <!--</TableRow>-->
-        </TableLayout>
-
-        <Button
-            android:id="@+id/btFindRequest"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/table_layout"
-            android:layout_marginBottom="10dp"
-            android:background="#009632"
-            android:text="Tìm đối thủ"
-            android:textColor="@android:color/white"
-            android:textSize="18dp" />
-
-        <Button
-            android:id="@+id/btCreateRequest"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/btFindRequest"
-            android:background="#009632"
-            android:text="Tạo yêu cầu mới"
-            android:textColor="@android:color/white"
-            android:textSize="18dp" />
-    </RelativeLayout>
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/btFindRequest"
+                android:background="#009632"
+                android:text="Tạo yêu cầu mới"
+                android:textColor="@android:color/white"
+                android:textSize="18dp" />
+        </RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
 </FrameLayout>

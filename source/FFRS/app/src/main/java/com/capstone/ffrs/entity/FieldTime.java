@@ -6,6 +6,7 @@ package com.capstone.ffrs.entity;
 
 public class FieldTime {
     private String fromTime, toTime;
+    private boolean isOptimal;
 
     public FieldTime(String fromTime, String toTime) {
         this.fromTime = fromTime;
@@ -28,4 +29,11 @@ public class FieldTime {
         this.toTime = toTime;
     }
 
+    public boolean isOptimal() {
+        return isOptimal;
+    }
+
+    public void setOptimal(boolean optimal) {
+        isOptimal = optimal;
+    }
 }

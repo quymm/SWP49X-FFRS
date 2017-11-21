@@ -13,8 +13,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.capstone.ffrs.FieldTimeActivity;
-import com.capstone.ffrs.entity.FieldOwner;
 import com.capstone.ffrs.R;
+import com.capstone.ffrs.entity.FieldOwner;
 
 import java.util.List;
 
@@ -53,32 +53,6 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.FieldViewHol
         holder.itemView.setTag(R.id.card_view, fieldOwner.getId());
         holder.title.setText(fieldOwner.getFieldName());
         holder.content.setText(fieldOwner.getAddress());
-//        holder.imageview.setVisibility(View.GONE);
-//        holder.imageview.setDefaultImageResId(R.drawable.img_placeholder);
-//        holder.imageview.setErrorImageResId(R.drawable.img_placeholder);
-
-//        ImageLoader imageLoader = NetworkController.getInstance(context).getImageLoader();
-//        imageLoader.get(url, new ImageLoader.ImageListener() {
-//
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                holder.progressBar.setVisibility(View.GONE);
-//                holder.imageview.setVisibility(View.VISIBLE);
-//            }
-//
-//            @Override
-//            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-//                if (response.getBitmap() != null) {
-//                    holder.progressBar.setVisibility(View.GONE);
-//                    holder.imageview.setImageBitmap(response.getBitmap());
-//                    holder.imageview.setVisibility(View.VISIBLE);
-//                } else {
-//                    holder.progressBar.setVisibility(View.GONE);
-//                    holder.imageview.setVisibility(View.VISIBLE);
-//                }
-//            }
-//        });
-//        holder.imageview.setImageUrl(url, imageLoader);
         String url = fieldOwner.getImgURL();
         loadImageWithGlide(holder.imageview, url);
     }

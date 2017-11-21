@@ -1,10 +1,10 @@
 package com.capstone.ffrs.adapter;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,11 +28,11 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestBuilder;
+import com.capstone.ffrs.FieldTimeActivity;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.FieldOwner;
+import com.capstone.ffrs.entity.FavoriteField;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,12 +46,12 @@ import java.util.List;
 
 public class FavoriteFieldAdapter extends RecyclerView.Adapter<FavoriteFieldAdapter.FavoriteFieldViewHolder> {
 
-    private List<FieldOwner> favoriteFieldList;
+    private List<FavoriteField> favoriteFieldList;
     private Context context;
     private LayoutInflater inflater;
     private int userId;
 
-    public FavoriteFieldAdapter(Context context, List<FieldOwner> favoriteFieldList) {
+    public FavoriteFieldAdapter(Context context, List<FavoriteField> favoriteFieldList) {
 
         this.context = context;
         this.favoriteFieldList = favoriteFieldList;
@@ -72,9 +71,9 @@ public class FavoriteFieldAdapter extends RecyclerView.Adapter<FavoriteFieldAdap
 
     @Override
     public void onBindViewHolder(FavoriteFieldViewHolder holder, int position) {
-        FieldOwner fieldOwner = favoriteFieldList.get(position);
+        FavoriteField fieldOwner = favoriteFieldList.get(position);
 
-        holder.itemView.setTag(R.id.card_view, fieldOwner.getId());
+        holder.itemView.setTag(R.id.card_view, fieldOwner);
         holder.title.setText(fieldOwner.getFieldName());
         holder.content.setText(fieldOwner.getAddress());
     }
@@ -98,7 +97,8 @@ public class FavoriteFieldAdapter extends RecyclerView.Adapter<FavoriteFieldAdap
             btDelete.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
-                                                final int favoriteId = (int) itemView.getTag(R.id.card_view);
+                                                final FavoriteField field = (FavoriteField) itemView.getTag(R.id.card_view);
+                                                final int favoriteId = field.getId();
                                                 AlertDialog.Builder builder;
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                                     builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
@@ -111,15 +111,19 @@ public class FavoriteFieldAdapter extends RecyclerView.Adapter<FavoriteFieldAdap
                                                             public void onClick(DialogInterface dialog, int which) {
                                                                 // continue with delete
                                                                 RequestQueue queue = NetworkController.getInstance(context).getRequestQueue();
-                                                                String url = context.getResources().getString(R.string.local_host) + context.getResources().getString(R.string.url_remove_favorite_field);
+                                                                String url = HostURLUtils.getInstance(context).getHostURL() + context.getResources().getString(R.string.url_remove_favorite_field);
                                                                 url = String.format(url, favoriteId);
                                                                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
                                                                     @Override
                                                                     public void onResponse(JSONObject response) {
                                                                         Toast.makeText(context, "Bạn đã xóa sân khỏi danh sách", Toast.LENGTH_SHORT).show();
-                                                                        // trigger reload BroadcastReceiver
-                                                                        Intent intent = new Intent("remove-message");
-                                                                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+
+                                                                        favoriteFieldList.remove(field);
+                                                                        notifyDataSetChanged();
+                                                                        if (favoriteFieldList.isEmpty()) {
+                                                                            TextView txtNotFound = (TextView) ((Activity) context).findViewById(R.id.text_not_found);
+                                                                            txtNotFound.setVisibility(View.VISIBLE);
+                                                                        }
                                                                     }
                                                                 }, new Response.ErrorListener() {
                                                                     @Override
@@ -164,6 +168,19 @@ public class FavoriteFieldAdapter extends RecyclerView.Adapter<FavoriteFieldAdap
                                             }
                                         }
             );
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, FieldTimeActivity.class);
+                    FavoriteField field = (FavoriteField) itemView.getTag(R.id.card_view);
+                    intent.putExtra("field_id", field.getFieldId());
+                    intent.putExtra("field_name", title.getText());
+                    intent.putExtra("field_address", content.getText());
+                    intent.putExtra("user_id", userId);
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 }

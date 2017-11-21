@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,17 +46,22 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.CreateRequestResultActivity;
+import com.capstone.ffrs.FieldTimeActivity;
 import com.capstone.ffrs.MatchResultActivity;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.RechargeActivity;
 import com.capstone.ffrs.adapter.PlacesAutoCompleteAdapter;
 import com.capstone.ffrs.controller.NetworkController;
+import com.capstone.ffrs.utils.HostURLUtils;
 import com.capstone.ffrs.utils.TimePickerListener;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -72,7 +78,7 @@ import java.util.Locale;
 public class MatchSearchFragment extends Fragment {
 
     private String displayFormat = "dd/MM/yyyy";
-    private Spinner fieldSpinner, durationSpinner;
+    private Spinner fieldSpinner, durationSpinner, distanceSpinner;
     private LatLng currentPosition = null;
     private LatLng customPosition = null;
     private Button btFindRequest, btCreateRequest;
@@ -124,7 +130,6 @@ public class MatchSearchFragment extends Fragment {
     };
 
     public void validate() {
-        EditText date = (EditText) getActivity().findViewById(R.id.input_date);
         EditText from = (EditText) getActivity().findViewById(R.id.input_start_time);
         EditText to = (EditText) getActivity().findViewById(R.id.input_end_time);
         if (currentPosition == null && customPosition == null) {
@@ -168,7 +173,7 @@ public class MatchSearchFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_match_search, container, false);
@@ -203,11 +208,13 @@ public class MatchSearchFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 DatePickerDialog dialog = new DatePickerDialog(v.getContext(), R.style.DatepickerCalendarTheme, datePickerListener, dateSelected
                         .get(Calendar.YEAR), dateSelected.get(Calendar.MONTH),
                         dateSelected.get(Calendar.DAY_OF_MONTH));
                 dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+                LocalDate maxDate = new LocalDate(System.currentTimeMillis() - 1000);
+                maxDate = maxDate.plusDays(7);
+                dialog.getDatePicker().setMaxDate(maxDate.toDate().getTime());
                 dialog.show();
             }
         });
@@ -301,27 +308,27 @@ public class MatchSearchFragment extends Fragment {
 
                     inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
+                    if (!v.getText().toString().isEmpty()) {
+                        try {
+                            Geocoder geocoder;
+                            List<Address> addresses;
+                            geocoder = new Geocoder(getActivity(), Locale.forLanguageTag("vi-VN"));
 
-                    try {
-                        Geocoder geocoder;
-                        List<Address> addresses;
-                        geocoder = new Geocoder(getActivity(), Locale.forLanguageTag("vi-VN"));
+                            addresses = geocoder.getFromLocationName(v.getText().toString(), 1);
 
-                        addresses = geocoder.getFromLocationName(v.getText().toString(), 1);
+                            if (!addresses.isEmpty()) {
+                                customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                            } else {
+                                customPosition = null;
+                                Toast.makeText(getActivity(), "Không thế lấy tọa độ từ địa chỉ này", Toast.LENGTH_LONG).show();
+                            }
 
-                        if (!addresses.isEmpty()) {
-                            customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-                            Toast.makeText(getActivity(), "Tọa độ: " + addresses.get(0).getLatitude() + ":" + addresses.get(0).getLongitude(), Toast.LENGTH_LONG).show();
-                        } else {
-                            customPosition = null;
-                            Toast.makeText(getActivity(), "Không thế lấy tọa độ từ địa chỉ này", Toast.LENGTH_LONG).show();
+                            validate();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-
-                        validate();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
@@ -346,7 +353,6 @@ public class MatchSearchFragment extends Fragment {
                         inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
                                 InputMethodManager.HIDE_NOT_ALWAYS);
                         customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-                        Toast.makeText(getActivity(), "Tọa độ: " + addresses.get(0).getLatitude() + ":" + addresses.get(0).getLongitude(), Toast.LENGTH_LONG).show();
                     } else {
                         customPosition = null;
                         Toast.makeText(getActivity(), "Không thế lấy tọa độ từ địa chỉ này", Toast.LENGTH_LONG).show();
@@ -372,14 +378,19 @@ public class MatchSearchFragment extends Fragment {
                 intent.putExtra("field_start_time", from.getText().toString());
                 intent.putExtra("field_end_time", to.getText().toString());
                 intent.putExtra("duration", 60 + durationSpinner.getSelectedItemPosition() * 30);
+                intent.putExtra("distance", 4 + (distanceSpinner.getSelectedItemPosition() * 2));
+                intent.putExtra("priorityField", true);
                 intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
                 if (txtAddress.getText().toString().isEmpty() || customPosition == null) {
+                    intent.putExtra("address", txtAddress.getHint().toString());
                     intent.putExtra("latitude", currentPosition.latitude);
                     intent.putExtra("longitude", currentPosition.longitude);
                 } else {
+                    intent.putExtra("address", txtAddress.getText().toString());
                     intent.putExtra("latitude", customPosition.latitude);
                     intent.putExtra("longitude", customPosition.longitude);
                 }
+                intent.putExtra("createMode", false);
                 startActivity(intent);
             }
         });
@@ -387,13 +398,11 @@ public class MatchSearchFragment extends Fragment {
         btCreateRequest = (Button) view.findViewById(R.id.btCreateRequest);
         btCreateRequest.setEnabled(false);
         btCreateRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
-        btCreateRequest.setOnClickListener(new View.OnClickListener()
-
-        {
+        btCreateRequest.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(v.getContext());
-                String url = getResources().getString(R.string.local_host) + getResources().getString(R.string.url_create_matching_request);
+                String url = HostURLUtils.getInstance(getContext()).getHostURL() + getResources().getString(R.string.url_create_matching_request);
 
                 RequestQueue queue = NetworkController.getInstance(getActivity()).getRequestQueue();
 
@@ -409,11 +418,15 @@ public class MatchSearchFragment extends Fragment {
                     params.put("startTime", from.getText().toString());
                     params.put("endTime", to.getText().toString());
                     params.put("duration", 60 + durationSpinner.getSelectedItemPosition() * 30);
+                    params.put("expectedDistance", 4 + distanceSpinner.getSelectedItemPosition() * 2);
+                    params.put("priorityField", true);
                     params.put("fieldTypeId", (fieldSpinner.getSelectedItemPosition() + 1));
                     if (txtAddress.getText().toString().isEmpty() || customPosition == null) {
+                        params.put("address", txtAddress.getHint().toString());
                         params.put("latitude", currentPosition.latitude);
                         params.put("longitude", currentPosition.longitude);
                     } else {
+                        params.put("address", txtAddress.getText().toString());
                         params.put("latitude", customPosition.latitude);
                         params.put("longitude", customPosition.longitude);
                     }
@@ -421,9 +434,64 @@ public class MatchSearchFragment extends Fragment {
                             new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
-                                    Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
-                                    intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
-                                    startActivity(intent);
+                                    try {
+                                        if (!response.isNull("body")) {
+                                            JSONObject body = response.getJSONObject("body");
+                                            final int matchingRequestId = body.getInt("matchingRequestId");
+                                            JSONArray list = body.getJSONArray("similarMatchingRequestList");
+                                            if (list.length() > 0) {
+                                                AlertDialog.Builder builder;
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                                    builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_Dialog_Alert);
+                                                } else {
+                                                    builder = new AlertDialog.Builder(getContext());
+                                                }
+                                                builder.setTitle("Tìm thấy đối thủ")
+                                                        .setMessage("Chúng tôi đã tìm thấy đối thủ phù hợp với bạn. Bạn có muốn xem danh sách đối thủ không?")
+                                                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(v.getContext());
+                                                                Intent intent = new Intent(v.getContext(), MatchResultActivity.class);
+                                                                intent.putExtra("field_type_id", (fieldSpinner.getSelectedItemPosition() + 1));
+                                                                intent.putExtra("field_date", mDate.getText().toString());
+                                                                intent.putExtra("field_start_time", from.getText().toString());
+                                                                intent.putExtra("field_end_time", to.getText().toString());
+                                                                intent.putExtra("duration", 60 + durationSpinner.getSelectedItemPosition() * 30);
+                                                                intent.putExtra("distance", 4 + (distanceSpinner.getSelectedItemPosition() * 2));
+                                                                intent.putExtra("priorityField", true);
+                                                                intent.putExtra("created_matching_request_id", matchingRequestId);
+                                                                intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
+                                                                if (txtAddress.getText().toString().isEmpty() || customPosition == null) {
+                                                                    intent.putExtra("address", txtAddress.getHint().toString());
+                                                                    intent.putExtra("latitude", currentPosition.latitude);
+                                                                    intent.putExtra("longitude", currentPosition.longitude);
+                                                                } else {
+                                                                    intent.putExtra("address", txtAddress.getText().toString());
+                                                                    intent.putExtra("latitude", customPosition.latitude);
+                                                                    intent.putExtra("longitude", customPosition.longitude);
+                                                                }
+                                                                intent.putExtra("createMode", true);
+                                                                startActivity(intent);
+                                                            }
+                                                        })
+                                                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
+                                                                intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
+                                                                intent.putExtra("message", "Bạn đã tạo yêu cầu tìm đối thủ thành công!");
+                                                                startActivity(intent);
+                                                            }
+                                                        }).show();
+                                            } else {
+                                                Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
+                                                intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
+                                                intent.putExtra("message", "Bạn đã tạo yêu cầu tìm đối thủ thành công!");
+                                                startActivity(intent);
+                                            }
+                                        }
+                                    } catch (JSONException e) {
+                                        Log.d("EXCEPTION", e.getMessage());
+                                    }
                                 }
                             }, new Response.ErrorListener() {
                         @Override
@@ -478,20 +546,8 @@ public class MatchSearchFragment extends Fragment {
         });
 
         addFieldSpinner(view);
-
-        durationSpinner = (Spinner) view.findViewById(R.id.spDuration);
-        durationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                validate();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
         addDurationSpinner(view);
+        addDistanceSpinner(view);
 
         return view;
     }
@@ -523,8 +579,27 @@ public class MatchSearchFragment extends Fragment {
     }
 
     public void addDurationSpinner(View view) {
+        durationSpinner = (Spinner) view.findViewById(R.id.spDuration);
+        durationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                validate();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(getContext(), R.array.duration_types, android.R.layout.simple_spinner_item);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         durationSpinner.setAdapter(dataAdapter);
+    }
+
+    public void addDistanceSpinner(View view) {
+        distanceSpinner = (Spinner) view.findViewById(R.id.spDistance);
+        ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(getContext(), R.array.distance_types, android.R.layout.simple_spinner_item);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        distanceSpinner.setAdapter(dataAdapter);
     }
 }

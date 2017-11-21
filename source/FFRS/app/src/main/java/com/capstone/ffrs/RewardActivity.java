@@ -1,17 +1,46 @@
 package com.capstone.ffrs;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
+import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.capstone.ffrs.controller.NetworkController;
+import com.capstone.ffrs.utils.HostURLUtils;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RewardActivity extends AppCompatActivity {
+
+    private String hostURL;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private TextView txtCurrentBonus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,33 +49,21 @@ public class RewardActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Add programmatically
-//        GridLayout grid = (GridLayout) findViewById(R.id.grid_layout);
-//
-//        LinearLayout testLayout = new LinearLayout(this.getBaseContext());
-//
-//        DisplayMetrics dm = new DisplayMetrics();
-//        this.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
-//
-//        int width = dm.widthPixels;
-//        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//        llp.setMargins(5, 5, 5, 5); // llp.setMargins(left, top, right, bottom);
-//
-//        TextView title = new TextView(this.getBaseContext());
-//        title.setWidth(width / 2 - 14);
-//        title.setText("What?");
-//        title.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-//        title.setLayoutParams(llp);
-//        testLayout.addView(title);
-//
-//        TextView title2 = new TextView(this.getBaseContext());
-//        title2.setWidth(width / 2 - 14);
-//        title2.setText("What?");
-//        title2.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-//        title2.setLayoutParams(llp);
-//        testLayout.addView(title2);
-//
-//        grid.addView(testLayout);
+        hostURL = HostURLUtils.getInstance(this).getHostURL();
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadVouchers();
+            }
+        });
+        swipeRefreshLayout.setRefreshing(true);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RewardActivity.this);
+        txtCurrentBonus = (TextView) findViewById(R.id.text_current_bonus);
+        txtCurrentBonus.setText("Điểm thưởng hiện tại: " + preferences.getInt("point", 0) + " điểm");
+        loadVouchers();
     }
 
     @Override
@@ -58,5 +75,121 @@ public class RewardActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    private void loadVouchers() {
+        final GridLayout grid = (GridLayout) findViewById(R.id.grid_layout);
+        grid.removeAllViews();
+
+        RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
+
+        final int width = dm.widthPixels;
+        final TextView txtNotFound = (TextView) findViewById(R.id.text_not_found);
+
+        String url = hostURL + getResources().getString(R.string.url_get_vouchers);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (!response.isNull("body")) {
+                        JSONArray body = response.getJSONArray("body");
+                        if (body != null && body.length() > 0) {
+                            for (int i = 0; i < body.length(); i++) {
+                                try {
+                                    final JSONObject obj = body.getJSONObject(i);
+
+                                    final double voucherValue = obj.getDouble("voucherValue");
+                                    int bonusPointTarget = obj.getInt("bonusPointTarget");
+
+                                    LayoutInflater inflater = LayoutInflater.from(RewardActivity.this);
+                                    View v = inflater.inflate(R.layout.voucher_item, grid, false);
+                                    grid.addView(v);
+                                    LinearLayout linearLayout = (LinearLayout) v.findViewById(R.id.voucher_layout);
+                                    linearLayout.setMinimumWidth(width / 2 - 14);
+
+                                    TextView voucherTitle = (TextView) v.findViewById(R.id.text_voucher);
+                                    voucherTitle.setText("Voucher trị giá " + String.format("%.0f", voucherValue) + " ngàn đồng");
+
+                                    TextView pointTitle = (TextView) v.findViewById(R.id.text_bonus_points);
+                                    pointTitle.setText(bonusPointTarget + " điểm");
+
+                                    Button btExchange = (Button) v.findViewById(R.id.btExchange);
+                                    btExchange.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            redeemVoucher(obj, String.format("%.0f", voucherValue) + " ngàn đồng");
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    Log.d("EXCEPTION", e.getMessage());
+                                }
+                            }
+                        } else {
+                            txtNotFound.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        txtNotFound.setVisibility(View.VISIBLE);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+        queue.add(request);
+    }
+
+    private void redeemVoucher(JSONObject obj, final String vouncherText) {
+        try {
+            final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RewardActivity.this);
+            String url = hostURL + getResources().getString(R.string.url_redeem_voucher);
+            Map<String, Object> params = new HashMap<>();
+            params.put("status", true);
+            params.put("voucherId", obj.getInt("id"));
+            params.put("userId", preferences.getInt("user_id", -1));
+            RequestQueue queue = NetworkController.getInstance(RewardActivity.this).getRequestQueue();
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    if (!response.isNull("body")) {
+                        try {
+                            JSONObject body = response.getJSONObject("body");
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putInt("balance", body.getJSONObject("userId").getJSONObject("profileId").getInt("balance"));
+                            editor.putInt("point", body.getJSONObject("userId").getJSONObject("profileId").getInt("bonusPoint"));
+                            editor.apply();
+                            AlertDialog alertDialog = new AlertDialog.Builder(RewardActivity.this).setTitle("Đổi voucher thành công").
+                                    setMessage("Bạn đã đổi voucher thành công. Tài khoản đã được cộng " + vouncherText)
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                        }
+                                    }).create();
+                            alertDialog.show();
+                            txtCurrentBonus.setText("Điểm thưởng hiện tại: " + preferences.getInt("point", 0) + " điểm");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("EXCEPTION", error.getMessage());
+                }
+            });
+            queue.add(request);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -4,12 +4,12 @@ package com.capstone.ffrs.entity;
  * Created by HuanPMSE61860 on 10/31/2017.
  */
 
-public class PaidTourMatchRequest {
-    private int id, userId, opponentId, fieldId, tourMatchId, duration;
+public class PaidTourMatch {
+    private int id, userId, opponentId, fieldId, tourMatchId, duration, fieldTypeId;
     private String date, startTime, endTime;
     private String teamName, fieldName;
 
-    public PaidTourMatchRequest() {
+    public PaidTourMatch() {
     }
 
     public int getId() {
@@ -43,6 +43,15 @@ public class PaidTourMatchRequest {
     public void setFieldId(int fieldId) {
         this.fieldId = fieldId;
     }
+
+    public int getFieldTypeId() {
+        return fieldTypeId;
+    }
+
+    public void setFieldTypeId(int fieldTypeId) {
+        this.fieldTypeId = fieldTypeId;
+    }
+
 
     public int getTourMatchId() {
         return tourMatchId;

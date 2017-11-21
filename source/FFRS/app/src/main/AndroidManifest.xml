@@ -9,7 +9,7 @@
     <uses-permission android:name="com.capstone.ffrs.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- To auto-complete the email tfieldOwnerield in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -31,7 +31,6 @@
             android:name="com.paypal.android.sdk.payments.PayPalService"
             android:exported="false" />
         <service android:name=".service.FirebaseNotificationServices" />
-        <service android:name=".service.TimerServices" />
 
         <activity
             android:name=".SearchActivity"
@@ -57,7 +56,8 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -164,9 +164,11 @@
         <activity
             android:name=".RegisterActivity"
             android:configChanges="orientation"
+            android:fitsSystemWindows="false"
             android:label="@string/title_activity_register"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".RequestTimeActivity"
             android:configChanges="orientation"
@@ -186,12 +188,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ScrollingActivity"
-            android:configChanges="orientation"
-            android:label="@string/title_activity_scrolling"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".FavoriteFieldActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_favorite_field"
@@ -203,6 +199,30 @@
             android:label="@string/title_activity_blacklist"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".DummyActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_dummy"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".RequestInfoActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_request_info"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="vn.demonganluong.ui.activity.NganLuongActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="vn.demonganluong.ui.activity.CheckOutActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="vn.demonganluong.ui.activity.CheckOrderActivity"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>

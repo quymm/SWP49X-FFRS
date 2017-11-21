@@ -33,7 +33,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
-                        android:text="Đội giành chiến thắng trận đấu này là: *" />
+                        android:text="Trận đấu kết thúc với kết quả: *" />
                 </TableRow>
 
                 <TableRow
@@ -45,7 +45,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
-                        android:orientation="horizontal">
+                        android:orientation="vertical">
 
                         <RadioButton
                             android:id="@+id/rbtYourTeam"
@@ -53,15 +53,49 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:checked="true"
-                            android:text="Đội mình" />
+                            android:text="Đội giành chiến thắng" />
+
+                        <RadioButton
+                            android:id="@+id/rbtDraw"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Hòa" />
 
                         <RadioButton
                             android:id="@+id/rbtOpponent"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Đối thủ" />
+                            android:text="Đối thủ giành chiến thắng" />
                     </RadioGroup>
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:text="Hiệu số bàn thắng là: " />
+
+                        <EditText
+                            android:id="@+id/text_goal_difference"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:ems="10"
+                            android:inputType="number"
+                            android:maxLength="2"
+                            android:maxLines="1" />
+                    </LinearLayout>
                 </TableRow>
 
                 <TableRow

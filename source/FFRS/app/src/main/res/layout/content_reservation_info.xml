@@ -38,7 +38,8 @@
                     android:id="@+id/table_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp">
+                    android:layout_marginBottom="10dp"
+                    android:shrinkColumns="1">
 
                     <TableRow
                         android:id="@+id/opponent_layout"
@@ -292,7 +293,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:background="@color/green"
-                    android:onClick="onClickRate"
+                    android:onClick="onClickRateField"
                     android:text="Đánh giá sân bóng"
                     android:textColor="@android:color/white"
                     android:textSize="18dp" />
@@ -303,7 +304,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:background="@color/green"
-                    android:onClick="onClickRate"
+                    android:onClick="onClickRateOpponent"
                     android:text="Đánh giá đối thủ"
                     android:textColor="@android:color/white"
                     android:textSize="18dp" />
@@ -315,7 +316,7 @@
                     android:layout_margin="5dp"
                     android:background="@color/yellow"
                     android:onClick="onClickReport"
-                    android:text="Báo cáo"
+                    android:text="Tố cáo"
                     android:textColor="@android:color/white"
                     android:textSize="18dp" />
 

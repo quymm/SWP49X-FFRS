@@ -1,10 +1,13 @@
 package com.capstone.ffrs.adapter;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +29,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.R;
+import com.capstone.ffrs.RequestInfoActivity;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.PendingRequest;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
@@ -75,7 +81,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
             Date endTime = sdf.parse(request.getEndTime());
 
             sdf = new SimpleDateFormat("H:mm");
-            holder.txtTime.setText(sdf.format(startTime) + " - " + sdf.format(endTime));
+            holder.txtTime.setText((position + 1) + ". " + sdf.format(startTime) + " - " + sdf.format(endTime));
 
             int duration = request.getDuration();
             String strDuration = "";
@@ -123,13 +129,21 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                                            public void onClick(DialogInterface dialog, int which) {
                                                                // continue with delete
+                                                               final PendingRequest request = (PendingRequest) itemView.getTag(R.id.card_view);
+
                                                                RequestQueue queue = NetworkController.getInstance(context).getRequestQueue();
-                                                               String url = context.getResources().getString(R.string.local_host) + context.getResources().getString(R.string.url_cancel_matching_request);
-                                                               JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
+                                                               String url = HostURLUtils.getInstance(context).getHostURL() + context.getResources().getString(R.string.url_cancel_matching_request);
+                                                               url = String.format(url, request.getMatchingRequestId());
+                                                               JsonObjectRequest cancelRequest = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
                                                                    @Override
                                                                    public void onResponse(JSONObject response) {
                                                                        Toast.makeText(context, "Bạn đã hủy yêu cầu đá chung", Toast.LENGTH_SHORT).show();
-                                                                       // trigger reload BroadcastReceiver
+                                                                       requestList.remove(request);
+                                                                       notifyDataSetChanged();
+                                                                       if (requestList.isEmpty()) {
+                                                                           TextView txtNotFound = (TextView) ((Activity) context).findViewById(R.id.text_not_found_pending_request);
+                                                                           txtNotFound.setVisibility(View.VISIBLE);
+                                                                       }
                                                                    }
                                                                }, new Response.ErrorListener() {
                                                                    @Override
@@ -162,7 +176,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                                                    }
 
                                                                };
-                                                               queue.add(request);
+                                                               queue.add(cancelRequest);
                                                            }
                                                        })
                                                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -174,6 +188,25 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                            }
                                        }
             );
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PendingRequest request = (PendingRequest) itemView.getTag(R.id.card_view);
+                    Intent intent = new Intent(context, RequestInfoActivity.class);
+                    intent.putExtra("id", request.getMatchingRequestId());
+                    intent.putExtra("field_type_id", request.getFieldTypeId());
+                    intent.putExtra("duration", request.getDuration());
+                    intent.putExtra("date", request.getDate());
+                    intent.putExtra("start_time", request.getStartTime());
+                    intent.putExtra("end_time", request.getEndTime());
+                    intent.putExtra("latitude", request.getLatitude());
+                    intent.putExtra("longitude", request.getLongitude());
+                    intent.putExtra("address", request.getAddress());
+                    context.startActivity(intent);
+
+                }
+            });
         }
     }
 }

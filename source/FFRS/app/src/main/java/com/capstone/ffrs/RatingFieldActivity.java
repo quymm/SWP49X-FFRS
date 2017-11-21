@@ -19,6 +19,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.controller.NetworkController;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +40,7 @@ public class RatingFieldActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(this).getHostURL();
 
         btSendRating = (Button) findViewById(R.id.btRequest);
         btSendRating.setEnabled(false);
@@ -77,7 +78,7 @@ public class RatingFieldActivity extends AppCompatActivity {
             if (favoriteId != null) {
                 url = hostURL + getResources().getString(R.string.url_remove_favorite_field);
                 url = String.format(url, favoriteId);
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Toast.makeText(RatingFieldActivity.this, "Bạn đã xóa sân ra khỏi danh sách yêu thích", Toast.LENGTH_LONG).show();
@@ -141,7 +142,7 @@ public class RatingFieldActivity extends AppCompatActivity {
                             JSONObject item = body.getJSONObject(i);
                             int fieldId = item.getJSONObject("fieldOwnerId").getInt("id");
                             if (fieldId == b.getInt("field_id")) {
-                                favoriteId = fieldId;
+                                favoriteId = b.getInt("id");
                                 swFavoriteField.setChecked(true);
                                 btSendRating.setEnabled(true);
                                 break;

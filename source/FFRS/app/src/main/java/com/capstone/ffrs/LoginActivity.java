@@ -1,25 +1,36 @@
 package com.capstone.ffrs;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -33,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(this).getHostURL();
         setContentView(R.layout.activity_login);
     }
 
@@ -41,6 +52,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
+    }
+
+    public void onClickDummy(View view) {
+        Intent intent = new Intent(this, DummyActivity.class);
+        startActivity(intent);
     }
 
     public void onClickLogin(View view) {
@@ -65,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void requestLogin(String username, String password) {
+    public void requestLogin(final String username, String password) {
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = hostURL + getResources().getString(R.string.url_login);
         url = String.format(url, username, password);
@@ -99,10 +115,45 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        EditText password = (EditText) findViewById(R.id.text_password);
-                        password.setText("");
-                        Toast.makeText(LoginActivity.this, "Sai tên tài khoản hay mật khẩu!", Toast.LENGTH_SHORT).show();
-                        Log.d("Error.Response", error.toString());
+                        if (error.networkResponse != null && (error.networkResponse.statusCode == 404 || error.networkResponse.statusCode == 400)) {
+                            try {
+                                EditText txtUsername = (EditText) findViewById(R.id.text_username);
+                                EditText txtPassword = (EditText) findViewById(R.id.text_password);
+                                String strResponse = new String(error.networkResponse.data, "UTF-8");
+                                JSONObject response = new JSONObject(strResponse);
+                                if (response.getString("message").equals("Account have username: " + txtUsername.getText().toString() + " is locked!")) {
+                                    EditText password = (EditText) findViewById(R.id.text_password);
+                                    password.setText("");
+                                    AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this).setTitle("Tài khoản đã bị khóa!").
+                                            setMessage("Tài khoản của bạn đã bị khóa bởi quản trị viên.")
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                }
+                                            }).create();
+                                    alertDialog.show();
+                                    Log.d("Error.Response", error.toString());
+                                } else if (response.getString("message").equals("Not found account have username: " + txtUsername.getText().toString() + " and password: " + txtPassword.getText().toString())) {
+                                    Toast.makeText(LoginActivity.this, "Sai tên tài khoản hay mật khẩu", Toast.LENGTH_LONG).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                                Toast.makeText(getApplicationContext(), "Không thể kết nối với máy chủ! Vui lòng thử lại sau!", Toast.LENGTH_SHORT).show();
+                            } else if (error instanceof AuthFailureError) {
+                                Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                            } else if (error instanceof ServerError) {
+                                Toast.makeText(getApplicationContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                            } else if (error instanceof NetworkError) {
+                                Toast.makeText(getApplicationContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                            } else if (error instanceof ParseError) {
+                                Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
                 });
         queue.add(getRequest);
@@ -119,9 +170,10 @@ public class LoginActivity extends AppCompatActivity {
                 editor.putString("password", body.getString("password"));
             }
             editor.putString("teamName", body.getJSONObject("profileId").getString("name"));
+            editor.putString("avatarURL", body.getJSONObject("profileId").getString("avatarUrl"));
             editor.putInt("balance", body.getJSONObject("profileId").getInt("balance"));
             editor.putInt("points", body.getJSONObject("profileId").getInt("bonusPoint"));
-            editor.commit();
+            editor.apply();
 
         } catch (JSONException e) {
             Log.d("EXCEPTION", e.getMessage());

@@ -122,7 +122,7 @@
                                 <Spinner
                                     android:id="@+id/spinner"
                                     android:layout_width="match_parent"
-                                    android:layout_height="50dp"
+                                    android:layout_height="40dp"
                                     android:layout_weight="9"
                                     android:background="@drawable/spinner_border"
                                     android:popupBackground="@drawable/popup_spinner" />
@@ -155,7 +155,7 @@
                             android:layout_height="32dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="16dp"
-                            android:text="Không có khung giờ rảnh trong ngày này"
+                            android:text="Không còn khung giờ rảnh trong ngày"
                             android:textAlignment="center"
                             android:textSize="16dp"
                             android:textStyle="bold"

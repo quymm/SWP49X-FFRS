@@ -7,4 +7,9 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <!-- Ngan Luong -->
+    <dimen name="TEXT_SIZE_NORMAL">15dp</dimen>
+    <dimen name="TEXT_SIZE_LARGE">18dp</dimen>
+    <dimen name="HEIGHT_EDIT_TEXT">48dp</dimen>
 </resources>

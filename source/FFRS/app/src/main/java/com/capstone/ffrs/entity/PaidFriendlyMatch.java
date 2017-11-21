@@ -4,12 +4,12 @@ package com.capstone.ffrs.entity;
  * Created by HuanPMSE61860 on 10/30/2017.
  */
 
-public class PaidFriendlyMatchRequest {
-    private int id, userId, fieldId;
+public class PaidFriendlyMatch {
+    private int id, userId, fieldId, fieldTypeId;
     private String date, startTime, endTime;
     private String fieldName;
 
-    public PaidFriendlyMatchRequest() {
+    public PaidFriendlyMatch() {
     }
 
     public int getId() {
@@ -34,6 +34,14 @@ public class PaidFriendlyMatchRequest {
 
     public void setFieldId(int fieldId) {
         this.fieldId = fieldId;
+    }
+
+    public int getFieldTypeId() {
+        return fieldTypeId;
+    }
+
+    public void setFieldTypeId(int fieldTypeId) {
+        this.fieldTypeId = fieldTypeId;
     }
 
     public String getDate() {

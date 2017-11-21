@@ -7,8 +7,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -25,10 +23,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.adapter.BlackListAdapter;
-import com.capstone.ffrs.adapter.FavoriteFieldAdapter;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.FieldOwner;
 import com.capstone.ffrs.entity.OpponentInfo;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,7 +57,7 @@ public class BlacklistActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(this).getHostURL();
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -90,6 +87,10 @@ public class BlacklistActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(mRemoveReceiver,
                 new IntentFilter("remove-message"));
         swipeRefreshLayout.setRefreshing(true);
+        if (!blackList.isEmpty()) {
+            blackList.clear();
+            loadBlackList();
+        }
     }
 
     @Override

@@ -3,11 +3,8 @@ package com.capstone.ffrs;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,14 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.capstone.ffrs.controller.NetworkController;
-
-import org.json.JSONObject;
+import com.capstone.ffrs.utils.VietnameseCurrencyConverter;
 
 public class RechargeActivity extends AppCompatActivity {
 
@@ -36,6 +26,7 @@ public class RechargeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recharge);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        final TextView txtCurrency = (TextView) findViewById(R.id.text_text_money);
         final EditText txtMoney = (EditText) findViewById(R.id.txtMoney);
         txtMoney.addTextChangedListener(new TextWatcher() {
             @Override
@@ -57,10 +48,12 @@ public class RechargeActivity extends AppCompatActivity {
                     btRecharge.setBackgroundColor(ContextCompat.getColor(RechargeActivity.this, R.color.green));
                     if (Integer.valueOf(value) > 5000) {
                         txtMoney.setText("5000");
+                        txtMoney.setSelection(txtMoney.getText().toString().length());
                     } else if (Integer.valueOf(value) < 50) {
                         btRecharge.setEnabled(false);
                         btRecharge.setBackgroundColor(ContextCompat.getColor(RechargeActivity.this, R.color.gray));
                     }
+                    txtCurrency.setText("Đọc là: " + VietnameseCurrencyConverter.convertNumber(txtMoney.getText().toString() + "000"));
                 } else {
                     if (value.length() > 0 && value.charAt(0) == '0') {
                         txtMoney.setText("");
@@ -68,6 +61,7 @@ public class RechargeActivity extends AppCompatActivity {
                     Button btRecharge = (Button) findViewById(R.id.btRecharge);
                     btRecharge.setEnabled(false);
                     btRecharge.setBackgroundColor(ContextCompat.getColor(RechargeActivity.this, R.color.gray));
+                    txtCurrency.setText("");
                 }
             }
         });
@@ -117,7 +111,6 @@ public class RechargeActivity extends AppCompatActivity {
             intent.putExtra("time_to", b.getSerializable("time_to"));
             intent.putExtra("price", b.getInt("price"));
             intent.putExtra("user_id", b.getInt("user_id"));
-            intent.putExtra("time_slot_id", b.getInt("time_slot_id"));
             intent.putExtra("tour_match_mode", b.getBoolean("tour_match_mode"));
             if (b.getBoolean("tour_match_mode")) {
                 intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
