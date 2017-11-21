@@ -31,6 +31,9 @@ public class TimeEnableServices {
     Constant constant;
 
     public List<TimeEnableEntity> setUpTimeEnable(List<InputTimeEnableDTO> inputTimeEnableDTOList) {
+//        int fieldOwnerId = inputTimeEnableDTOList.get(0).getFieldOwnerId();
+//        int fieldTypeId = inputTimeEnableDTOList.get(0).getFieldTypeId();
+//        List<TimeEnableEntity> timeEnableOfFieldInDb = findTimeEnableByFieldOwnerIdAndFieldTypeId(fieldOwnerId, fieldTypeId);
         List<TimeEnableEntity> savedTimeEnableEntity = new ArrayList<>();
         for (InputTimeEnableDTO inputTimeEnableDTO : inputTimeEnableDTOList) {
             TimeEnableEntity timeEnableEntity = convertFromInputTimeEnableDTOToEntity(inputTimeEnableDTO);
