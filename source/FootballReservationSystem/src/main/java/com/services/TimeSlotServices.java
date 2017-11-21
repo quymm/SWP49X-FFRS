@@ -75,15 +75,17 @@ public class TimeSlotServices {
         // kiểm tra nếu được tạo rồi thì ko tạo nữa
         if (timeSlotRepository.countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(fieldOwnerEntity, fieldTypeEntity, date, true) == 0) {
             // đếm chủ sân có bao nhiêu sân loại đó
-            int numberOfField = fieldServices.countNumberOfFieldByFieldOwnerAndFieldType(fieldOwnerEntity, fieldTypeEntity);
+            int numberOfField = fieldServices.countNumberOfFieldByFieldOwnerAndFieldType(fieldOwnerEntity, fieldTypeEntity, date);
             if (numberOfField == 0) {
                 throw new IllegalArgumentException("Field owner has not created any fields!");
             }
+            // tìm ngày hiệu lực của time enable
+            Date effectiveDate = timeEnableServices.getEffectiveDate(date);
             // get list timeEnable theo chủ sân, loại sân và theo ngày order by theo thời gian từ nhỏ đến lớn
             // list not optimal
-            List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDate(fieldOwnerEntity, fieldTypeEntity, dayInWeek, false);
+            List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(fieldOwnerEntity, fieldTypeEntity, dayInWeek, effectiveDate, false);
             // list optimal
-            List<TimeEnableEntity> timeEnableEntityOptimalList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDate(fieldOwnerEntity, fieldTypeEntity, dayInWeek, true);
+            List<TimeEnableEntity> timeEnableEntityOptimalList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(fieldOwnerEntity, fieldTypeEntity, dayInWeek, effectiveDate, true);
             if (timeEnableEntityList.size() != 0) {
 
                 if (timeEnableEntityOptimalList.size() == 0) {
@@ -92,7 +94,7 @@ public class TimeSlotServices {
                     timeSlotEntity.setFieldOwnerId(fieldOwnerEntity);
                     timeSlotEntity.setFieldTypeId(fieldTypeEntity);
                     timeSlotEntity.setStartTime(timeEnableEntityList.get(0).getStartTime());
-                    timeSlotEntity.setEndTime(timeEnableEntityList.get(timeEnableEntityList.size()-1).getEndTime());
+                    timeSlotEntity.setEndTime(timeEnableEntityList.get(timeEnableEntityList.size() - 1).getEndTime());
                     timeSlotEntity.setReserveStatus(false);
                     timeSlotEntity.setOptimal(false);
                     timeSlotEntity.setStatus(true);
@@ -326,6 +328,7 @@ public class TimeSlotServices {
         // chia thời gian thành những khoảng nhỏ 30 phút
         int numberOfTimeSlide = duration / 30;
         List<TimeSlotDTO> timeSlotDTOList = new ArrayList<>();
+        Date effectiveDateOfTimeEnable = timeEnableServices.getEffectiveDate(targetDate);
         for (int i = 0; i < numberOfTimeSlide; i++) {
             TimeSlotDTO timeSlotDTO = new TimeSlotDTO();
             if (i == 0) {
@@ -339,7 +342,7 @@ public class TimeSlotServices {
 
         String dateInWeek = DateTimeUtils.returnDayInWeek(targetDate);
 
-        List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDate(fieldOwner, fieldType, dateInWeek, null);
+        List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(fieldOwner, fieldType, dateInWeek, effectiveDateOfTimeEnable, null);
         Float priceReturn = Float.valueOf(0);
         for (TimeSlotDTO timeSlotDTO : timeSlotDTOList) {
             for (TimeEnableEntity timeEnableEntity : timeEnableEntityList) {
@@ -498,15 +501,17 @@ public class TimeSlotServices {
 
     public List<TimeSlotEntity> addTimeSlotWhenCreateNewField(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity) {
         Date targetDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
+        // tìm những ngày đã đổ time slot rồi thì đổ thêm vào những ngày đó
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findTimeWhenAddNewField(targetDate, true, fieldOwner, fieldTypeEntity);
         List<TimeSlotEntity> savedTimeSlotEntityList = new ArrayList<>();
+        Date nowDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
+        Date effectiveDateOfTimeEnable = timeEnableServices.getEffectiveDate(nowDate);
         if (!timeSlotEntityList.isEmpty())
             for (TimeSlotEntity timeSlot : timeSlotEntityList) {
                 String dayInWeek = DateTimeUtils.returnDayInWeek(timeSlot.getDate());
-                List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDate(fieldOwner, fieldTypeEntity, dayInWeek, false);
-//                List<TimeEnableEntity> timeEnableEntityOptimalList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDate(fieldOwner, fieldTypeEntity, dayInWeek, true);
+                List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(fieldOwner, fieldTypeEntity, dayInWeek, effectiveDateOfTimeEnable, false);
+                List<TimeEnableEntity> timeEnableEntityOptimalList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(fieldOwner, fieldTypeEntity, dayInWeek, effectiveDateOfTimeEnable, true);
                 if (!timeEnableEntityList.isEmpty()) {
-
                     TimeSlotEntity timeSlotEntity = new TimeSlotEntity();
 
                     timeSlotEntity.setFieldOwnerId(fieldOwner);
@@ -515,16 +520,26 @@ public class TimeSlotServices {
                     timeSlotEntity.setStartTime(timeEnableEntityList.get(0).getStartTime());
                     timeSlotEntity.setEndTime(timeEnableEntityList.get(timeEnableEntityList.size() - 1).getEndTime());
                     timeSlotEntity.setReserveStatus(false);
+                    timeSlotEntity.setOptimal(false);
                     timeSlotEntity.setStatus(true);
                     savedTimeSlotEntityList.add(timeSlotRepository.save(timeSlotEntity));
                 }
-//                if(!timeEnableEntityOptimalList.isEmpty()){
-//                    TimeSlotEntity timeSlotEntity = new TimeSlotEntity();
-//
-//                    timeSlotEntity.setFieldOwnerId(fieldOwner);
-//                    timeSlotEntity.setFieldTypeId(fieldTypeEntity);
-//                    timeSlotEntity.setDate();
-//                }
+                if (!timeEnableEntityOptimalList.isEmpty()) {
+                    for (TimeEnableEntity timeEnableEntity : timeEnableEntityOptimalList) {
+
+                        TimeSlotEntity timeSlotEntity = new TimeSlotEntity();
+
+                        timeSlotEntity.setFieldOwnerId(fieldOwner);
+                        timeSlotEntity.setFieldTypeId(fieldTypeEntity);
+                        timeSlotEntity.setDate(timeSlot.getDate());
+                        timeSlotEntity.setStartTime(timeEnableEntity.getStartTime());
+                        timeSlotEntity.setEndTime(timeEnableEntity.getEndTime());
+                        timeSlotEntity.setReserveStatus(false);
+                        timeSlotEntity.setOptimal(true);
+                        timeSlotEntity.setStatus(true);
+                        savedTimeSlotEntityList.add(timeSlotRepository.save(timeSlotEntity));
+                    }
+                }
             }
         return timeSlotEntityList;
     }

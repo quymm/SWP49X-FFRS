@@ -94,7 +94,7 @@ INSERT INTO account (`username`, `password`, `profile_id`, `role_id`, `num_of_re
 
 -- tạo mức giá max min hệ thống
 INSERT INTO standard_price (`staff_id`, `field_type_id`, `date_from`, `date_to`, `rush_hour`, `max_price`, `min_price`) VALUES (33, 1, '2017-10-11', '2018-01-01', 1, 300, 150);
-INSERT INTO standard_price (`staff_id`, `field_type_id`, `date_from`, `date_to`, `rush_hour`, `max_price`, `min_price`) VALUES (33, 0, '2017-10-11', '2018-01-01', 1, 200, 80);
+INSERT INTO standard_price (`staff_id`, `field_type_id`, `date_from`, `date_to`, `rush_hour`, `max_price`, `min_price`) VALUES (33, 1, '2017-10-11', '2018-01-01', 0, 200, 80);
 
 -- tạo sân cho chủ sân
 INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Sân 1', 11, 1);
@@ -196,25 +196,25 @@ INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`
 INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('8888', 32, 1);
 
 -- tạo time-enable cho chủ sân giờ thường
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(11, 1, 'Sun', '06:00:00', '17:00:00', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(12, 1, 'Sun', '06:00:00', '17:00:00', 0, 150);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(13, 1, 'Sun', '06:00:00', '17:00:00', 0, 130);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(14, 1, 'Sun', '06:00:00', '17:00:00', 0, 100);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(15, 1, 'Sun', '06:00:00', '17:00:00', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(16, 1, 'Sun', '06:00:00', '17:00:00', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(17, 1, 'Sun', '06:00:00', '17:00:00', 0, 130);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(18, 1, 'Sun', '06:00:00', '17:00:00', 0, 140);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(19, 1, 'Sun', '06:00:00', '17:00:00', 0, 140);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(20, 1, 'Sun', '06:00:00', '17:00:00', 0, 140);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(21, 1, 'Sun', '06:00:00', '17:00:00', 0, 110);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(22, 1, 'Sun', '06:00:00', '17:00:00', 0, 110);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(23, 1, 'Sun', '06:00:00', '17:00:00', 0, 110);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(24, 1, 'Sun', '06:00:00', '17:00:00', 0, 110);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(25, 1, 'Sun', '06:00:00', '17:00:00', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(26, 1, 'Sun', '06:00:00', '17:00:00', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(27, 1, 'Sun', '06:00:00', '17:00:00', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(28, 1, 'Sun', '06:00:00', '17:00:00', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(29, 1, 'Sun', '06:00:00', '17:00:00', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(11, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(12, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 150);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(13, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 130);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(14, 1, 'Thu', '06:00:00', '17:00:00', '2017-01-01', 0, 100);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(15, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(16, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(17, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 130);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(18, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 140);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(19, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 140);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(20, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 140);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(21, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 110);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(22, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 110);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(23, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 110);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(24, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 110);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(25, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(26, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(27, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(28, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(29, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
 /*
 INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(30, 1, 'Fri', '06:00:00', '17:00:00', 0, 120);
 INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(31, 1, 'Fri', '06:00:00', '17:00:00', 0, 120);
@@ -222,39 +222,39 @@ INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `star
 */
 
 -- tạo time-enable cho chủ sân giờ cao điểm
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(11, 1, 'Sun', '17:00:00', '19:00:00', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(11, 1, 'Sun', '19:00:00', '21:00:00', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(11, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(11, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(12, 1, 'Sun', '17:00:00', '19:00:00', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(12, 1, 'Sun', '19:00:00', '21:00:00', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(12, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(12, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(13, 1, 'Sun', '17:00:00', '19:00:00', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(13, 1, 'Sun', '19:00:00', '21:00:00', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(13, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(13, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(14, 1, 'Sun', '17:00:00', '19:00:00', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(14, 1, 'Sun', '19:00:00', '21:00:00', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(14, 1, 'Thu', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(14, 1, 'Thu', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(15, 1, 'Sun', '17:00:00', '19:00:00', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(15, 1, 'Sun', '19:00:00', '21:00:00', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(15, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(15, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(16, 1, 'Sun', '17:00:00', '19:00:00', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(16, 1, 'Sun', '19:00:00', '21:00:00', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(16, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(16, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(17, 1, 'Sun', '17:00:00', '19:00:00', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(17, 1, 'Sun', '19:00:00', '21:00:00', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(17, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(17, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(18, 1, 'Sun', '17:00:00', '22:00:00', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(19, 1, 'Sun', '17:00:00', '22:00:00', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(20, 1, 'Sun', '17:00:00', '22:00:00', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(21, 1, 'Sun', '17:00:00', '22:00:00', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(22, 1, 'Sun', '17:00:00', '22:00:00', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(23, 1, 'Sun', '17:00:00', '22:00:00', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(24, 1, 'Sun', '17:00:00', '22:00:00', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(25, 1, 'Sun', '17:00:00', '22:00:00', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(26, 1, 'Sun', '17:00:00', '22:00:00', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(27, 1, 'Sun', '17:00:00', '22:00:00', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(28, 1, 'Sun', '17:00:00', '22:00:00', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(29, 1, 'Sun', '17:00:00', '22:00:00', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(18, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(19, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(20, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(21, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(22, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(23, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(24, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(25, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(26, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(27, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(28, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(29, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
 
 
 /*
