@@ -4,23 +4,19 @@
         android:id="@+id/grp_balance"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_recharge"
-            android:icon="@drawable/ic_recharge"
-            android:title="Nạp tiền" />
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_profile"
+            android:title="Tài khoản" />
+
     </group>
     <group
         android:id="@+id/grp_profile"
         android:checkableBehavior="single">
 
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_home_black"
-            android:title="Trang chủ"
-            android:visible="false" />
-        <item
-            android:id="@+id/nav_profile"
-            android:icon="@drawable/ic_profile"
-            android:title="Tài khoản" />
+            android:id="@+id/nav_recharge"
+            android:icon="@drawable/ic_recharge"
+            android:title="Nạp tiền" />
         <item
             android:id="@+id/nav_favorite_field"
             android:icon="@drawable/ic_favorite"
@@ -36,7 +32,7 @@
         <item
             android:id="@+id/nav_rewards"
             android:icon="@drawable/ic_reward"
-            android:title="Đổi thưởng" />
+            android:title="Đổi voucher" />
         <!--<item-->
         <!--android:id="@+id/nav_notifications"-->
         <!--android:icon="@drawable/ic_notifications"-->

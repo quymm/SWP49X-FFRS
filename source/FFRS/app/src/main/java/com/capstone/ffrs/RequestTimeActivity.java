@@ -181,6 +181,7 @@ public class RequestTimeActivity extends AppCompatActivity {
                                         intent.putExtra("user_id", userId);
                                         intent.putExtra("tour_match_mode", true);
                                         intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
+                                        intent.putExtra("created_matching_request_id", b.getInt("created_matching_request_id"));
                                         intent.putExtra("opponent_id", opponentId);
                                         startActivity(intent);
                                     } catch (Exception e) {

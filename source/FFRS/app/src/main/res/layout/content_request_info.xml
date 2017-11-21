@@ -178,7 +178,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:background="@color/red"
-
+            android:onClick="onClickCancelRequest"
             android:text="Hủy"
             android:textColor="@android:color/white"
             android:textSize="18dp" />

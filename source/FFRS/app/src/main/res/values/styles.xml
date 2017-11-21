@@ -41,9 +41,59 @@
 
 
     <style name="SplashTheme" parent="AppTheme">
-
         <item name="android:windowBackground">@drawable/logo</item>
+    </style>
+
+
+    <!-- Ngan Luong -->
+    <style name="StyledTilEditTextFloatingLabel" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/colorSecondaryBlack</item>
+        <item name="android:textSize">13dp</item>
+        <item name="fontPath">fonts/Roboto-Regular.ttf</item>
 
     </style>
 
+    <style name="StyledTilEditTextLayout">
+        <item name="android:textColorHint">@color/colorTextHint</item>
+    </style>
+
+    <!-- LinearLayout -->
+    <style name="LinearLayoutRippleStyle" parent="Material.Drawable.Ripple.Wave.Light">
+        <item name="rd_rippleColor">@color/colorRipple</item>
+        <item name="rd_cornerRadius">4dp</item>
+    </style>
+
+    <style name="FontRoboto" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/Roboto-Regular.ttf</item>
+    </style>
+
+    <style name="TitleTextStyle" parent="TextAppearance.AppCompat.Title">
+        <item name="fontPath">fonts/Roboto-Regular.ttf</item>
+        <item name="android:textSize">@dimen/TEXT_SIZE_LARGE</item>
+    </style>
+
+    <style name="CaptionTextStyle" parent="TextAppearance.AppCompat.Caption">
+        <item name="fontPath">fonts/Roboto-Regular.ttf</item>
+        <item name="android:textSize">@dimen/TEXT_SIZE_NORMAL</item>
+    </style>
+
+    <style name="ButtonRippleStyle" parent="Material.Drawable.Ripple.Touch.Light">
+        <item name="rd_cornerRadius">4dp</item>
+        <item name="rd_rippleColor">@color/colorRipple</item>
+        <item name="fontPath">fonts/Roboto-Regular.ttf</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="WaveButtonRippleStyle" parent="Material.Drawable.Ripple.Wave.Light">
+        <item name="rd_rippleColor">@color/colorRipple</item>
+        <item name="fontPath">fonts/Roboto-Regular.ttf</item>
+        <item name="android:textSize">18dp</item>
+        <item name="rd_cornerRadius">4dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="CircularProgressDrawableStyle" parent="Material.Drawable.CircularProgress">
+        <item name="cpd_strokeColor">@color/colorPrimary</item>
+    </style>
 </resources>

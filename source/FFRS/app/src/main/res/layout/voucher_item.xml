@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="163dp"
+    android:layout_height="225dp"
+    android:layout_margin="5dp"
+    android:background="@android:color/white"
+    android:id="@+id/voucher_layout"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_credit_card" />
+    <TextView
+        android:id="@+id/text_voucher"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="Vouncher giảm giá 200 ngàn"
+        android:textColor="@android:color/black"
+        android:textSize="17dp" />
+
+    <TextView
+        android:id="@+id/text_bonus_points"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:gravity="center"
+        android:text="20000 điểm"
+        android:textSize="14dp" />
+
+    <Button
+        android:id="@+id/btExchange"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#009632"
+        android:text="Đổi quà"
+        android:textColor="@android:color/white"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+</LinearLayout>

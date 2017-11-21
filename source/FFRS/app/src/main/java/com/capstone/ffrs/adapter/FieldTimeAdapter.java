@@ -2,11 +2,15 @@ package com.capstone.ffrs.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.capstone.ffrs.R;
@@ -42,6 +46,10 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.Fiel
         FieldTime item = timeList.get(position);
 
         holder.title.setText(item.getFromTime() + " - " + item.getToTime());
+        if (item.isOptimal()) {
+            holder.title.setTextColor(ContextCompat.getColor(context, android.R.color.white));
+            holder.view.setBackgroundColor(Color.parseColor("#00600d"));
+        }
     }
 
     @Override
@@ -52,10 +60,12 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.Fiel
     public class FieldTimeViewHolder extends RecyclerView.ViewHolder {
 
         private TextView title;
+        private LinearLayout view;
 
         public FieldTimeViewHolder(final View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.time_frame);
+            view = (LinearLayout) itemView.findViewById(R.id.field_time_layout);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

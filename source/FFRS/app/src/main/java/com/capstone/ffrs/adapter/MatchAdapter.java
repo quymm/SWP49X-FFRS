@@ -152,6 +152,7 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
                             intent.putExtra("duration", b.getInt("duration"));
                             intent.putExtra("distance", b.getInt("distance"));
                             intent.putExtra("priorityField", b.getBoolean("priorityField"));
+                            intent.putExtra("created_matching_request_id", b.getInt("created_matching_request_id"));
                             context.startActivity(intent);
                         } catch (ParseException e) {
                             e.printStackTrace();

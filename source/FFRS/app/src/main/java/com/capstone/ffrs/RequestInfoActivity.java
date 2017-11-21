@@ -73,9 +73,9 @@ public class RequestInfoActivity extends AppCompatActivity {
             TextView txtEndTime = (TextView) findViewById(R.id.text_to);
             txtEndTime.setText(sdf.format(endTime));
 
-            long duration = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
-            long hours = (duration / 60);
-            long minutes = (duration % 60);
+            int duration = b.getInt("duration");
+            int hours = (duration / 60);
+            int minutes = (duration % 60);
             String strDuration = (hours != 0 ? hours + " tiếng " : "") + (minutes != 0 ? minutes + " phút" : "");
             TextView txtDuration = (TextView) findViewById(R.id.text_duration);
             txtDuration.setText(strDuration);
@@ -90,51 +90,48 @@ public class RequestInfoActivity extends AppCompatActivity {
         return true;
     }
 
-//    public void onClickCancelRequest(View view){
-//        // continue with delete
-//        final PendingRequest request = (PendingRequest) itemView.getTag(R.id.card_view);
-//
-//        RequestQueue queue = NetworkController.getInstance(context).getRequestQueue();
-//        String url = HostURLUtils.getInstance(context).getHostURL() + context.getResources().getString(R.string.url_cancel_matching_request);
-//        url = String.format(url, request.getMatchingRequestId());
-//        JsonObjectRequest cancelRequest = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject response) {
-//                Toast.makeText(context, "Bạn đã hủy yêu cầu đá chung", Toast.LENGTH_SHORT).show();
-//                requestList.remove(request);
-//                notifyDataSetChanged();
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-//                    Toast.makeText(context, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
-//                } else if (error instanceof AuthFailureError) {
-//                    Toast.makeText(context, "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
-//                } else if (error instanceof ServerError) {
-//                    Toast.makeText(context, "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
-//                } else if (error instanceof NetworkError) {
-//                    Toast.makeText(context, "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
-//                } else if (error instanceof ParseError) {
-//                    Toast.makeText(context, "Lỗi parse!", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        }) {
-//            @Override
-//            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-//                try {
-//                    String utf8String = new String(response.data, "UTF-8");
-//                    return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
-//                } catch (UnsupportedEncodingException e) {
-//                    // log error
-//                    return Response.error(new ParseError(e));
-//                } catch (JSONException e) {
-//                    // log error
-//                    return Response.error(new ParseError(e));
-//                }
-//            }
-//
-//        };
-//        queue.add(cancelRequest);
-//    }
+    public void onClickCancelRequest(View view) {
+        Bundle b = getIntent().getExtras();
+        RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
+        String url = HostURLUtils.getInstance(this).getHostURL() + getResources().getString(R.string.url_cancel_matching_request);
+        url = String.format(url, b.getInt("id"));
+        JsonObjectRequest cancelRequest = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Toast.makeText(RequestInfoActivity.this, "Bạn đã hủy yêu cầu đá chung", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                    Toast.makeText(RequestInfoActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof AuthFailureError) {
+                    Toast.makeText(RequestInfoActivity.this, "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof ServerError) {
+                    Toast.makeText(RequestInfoActivity.this, "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof NetworkError) {
+                    Toast.makeText(RequestInfoActivity.this, "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof ParseError) {
+                    Toast.makeText(RequestInfoActivity.this, "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }) {
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                try {
+                    String utf8String = new String(response.data, "UTF-8");
+                    return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    // log error
+                    return Response.error(new ParseError(e));
+                } catch (JSONException e) {
+                    // log error
+                    return Response.error(new ParseError(e));
+                }
+            }
+
+        };
+        queue.add(cancelRequest);
+    }
 }

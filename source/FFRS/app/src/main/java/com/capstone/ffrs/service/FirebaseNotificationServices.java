@@ -52,7 +52,7 @@ public class FirebaseNotificationServices extends Service {
     Context context;
 
     private int userId;
-    private boolean firstRequestCreated, firstResponseCreated;
+    private boolean firstResponseCreated;
     private String hostURL;
 
     @Override
@@ -62,7 +62,6 @@ public class FirebaseNotificationServices extends Service {
 
         mDatabase = FirebaseDatabase.getInstance();
         myRef = mDatabase.getReference();
-        firstRequestCreated = false;
         firstResponseCreated = false;
         hostURL = HostURLUtils.getInstance(this).getHostURL();
 
@@ -144,87 +143,90 @@ public class FirebaseNotificationServices extends Service {
 
         if (keyword.equalsIgnoreCase("tourMatch")) {
             final int tourMatchId = Integer.valueOf(snapshot.getKey());
-            String url = hostURL + getResources().getString(R.string.url_get_tour_match_by_id);
-            url = String.format(url, tourMatchId);
+            final long status = (long) snapshot.getValue();
+            if (status == 0) {
+                String url = hostURL + getResources().getString(R.string.url_get_tour_match_by_id);
+                url = String.format(url, tourMatchId);
 
-            RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
-            JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        if (!response.isNull("body")) {
-                            JSONObject body = response.getJSONObject("body");
-                            if (body != null) {
+                RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
+                JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            if (!response.isNull("body")) {
+                                JSONObject body = response.getJSONObject("body");
+                                if (body != null) {
 
-                                String opponentTeamName = body.getJSONObject("userId").getJSONObject("profileId").getString("name");
-                                String content = opponentTeamName + " đã chấp nhận yêu cầu của bạn.\nTrận đấu đã được sắp xếp.";
+                                    String opponentTeamName = body.getJSONObject("userId").getJSONObject("profileId").getString("name");
+                                    String content = opponentTeamName + " đã chấp nhận yêu cầu của bạn.\nTrận đấu đã được sắp xếp.";
 
-                                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                                        .setSmallIcon(R.mipmap.ic_launcher)
-                                        .setContentTitle(title)
-                                        .setDefaults(NotificationCompat.DEFAULT_ALL)
-                                        .setContentText(content)
-                                        .setAutoCancel(true);
+                                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                                            .setSmallIcon(R.mipmap.ic_launcher)
+                                            .setContentTitle(title)
+                                            .setDefaults(NotificationCompat.DEFAULT_ALL)
+                                            .setContentText(content)
+                                            .setAutoCancel(true);
 
-                                Intent backIntent = new Intent(context, HistoryActivity.class);
+                                    Intent backIntent = new Intent(context, HistoryActivity.class);
+                                    backIntent.putExtra("notification_tour_match_id", tourMatchId);
 
-                                backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                    backIntent.putExtra("notification_user_id", preferences.getInt("user_id", -1));
 
-                                final PendingIntent pendingIntent = PendingIntent.getActivities(context, 900,
-                                        new Intent[]{backIntent}, PendingIntent.FLAG_ONE_SHOT);
+                                    backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                                mBuilder.setContentIntent(pendingIntent);
+                                    final PendingIntent pendingIntent = PendingIntent.getActivities(context, 900,
+                                            new Intent[]{backIntent}, PendingIntent.FLAG_ONE_SHOT);
 
-                                NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                mNotificationManager.notify(body.getInt("id"), mBuilder.build());
+                                    mBuilder.setContentIntent(pendingIntent);
 
-                                Intent intent = new Intent("balance-message");
-                                intent.putExtra("balance", body.getJSONObject("opponentId").getJSONObject("profileId").getInt("balance"));
-                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                                    NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                                    mNotificationManager.notify(body.getInt("id"), mBuilder.build());
+
+                                    Intent intent = new Intent("balance-message");
+                                    intent.putExtra("balance", body.getJSONObject("opponentId").getJSONObject("profileId").getInt("balance"));
+                                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                                }
                             }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
 
-                    } else if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                        Toast.makeText(getApplicationContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
-                    } else if (error instanceof AuthFailureError) {
-                        Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
-                    } else if (error instanceof ServerError) {
-                        Toast.makeText(getApplicationContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
-                    } else if (error instanceof NetworkError) {
-                        Toast.makeText(getApplicationContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
-                    } else if (error instanceof ParseError) {
-                        Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(getApplicationContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(getApplicationContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(getApplicationContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof ParseError) {
+                            Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-            }) {
-                @Override
-                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                    try {
-                        String utf8String = new String(response.data, "UTF-8");
-                        return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
-                    } catch (UnsupportedEncodingException e) {
-                        // log error
-                        return Response.error(new ParseError(e));
-                    } catch (JSONException e) {
-                        // log error
-                        return Response.error(new ParseError(e));
+                }) {
+                    @Override
+                    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                        try {
+                            String utf8String = new String(response.data, "UTF-8");
+                            return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
+                        } catch (UnsupportedEncodingException e) {
+                            // log error
+                            return Response.error(new ParseError(e));
+                        } catch (JSONException e) {
+                            // log error
+                            return Response.error(new ParseError(e));
+                        }
                     }
-                }
 
-            };
-            queue.add(newsReq);
-
+                };
+                queue.add(newsReq);
+            }
         }
-
-
     }
-
 }

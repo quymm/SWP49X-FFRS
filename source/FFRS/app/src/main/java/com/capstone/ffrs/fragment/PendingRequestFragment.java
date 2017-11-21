@@ -64,6 +64,15 @@ public class PendingRequestFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (getView() != null) {
+            swipeRefreshLayout.setRefreshing(true);
+            loadPendingRequests(getView());
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -76,8 +85,6 @@ public class PendingRequestFragment extends Fragment {
         adapter = new PendingRequestAdapter(this.getContext(), requestList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
-
-        loadPendingRequests(view);
 
         txtNotFound = (TextView) view.findViewById(R.id.text_not_found_pending_request);
 

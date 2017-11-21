@@ -1,5 +1,6 @@
 package com.capstone.ffrs;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,14 +20,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.FieldOwnerFriendlyNotification;
 import com.capstone.ffrs.entity.FieldOwnerTourNotification;
+import com.capstone.ffrs.entity.PendingRequest;
 import com.capstone.ffrs.utils.HostURLUtils;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -146,6 +155,49 @@ public class FieldDetailActivity extends AppCompatActivity {
 
     public void onClickReserve(View view) {
         final Bundle b = getIntent().getExtras();
+        if (b.containsKey("created_matching_request_id")) {
+            int createdMatchingRequestId = b.getInt("created_matching_request_id");
+
+            RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
+            String url = HostURLUtils.getInstance(this).getHostURL() + getResources().getString(R.string.url_cancel_matching_request);
+            url = String.format(url, createdMatchingRequestId);
+            JsonObjectRequest cancelRequest = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+//                    if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+//                        Toast.makeText(FieldDetailActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+//                    } else if (error instanceof AuthFailureError) {
+//                        Toast.makeText(FieldDetailActivity.this, "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+//                    } else if (error instanceof ServerError) {
+//                        Toast.makeText(FieldDetailActivity.this, "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+//                    } else if (error instanceof NetworkError) {
+//                        Toast.makeText(FieldDetailActivity.this, "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+//                    } else if (error instanceof ParseError) {
+//                        Toast.makeText(FieldDetailActivity.this, "Lỗi parse!", Toast.LENGTH_SHORT).show();
+//                    }
+                }
+            }) {
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                    try {
+                        String utf8String = new String(response.data, "UTF-8");
+                        return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
+                    } catch (UnsupportedEncodingException e) {
+                        // log error
+                        return Response.error(new ParseError(e));
+                    } catch (JSONException e) {
+                        // log error
+                        return Response.error(new ParseError(e));
+                    }
+                }
+
+            };
+            queue.add(cancelRequest);
+        }
         final boolean tourMatchMode = b.getBoolean("tour_match_mode");
         String url;
         if (!tourMatchMode) {

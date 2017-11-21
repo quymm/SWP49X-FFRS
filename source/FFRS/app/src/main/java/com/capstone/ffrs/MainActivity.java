@@ -150,10 +150,6 @@ public class MainActivity extends Activity {
                         } else {
                             if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                                 Toast.makeText(getApplicationContext(), "Không thể kết nối với máy chủ! Vui lòng thử lại sau!", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                overridePendingTransition(0, 0);
                             } else if (error instanceof AuthFailureError) {
                                 Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
                             } else if (error instanceof ServerError) {
@@ -163,7 +159,6 @@ public class MainActivity extends Activity {
                             } else if (error instanceof ParseError) {
                                 Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
                             }
-                            clearSharedPreferences();
                             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
@@ -274,7 +269,7 @@ public class MainActivity extends Activity {
     public void clearSharedPreferences() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
-        String hostURL = preferences.getString("host_url", "http://localhost:8080");
+        String hostURL = HostURLUtils.getInstance(this).getHostURL();
         editor.clear();
         editor.putString("host_url", hostURL);
         editor.apply();

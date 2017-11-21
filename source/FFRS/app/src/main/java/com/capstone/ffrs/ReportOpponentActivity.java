@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +24,7 @@ import java.util.Map;
 
 public class ReportOpponentActivity extends AppCompatActivity {
 
-    private String url, hostURL;
+    private String url, hostURL, strReportReason;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +45,17 @@ public class ReportOpponentActivity extends AppCompatActivity {
     public void onClickSendReport(View view) {
         url = hostURL + getResources().getString(R.string.url_send_report_opponent);
 
+        CheckBox chBox1 = (CheckBox) findViewById(R.id.checkBox1);
+        addCheckedTextToString(chBox1);
+        CheckBox chBox2 = (CheckBox) findViewById(R.id.checkBox2);
+        addCheckedTextToString(chBox2);
+        CheckBox chBox3 = (CheckBox) findViewById(R.id.checkBox3);
+        addCheckedTextToString(chBox3);
+        CheckBox chBox4 = (CheckBox) findViewById(R.id.checkBox4);
+        addCheckedTextToString(chBox4);
+
         TextView txtOtherReason = (TextView) findViewById(R.id.text_content);
-        String strReportReason = txtOtherReason.getText().toString();
+        strReportReason += txtOtherReason.getText().toString();
 
         Bundle b = getIntent().getExtras();
         Map<String, Object> params = new HashMap<>();
@@ -72,5 +82,11 @@ public class ReportOpponentActivity extends AppCompatActivity {
         });
 
         queue.add(request);
+    }
+
+    private void addCheckedTextToString(CheckBox chBox) {
+        if (chBox.isChecked()) {
+            strReportReason += chBox.getText().toString() + ";";
+        }
     }
 }

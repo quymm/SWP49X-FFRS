@@ -188,12 +188,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ScrollingActivity"
-            android:configChanges="orientation"
-            android:label="@string/title_activity_scrolling"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".FavoriteFieldActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_favorite_field"
@@ -207,12 +201,28 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".DummyActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_dummy"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RequestInfoActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_request_info"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="vn.demonganluong.ui.activity.NganLuongActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="vn.demonganluong.ui.activity.CheckOutActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="vn.demonganluong.ui.activity.CheckOrderActivity"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>

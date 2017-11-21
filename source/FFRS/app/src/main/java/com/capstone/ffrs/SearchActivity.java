@@ -81,7 +81,7 @@ public class SearchActivity extends AppCompatActivity
         txtPoints.setText("Điểm đổi thưởng: " + preferences.getInt("points", 0));
 
         TextView txtBalance = (TextView) headerLayout.findViewById(R.id.text_balance);
-        txtBalance.setText("Số dư khả dụng: " + preferences.getInt("balance", 0) + " K đồng");
+        txtBalance.setText("Số dư hiện có: " + preferences.getInt("balance", 0) + " K đồng");
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         //call to location listener to start location updates when activity gets started
@@ -172,7 +172,7 @@ public class SearchActivity extends AppCompatActivity
                 builder = new AlertDialog.Builder(SearchActivity.this);
             }
             builder.setTitle("Đóng ứng dụng")
-                    .setMessage("Bạn có muốn đóng ứng dụng không?")
+                    .setMessage("Bạn có muốn tắt ứng dụng này không?")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             finish();
@@ -194,10 +194,6 @@ public class SearchActivity extends AppCompatActivity
         if (id == R.id.nav_recharge) {
             Intent intent = new Intent(this, RechargeActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_home) {
-            Intent intent = new Intent(this, SearchActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
         } else if (id == R.id.nav_profile) {
             Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
@@ -216,7 +212,7 @@ public class SearchActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = preferences.edit();
-            String hostURL = preferences.getString("host_url", "http://localhost:8080");
+            String hostURL = HostURLUtils.getInstance(this).getHostURL();
             editor.clear();
             editor.putString("host_url", hostURL);
             editor.apply();

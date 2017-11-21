@@ -65,6 +65,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class FieldTimeActivity extends AppCompatActivity {
@@ -130,16 +131,26 @@ public class FieldTimeActivity extends AppCompatActivity {
                 for (FieldTime fieldTime : fieldTimeList) {
                     Date fromFrame = sdf.parse(fieldTime.getFromTime());
                     Date toFrame = sdf.parse(fieldTime.getToTime());
-
-                    if (fromFrame.compareTo(startTime) <= 0 && toFrame.compareTo(startTime) > 0) {
-                        LocalDateTime time = new LocalDateTime(startTime);
-                        time = time.plusMinutes(60);
-                        startTime = time.toDate();
-                        endTimeListener.setDate(new SimpleDateFormat("dd/MM/yyyy").parse(date.getText().toString()));
-                        endTimeListener.setMinTime(new LocalDateTime(startTime).toDate());
-                        endTimeListener.setMaxTime(toFrame);
-                        flag = true;
-                        break;
+                    boolean isOptimal = fieldTime.isOptimal();
+                    if (isOptimal) {
+                        if (fromFrame.compareTo(startTime) <= 0 && toFrame.compareTo(startTime) > 0) {
+                            startTime = fromFrame;
+                            from.setText(new SimpleDateFormat("H:mm").format(startTime));
+                            to.setText(new SimpleDateFormat("H:mm").format(toFrame));
+                            endTimeListener = null;
+                            Toast.makeText(this, "Khung giờ cố định", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        if (fromFrame.compareTo(startTime) <= 0 && toFrame.compareTo(startTime) > 0) {
+                            LocalDateTime time = new LocalDateTime(startTime);
+                            time = time.plusMinutes(60);
+                            startTime = time.toDate();
+                            endTimeListener.setDate(new SimpleDateFormat("dd/MM/yyyy").parse(date.getText().toString()));
+                            endTimeListener.setMinTime(new LocalDateTime(startTime).toDate());
+                            endTimeListener.setMaxTime(toFrame);
+                            flag = true;
+                            break;
+                        }
                     }
                 }
 
@@ -168,7 +179,12 @@ public class FieldTimeActivity extends AppCompatActivity {
                     for (FieldTime time : fieldTimeList) {
                         Date startFrameTime = sdf.parse(time.getFromTime());
                         Date endFrameTime = sdf.parse(time.getToTime());
-                        if (startTime.compareTo(startFrameTime) >= 0 && endTime.compareTo(endFrameTime) <= 0) {
+                        boolean isOptimal = time.isOptimal();
+                        if (isOptimal) {
+                            if (startTime.compareTo(startFrameTime) >= 0 && endTime.compareTo(endFrameTime) <= 0) {
+                                flag = true;
+                            }
+                        } else if (startTime.compareTo(startFrameTime) >= 0 && endTime.compareTo(endFrameTime) <= 0) {
                             flag = true;
                         }
                     }
@@ -281,11 +297,13 @@ public class FieldTimeActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 DatePickerDialog dialog = new DatePickerDialog(FieldTimeActivity.this, R.style.DatepickerCalendarTheme, datePickerListener, dateSelected
                         .get(Calendar.YEAR), dateSelected.get(Calendar.MONTH),
                         dateSelected.get(Calendar.DAY_OF_MONTH));
                 dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+                LocalDate maxDate = new LocalDate(System.currentTimeMillis() - 1000);
+                maxDate = maxDate.plusDays(7);
+                dialog.getDatePicker().setMaxDate(maxDate.toDate().getTime());
                 dialog.show();
             }
         });
@@ -618,6 +636,7 @@ public class FieldTimeActivity extends AppCompatActivity {
                                         }
                                     } else {
                                         FieldTime fieldTime = new FieldTime(sdf.format(startTime), sdf.format(sdf.parse(obj.getString("endTime"))));
+                                        fieldTime.setOptimal(obj.getBoolean("optimal"));
                                         // adding movie to movies array
                                         fieldTimeList.add(fieldTime);
                                     }

@@ -151,15 +151,13 @@ public class PayPalActivity extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-
+                            error.printStackTrace();
                         }
                     });
                     queue.add(request);
                 }
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                Intent intent = new Intent(PayPalActivity.this, ReservationResultActivity.class);
-                intent.putExtra("payment_result", "Cancelled");
-                startActivity(intent);
+                finish();
             } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
                 Intent intent = new Intent(PayPalActivity.this, ReservationResultActivity.class);
                 intent.putExtra("payment_result", "Invalid configuration");

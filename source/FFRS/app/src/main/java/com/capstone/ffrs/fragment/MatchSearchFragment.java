@@ -46,6 +46,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.CreateRequestResultActivity;
+import com.capstone.ffrs.FieldTimeActivity;
 import com.capstone.ffrs.MatchResultActivity;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.RechargeActivity;
@@ -207,11 +208,13 @@ public class MatchSearchFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 DatePickerDialog dialog = new DatePickerDialog(v.getContext(), R.style.DatepickerCalendarTheme, datePickerListener, dateSelected
                         .get(Calendar.YEAR), dateSelected.get(Calendar.MONTH),
                         dateSelected.get(Calendar.DAY_OF_MONTH));
                 dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+                LocalDate maxDate = new LocalDate(System.currentTimeMillis() - 1000);
+                maxDate = maxDate.plusDays(7);
+                dialog.getDatePicker().setMaxDate(maxDate.toDate().getTime());
                 dialog.show();
             }
         });
@@ -315,7 +318,6 @@ public class MatchSearchFragment extends Fragment {
 
                             if (!addresses.isEmpty()) {
                                 customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-                                Toast.makeText(getActivity(), "Tọa độ: " + addresses.get(0).getLatitude() + ":" + addresses.get(0).getLongitude(), Toast.LENGTH_LONG).show();
                             } else {
                                 customPosition = null;
                                 Toast.makeText(getActivity(), "Không thế lấy tọa độ từ địa chỉ này", Toast.LENGTH_LONG).show();
@@ -351,7 +353,6 @@ public class MatchSearchFragment extends Fragment {
                         inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
                                 InputMethodManager.HIDE_NOT_ALWAYS);
                         customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-                        Toast.makeText(getActivity(), "Tọa độ: " + addresses.get(0).getLatitude() + ":" + addresses.get(0).getLongitude(), Toast.LENGTH_LONG).show();
                     } else {
                         customPosition = null;
                         Toast.makeText(getActivity(), "Không thế lấy tọa độ từ địa chỉ này", Toast.LENGTH_LONG).show();
@@ -435,8 +436,10 @@ public class MatchSearchFragment extends Fragment {
                                 public void onResponse(JSONObject response) {
                                     try {
                                         if (!response.isNull("body")) {
-                                            JSONArray body = response.getJSONArray("body");
-                                            if (body.length() > 0) {
+                                            JSONObject body = response.getJSONObject("body");
+                                            final int matchingRequestId = body.getInt("matchingRequestId");
+                                            JSONArray list = body.getJSONArray("similarMatchingRequestList");
+                                            if (list.length() > 0) {
                                                 AlertDialog.Builder builder;
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                                     builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_Dialog_Alert);
@@ -456,6 +459,7 @@ public class MatchSearchFragment extends Fragment {
                                                                 intent.putExtra("duration", 60 + durationSpinner.getSelectedItemPosition() * 30);
                                                                 intent.putExtra("distance", 4 + (distanceSpinner.getSelectedItemPosition() * 2));
                                                                 intent.putExtra("priorityField", true);
+                                                                intent.putExtra("created_matching_request_id", matchingRequestId);
                                                                 intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
                                                                 if (txtAddress.getText().toString().isEmpty() || customPosition == null) {
                                                                     intent.putExtra("address", txtAddress.getHint().toString());

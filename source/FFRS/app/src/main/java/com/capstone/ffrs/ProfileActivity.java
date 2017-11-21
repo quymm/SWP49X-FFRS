@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +40,7 @@ import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 
@@ -100,6 +102,9 @@ public class ProfileActivity extends AppCompatActivity {
 
                             TextView txtBalance = (TextView) findViewById(R.id.text_balance);
                             txtBalance.setText(body.getJSONObject("profileId").getInt("balance") + " nghìn đồng");
+
+                            TextView txtAvailableBalance = (TextView) findViewById(R.id.text_available_balance);
+                            txtAvailableBalance.setText((body.getJSONObject("profileId").getInt("balance") - body.getJSONObject("profileId").getInt("accountPayable")) + " nghìn đồng");
                         }
                     }
                 } catch (JSONException e) {
@@ -192,6 +197,7 @@ public class ProfileActivity extends AppCompatActivity {
         if ((requestCode == SELECT_FILE || requestCode == REQUEST_CAMERA) && resultCode == Activity.RESULT_OK) {
             if (data == null) {
                 //Display an error
+                Log.d("ERROR", "No date");
                 return;
             }
             final Bundle extras = data.getExtras();
