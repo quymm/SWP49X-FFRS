@@ -2,6 +2,7 @@ package com.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -76,5 +77,13 @@ public class DateTimeUtils {
         String shh = hh<10?"0"+Integer.toString(hh):Integer.toString(hh);
         String smm = mm==1?"30":"00";
         return convertFromStringToTime(shh+":"+smm);
+    }
+
+    public static String getDateAfter(String  curDate, int numberAfter) {
+        final Date date = DateTimeUtils.convertFromStringToDate(curDate);
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_YEAR, numberAfter);
+        return DateTimeUtils.formatDate(calendar.getTime());
     }
 }

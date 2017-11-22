@@ -51,6 +51,13 @@ public class TimeEnableEntity implements Serializable {
     @Column(name = "price")
     private float price;
     @Basic(optional = false)
+    @Column(name = "optimal")
+    private boolean optimal;
+    @Basic(optional = false)
+    @Column(name = "effective_date")
+    @Temporal(TemporalType.DATE)
+    private Date effectiveDate;
+    @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
     @Basic(optional = false)
@@ -122,6 +129,22 @@ public class TimeEnableEntity implements Serializable {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public boolean isOptimal() {
+        return optimal;
+    }
+
+    public void setOptimal(boolean optimal) {
+        this.optimal = optimal;
+    }
+
+    public Date getEffectiveDate() {
+        return effectiveDate;
+    }
+
+    public void setEffectiveDate(Date effectiveDate) {
+        this.effectiveDate = effectiveDate;
     }
 
     public boolean getStatus() {

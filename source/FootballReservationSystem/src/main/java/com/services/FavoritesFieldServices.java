@@ -60,8 +60,8 @@ public class FavoritesFieldServices {
 
     public boolean removeFavoritesEntity(int id) {
         FavoritesFieldEntity favoritesFieldEntity = favoritesFieldRepository.findByIdAndStatus(id, true);
-        favoritesFieldEntity.setStatus(false);
-        return !favoritesFieldRepository.save(favoritesFieldEntity).getStatus();
+        favoritesFieldRepository.delete(favoritesFieldEntity);
+        return true;
     }
 
     public List<AccountEntity> findFavoritesFieldOf2User(int userId1, int userId2) {
