@@ -9,6 +9,7 @@ import {
   doLoginSuccessful,
   doLogout
 } from '../redux/guest/guest-action-creators';
+import moment from 'moment';
 class Field extends Component {
   constructor(props) {
     super(props);
@@ -34,7 +35,9 @@ class Field extends Component {
       } else {
         const idLocal = authLocalStorage.id;
         await this.props.doLoginSuccessful(authLocalStorage);
+        debugger
         const data = await fetchGetAllField(idLocal);
+        debugger
         await this.props.getAllField(data.body);
       }
     }
@@ -68,15 +71,17 @@ class Field extends Component {
                 <td>{index + 1}</td>
                 <td>{listField.name}</td>
                 <td>{listField.fieldTypeId.name}</td>
+                <td>{listField.expirationDate? moment(listField.expirationDate, 'YYYY-MM-DD').format('DD/MM/YYYY'): null }</td>
+                {listField.expirationDate? null:
                 <td>
-                  {/* <button
+                  <button
                     value={listField.id}
                     onClick={this.deleteField.bind(this)}
                     className="btn btn-danger"
                   >
                     Xoá
-                  </button> */}
-                </td>
+                  </button>
+                </td>}
               </tr>
             );
           })
@@ -102,6 +107,7 @@ class Field extends Component {
                           <th>#</th>
                           <th>Tên sân</th>
                           <th>Loại sân</th>
+                          <th>Hiệu lực đến ngày</th>                         
                           <th />
                         </tr>
                       </thead>

@@ -19,6 +19,8 @@ import {
   GET_ALL_PROMOTION,
   ADD_PROMOTION,
 } from './base-URL';
+//get account user save at localStorage
+const auth = JSON.parse(localStorage.getItem('auth'));
 
 export function fetchGetMatchByFieldOwnerAndDay(
   fieldOwnerId,
@@ -34,6 +36,7 @@ export function fetchGetMatchByFieldOwnerAndDay(
       fieldTypeId +
       '&date=' +
       day,
+    { headers: { Authorization: auth.tokenValue } },
   ).then(res => res.json());
 }
 
@@ -54,25 +57,30 @@ export function fetchCheckTimeSlotStatus(
       paramduration +
       '&fieldType' +
       paramFieldType,
+    { headers: { Authorization: auth.tokenValue } },
   ).then(res => res.status);
 }
 //Field
 export function fetchGetAllField(fieldOwnerId) {
-  return fetch(
-    BASE_URL + GET_ALL_FIELD + '?&field-owner-id=' + fieldOwnerId,
-  ).then(res => res.json());
+  return fetch(BASE_URL + GET_ALL_FIELD + '?&field-owner-id=' + fieldOwnerId, {
+    headers: { Authorization: auth.tokenValue },
+  }).then(res => res.json());
 }
 
 export function fetchDeleteField(fieldId) {
   return fetch(BASE_URL + DETELE_FIELD + '?&field-id=' + fieldId, {
     method: 'DELETE',
+    headers: { Authorization: auth.tokenValue },
   }).then(res => res.json());
 }
 
 export function fetchAddField(paramFieldName, paramFieldType, fieldOwnerId) {
   return fetch(BASE_URL + ADD_FIELD, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: {
+      'content-type': 'application/json',
+      Authorization: auth.tokenValue,
+    },
     body: JSON.stringify({
       fieldName: paramFieldName,
       fieldOwnerId: fieldOwnerId,
@@ -83,6 +91,7 @@ export function fetchAddField(paramFieldName, paramFieldType, fieldOwnerId) {
 export function fetchGetTimeEnableInWeek(fieldOwnerId) {
   return fetch(
     BASE_URL + GET_TIME_ENABLE_IN_WEEK + '?field-owner-id=' + fieldOwnerId,
+    { headers: { Authorization: auth.tokenValue } },
   ).then(res => res.json());
 }
 
@@ -93,11 +102,14 @@ export function fetchUpdateTimeEnableInWeek(
   endDay,
   paramPrice,
   paramFieldTypeId,
-  optimize
+  optimize,
 ) {
   return fetch(BASE_URL + UPDATE_TIME_ENABLE_IN_WEEK, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: {
+      'content-type': 'application/json',
+      Authorization: auth.tokenValue,
+    },
     body: JSON.stringify([
       {
         dayInWeek: paramDayInWeek,
@@ -106,7 +118,7 @@ export function fetchUpdateTimeEnableInWeek(
         fieldTypeId: paramFieldTypeId,
         price: paramPrice,
         startTime: startday,
-        optimal: optimize
+        optimal: optimize,
       },
     ]),
   }).then(res => res.json());
@@ -122,6 +134,7 @@ export function fetchGetFreeTime(fieldownerid, fieldTypeId, argDate) {
       fieldTypeId +
       '&date=' +
       argDate,
+    { headers: { Authorization: auth.tokenValue } },
   ).then(res => res.json());
 }
 
@@ -134,7 +147,10 @@ export function fetchBookMatch(
 ) {
   return fetch(BASE_URL + BOOK_MATCH, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: {
+      'content-type': 'application/json',
+      Authorization: auth.tokenValue,
+    },
     body: JSON.stringify({
       date: argDate,
       endTime: argDuration,
@@ -157,6 +173,7 @@ export function fetchGetFreeFieldByTime(fieldownerid, fieldTypeId, date, time) {
       date +
       '&time=' +
       time,
+    { headers: { Authorization: auth.tokenValue } },
   ).then(res => res.json());
 }
 
@@ -170,6 +187,7 @@ export function fetchSetFieldToMatch(timeSlotId, fieldId) {
       fieldId,
     {
       method: 'PUT',
+      headers: { Authorization: auth.tokenValue },
     },
   ).then(res => res.json());
 }
@@ -177,24 +195,28 @@ export function fetchSetFieldToMatch(timeSlotId, fieldId) {
 export function fetchGetFriendlyMatch(matchId) {
   return fetch(
     BASE_URL + GET_FRIENDLY_MATCH + '?friendly-match-id=' + matchId,
+    { headers: { Authorization: auth.tokenValue } },
   ).then(res => res.json());
 }
 
 export function fetchGetTourMatch(matchId) {
-  return fetch(
-    BASE_URL + GET_TOUR_MATCH + '?tour-match-id=' + matchId,
-  ).then(res => res.json());
+  return fetch(BASE_URL + GET_TOUR_MATCH + '?tour-match-id=' + matchId, {
+    headers: { Authorization: auth.tokenValue },
+  }).then(res => res.json());
 }
 
 export function fetchGetOvercome(fieldownerid) {
-  return fetch(
-    BASE_URL + GET_OVERCONE + '?field-owner-id=' + fieldownerid,
-  ).then(res => res.json());
+  return fetch(BASE_URL + GET_OVERCONE + '?field-owner-id=' + fieldownerid, {
+    headers: { Authorization: auth.tokenValue },
+  }).then(res => res.json());
 }
 export function fetchUpdateProfile(id, data) {
   return fetch(BASE_URL + UPDATE_PROFILE + '?field-owner-id=' + id, {
     method: 'PUT',
-    headers: { 'content-type': 'application/json' },
+    headers: {
+      'content-type': 'application/json',
+      Authorization: auth.tokenValue,
+    },
     body: JSON.stringify({
       address: data.address,
       avatarUrl: data.avatarUrl,
@@ -209,14 +231,14 @@ export function fetchUpdateProfile(id, data) {
   }).then(res => res.json());
 }
 export function fetchGetAllPromotion(id) {
-  return fetch(
-    BASE_URL + GET_ALL_PROMOTION + '?field-owner-id=' + id,
-  ).then(res => res.json());
+  return fetch(BASE_URL + GET_ALL_PROMOTION + '?field-owner-id=' + id, {
+    headers: { Authorization: auth.tokenValue },
+  }).then(res => res.json());
 }
 export function fetchAddPromotion(id, data) {
   return fetch(BASE_URL + ADD_PROMOTION, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', Authorization: auth.tokenValue },
     body: JSON.stringify({
       dateFrom: data.startDate.format('DD-MM-YYYY'),
       dateTo: data.endDate.format('DD-MM-YYYY'),
@@ -225,8 +247,8 @@ export function fetchAddPromotion(id, data) {
       fieldTypeId: data.fieldStyle,
       freeServices: data.decription,
       saleOff: data.saleOff,
-      startTime: data.startTime.format('Hh:mm')
-    })
+      startTime: data.startTime.format('Hh:mm'),
+    }),
   });
 }
 
