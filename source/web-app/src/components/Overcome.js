@@ -44,7 +44,7 @@ class OverCome extends Component {
     });
   }
   async handleShowModal(match) {
-    console.log('match: ', match);
+    debugger
     const detail = (await !match.friendlyMatchId)
       ? match.tourMatchId
       : match.friendlyMatchId;

@@ -326,7 +326,8 @@ class FreeTime extends Component {
                                 ).format('HH:mm')}
                               </h4>
                             </div>
-                            <div className="col-sm-3">
+                            <div>
+                            <h4>
                               <button
                                 onClick={() =>
                                   this.handelShowModalBookMatch(freeTime)}
@@ -334,7 +335,8 @@ class FreeTime extends Component {
                               >
                                 Đặt sân
                               </button>
-                            </div>
+                            </h4>
+                          </div>
                           </div>
                         ))
                       ) : (
