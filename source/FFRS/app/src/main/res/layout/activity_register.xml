@@ -74,6 +74,7 @@
             android:background="@android:color/white"
             android:ems="10"
             android:fontFamily="sans-serif"
+            android:maxLength="11"
             android:hint="Số điện thoại"
             android:inputType="phone"
             android:padding="5dp" />

@@ -40,6 +40,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by HuanPMSE61860 on 10/23/2017.
@@ -222,6 +224,14 @@ public class FirebaseNotificationServices extends Service {
                             // log error
                             return Response.error(new ParseError(e));
                         }
+                    }
+
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        HashMap<String, String> headers = new HashMap<String, String>();
+                        headers.put("Content-Type", "application/json; charset=utf-8");
+
+                        return headers;
                     }
 
                 };

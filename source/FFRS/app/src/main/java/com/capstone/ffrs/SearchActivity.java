@@ -173,12 +173,12 @@ public class SearchActivity extends AppCompatActivity
             }
             builder.setTitle("Đóng ứng dụng")
                     .setMessage("Bạn có muốn tắt ứng dụng này không?")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             finish();
                         }
                     })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    .setNegativeButton("Không", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                         }
                     })
@@ -196,6 +196,9 @@ public class SearchActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_profile) {
             Intent intent = new Intent(this, ProfileActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_member) {
+            Intent intent = new Intent(this, TeamMemberListActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_rewards) {
             Intent intent = new Intent(this, RewardActivity.class);

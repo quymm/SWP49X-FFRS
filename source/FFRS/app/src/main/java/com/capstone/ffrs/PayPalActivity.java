@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -153,7 +154,15 @@ public class PayPalActivity extends AppCompatActivity {
                         public void onErrorResponse(VolleyError error) {
                             error.printStackTrace();
                         }
-                    });
+                    }){
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                            HashMap<String, String> headers = new HashMap<String, String>();
+                            headers.put("Content-Type", "application/json; charset=utf-8");
+
+                            return headers;
+                        }
+                    };
                     queue.add(request);
                 }
             } else if (resultCode == Activity.RESULT_CANCELED) {

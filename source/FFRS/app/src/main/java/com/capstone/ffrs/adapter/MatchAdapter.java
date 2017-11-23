@@ -110,21 +110,7 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
                 public void onClick(View v) {
                     if (context instanceof Activity) {
                         final Bundle b = ((Activity) context).getIntent().getExtras();
-
                         MatchRequest request = (MatchRequest) v.getTag(R.id.card_view);
-
-//                        // Firebase
-//                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//                        DatabaseReference myRef = database.getReference();
-//
-//                        Integer userId = b.getInt("user_id");
-//
-//                        FirebaseUserInfo info = new FirebaseUserInfo();
-//                        info.setStatus(0);
-//                        info.setLatitude(b.getDouble("latitude"));
-//                        info.setLongitude(b.getDouble("longitude"));
-//                        myRef.child("request").child(request.getUserId() + "").child(request.getId() + "").child(userId.toString()).setValue(info);
-
                         try {
                             Date requestStartTime = new SimpleDateFormat("H:mm:ss").parse(request.getStartTime());
                             Date requestEndTime = new SimpleDateFormat("H:mm:ss").parse(request.getEndTime());
@@ -157,7 +143,6 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
-
                     }
                 }
             });

@@ -5,8 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -369,7 +371,15 @@ public class FieldTimeActivity extends AppCompatActivity {
                         public void onErrorResponse(VolleyError error) {
                             error.printStackTrace();
                         }
-                    });
+                    }) {
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                            HashMap<String, String> headers = new HashMap<String, String>();
+                            headers.put("Content-Type", "application/json; charset=utf-8");
+
+                            return headers;
+                        }
+                    };
                     queue.add(request);
                 } else {
                     url = hostURL + getResources().getString(R.string.url_add_favorite_field);
@@ -390,7 +400,15 @@ public class FieldTimeActivity extends AppCompatActivity {
                         public void onErrorResponse(VolleyError error) {
                             error.printStackTrace();
                         }
-                    });
+                    }) {
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                            HashMap<String, String> headers = new HashMap<String, String>();
+                            headers.put("Content-Type", "application/json; charset=utf-8");
+
+                            return headers;
+                        }
+                    };
                     queue.add(request);
                 }
                 isEnable = !isEnable;
@@ -547,12 +565,15 @@ public class FieldTimeActivity extends AppCompatActivity {
                         }
                     }) {
 
+
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     HashMap<String, String> headers = new HashMap<String, String>();
                     headers.put("Content-Type", "application/json; charset=utf-8");
+
                     return headers;
                 }
+
             };
             queue.add(postRequest);
         } catch (ParseException e) {
@@ -631,6 +652,7 @@ public class FieldTimeActivity extends AppCompatActivity {
 
                                         if (localEndTime.toDateTimeToday().getMillis() - localCurrentTime.toDateTimeToday().getMillis() >= (60 * 60 * 1000)) {
                                             FieldTime fieldTime = new FieldTime(sdf.format(startTime), sdf.format(localEndTime.toDateTimeToday().toDate()));
+                                            fieldTime.setOptimal(obj.getBoolean("optimal"));
                                             // adding movie to movies array
                                             fieldTimeList.add(fieldTime);
                                         }
@@ -722,6 +744,15 @@ public class FieldTimeActivity extends AppCompatActivity {
                     return Response.error(new ParseError(e));
                 }
             }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+            }
+
         };
         //Adding JsonArrayRequest to Request Queue
         queue.add(newsReq);
@@ -765,7 +796,15 @@ public class FieldTimeActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
             }
-        });
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+            }
+        };
         queue.add(request);
     }
 }

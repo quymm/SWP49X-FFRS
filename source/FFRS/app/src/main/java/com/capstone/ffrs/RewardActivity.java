@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -40,12 +41,13 @@ public class RewardActivity extends AppCompatActivity {
 
     private String hostURL;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private TextView txtCurrentBonus;
+    private TextView txtCurrentBonus, txtNotFound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reward);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -63,6 +65,8 @@ public class RewardActivity extends AppCompatActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RewardActivity.this);
         txtCurrentBonus = (TextView) findViewById(R.id.text_current_bonus);
         txtCurrentBonus.setText("Điểm thưởng hiện tại: " + preferences.getInt("point", 0) + " điểm");
+
+        txtNotFound = (TextView) findViewById(R.id.text_not_found);
         loadVouchers();
     }
 
@@ -78,6 +82,7 @@ public class RewardActivity extends AppCompatActivity {
     }
 
     private void loadVouchers() {
+        //txtNotFound.setVisibility(View.GONE);
         final GridLayout grid = (GridLayout) findViewById(R.id.grid_layout);
         grid.removeAllViews();
 
@@ -87,7 +92,6 @@ public class RewardActivity extends AppCompatActivity {
         getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
 
         final int width = dm.widthPixels;
-        final TextView txtNotFound = (TextView) findViewById(R.id.text_not_found);
 
         String url = hostURL + getResources().getString(R.string.url_get_vouchers);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -128,10 +132,10 @@ public class RewardActivity extends AppCompatActivity {
                                 }
                             }
                         } else {
-                            txtNotFound.setVisibility(View.VISIBLE);
+                            //txtNotFound.setVisibility(View.VISIBLE);
                         }
                     } else {
-                        txtNotFound.setVisibility(View.VISIBLE);
+                        //txtNotFound.setVisibility(View.VISIBLE);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -144,7 +148,15 @@ public class RewardActivity extends AppCompatActivity {
                 error.printStackTrace();
                 swipeRefreshLayout.setRefreshing(false);
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+            }
+        };
         queue.add(request);
     }
 
@@ -165,7 +177,7 @@ public class RewardActivity extends AppCompatActivity {
                             JSONObject body = response.getJSONObject("body");
                             SharedPreferences.Editor editor = preferences.edit();
                             editor.putInt("balance", body.getJSONObject("userId").getJSONObject("profileId").getInt("balance"));
-                            editor.putInt("point", body.getJSONObject("userId").getJSONObject("profileId").getInt("bonusPoint"));
+                            editor.putInt("points", body.getJSONObject("userId").getJSONObject("profileId").getInt("bonusPoint"));
                             editor.apply();
                             AlertDialog alertDialog = new AlertDialog.Builder(RewardActivity.this).setTitle("Đổi voucher thành công").
                                     setMessage("Bạn đã đổi voucher thành công. Tài khoản đã được cộng " + vouncherText)
@@ -186,7 +198,15 @@ public class RewardActivity extends AppCompatActivity {
                 public void onErrorResponse(VolleyError error) {
                     Log.d("EXCEPTION", error.getMessage());
                 }
-            });
+            }){
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Content-Type", "application/json; charset=utf-8");
+
+                    return headers;
+                }
+            };
             queue.add(request);
         } catch (JSONException e) {
             e.printStackTrace();
