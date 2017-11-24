@@ -82,7 +82,6 @@ public class RewardActivity extends AppCompatActivity {
     }
 
     private void loadVouchers() {
-        //txtNotFound.setVisibility(View.GONE);
         final GridLayout grid = (GridLayout) findViewById(R.id.grid_layout);
         grid.removeAllViews();
 
@@ -115,7 +114,7 @@ public class RewardActivity extends AppCompatActivity {
                                     linearLayout.setMinimumWidth(width / 2 - 14);
 
                                     TextView voucherTitle = (TextView) v.findViewById(R.id.text_voucher);
-                                    voucherTitle.setText("Voucher trị giá " + String.format("%.0f", voucherValue) + " ngàn đồng");
+                                    voucherTitle.setText("Voucher trị giá " + String.format("%.0f", voucherValue) + " nghìn đồng");
 
                                     TextView pointTitle = (TextView) v.findViewById(R.id.text_bonus_points);
                                     pointTitle.setText(bonusPointTarget + " điểm");
@@ -124,18 +123,19 @@ public class RewardActivity extends AppCompatActivity {
                                     btExchange.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            redeemVoucher(obj, String.format("%.0f", voucherValue) + " ngàn đồng");
+                                            redeemVoucher(obj, String.format("%.0f", voucherValue) + " nghìn đồng");
                                         }
                                     });
                                 } catch (Exception e) {
                                     Log.d("EXCEPTION", e.getMessage());
                                 }
                             }
+                            txtNotFound.setVisibility(View.GONE);
                         } else {
-                            //txtNotFound.setVisibility(View.VISIBLE);
+                            txtNotFound.setVisibility(View.VISIBLE);
                         }
                     } else {
-                        //txtNotFound.setVisibility(View.VISIBLE);
+                        txtNotFound.setVisibility(View.VISIBLE);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -148,7 +148,7 @@ public class RewardActivity extends AppCompatActivity {
                 error.printStackTrace();
                 swipeRefreshLayout.setRefreshing(false);
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();
@@ -198,7 +198,7 @@ public class RewardActivity extends AppCompatActivity {
                 public void onErrorResponse(VolleyError error) {
                     Log.d("EXCEPTION", error.getMessage());
                 }
-            }){
+            }) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     HashMap<String, String> headers = new HashMap<String, String>();

@@ -103,7 +103,7 @@ public class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements F
             sb.append("?key=" + API_KEY);
             sb.append("&language=vi");
             sb.append("&region=VN");
-            sb.append("&types=address");
+            sb.append("&types=geocode");
             sb.append("&input=" + URLEncoder.encode(input, "utf8"));
 
             URL url = new URL(sb.toString());

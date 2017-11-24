@@ -189,7 +189,7 @@ public class FieldSearchFragment extends Fragment {
 //                        InputMethodManager.HIDE_NOT_ALWAYS);
 //
 //                searchText.setCursorVisible(false);
-//                loadFields(view);
+                loadFields();
             }
         });
         txtNotFound = (TextView) view.findViewById(R.id.text_not_found);

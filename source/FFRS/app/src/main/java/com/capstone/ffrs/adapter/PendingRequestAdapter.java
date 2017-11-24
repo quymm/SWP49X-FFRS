@@ -76,6 +76,10 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
             PendingRequest request = requestList.get(position);
             holder.itemView.setTag(R.id.card_view, request);
 
+            String address = request.getAddress();
+            holder.txtAddress.setText(address);
+
+
             String strDate = sdf.format(new Date(Long.parseLong(request.getDate())));
             holder.txtDate.setText(strDate);
 
@@ -85,7 +89,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
             Date endTime = sdf.parse(request.getEndTime());
 
             sdf = new SimpleDateFormat("H:mm");
-            holder.txtTime.setText((position + 1) + ". " + sdf.format(startTime) + " - " + sdf.format(endTime));
+            holder.txtTime.setText(sdf.format(startTime) + " - " + sdf.format(endTime));
 
             int duration = request.getDuration();
             String strDuration = "";
@@ -108,12 +112,13 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
 
     public class PendingRequestViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView txtTime, txtDate, txtDuration;
+        private TextView txtAddress, txtTime, txtDate, txtDuration;
 
         private Button btClose;
 
         public PendingRequestViewHolder(final View itemView) {
             super(itemView);
+            txtAddress = (TextView) itemView.findViewById(R.id.address_short_view);
             txtTime = (TextView) itemView.findViewById(R.id.time_view);
             txtDate = (TextView) itemView.findViewById(R.id.date_view);
             txtDuration = (TextView) itemView.findViewById(R.id.duration_view);

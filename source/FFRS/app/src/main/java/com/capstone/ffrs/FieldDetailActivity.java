@@ -130,13 +130,13 @@ public class FieldDetailActivity extends AppCompatActivity {
         TextView txtTotalPrice = (TextView) findViewById(R.id.text_total_price);
         boolean tourMatchMode = b.getBoolean("tour_match_mode");
         if (tourMatchMode) {
-            txtTotalPrice.setText((price * 2) + "K đồng");
+            txtTotalPrice.setText((price * 2) + " ngàn đồng");
         } else {
-            txtTotalPrice.setText(price + "K đồng");
+            txtTotalPrice.setText(price + " ngàn đồng");
         }
 
         TextView txtPrice = (TextView) findViewById(R.id.text_price);
-        txtPrice.setText(price + "K đồng");
+        txtPrice.setText(price + " ngàn đồng");
 
         relativeLayout = (RelativeLayout) findViewById(R.id.relative_layout);
         progressBarHolder = (FrameLayout) findViewById(R.id.progressBarHolder);

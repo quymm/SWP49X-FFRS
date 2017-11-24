@@ -1,5 +1,6 @@
 package com.capstone.ffrs.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.BroadcastReceiver;
@@ -56,7 +57,9 @@ import com.capstone.ffrs.utils.HostURLUtils;
 import com.capstone.ffrs.utils.TimePickerListener;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DatabaseReference;
@@ -309,10 +312,10 @@ public class MatchSearchFragment extends Fragment {
 //                int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 //                try {
 //                    AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-//                            .setCountry("VN").setTypeFilter()
+//                            .setCountry("VN")
 //                            .build();
 //                    Intent intent =
-//                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN).setFilter(typeFilter)
+//                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).setFilter(typeFilter)
 //                                    .build(getActivity());
 //                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
 //                } catch (GooglePlayServicesRepairableException e) {
@@ -344,7 +347,20 @@ public class MatchSearchFragment extends Fragment {
                                 customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
                             } else {
                                 customPosition = null;
-                                Toast.makeText(getActivity(), "Không thế lấy tọa độ từ địa chỉ này", Toast.LENGTH_LONG).show();
+                                txtAddress.setText("");
+                                AlertDialog.Builder builder;
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_Dialog_Alert);
+                                } else {
+                                    builder = new AlertDialog.Builder(getContext());
+                                }
+                                builder.setTitle("Không tìm thấy địa chỉ phù hợp")
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+
+                                            }
+                                        }).setCancelable(false).show();
+                                //Toast.makeText(getActivity(), "", Toast.LENGTH_LONG).show();
                             }
 
                             validate();
@@ -352,6 +368,8 @@ public class MatchSearchFragment extends Fragment {
                             e.printStackTrace();
                         }
                         return true;
+                    } else {
+                        customPosition = null;
                     }
                 }
                 return false;
@@ -379,7 +397,20 @@ public class MatchSearchFragment extends Fragment {
                         customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
                     } else {
                         customPosition = null;
-                        Toast.makeText(getActivity(), "Không thế lấy tọa độ từ địa chỉ này", Toast.LENGTH_LONG).show();
+                        txtAddress.setText("");
+                        AlertDialog.Builder builder;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_Dialog_Alert);
+                        } else {
+                            builder = new AlertDialog.Builder(getContext());
+                        }
+                        builder.setTitle("Không tìm thấy địa chỉ phù hợp")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                }).setCancelable(false).show();
+//                        Toast.makeText(getActivity(), "", Toast.LENGTH_LONG).show();
                     }
 
                     validate();
@@ -498,7 +529,7 @@ public class MatchSearchFragment extends Fragment {
                                                                 startActivity(intent);
                                                             }
                                                         })
-                                                        .setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                                                        .setNegativeButton("Không, tạo mới yêu cầu", new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int which) {
                                                                 Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
                                                                 intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
@@ -561,7 +592,7 @@ public class MatchSearchFragment extends Fragment {
                                 Toast.makeText(getContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
                             }
                         }
-                    }){
+                    }) {
                         @Override
                         public Map<String, String> getHeaders() throws AuthFailureError {
                             HashMap<String, String> headers = new HashMap<String, String>();
@@ -602,6 +633,26 @@ public class MatchSearchFragment extends Fragment {
 
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(timepickerReceiver);
     }
+
+//    private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+//
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+//            if (resultCode == Activity.RESULT_OK) {
+//                Place place = PlaceAutocomplete.getPlace(getContext(), data);
+//                TextView txtAddress = (TextView) getActivity().findViewById(R.id.input_address);
+//                txtAddress.setText(place.getAddress());
+//                customPosition = place.getLatLng();
+//            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+//                Status status = PlaceAutocomplete.getStatus(getContext(), data);
+//                // TODO: Handle the error.
+//                Log.i("GoogleError", status.getStatusMessage());
+//            } else if (resultCode == Activity.RESULT_CANCELED) {
+//                // The user canceled the operation.
+//            }
+//        }
+//    }
 
     public void addFieldSpinner(View view) {
         fieldSpinner = (Spinner) view.findViewById(R.id.spField);

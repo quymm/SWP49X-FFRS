@@ -15,6 +15,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:background="@drawable/background4"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -39,7 +40,6 @@
                     android:id="@+id/detail_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/white"
                     android:orientation="vertical">
 
                     <!--<com.android.volley.toolbox.NetworkImageView-->
@@ -171,18 +171,24 @@
                         <EditText
                             android:id="@+id/text_from"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="50dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="@drawable/search_text"
                             android:focusable="false"
                             android:hint="Thời gian bắt đầu:"
-                            android:inputType="none" />
+                            android:inputType="none"
+                            android:padding="5dp" />
 
                         <EditText
                             android:id="@+id/text_to"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="50dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="@drawable/search_text"
                             android:focusable="false"
                             android:hint="Thời gian kết thúc:"
-                            android:inputType="none" />
+                            android:inputType="none"
+                            android:padding="5dp" />
 
                         <Button
                             android:id="@+id/btReserve"

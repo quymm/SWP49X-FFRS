@@ -56,7 +56,7 @@ public class SearchActivity extends AppCompatActivity
             View headerLayout = navigationView.getHeaderView(0);
 
             TextView txtBalance = (TextView) headerLayout.findViewById(R.id.text_balance);
-            txtBalance.setText("Tiền còn lại: " + sharedPreferences.getInt("balance", 0) + "K đồng");
+            txtBalance.setText("Tiền còn lại: " + sharedPreferences.getInt("balance", 0) + "ngàn đồng");
         }
     };
 
@@ -78,10 +78,10 @@ public class SearchActivity extends AppCompatActivity
         txtTeamName.setText(preferences.getString("teamName", ""));
 
         TextView txtPoints = (TextView) headerLayout.findViewById(R.id.text_points);
-        txtPoints.setText("Điểm đổi thưởng: " + preferences.getInt("points", 0));
+        txtPoints.setText("Điểm thưởng: " + preferences.getInt("points", 0) + " điểm");
 
         TextView txtBalance = (TextView) headerLayout.findViewById(R.id.text_balance);
-        txtBalance.setText("Số dư hiện có: " + preferences.getInt("balance", 0) + " K đồng");
+        txtBalance.setText("Số dư hiện có: " + preferences.getInt("balance", 0) + " ngàn đồng");
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         //call to location listener to start location updates when activity gets started

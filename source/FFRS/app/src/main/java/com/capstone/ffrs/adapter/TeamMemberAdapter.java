@@ -62,7 +62,7 @@ public class TeamMemberAdapter extends RecyclerView.Adapter<TeamMemberAdapter.Te
 
         public TeamMemberViewHolder(final View itemView) {
             super(itemView);
-            txtName = (TextView) itemView.findViewById(R.id.text_team_name);
+            txtName = (TextView) itemView.findViewById(R.id.text_member_name);
             txtPhone = (TextView) itemView.findViewById(R.id.text_phone);
             txtAddress = (TextView) itemView.findViewById(R.id.text_address);
 

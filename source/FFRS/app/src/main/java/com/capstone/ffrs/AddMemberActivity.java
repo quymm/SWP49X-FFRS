@@ -151,9 +151,9 @@ public class AddMemberActivity extends AppCompatActivity {
             params.put("captainId", userId);
             params.put("playerName", txtName.getText().toString());
             params.put("phone", txtPhone.getText().toString());
-            params.put("address", txtAddress.getText().toString());
-            params.put("latitude", location.latitude);
-            params.put("longitude", location.longitude);
+//            params.put("address", txtAddress.getText().toString());
+//            params.put("latitude", location.latitude);
+//            params.put("longitude", location.longitude);
             //Volley's inbuilt class to make Json array request
             JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
                 @Override

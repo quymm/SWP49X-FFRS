@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#dbdbdb"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.capstone.ffrs.SearchActivity"
     tools:showIn="@layout/app_bar_search">
@@ -22,6 +21,5 @@
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintTop_creator="1" />
-
 
 </android.support.constraint.ConstraintLayout>
