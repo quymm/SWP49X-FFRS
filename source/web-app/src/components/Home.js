@@ -424,18 +424,10 @@ class Home extends Component {
                                           this.handleShowModalField(listMatch)}
                                         className="btn btn-md btn-primary"
                                       >
-                                        Chọn sân
+                                        Chi tiết
                                       </button>
                                     </p>
-                                    <p className="text-center">
-                                      <button
-                                        onClick={() =>
-                                          this.handleShowModalField(listMatch)}
-                                        className="btn btn-md btn-danger"
-                                      >
-                                        Huỷ trận 
-                                      </button>
-                                    </p>
+                                    
                                   </div>
                                 </div>
                                 <div className="col-md-3">
