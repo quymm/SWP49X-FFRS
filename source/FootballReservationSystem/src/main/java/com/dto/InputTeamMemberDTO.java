@@ -7,6 +7,12 @@ public class InputTeamMemberDTO {
 
     private String phone;
 
+    private String longitude;
+
+    private String latitude;
+
+    private String address;
+
     public InputTeamMemberDTO(Integer captainId, String playerName, String phone) {
         this.captainId = captainId;
         this.playerName = playerName;
@@ -38,5 +44,29 @@ public class InputTeamMemberDTO {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

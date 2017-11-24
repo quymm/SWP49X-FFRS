@@ -363,7 +363,7 @@ public class TimeSlotServices {
         Date targetDate = DateTimeUtils.convertFromStringToDate(targetDateStr);
         Date targetTime = DateTimeUtils.convertFromStringToTime(targetTimeStr);
 
-        List<FieldEntity> fieldEntityList = fieldServices.findFieldEntityByFieldOwnerAndFieldType(fieldOwner, fieldType);
+        List<FieldEntity> fieldEntityList = fieldServices.findFieldEntityByFieldOwnerAndFieldType(fieldOwner, fieldType, targetDate);
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findTimeSlotHaveMatch(fieldOwner, fieldType, targetDate, targetTime, true, true);
         List<FieldEntity> returnFieldEntityList = new ArrayList<>();
         for (FieldEntity fieldEntity : fieldEntityList) {

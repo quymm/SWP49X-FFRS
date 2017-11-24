@@ -103,29 +103,10 @@ public class MatchServices {
         return tourMatchRepository.findByTimeSlotIdAndStatus(timeSlotEntity, true);
     }
 
-//    public String warningAboutDistanceOfFavoritesField(int userId, String longitude, String latitude, int expectedDistance) {
-//        CordinationPoint cordinationPoint = new CordinationPoint();
-//        cordinationPoint.setLongitude(NumberUtils.parseFromStringToDouble(longitude));
-//        cordinationPoint.setLatitude(NumberUtils.parseFromStringToDouble(latitude));
-//        List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPoint, userId, true);
-//        if (!fieldOwnerAndDistanceList.isEmpty()) {
-//            if (fieldOwnerAndDistanceList.get(fieldOwnerAndDistanceList.size()).getDistance() > expectedDistance) {
-//                return String.format("Sân ưa thích: %s có khoảng cách với bạn là: %s. Bạn có muốn tiếp tục ưu tiên không?",
-//                        fieldOwnerAndDistanceList.get(fieldOwnerAndDistanceList.size()).getFieldOwner().getProfileId().getName(),
-//                        fieldOwnerAndDistanceList.get(fieldOwnerAndDistanceList.size()).getDistance());
-//            } else {
-//                return null;
-//            }
-//        } else {
-//            return "Bạn không có sân ưa thích nào!";
-//        }
-//    }
-
     public OutputMatchingRequestDTO createNewMatchingRequest(InputMatchingRequestDTO inputMatchingRequestDTO) {
         AccountEntity user = accountServices.findAccountEntityByIdAndRole(inputMatchingRequestDTO.getUserId(), constant.getUserRole());
 
         RequestReservateDTO requestReservateDTO = new RequestReservateDTO();
-        requestReservateDTO.setDate(inputMatchingRequestDTO.getDate());
         requestReservateDTO.setStartTime(inputMatchingRequestDTO.getStartTime());
         requestReservateDTO.setEndTime(inputMatchingRequestDTO.getEndTime());
         requestReservateDTO.setDuration(inputMatchingRequestDTO.getDuration());
@@ -150,8 +131,8 @@ public class MatchServices {
         matchingRequestEntity.setEndTime(endTime);
         matchingRequestEntity.setDuration(inputMatchingRequestDTO.getDuration());
         matchingRequestEntity.setExpectedDistance(inputMatchingRequestDTO.getExpectedDistance());
-        matchingRequestEntity.setLongitude(inputMatchingRequestDTO.getLongitude());
-        matchingRequestEntity.setLatitude(inputMatchingRequestDTO.getLatitude());
+        matchingRequestEntity.setLongitude(NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLongitude()));
+        matchingRequestEntity.setLatitude(NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()));
         matchingRequestEntity.setAddress(inputMatchingRequestDTO.getAddress());
         matchingRequestEntity.setPriorityField(inputMatchingRequestDTO.getPriorityField());
         matchingRequestEntity.setExpectedPrice(maxPrice / 2);
@@ -189,8 +170,8 @@ public class MatchServices {
         List<MatchingRequestEntity> returnMatchingRequest = new ArrayList<>();
         if (!similarMatchingRequestList.isEmpty()) {
             for (MatchingRequestEntity matchingRequest : similarMatchingRequestList) {
-                CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(matchingRequest.getLongitude()),
-                        NumberUtils.parseFromStringToDouble(matchingRequest.getLatitude()));
+                CordinationPoint cordinationPointB = new CordinationPoint(matchingRequest.getLongitude(),
+                        matchingRequest.getLatitude());
                 Date startTimeOfReq = DateTimeUtils.convertFromStringToTime(DateTimeUtils.formatTime(matchingRequest.getStartTime()));
                 Date endTimeOfReq = DateTimeUtils.convertFromStringToTime(DateTimeUtils.formatTime(matchingRequest.getEndTime()));
                 // nếu endtime của matching sau startTime của input 1 khoảng thời gian nhỏ hơn duration
@@ -258,8 +239,7 @@ public class MatchServices {
         // tạo list những sân và khoảng cách đến sân đó sắp xếp theo thứ tự tăng dần
         CordinationPoint cordinationPointUser = new CordinationPoint(NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLongitude()),
                 NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()));
-        CordinationPoint cordinationPointOpponent = new CordinationPoint(NumberUtils.parseFromStringToDouble(opponentMatching.getLongitude()),
-                NumberUtils.parseFromStringToDouble(opponentMatching.getLatitude()));
+        CordinationPoint cordinationPointOpponent = new CordinationPoint(opponentMatching.getLongitude(), opponentMatching.getLatitude());
         List<FieldOwnerAndDistance> fieldOwnerAndDistanceListFromUser = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPointUser, inputMatchingRequestDTO.getExpectedDistance(), false);
         List<FieldOwnerAndDistance> fieldOwnerAndDistanceListFromOpponent = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPointOpponent, opponentMatching.getExpectedDistance(), false);
         List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
@@ -297,8 +277,8 @@ public class MatchServices {
         }
 
         for (AccountEntity accountEntity : allfieldOwnerList) {
-            CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(accountEntity.getProfileId().getLongitude()),
-                    NumberUtils.parseFromStringToDouble(accountEntity.getProfileId().getLatitude()));
+            CordinationPoint cordinationPointB = new CordinationPoint(accountEntity.getProfileId().getLongitude(),
+                    accountEntity.getProfileId().getLatitude());
             double distance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
             if (deviationOrUserId > 0) {
                 if (distance <= deviationOrUserId) {

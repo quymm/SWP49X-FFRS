@@ -48,11 +48,11 @@ public class FieldController {
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
-    @CrossOrigin
-    @RequestMapping(value = "/swp49x-ffrs/field/managed-field", method = RequestMethod.DELETE)
-    public ResponseEntity deleteField(@RequestParam("field-id") int fieldId){
-        Wrapper wrapper = new Wrapper(fieldServices.deleteFieldEntity(fieldId), HttpStatus.OK.value(), HttpStatus.OK.name());
-        return new ResponseEntity(wrapper, HttpStatus.OK);
-    }
+//    @CrossOrigin
+//    @RequestMapping(value = "/swp49x-ffrs/field/managed-field", method = RequestMethod.DELETE)
+//    public ResponseEntity deleteField(@RequestParam("field-id") int fieldId){
+//        Wrapper wrapper = new Wrapper(fieldServices.deleteFieldEntity(fieldId), HttpStatus.OK.value(), HttpStatus.OK.name());
+//        return new ResponseEntity(wrapper, HttpStatus.OK);
+//    }
 
 }

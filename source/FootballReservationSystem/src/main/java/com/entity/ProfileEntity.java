@@ -35,9 +35,9 @@ public class ProfileEntity implements Serializable {
     @Column(name = "phone")
     private String phone;
     @Column(name = "longitude")
-    private String longitude;
+    private Double longitude;
     @Column(name = "latitude")
-    private String latitude;
+    private Double latitude;
     @Basic(optional = false)
     @Column(name = "balance")
     private float balance;
@@ -111,19 +111,19 @@ public class ProfileEntity implements Serializable {
         this.phone = phone;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 

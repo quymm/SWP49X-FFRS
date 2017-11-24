@@ -4,6 +4,7 @@ public class InputVoucherDTO {
 
     private float voucherValue;
     private int bonusPointTarget;
+    private String imageUrl;
 
     public InputVoucherDTO() {
     }
@@ -27,5 +28,13 @@ public class InputVoucherDTO {
 
     public void setBonusPointTarget(int bonusPointTarget) {
         this.bonusPointTarget = bonusPointTarget;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

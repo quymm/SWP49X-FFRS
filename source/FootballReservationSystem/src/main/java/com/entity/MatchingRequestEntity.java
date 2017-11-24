@@ -40,10 +40,10 @@ public class MatchingRequestEntity implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @Column(name = "longitude")
-    private String longitude;
+    private Double longitude;
     @Basic(optional = false)
     @Column(name = "latitude")
-    private String latitude;
+    private Double latitude;
     @Basic(optional = false)
     @Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -96,7 +96,7 @@ public class MatchingRequestEntity implements Serializable {
         this.id = id;
     }
 
-    public MatchingRequestEntity(String longitude, String latitude, Date date, Date startTime, Date endTime, boolean status, FieldTypeEntity fieldTypeId, AccountEntity userId) {
+    public MatchingRequestEntity(double longitude, double latitude, Date date, Date startTime, Date endTime, boolean status, FieldTypeEntity fieldTypeId, AccountEntity userId) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.date = date;
@@ -119,19 +119,19 @@ public class MatchingRequestEntity implements Serializable {
         this.id = id;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
