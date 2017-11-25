@@ -53,10 +53,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="50dp" />
 
-                    <RadioButton
-                        android:id="@+id/rbtChargeCard"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp" />
+                    <!--<RadioButton-->
+                        <!--android:id="@+id/rbtChargeCard"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="50dp" />-->
                 </RadioGroup>
 
                 <LinearLayout
@@ -86,14 +86,6 @@
 
                         android:scaleType="fitXY"
                         android:src="@drawable/img_credit_cards_icon" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:gravity="center_vertical"
-                        android:text="Thẻ cào"
-                        android:textColor="@android:color/black"
-                        android:textSize="18dp" />
                 </LinearLayout>
             </RelativeLayout>
 

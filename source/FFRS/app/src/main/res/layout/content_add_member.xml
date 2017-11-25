@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background3"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.capstone.ffrs.AddMemberActivity"
+    tools:showIn="@layout/activity_add_member">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/fullscreen_content_controls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:weightSum="5">
+
+            <EditText
+                android:id="@+id/input_username"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginBottom="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/spinner_border"
+                android:ems="10"
+                android:hint="Tên thành viên"
+                android:inputType="text"
+                android:padding="5dp" />
+
+            <EditText
+                android:id="@+id/input_phone"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginBottom="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/spinner_border"
+                android:ems="10"
+                android:fontFamily="sans-serif"
+                android:hint="Số điện thoại"
+                android:inputType="phone"
+                android:maxLength="11"
+                android:padding="5dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/input_address"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/spinner_border"
+                android:ems="10"
+                android:hint="Địa chỉ"
+                android:inputType="text"
+                android:padding="5dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btAddMember"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#008e21"
+            android:onClick="onClickAddMember"
+            android:text="Thêm mới"
+            android:textColor="@android:color/white"
+            android:textSize="18dp" />
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>

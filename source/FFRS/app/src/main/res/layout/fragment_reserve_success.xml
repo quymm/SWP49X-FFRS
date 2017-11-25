@@ -5,6 +5,7 @@
     tools:context=".fragment.ReserveSuccessFragment">
 
     <LinearLayout
+        android:id="@+id/linear_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -17,7 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:text="Bạn đã thanh toán thành công!\nNhấn OK để tiếp tục sử dụng"
+            android:layout_marginBottom="8dp"
+            android:text="Bạn đã đặt sân thành công!\nVui lòng nhấn OK để tiếp tục sử dụng"
             android:textAlignment="center"
             android:textSize="20dp" />
 

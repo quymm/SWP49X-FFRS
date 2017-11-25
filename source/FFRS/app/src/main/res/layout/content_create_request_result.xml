@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_success_3"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.capstone.ffrs.CreateRequestResultActivity"
     tools:showIn="@layout/activity_create_request_result">
@@ -11,29 +12,29 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:orientation="vertical"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="8dp"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1">
 
         <TextView
             android:id="@+id/text_result"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:text="Bạn đã tạo yêu cầu tìm đối thủ thành công!"
-            android:layout_marginBottom="10dp"
             android:textAlignment="center"
             android:textSize="20dp" />
 
@@ -44,9 +45,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:background="#009632"
+            android:onClick="onClickHome"
             android:text="Trở về màn hình chính"
             android:textColor="@android:color/white"
-            android:textSize="18dp"
-            android:onClick="onClickHome"/>
+            android:textSize="18dp" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

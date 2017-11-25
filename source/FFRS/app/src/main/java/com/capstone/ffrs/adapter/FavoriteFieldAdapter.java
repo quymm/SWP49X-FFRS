@@ -5,7 +5,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -38,7 +40,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by HuanPMSE61860 on 11/12/2017.
@@ -107,7 +111,7 @@ public class FavoriteFieldAdapter extends RecyclerView.Adapter<FavoriteFieldAdap
                                                 }
                                                 builder.setTitle("Xóa danh sách")
                                                         .setMessage("Bạn có muốn xóa sân này ra khỏi danh sách không?")
-                                                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int which) {
                                                                 // continue with delete
                                                                 RequestQueue queue = NetworkController.getInstance(context).getRequestQueue();
@@ -155,11 +159,19 @@ public class FavoriteFieldAdapter extends RecyclerView.Adapter<FavoriteFieldAdap
                                                                         }
                                                                     }
 
+                                                                    @Override
+                                                                    public Map<String, String> getHeaders() throws AuthFailureError {
+                                                                        HashMap<String, String> headers = new HashMap<String, String>();
+                                                                        headers.put("Content-Type", "application/json; charset=utf-8");
+
+                                                                        return headers;
+                                                                    }
+
                                                                 };
                                                                 queue.add(request);
                                                             }
                                                         })
-                                                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                                        .setNegativeButton("Không", new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int which) {
                                                                 // do nothing
                                                             }

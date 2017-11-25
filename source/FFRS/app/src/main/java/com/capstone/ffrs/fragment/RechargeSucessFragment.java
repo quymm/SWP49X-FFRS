@@ -1,7 +1,9 @@
 package com.capstone.ffrs.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -130,12 +132,15 @@ public class RechargeSucessFragment extends Fragment {
                                     Log.d("Error.Response", error.toString());
                                 }
                             }) {
+
                         @Override
                         public Map<String, String> getHeaders() throws AuthFailureError {
                             HashMap<String, String> headers = new HashMap<String, String>();
                             headers.put("Content-Type", "application/json; charset=utf-8");
+
                             return headers;
                         }
+
                     };
                     queue.add(postRequest);
                 } else {

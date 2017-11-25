@@ -85,6 +85,10 @@
     <string name="url_get_vouchers">/swp49x-ffrs/voucher/get-all</string>
     <string name="url_redeem_voucher">/swp49x-ffrs/voucher/managed-voucher-record</string>
 
+    ////Team member
+    <string name="url_get_team_members">/swp49x-ffrs/team-member/managed-team-member?captain-id=%s</string>
+    <string name="url_add_team_member_info">/swp49x-ffrs/team-member/managed-team-member</string>
+
     <!-- Ngân Lượng strings -->
     <string name="dialog_close">Đóng</string>
 
@@ -152,4 +156,6 @@
     <string name="title_activity_blacklist">Đối thủ bị chặn</string>
     <string name="title_activity_dummy">Dummy</string>
     <string name="title_activity_request_info">Thông tin yêu cầu</string>
+    <string name="title_activity_team_member_list">Danh sách thành viên</string>
+    <string name="title_activity_add_member">Thêm thành viên</string>
 </resources>

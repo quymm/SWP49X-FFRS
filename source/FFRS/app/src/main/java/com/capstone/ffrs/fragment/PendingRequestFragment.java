@@ -38,7 +38,9 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PendingRequestFragment extends Fragment {
     private String url;
@@ -184,6 +186,14 @@ public class PendingRequestFragment extends Fragment {
                 }
             }
 
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+
+            }
         };
         //Adding JsonArrayRequest to Request Queue
         queue.add(newsReq);

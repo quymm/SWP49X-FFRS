@@ -43,6 +43,8 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -141,6 +143,14 @@ public class ProfileActivity extends AppCompatActivity {
                     // log error
                     return Response.error(new ParseError(e));
                 }
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
             }
 
         };

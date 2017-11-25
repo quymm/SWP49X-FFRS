@@ -39,6 +39,20 @@
                 android:textColor="@color/primaryText"
                 android:textSize="20dp"
                 android:textStyle="bold"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/text_not_found"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:layout_gravity="center"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="Hiện tại không có voucher nào khả dụng"
+                android:textAlignment="center"
+                android:textSize="20dp"
+                android:textStyle="bold"
                 android:visibility="gone" />
 
             <ScrollView
@@ -50,23 +64,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="7dp"
-                    android:columnCount="2">
-
-                    <TextView
-                        android:id="@+id/text_not_found"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_columnSpan="2"
-                        android:layout_gravity="center"
-                        android:paddingLeft="20dp"
-                        android:paddingRight="20dp"
-                        android:paddingTop="10dp"
-                        android:text="Hiện tại không có voucher nào khả dụng"
-                        android:textAlignment="center"
-                        android:textSize="20dp"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
-                </GridLayout>
+                    android:columnCount="2"></GridLayout>
             </ScrollView>
         </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>

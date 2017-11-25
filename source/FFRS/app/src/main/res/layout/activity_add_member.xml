@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.capstone.ffrs.NotificationActivity">
+    tools:context="com.capstone.ffrs.AddMemberActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -16,11 +16,10 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#009632"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:navigationIcon="@drawable/ic_arrow_back_white" />
+            app:navigationIcon="@drawable/ic_arrow_back_white"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_notification" />
-
+    <include layout="@layout/content_add_member" />
 </android.support.design.widget.CoordinatorLayout>

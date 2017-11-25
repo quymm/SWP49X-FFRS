@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,7 @@ public class FieldTimeAdapter extends RecyclerView.Adapter<FieldTimeAdapter.Fiel
         FieldTime item = timeList.get(position);
 
         holder.title.setText(item.getFromTime() + " - " + item.getToTime());
+        Log.d("boolean", item.isOptimal()+"");
         if (item.isOptimal()) {
             holder.title.setTextColor(ContextCompat.getColor(context, android.R.color.white));
             holder.view.setBackgroundColor(Color.parseColor("#00600d"));

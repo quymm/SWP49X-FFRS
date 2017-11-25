@@ -7,6 +7,10 @@
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_profile"
             android:title="Tài khoản" />
+        <item
+            android:id="@+id/nav_member"
+            android:icon="@drawable/ic_account_box"
+            android:title="Thông tin thành viên" />
 
     </group>
     <group

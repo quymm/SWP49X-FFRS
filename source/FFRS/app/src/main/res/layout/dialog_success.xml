@@ -16,13 +16,12 @@
         android:gravity="center"
         android:textColor="@color/colorBlack" />
 
-    <com.rey.material.widget.Button
+    <Button
         android:id="@+id/dialog_success_btnClose"
-        style="@style/WaveButtonRippleStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/dialog_success_txtContent"
         android:layout_alignParentRight="true"
+        android:layout_below="@+id/dialog_success_txtContent"
         android:layout_marginRight="24dp"
         android:layout_marginTop="24dp"
         android:background="@null"
