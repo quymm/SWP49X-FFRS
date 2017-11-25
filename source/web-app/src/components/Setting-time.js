@@ -208,12 +208,14 @@ class SettingTime extends Component {
     await this.setState({ endDay: evt });
   }
   disableDayClick(timeEnable) {
-    debugger
+    debugger;
     const { buttonGroupDayInWeek } = this.state;
     const tmpButtonGroupDayInWeek = buttonGroupDayInWeek;
     for (let i = 0; i < tmpButtonGroupDayInWeek.length; i++) {
       const filterDay = timeEnable.filter(
-        day => day.dateInWeek === tmpButtonGroupDayInWeek[i].value && day.fieldTypeId.id === this.state.fieldTypeId,
+        day =>
+          day.dateInWeek === tmpButtonGroupDayInWeek[i].value &&
+          day.fieldTypeId.id === this.state.fieldTypeId,
       );
       if (filterDay.length > 0) {
         tmpButtonGroupDayInWeek[i].checked = false;
@@ -257,53 +259,68 @@ class SettingTime extends Component {
           );
           if (dayAdd.length > 0) {
             for (let i = 0; i < dayAdd.length; i++) {
-              await fetchUpdateTimeEnableInWeek(
-                id,
-                dayAdd[i].value,
-                startDay.format('HH:mm'),
-                '17:00',
-                idelPrice,
-                fieldTypeId,
-                false,
-              );
+              let timeEnable = [
+                {
+                  dayInWeek: dayAdd[i].value,
+                  endTime: '17:00',
+                  fieldOwnerId: id,
+                  fieldTypeId: fieldTypeId,
+                  price: idelPrice,
+                  startTime: startDay.format('HH:mm'),
+                  optimal: false,
+                },
+              ];
+              if (!this.state.isOptimze) {
+                timeEnable.push({dayInWeek: dayAdd[i].value,
+                  endTime: endDay.format('HH:mm'),
+                  fieldOwnerId: id,
+                  fieldTypeId: fieldTypeId,
+                  price: peakPrice,
+                  startTime: '17:00',
+                  optimal: false,})
+              }
               if (this.state.isOptimze) {
-                let startTimeTmp = '17:00';
-                // const endTimeTmp = '00:00';
+                let startTimeTmp = '17:00';               
                 for (let j = 1; j <= this.state.optimizeNumOfMatch; j++) {
-                  await fetchUpdateTimeEnableInWeek(
-                    id,
-                    dayAdd[i].value,
-                    startTimeTmp,
-                    `${Math.floor(17 + this.state.optimizeTime * j)}:${17 +
+                  let endTimeWithPeak = `${Math.floor(17 + this.state.optimizeTime * j)}:${
+                    17 +
                       this.state.optimizeTime * j -
                       Math.floor(17 + this.state.optimizeTime * j) >
                     0
                       ? '30'
-                      : '00'}`,
-                    peakPrice,
-                    fieldTypeId,
-                    true,
-                  );
+                      : '00'
+                  }`
+                  timeEnable.push({
+                    fieldOwnerId: id,
+                    dayInWeek: dayAdd[i].value,
+                    startTime: startTimeTmp,
+                    endTime: `${Math.floor(17 + this.state.optimizeTime * j)}:${
+                      17 +
+                        this.state.optimizeTime * j -
+                        Math.floor(17 + this.state.optimizeTime * j) >
+                      0
+                        ? '30'
+                        : '00'
+                    }`,
+                    price: peakPrice,
+                    fieldTypeId: fieldTypeId,
+                    optimal: true,
+                  })
                   startTimeTmp = `${Math.floor(
                     17 + this.state.optimizeTime * j,
-                  )}:${17 +
-                    this.state.optimizeTime * j -
-                    Math.floor(17 + this.state.optimizeTime * j) >
-                  0
-                    ? '30'
-                    : '00'}`;
+                  )}:${
+                    17 +
+                      this.state.optimizeTime * j -
+                      Math.floor(17 + this.state.optimizeTime * j) >
+                    0
+                      ? '30'
+                      : '00'
+                  }`;
                 }
-              } else {
-                await fetchUpdateTimeEnableInWeek(
-                  id,
-                  dayAdd[i].value,
-                  '17:00',
-                  endDay.format('HH:mm'),
-                  peakPrice,
-                  fieldTypeId,
-                  false,
-                );
               }
+              await fetchUpdateTimeEnableInWeek(              
+                timeEnable
+              );
             }
             await this.setState({ isShowAddTime: !isShowAddTime });
             const data = await fetchGetTimeEnableInWeek(id);
@@ -501,7 +518,6 @@ class SettingTime extends Component {
                           <th>Từ</th>
                           <th>Đến</th>
                           <th>Giá</th>
-      
                         </tr>
                       </thead>
                       <tbody>
@@ -527,8 +543,7 @@ class SettingTime extends Component {
                               <label className="label label-primary">
                                 Tối ưu giờ cao điểm
                               </label>
-                            ) : null
-                          }
+                            ) : null}
                           </td>
                         </tr>
                       </tbody>
@@ -729,59 +744,67 @@ class SettingTime extends Component {
                             {moment(
                               `10-10-2017 ${Math.floor(
                                 17 + 2 * this.state.optimizeTime,
-                              )}:${2 * this.state.optimizeTime -
-                                Math.floor(2 * this.state.optimizeTime) >
-                              0
-                                ? 30
-                                : 0}`,
+                              )}:${
+                                2 * this.state.optimizeTime -
+                                  Math.floor(2 * this.state.optimizeTime) >
+                                0
+                                  ? 30
+                                  : 0
+                              }`,
                               'DD-MM-YYYY HH:mm',
                             ) > this.state.endDay ? null : (
                               <option value="2">2 trận</option>
                             )}
                             {moment(
-                              `${17 + 3 * this.state.optimizeTime > 23
-                                ? 11
-                                : 10}-10-2017 ${Math.floor(
+                              `${
+                                17 + 3 * this.state.optimizeTime > 23 ? 11 : 10
+                              }-10-2017 ${Math.floor(
                                 17 + 3 * this.state.optimizeTime > 23
                                   ? 2
                                   : 17 + 3 * this.state.optimizeTime,
-                              )}:${3 * this.state.optimizeTime -
-                                Math.floor(3 * this.state.optimizeTime) >
-                              0
-                                ? 30
-                                : 0}`,
+                              )}:${
+                                3 * this.state.optimizeTime -
+                                  Math.floor(3 * this.state.optimizeTime) >
+                                0
+                                  ? 30
+                                  : 0
+                              }`,
                               'DD-MM-YYYY HH:mm',
                             ) > this.state.endDay ? null : (
                               <option value="3">3 trận</option>
                             )}
                             {moment(
-                              `${17 + 4 * this.state.optimizeTime > 23
-                                ? 11
-                                : 10}-10-2017 ${Math.floor(
+                              `${
+                                17 + 4 * this.state.optimizeTime > 23 ? 11 : 10
+                              }-10-2017 ${Math.floor(
                                 17 + 4 * this.state.optimizeTime > 23
                                   ? 2
                                   : 17 + 4 * this.state.optimizeTime,
-                              )}:${1 * this.state.optimizeTime -
-                                Math.floor(4 * this.state.optimizeTime) >
-                              0
-                                ? 30
-                                : 0}`,
+                              )}:${
+                                1 * this.state.optimizeTime -
+                                  Math.floor(4 * this.state.optimizeTime) >
+                                0
+                                  ? 30
+                                  : 0
+                              }`,
                               'DD-MM-YYYY HH:mm',
                             ) > this.state.endDay ? null : (
                               <option value="4">4 trận</option>
                             )}
                             {moment(
-                              `${17 + 5 * this.state.optimizeTime > 23
-                                ? 11
-                                : 10}-10-2017 ${Math.floor(
+                              `${
+                                17 + 5 * this.state.optimizeTime > 23 ? 11 : 10
+                              }-10-2017 ${Math.floor(
                                 17 + 5 * this.state.optimizeTime > 23
                                   ? 2
                                   : 17 + 5 * this.state.optimizeTime,
-                              )}:${5 * this.state.optimizeTime -
-                                Math.floor(5 * this.state.optimizeTime) >
-                              0
-                                ? 30
-                                : 0}`,
+                              )}:${
+                                5 * this.state.optimizeTime -
+                                  Math.floor(5 * this.state.optimizeTime) >
+                                0
+                                  ? 30
+                                  : 0
+                              }`,
                               'DD-MM-YYYY HH:mm',
                             ) > this.state.endDay ? null : (
                               <option value="5">5 trận</option>

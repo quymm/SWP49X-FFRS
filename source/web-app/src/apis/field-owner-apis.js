@@ -96,31 +96,27 @@ export function fetchGetTimeEnableInWeek(fieldOwnerId) {
 }
 
 export function fetchUpdateTimeEnableInWeek(
-  paramfieldOwnerId,
-  paramDayInWeek,
-  startday,
-  endDay,
-  paramPrice,
-  paramFieldTypeId,
-  optimize,
+  timeEnable
 ) {
+  debugger
   return fetch(BASE_URL + UPDATE_TIME_ENABLE_IN_WEEK, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
       Authorization: auth.tokenValue,
     },
-    body: JSON.stringify([
-      {
-        dayInWeek: paramDayInWeek,
-        endTime: endDay,
-        fieldOwnerId: paramfieldOwnerId,
-        fieldTypeId: paramFieldTypeId,
-        price: paramPrice,
-        startTime: startday,
-        optimal: optimize,
-      },
-    ]),
+    body: JSON.stringify(timeEnable)
+    // body: JSON.stringify([
+    //   {
+    //     dayInWeek: paramDayInWeek,
+    //     endTime: endDay,
+    //     fieldOwnerId: paramfieldOwnerId,
+    //     fieldTypeId: paramFieldTypeId,
+    //     price: paramPrice,
+    //     startTime: startday,
+    //     optimal: optimize,
+    //   },
+    // ]),
   }).then(res => res.json());
 }
 
@@ -232,13 +228,15 @@ export function fetchUpdateProfile(id, data) {
 }
 export function fetchGetAllPromotion(id) {
   return fetch(BASE_URL + GET_ALL_PROMOTION + '?field-owner-id=' + id, {
-    headers: { Authorization: auth.tokenValue },
+    // headers: { Authorization: auth.tokenValue },
   }).then(res => res.json());
 }
 export function fetchAddPromotion(id, data) {
   return fetch(BASE_URL + ADD_PROMOTION, {
     method: 'POST',
-    headers: { 'content-type': 'application/json', Authorization: auth.tokenValue },
+    headers: { 'content-type': 'application/json', 
+    // Authorization: auth.tokenValue 
+  },
     body: JSON.stringify({
       dateFrom: data.startDate.format('DD-MM-YYYY'),
       dateTo: data.endDate.format('DD-MM-YYYY'),

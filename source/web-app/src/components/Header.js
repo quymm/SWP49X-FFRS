@@ -176,6 +176,7 @@ class Header extends Component {
   }
 
   async handelClickDetailMatch(match) {
+    debugger
     const messageabc = this.state.messages;
     const index = messageabc.findIndex(
       messageabc =>
