@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by MinhQuy on 9/29/2017.
@@ -79,13 +81,11 @@ public class TimeSlotServices {
             if (numberOfField == 0) {
                 throw new IllegalArgumentException("Field owner has not created any fields!");
             }
-            // tìm ngày hiệu lực của time enable
-            Date effectiveDate = timeEnableServices.getEffectiveDate(date);
             // get list timeEnable theo chủ sân, loại sân và theo ngày order by theo thời gian từ nhỏ đến lớn
             // list not optimal
-            List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(fieldOwnerEntity, fieldTypeEntity, dayInWeek, effectiveDate, false);
+            List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwnerEntity, fieldTypeEntity, dayInWeek, date, false);
             // list optimal
-            List<TimeEnableEntity> timeEnableEntityOptimalList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(fieldOwnerEntity, fieldTypeEntity, dayInWeek, effectiveDate, true);
+            List<TimeEnableEntity> timeEnableEntityOptimalList = timeEnableServices.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwnerEntity, fieldTypeEntity, dayInWeek, date, true);
             if (timeEnableEntityList.size() != 0) {
 
                 if (timeEnableEntityOptimalList.size() == 0) {
@@ -328,7 +328,6 @@ public class TimeSlotServices {
         // chia thời gian thành những khoảng nhỏ 30 phút
         int numberOfTimeSlide = duration / 30;
         List<TimeSlotDTO> timeSlotDTOList = new ArrayList<>();
-        Date effectiveDateOfTimeEnable = timeEnableServices.getEffectiveDate(targetDate);
         for (int i = 0; i < numberOfTimeSlide; i++) {
             TimeSlotDTO timeSlotDTO = new TimeSlotDTO();
             if (i == 0) {
@@ -342,7 +341,7 @@ public class TimeSlotServices {
 
         String dateInWeek = DateTimeUtils.returnDayInWeek(targetDate);
 
-        List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(fieldOwner, fieldType, dateInWeek, effectiveDateOfTimeEnable, null);
+        List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwner, fieldType, dateInWeek, targetDate, null);
         Float priceReturn = Float.valueOf(0);
         for (TimeSlotDTO timeSlotDTO : timeSlotDTOList) {
             for (TimeEnableEntity timeEnableEntity : timeEnableEntityList) {
@@ -505,12 +504,11 @@ public class TimeSlotServices {
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findTimeWhenAddNewField(targetDate, true, fieldOwner, fieldTypeEntity);
         List<TimeSlotEntity> savedTimeSlotEntityList = new ArrayList<>();
         Date nowDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
-        Date effectiveDateOfTimeEnable = timeEnableServices.getEffectiveDate(nowDate);
         if (!timeSlotEntityList.isEmpty())
             for (TimeSlotEntity timeSlot : timeSlotEntityList) {
                 String dayInWeek = DateTimeUtils.returnDayInWeek(timeSlot.getDate());
-                List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(fieldOwner, fieldTypeEntity, dayInWeek, effectiveDateOfTimeEnable, false);
-                List<TimeEnableEntity> timeEnableEntityOptimalList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(fieldOwner, fieldTypeEntity, dayInWeek, effectiveDateOfTimeEnable, true);
+                List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwner, fieldTypeEntity, dayInWeek, nowDate, false);
+                List<TimeEnableEntity> timeEnableEntityOptimalList = timeEnableServices.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwner, fieldTypeEntity, dayInWeek, nowDate, true);
                 if (!timeEnableEntityList.isEmpty()) {
                     TimeSlotEntity timeSlotEntity = new TimeSlotEntity();
 

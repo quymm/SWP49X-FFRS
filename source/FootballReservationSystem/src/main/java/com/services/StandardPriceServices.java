@@ -31,21 +31,10 @@ public class StandardPriceServices {
     public StandardPriceEntity createNewStandardPrice(InputStandardPriceDTO inputStandardPriceDTO) {
         AccountEntity staff = accountServices.findAccountEntityByIdAndRole(inputStandardPriceDTO.getStaffId(), constant.getStaffRole());
         FieldTypeEntity fieldType = fieldTypeServices.findById(inputStandardPriceDTO.getFieldTypeId());
-        Date dateFrom = DateTimeUtils.convertFromStringToDate(inputStandardPriceDTO.getDateFrom());
-        Date dateTo = DateTimeUtils.convertFromStringToDate(inputStandardPriceDTO.getDateTo());
-
-        StandardPriceEntity standardPriceEntityDateFrom = getStandardPriceWithDateFieldTypeAndRushHour(inputStandardPriceDTO.getDateFrom(), fieldType.getId(), inputStandardPriceDTO.isRushHour());
-        StandardPriceEntity standardPriceEntityDateTo = getStandardPriceWithDateFieldTypeAndRushHour(inputStandardPriceDTO.getDateTo(), fieldType.getId(), inputStandardPriceDTO.isRushHour());
-
-        if (standardPriceEntityDateFrom != null || standardPriceEntityDateTo != null) {
-            throw new IllegalArgumentException("There was a standard price during this time!");
-        }
 
         StandardPriceEntity standardPriceEntity = new StandardPriceEntity();
         standardPriceEntity.setStaffId(staff);
         standardPriceEntity.setFieldTypeId(fieldType);
-        standardPriceEntity.setDateFrom(dateFrom);
-        standardPriceEntity.setDateTo(dateTo);
         standardPriceEntity.setMaxPrice(inputStandardPriceDTO.getMaxPrice());
         standardPriceEntity.setMinPrice(inputStandardPriceDTO.getMinPrice());
         standardPriceEntity.setRushHour(inputStandardPriceDTO.isRushHour());
@@ -53,10 +42,14 @@ public class StandardPriceServices {
         return standardPriceRepository.save(standardPriceEntity);
     }
 
-    public StandardPriceEntity getStandardPriceWithDateFieldTypeAndRushHour(String targetDateStr, int fieldTypeId, boolean rushHour) {
+    public List<StandardPriceEntity> getStandardPriceWithFieldType(int fieldTypeId) {
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(fieldTypeId);
-        Date targetDate = DateTimeUtils.convertFromStringToDate(targetDateStr);
-        return standardPriceRepository.getStandartPriceWithTargetDateFieldTypeAndRushHour(targetDate, true, rushHour, fieldTypeEntity);
+        return standardPriceRepository.findByFieldTypeIdAndStatus(fieldTypeEntity, true);
+    }
+
+    public StandardPriceEntity getStandardPriceWithDateAndFieldTypeAndRushHour(int fieldTypeId, boolean rushHour){
+        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(fieldTypeId);
+        return standardPriceRepository.findByFieldTypeIdAndRushHourAndStatus(fieldTypeEntity, rushHour, true);
     }
 
     public List<StandardPriceEntity> getAllStandardPrice() {
@@ -67,8 +60,8 @@ public class StandardPriceServices {
 
         Date endTime = DateTimeUtils.convertFromStringToTime(requestReservateDTO.getEndTime());
 
-        float maxPriceRush = getStandardPriceWithDateFieldTypeAndRushHour(requestReservateDTO.getDate(), requestReservateDTO.getFieldTypeId(), true).getMaxPrice();
-        float maxPriceNormal = getStandardPriceWithDateFieldTypeAndRushHour(requestReservateDTO.getDate(), requestReservateDTO.getFieldTypeId(), false).getMaxPrice();
+        float maxPriceRush = getStandardPriceWithDateAndFieldTypeAndRushHour(requestReservateDTO.getFieldTypeId(), true).getMaxPrice();
+        float maxPriceNormal = getStandardPriceWithDateAndFieldTypeAndRushHour(requestReservateDTO.getFieldTypeId(), false).getMaxPrice();
 
         float price = 0;
         Date rushHour = DateTimeUtils.convertFromStringToTime(constant.getRushHour());

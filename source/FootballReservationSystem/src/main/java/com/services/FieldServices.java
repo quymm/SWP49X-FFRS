@@ -2,7 +2,10 @@ package com.services;
 
 import com.config.Constant;
 import com.dto.InputFieldDTO;
-import com.entity.*;
+import com.entity.AccountEntity;
+import com.entity.FieldEntity;
+import com.entity.FieldTypeEntity;
+import com.entity.TimeSlotEntity;
 import com.repository.FieldRepository;
 import com.repository.TimeSlotRepository;
 import com.utils.DateTimeUtils;
@@ -44,12 +47,16 @@ public class FieldServices {
         AccountEntity accountEntity = accountServices.findAccountEntityByIdAndRole(inputFieldDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
         FieldEntity fieldEntity = fieldRepository.findByFieldOwnerIdAndFieldTypeIdAndNameAndStatus(accountEntity, fieldTypeEntity, inputFieldDTO.getFieldName(), false);
         if (fieldEntity != null) {
+            fieldEntity.setDateFrom(new Date());
+            fieldEntity.setDateTo(null);
             fieldEntity.setStatus(true);
         } else {
             fieldEntity = new FieldEntity();
             fieldEntity.setName(inputFieldDTO.getFieldName());
             fieldEntity.setFieldOwnerId(accountEntity);
             fieldEntity.setFieldTypeId(fieldTypeEntity);
+            fieldEntity.setDateFrom(new Date());
+            fieldEntity.setDateTo(null);
             fieldEntity.setStatus(true);
         }
         FieldEntity savedFieldEntity = fieldRepository.save(fieldEntity);
@@ -59,114 +66,84 @@ public class FieldServices {
     }
 
     public List<FieldEntity> findFieldEntityByFieldOwnerId(int fieldOwnerId) {
+        Date currDay = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
         AccountEntity accountEntity = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
-        return fieldRepository.findByFieldOwnerIdAndStatus(accountEntity, true);
-    }
-
-    public FieldEntity findFieldEntityByFieldNameAndFieldOwnerId(String fieldName, int fieldOwnerId) {
-        AccountEntity accountEntity = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
-        return fieldRepository.findByFieldOwnerIdAndNameAndStatus(accountEntity, fieldName, true);
+        List<FieldEntity> fieldEntityList = fieldRepository.findByFieldOwnerIdAndStatus(accountEntity, currDay, true);
+        return getListFieldAvailableFromListField(fieldEntityList, currDay);
     }
 
     public FieldEntity findFieldEntityById(int fieldId) {
         return fieldRepository.findByIdAndStatus(fieldId, true);
     }
 
-    // trả về ngày sân sẽ bắt đầu được xóa
-    public String deleteFieldEntity(int fieldId) {
+    //trả về ngày sân sẽ bắt đầu được xóa
+    public boolean disableField(int fieldId, String dateFrom, String dateTo) {
         FieldEntity fieldEntity = findFieldEntityById(fieldId);
         AccountEntity fieldOwner = fieldEntity.getFieldOwnerId();
         FieldTypeEntity fieldType = fieldEntity.getFieldTypeId();
-        String dateNow = DateTimeUtils.formatDate(new Date());
+        String dateNowStr = DateTimeUtils.formatDate(new Date());
+        Date dateNow = DateTimeUtils.convertFromStringToDate(dateNowStr);
 
         // nếu chủ sân chưa có dữ liệu về time enable thì có thể xóa sân thỏa mái
         if (timeEnableServices.findTimeEnableByFieldOwnerIdAndFieldTypeId(fieldOwner.getId(), fieldType.getId()).isEmpty()) {
             fieldRepository.delete(fieldEntity);
-            return dateNow;
+            return true;
         }
         int numDateFromNow = 0;
-        // kiểm tra trong 6 ngày tới, ngày nào thời gian rảnh bằng đúng time enable 1 ngày thì ngày đó là ngày xóa được
+        // kiểm tra trong 6 ngày tới, ngày nào có người đặt rồi thì báo ngày đó là ngày ko thể disable
         // trả về i, tức là ngày đó cách hiện tại bao lâu
-        for (int i = 7; i >= 0; i--) {
-            boolean checkEqual = true;
-            // bắt đầu từ ngày xa nhất với i = 7;
-            String targetDate = DateTimeUtils.getDateAfter(dateNow, i);
-            // kiểm tra hôm đó là thứ mấy trong tuần
-            String dateInWeek = DateTimeUtils.returnDayInWeek(DateTimeUtils.convertFromStringToDate(targetDate));
-            // get time enable sẽ được apply cho ngày hôm đó
-            Date effectiveDateOfTimeEnable = timeEnableServices.getEffectiveDate(DateTimeUtils.convertFromStringToDate(targetDate));
-            // get list thời gian hoạt động trong giờ trước cao điểm, ko optimal
-            List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(fieldOwner, fieldType, dateInWeek, effectiveDateOfTimeEnable, false);
-            if (timeEnableEntityList.isEmpty()) {
-                continue;
-            }
-            Date startTimeNotOptimal = timeEnableEntityList.get(0).getStartTime();
-            Date endTimeNotOptimal = timeEnableEntityList.get(timeEnableEntityList.size() - 1).getEndTime();
-            List<TimeEnableEntity> timeEnableEntityOptimalList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(fieldOwner, fieldType, dateInWeek, effectiveDateOfTimeEnable, true);
-            // thời gian rảnh của chủ sân tại ngày hôm đó
-            List<TimeSlotEntity> freeTimeSlotList = timeSlotServices.findFreeTimeByFieldOwnerTypeAndDate(fieldOwner.getId(), fieldType.getId(), targetDate);
-            List<TimeSlotEntity> freeTimeSlotOptimalList = new ArrayList<>();
-            for (TimeSlotEntity timeSlot : freeTimeSlotList) {
-                // nếu nó ko phải là time slot tối ưu thì nó chỉ có duy nhất 1 cái đối với ngày chưa được đặt hết sân
-                if (!timeSlot.isOptimal()) {
-                    if (!timeSlot.getStartTime().equals(startTimeNotOptimal) && !timeSlot.getEndTime().equals(endTimeNotOptimal)) {
-                        checkEqual = false;
-                        break;
-                    }
-                } else {
-                    // tạo 1 list chỉ gồm những time slot optimal
-                    freeTimeSlotOptimalList.add(timeSlot);
-                }
-            }
-            // nếu time enable có optimal vào giờ cao điểm
-            if (!timeEnableEntityOptimalList.isEmpty()) {
-                // mà free time ko có optimal hoặc là có optimal nhưng ít hơn time enable thì là sai
-                if (freeTimeSlotOptimalList.isEmpty() || freeTimeSlotOptimalList.size() != timeEnableEntityOptimalList.size()) {
-                    checkEqual = false;
-                }
-            }
-            // đi từ cách thời điểm hiện tại 7 ngày trở về trước, nếu ngày nào mà có thời gian rảnh khác thời gian hoạt động
-            // nghĩa là ngày đó đã có đặt sân, ngày đó là ngày expire date
-            if (!checkEqual) {
+        for (int i = 6; i >= 0; i--) {
+            Date targetDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.getDateAfter(dateNowStr, i));
+            // ngày nào có người đặt sân
+            List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndReserveStatusAndDateAndStatus(fieldOwner, true, targetDate, true);
+            if (!timeSlotEntityList.isEmpty()) {
                 numDateFromNow = i;
                 break;
             }
         }
-        // set ngày đó làm ngày cuối cùng mà sân phải hoạt động để đáp ứng cho những người đã đặt sân
-        fieldEntity.setExpirationDate(DateTimeUtils.convertFromStringToDate(DateTimeUtils.getDateAfter(dateNow, numDateFromNow)));
-
-        // xóa những time slot trống từ ngày đó trở về sau nếu đã đổ rồi
-        for (int i = numDateFromNow + 1; i < 7; i++) {
-            String deleteDate = DateTimeUtils.getDateAfter(dateNow, i);
-            List<TimeSlotEntity> freeTimeSlotList = timeSlotServices.findFreeTimeByFieldOwnerTypeAndDate(fieldOwner.getId(), fieldType.getId(), deleteDate);
-            if (!freeTimeSlotList.isEmpty()) {
-                for (TimeSlotEntity timeSlotEntity : freeTimeSlotList) {
-                    timeSlotRepository.delete(timeSlotEntity);
-                }
-            }
+        Date deletedDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.getDateAfter(dateNowStr, numDateFromNow));
+        Date expectedDeleteDate = DateTimeUtils.convertFromStringToDate(dateFrom);
+        if (expectedDeleteDate.before(deletedDate)) {
+            throw new IllegalArgumentException(String.format("Have reservation request in %s", DateTimeUtils.getDateAfter(dateNowStr, numDateFromNow)));
         }
-        return DateTimeUtils.formatDate(fieldRepository.save(fieldEntity).getExpirationDate());
+        // set ngày đó làm ngày cuối cùng mà sân phải hoạt động để đáp ứng cho những người đã đặt sân
+        fieldEntity.setDateTo(DateTimeUtils.convertFromStringToDate(DateTimeUtils.getDateAfter(dateFrom, -1)));
+        // tạo mới record về thời gian sẽ hoạt động lại
+        FieldEntity newFieldEntity = new FieldEntity();
+        newFieldEntity.setFieldOwnerId(fieldOwner);
+        newFieldEntity.setFieldTypeId(fieldType);
+        newFieldEntity.setName(fieldEntity.getName());
+        newFieldEntity.setDateTo(null);
+        newFieldEntity.setDateFrom(DateTimeUtils.convertFromStringToDate(DateTimeUtils.getDateAfter(dateTo, 1)));
+        fieldRepository.save(newFieldEntity);
+        return true;
     }
 
     public List<FieldEntity> findFieldEntityByFieldOwnerAndFieldType(AccountEntity fieldOwner, FieldTypeEntity fieldType) {
-        return fieldRepository.findByFieldOwnerIdAndFieldTypeIdAndStatus(fieldOwner, fieldType, true);
+        Date currDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
+        List<FieldEntity> fieldEntityList = fieldRepository.getListFieldWithFieldOwnerTypeAndDate(fieldOwner, fieldType, currDate, true);
+        return getListFieldAvailableFromListField(fieldEntityList, currDate);
     }
 
-    public Integer countNumberOfFieldByFieldOwnerAndFieldType(AccountEntity fieldOwner, FieldTypeEntity fieldType, Date targetDate) {
-        List<FieldEntity> fieldEntityList = fieldRepository.getListFieldWithFieldOwnerTypeExpirationAndStatus(fieldOwner, fieldType, true);
-        int numberOfField = 0;
-        if (!fieldEntityList.isEmpty()) {
-            for (FieldEntity fieldEntity : fieldEntityList) {
-                if (fieldEntity.getExpirationDate() != null) {
-                    if (!fieldEntity.getExpirationDate().before(targetDate)) {
-                        numberOfField += 1;
-                    }
+    public List<FieldEntity> getListFieldAvailableFromListField(List<FieldEntity> inputFieldEntityList, Date targetDate) {
+        List<FieldEntity> returnFieldEntityList = new ArrayList<>();
+        if (!inputFieldEntityList.isEmpty()) {
+            for (FieldEntity fieldEntity : inputFieldEntityList) {
+                if (fieldEntity.getDateTo() == null) {
+                    returnFieldEntityList.add(fieldEntity);
                 } else {
-                    numberOfField += 1;
+                    if (!fieldEntity.getDateTo().before(targetDate)) {
+                        returnFieldEntityList.add(fieldEntity);
+                    }
                 }
             }
         }
-        return numberOfField;
+        return returnFieldEntityList;
+    }
+
+    public Integer countNumberOfFieldByFieldOwnerAndFieldType(AccountEntity fieldOwner, FieldTypeEntity fieldType, Date targetDate) {
+        List<FieldEntity> fieldEntityList = fieldRepository.getListFieldWithFieldOwnerTypeAndDate(fieldOwner, fieldType, targetDate, true);
+        return getListFieldAvailableFromListField(fieldEntityList, targetDate).size();
     }
 
 }

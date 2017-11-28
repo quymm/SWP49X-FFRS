@@ -33,6 +33,9 @@ public class VoucherEntity implements Serializable {
     @Column(name = "bonus_point_target")
     private int bonusPointTarget;
     @Basic(optional = false)
+    @Column(name = "image_url")
+    private String imageUrl;
+    @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
     @Basic(optional = false)
@@ -80,6 +83,14 @@ public class VoucherEntity implements Serializable {
 
     public void setBonusPointTarget(int bonusPointTarget) {
         this.bonusPointTarget = bonusPointTarget;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public boolean getStatus() {
