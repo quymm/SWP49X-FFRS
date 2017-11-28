@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by MinhQuy on 9/29/2017.
@@ -39,76 +39,51 @@ public class TimeEnableServices {
     @Autowired
     Constant constant;
 
-//    public List<TimeEnableEntity> setUpTimeEnable(List<InputTimeEnableDTO> inputTimeEnableDTOList) {
-////        int fieldOwnerId = inputTimeEnableDTOList.get(0).getFieldOwnerId();
-////        int fieldTypeId = inputTimeEnableDTOList.get(0).getFieldTypeId();
-////        List<TimeEnableEntity> timeEnableOfFieldInDb = findTimeEnableByFieldOwnerIdAndFieldTypeId(fieldOwnerId, fieldTypeId);
-//        List<TimeEnableEntity> savedTimeEnableEntity = new ArrayList<>();
-//        for (InputTimeEnableDTO inputTimeEnableDTO : inputTimeEnableDTOList) {
-//            TimeEnableEntity timeEnableEntity = convertFromInputTimeEnableDTOToEntity(inputTimeEnableDTO);
-//            savedTimeEnableEntity.add(timeEnableRepository.save(timeEnableEntity));
-//        }
-//        return savedTimeEnableEntity;
-//    }
-
     public List<TimeEnableEntity> setUpTimeEnable(List<InputTimeEnableDTO> inputTimeEnableDTOList) {
         int fieldOwnerId = inputTimeEnableDTOList.get(0).getFieldOwnerId();
         int fieldTypeId = inputTimeEnableDTOList.get(0).getFieldTypeId();
+        String dateInWeek = inputTimeEnableDTOList.get(0).getDayInWeek();
         AccountEntity fieldOwnerEntity = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(fieldTypeId);
-//        List<TimeEnableEntity> timeEnableOfFieldInDb = findTimeEnableByFieldOwnerIdAndFieldTypeId(fieldOwnerId, fieldTypeId);
-        /*findByFieldOwnerIdAndReserveStatusAndDateAndStatus*/
-        // lay ngay hien tai
         Date currDate = new Date();
         String sCurrDate = DateTimeUtils.formatDate(currDate);
+        int numDayFromNow = -1;
 
-        // Muc tieu la 8 ngay sau
-        int count = 8;
-        String stargetDate = DateTimeUtils.getDateAfter(sCurrDate, count);
-        Date targetDate = DateTimeUtils.convertFromStringToDate(stargetDate);
-        boolean check = true;
-
-        while ((check) && count > 0) {
-//            tim ngay targetdate xem co time slot nao dc dat chua
-            List<TimeSlotEntity> listReservedTimeSlotEntity = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(
-                    fieldOwnerEntity, fieldTypeEntity, targetDate, true, true);
-
-            if (listReservedTimeSlotEntity.isEmpty()) {
-                List<TimeSlotEntity> listNotReserveTimeSlotEntity = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(
-                        fieldOwnerEntity, fieldTypeEntity, targetDate, false, true);
-                timeSlotServices.deleteTimeSlotInList(listNotReserveTimeSlotEntity);
-                count--;
-                stargetDate = DateTimeUtils.getDateAfter(sCurrDate, count);
-                targetDate = DateTimeUtils.convertFromStringToDate(stargetDate);
-            } else {
-                check = false;
+        for (int i = 6; i >= 0; i--) {
+            Date targetDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.getDateAfter(sCurrDate, i));
+            if (!DateTimeUtils.returnDayInWeek(targetDate).equals(dateInWeek)) {
+                continue;
+            }
+            List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndReserveStatusAndDateAndStatus(fieldOwnerEntity, true, targetDate, true);
+            if (!timeSlotEntityList.isEmpty()) {
+                numDayFromNow = i;
+                break;
             }
         }
-
-        String dateInWeekOfTargetDate = DateTimeUtils.returnDayInWeek(targetDate);
-        List<TimeEnableEntity> timeEnableEntityListInDb = timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekAndEffectiveDateOrderByStartTime(fieldOwnerEntity, fieldTypeEntity, dateInWeekOfTargetDate, true, targetDate);
-        // xóa hết những time enable cũ trong database nếu có
-        if (!timeEnableEntityListInDb.isEmpty()) {
-            timeEnableRepository.delete(timeEnableEntityListInDb);
+        // targetdate là ngày cuối cùng time enable cũ còn hoạt động
+        Date targetDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.getDateAfter(sCurrDate, numDayFromNow));
+        List<TimeEnableEntity> oldTimeEnableEntityList = findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwnerEntity, fieldTypeEntity, dateInWeek, targetDate, null);
+        for (TimeEnableEntity timeEnableEntity : oldTimeEnableEntityList) {
+            timeEnableEntity.setDateTo(targetDate);
         }
+        // update old time enable entity
+        timeEnableRepository.save(oldTimeEnableEntityList);
 
-        List<TimeEnableEntity> savedTimeEnableEntity = new ArrayList<>();
+        // ngày time enable mới có hiệu lực
+        Date newDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.getDateAfter(sCurrDate, numDayFromNow + 1));
+
+        // kiểm tra có thể ngày hôm đó user đã thực hiện update 1 lần thì xóa dữ liệu đó đi
+        List<TimeEnableEntity> sameDayTimeEnableEntityList = findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwnerEntity, fieldTypeEntity, dateInWeek, newDate, null);
+        timeEnableRepository.delete(sameDayTimeEnableEntityList);
+
+        List<TimeEnableEntity> newTimeEnableEntityList = new ArrayList<>();
+
         for (InputTimeEnableDTO inputTimeEnableDTO : inputTimeEnableDTOList) {
-            TimeEnableEntity timeEnableEntity = convertFromInputTimeEnableDTOToEntity(inputTimeEnableDTO, targetDate);
-            savedTimeEnableEntity.add(timeEnableRepository.save(timeEnableEntity));
+            // time enable entity mới có ngày hiệu lực là sau ngày cuối cùng time enable cũ còn hoạt động 1 ngày
+            TimeEnableEntity timeEnableEntity = convertFromInputTimeEnableDTOToEntity(inputTimeEnableDTO, newDate);
+            newTimeEnableEntityList.add(timeEnableEntity);
         }
-        return savedTimeEnableEntity;
-
-
-        ////        int fieldOwnerId = inputTimeEnableDTOList.get(0).getFieldOwnerId();
-////        int fieldTypeId = inputTimeEnableDTOList.get(0).getFieldTypeId();
-////        List<TimeEnableEntity> timeEnableOfFieldInDb = findTimeEnableByFieldOwnerIdAndFieldTypeId(fieldOwnerId, fieldTypeId);
-//        List<TimeEnableEntity> savedTimeEnableEntity = new ArrayList<>();
-//        for (InputTimeEnableDTO inputTimeEnableDTO : inputTimeEnableDTOList) {
-//            TimeEnableEntity timeEnableEntity = convertFromInputTimeEnableDTOToEntity(inputTimeEnableDTO);
-//            savedTimeEnableEntity.add(timeEnableRepository.save(timeEnableEntity));
-//        }
-//        return savedTimeEnableEntity;
+        return timeEnableRepository.save(newTimeEnableEntityList);
     }
 
     public List<TimeEnableEntity> findTimeEnableByFieldOwnerIdAndFieldTypeId(int fieldOwnerId, int fieldTypeId) {
@@ -122,11 +97,7 @@ public class TimeEnableServices {
         return timeEnableRepository.findByFieldOwnerIdAndStatus(fieldOwnerEntity, true);
     }
 
-    public List<TimeEnableEntity> findTimeEnableByDateInWeek(String dateInWeek) {
-        return timeEnableRepository.findByDateInWeekAndStatus(dateInWeek, true);
-    }
-
-    public TimeEnableEntity convertFromInputTimeEnableDTOToEntity(InputTimeEnableDTO inputTimeEnableDTO, Date effectDate) {
+    public TimeEnableEntity convertFromInputTimeEnableDTOToEntity(InputTimeEnableDTO inputTimeEnableDTO, Date targetDate) {
         TimeEnableEntity timeEnableEntity = new TimeEnableEntity();
         timeEnableEntity.setDateInWeek(inputTimeEnableDTO.getDayInWeek());
         timeEnableEntity.setFieldOwnerId(accountServices.findAccountEntityByIdAndRole(inputTimeEnableDTO.getFieldOwnerId(), constant.getFieldOwnerRole()));
@@ -135,29 +106,38 @@ public class TimeEnableServices {
         timeEnableEntity.setEndTime(DateTimeUtils.convertFromStringToTime(inputTimeEnableDTO.getEndTime()));
         timeEnableEntity.setPrice(Float.parseFloat(inputTimeEnableDTO.getPrice()));
         timeEnableEntity.setOptimal(inputTimeEnableDTO.isOptimal());
-        timeEnableEntity.setEffectiveDate(effectDate);
+        timeEnableEntity.setDateFrom(targetDate);
         timeEnableEntity.setStatus(true);
         return timeEnableEntity;
     }
 
-    public List<TimeEnableEntity> findTimeEnableByFieldOwnerTypeAndDate(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity, String dateInWeek, Boolean optimal) {
+
+    public List<TimeEnableEntity> findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity, String dateInWeek, Date targetDate, Boolean optimal) {
+        List<TimeEnableEntity> returnTimeEnableEntity;
         if (optimal != null) {
-            return timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekAndOptimalOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, optimal, true);
+            List<TimeEnableEntity> timeEnableEntityList = timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, targetDate, optimal, true);
+            returnTimeEnableEntity = returnTimeEnableEntity(timeEnableEntityList, targetDate);
         } else {
-            return timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, true);
+            List<TimeEnableEntity> timeEnableEntityList = timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekAndTargetDateOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, targetDate, true);
+            returnTimeEnableEntity = returnTimeEnableEntity(timeEnableEntityList, targetDate);
         }
+        return returnTimeEnableEntity;
     }
 
-    public Date getEffectiveDate(Date targetDate) {
-        return timeEnableRepository.getMaxEffectiveDate(targetDate);
-    }
-
-    public List<TimeEnableEntity> findTimeEnableByFieldOwnerTypeAndDateInWeekAndEffectiveDate(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity, String dateInWeek, Date effectiveDate, Boolean optimal) {
-        if (optimal != null) {
-            return timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndEffectiveDateOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, optimal, true, effectiveDate);
-        } else {
-            return timeEnableRepository.findByFieldOwnerAndTypeAndDateInWeekAndEffectiveDateOrderByStartTime(fieldOwner, fieldTypeEntity, dateInWeek, true, effectiveDate);
+    public List<TimeEnableEntity> returnTimeEnableEntity(List<TimeEnableEntity> inputTimeEnableEntity, Date targetDate) {
+        List<TimeEnableEntity> returnTimeEnableEntityList = new ArrayList<>();
+        if (!inputTimeEnableEntity.isEmpty()) {
+            for (TimeEnableEntity timeEnableEntity : inputTimeEnableEntity) {
+                if (timeEnableEntity.getDateTo() == null) {
+                    returnTimeEnableEntityList.add(timeEnableEntity);
+                } else {
+                    if (!timeEnableEntity.getDateTo().before(targetDate)) {
+                        returnTimeEnableEntityList.add(timeEnableEntity);
+                    }
+                }
+            }
         }
+        return returnTimeEnableEntityList;
     }
 
 }

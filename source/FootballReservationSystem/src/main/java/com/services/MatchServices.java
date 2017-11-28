@@ -134,7 +134,6 @@ public class MatchServices {
         matchingRequestEntity.setLongitude(NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLongitude()));
         matchingRequestEntity.setLatitude(NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()));
         matchingRequestEntity.setAddress(inputMatchingRequestDTO.getAddress());
-        matchingRequestEntity.setPriorityField(inputMatchingRequestDTO.getPriorityField());
         matchingRequestEntity.setExpectedPrice(maxPrice / 2);
         matchingRequestEntity.setStatus(true);
 
