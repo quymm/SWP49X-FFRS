@@ -16,7 +16,7 @@ class Register extends Component {
       creditCard: undefined,
       latitude: undefined,
       longitude: undefined,
-      name: undefined,
+      fieldOwnerName: undefined,
       phone: undefined,
       message: undefined,
       messageSuccess: false,
@@ -45,7 +45,7 @@ class Register extends Component {
     const target = evt.target;
     const value = target.value;
     const name = target.name;
-    await this.setState({ name: value });
+    await this.setState({ [name]: value });
     console.log(this.state);
   }
 
@@ -66,20 +66,20 @@ class Register extends Component {
       username,
       password,
       address,
-
       latitude,
       longitude,
-      name,
+      fieldOwnerName,
       phone,
 
       confirmPassword,
     } = this.state;
+    debugger
     if (
       username !== undefined &&
       password !== undefined &&
       address !== undefined &&
       confirmPassword !== undefined &&
-      avatarUrl !== ''
+      fieldOwnerName !== undefined
     ) {
       if (password === confirmPassword) {
         // try {
@@ -87,11 +87,11 @@ class Register extends Component {
           username,
           password,
           address,
-          avatarUrlAfter,
+          'avatar',
           '123456',
           latitude,
           longitude,
-          name,
+          fieldOwnerName,
           phone,
         );
         debugger;
@@ -138,10 +138,10 @@ class Register extends Component {
                     <div className="form-group">
                       <label htmlFor="exampleInputEmail1">Tên sân</label>
                       <input
-                        value={this.state.name}
+                        value={this.state.fieldOwnerName}
                         onChange={this.handleInputChange.bind(this)}
                         className="form-control"
-                        name="name"
+                        name="fieldOwnerName"
                         type="text"
                         id="exampleInputPassword1"
                       />
@@ -169,7 +169,7 @@ class Register extends Component {
                         type="text"
                       />
                     </div>
-                    <div className="form-group">
+                    {/* <div className="form-group">
                       <label htmlFor="exampleInputEmail1">Hình ảnh</label>
                       <input
                         value={this.state.avatarUrl}
@@ -177,7 +177,7 @@ class Register extends Component {
                         name="avatarUrl"
                         type="file"
                       />
-                    </div>
+                    </div> */}
                     <div className="form-group">
                       <label htmlFor="exampleInputEmail1">Mật khẩu</label>
                       <input

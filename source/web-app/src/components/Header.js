@@ -86,7 +86,7 @@ class Header extends Component {
               tourMatch: true,
             };
             if (
-              moment(message.text.playTime, 'MM-DD-YYYY HH:mm') >=
+              moment(message.text.playTime, 'DD-MM-YYYY HH:mm') >=
               this.state.currentDaySelected
             ) {
               this.props.setCurrentDaySelected(true);
@@ -146,7 +146,7 @@ class Header extends Component {
             tourMatch: true,
           };
           if (
-            moment(message.text.playTime, 'MM-DD-YYYY HH:mm') >=
+            moment(message.text.playTime, 'DD-MM-YYYY HH:mm') >=
             this.state.currentDaySelected
           ) {
             this.props.setCurrentDaySelected(true);

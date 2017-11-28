@@ -6,6 +6,8 @@ import {
   fetchGetFreeFieldByTime,
   fetchSetFieldToMatch,
 } from '../apis/field-owner-apis';
+import { fetchGetAllField } from '../apis/field-owner-apis';
+import { getAllField } from '../redux/field-owner/field-owner-action-creator';
 import {
   GetMatchByFieldOwnerAndDay,
   getAllFreeField,
@@ -35,10 +37,28 @@ class Home extends Component {
       timeSlotSelected: undefined,
       filterName: 'ans',
       messages: {},
+      currentShowOption: true,
     };
     this.handleShowModalField = this.handleShowModalField.bind(this);
   }
-
+  async handelShowViewOption(evt) {
+    const { id } = this.props.auth.user.data;
+    evt.preventDefault();
+    const match = await fetchGetMatchByFieldOwnerAndDay(
+      id,
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      1,
+    );
+    const afterSort = match.body.sort(
+      (a, b) =>
+        moment('10-Jan-2017 ' + a.timeSlotEntity.startTime) -
+        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime),
+    );
+    await this.props.GetMatchByFieldOwnerAndDay(afterSort);
+    this.props.setCurrentDaySelected(this.state.dateSelected);
+    const { currentShowOption } = this.state;
+    this.setState({ currentShowOption: !currentShowOption });
+  }
   async handelNextDay(evt) {
     evt.preventDefault();
     const { dateSelected } = this.state;
@@ -119,8 +139,9 @@ class Home extends Component {
                   'DD-MM-YYYY HH:mm',
                 ),
             );
-
             await this.props.GetMatchByFieldOwnerAndDay(afterSort);
+            const data = await fetchGetAllField(idLocal);
+            await this.props.getAllField(data.body);
           } catch (error) {
             console.log('error: ', error);
           }
@@ -136,15 +157,17 @@ class Home extends Component {
         const afterSort = match.body.sort(
           (a, b) =>
             moment(
-              '10-Jan-2017 ' + a.timeSlotEntity.startTime,
+              '10-10-2017 ' + a.timeSlotEntity.startTime,
               'DD-MM-YYYY HH:mm',
             ) -
             moment(
-              '10-Jan-2017 ' + b.timeSlotEntity.startTime,
+              '10-10-2017 ' + b.timeSlotEntity.startTime,
               'DD-MM-YYYY HH:mm',
             ),
         );
         await this.props.GetMatchByFieldOwnerAndDay(afterSort);
+        const data = await fetchGetAllField(id);
+        await this.props.getAllField(data.body);
       } catch (error) {
         console.log('error: ', error);
       }
@@ -167,7 +190,15 @@ class Home extends Component {
         this.state.dateSelected.format('DD-MM-YYYY'),
         1,
       );
-      await this.props.GetMatchByFieldOwnerAndDay(match.body);
+      const afterSort = match.body.sort(
+        (a, b) =>
+          moment(
+            '10-10-2017 ' + a.timeSlotEntity.startTime,
+            'DD-MM-YYYY HH:mm',
+          ) -
+          moment('10-10-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
+      );
+      await this.props.GetMatchByFieldOwnerAndDay(afterSort);
       toast.success('Cập nhật sân thành công!');
     }
   }
@@ -239,10 +270,10 @@ class Home extends Component {
     const afterSort = match.body.sort(
       (a, b) =>
         moment(
-          '10-Jan-2017 ' + a.timeSlotEntity.startTime,
+          '10-10-2017 ' + a.timeSlotEntity.startTime,
           'DD-MM-YYYY HH:mm',
         ) -
-        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
+        moment('10-10-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
     );
     await this.props.GetMatchByFieldOwnerAndDay(afterSort);
   }
@@ -267,33 +298,32 @@ class Home extends Component {
     );
     const afterSort = match.body.sort(
       (a, b) =>
-        moment(
-          '10-Jan-2017 ' + a.timeSlotEntity.startTime,
-          'DD-MM-YYYY HH:mm',
-        ) -
-        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
+        moment('10-10-2017 ' + a.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm') -
+        moment('10-10-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
     );
     await this.props.GetMatchByFieldOwnerAndDay(afterSort);
-    console.log('======================');
+    // console.log('======================');
     this.props.setCurrentDaySelected(false);
   }
   render() {
-    const { listMatch, freeField, currentDaySelected } = this.props;
+    const { listMatch, freeField, currentDaySelected, listField } = this.props;
     if (currentDaySelected) {
       this.handelLoadMatchAgain();
     }
     return (
       <div className="main-panel">
         <div className="content">
-          <button className="next-left"
-              onClick={this.handelPreviousDay.bind(this)}
-            >
-              {' '}
-              <i className="glyphicon glyphicon-chevron-left" />
+          <button
+            className="next-left"
+            onClick={this.handelPreviousDay.bind(this)}
+          >
+            {' '}
+            <i className="glyphicon glyphicon-chevron-left" />
           </button>
-          <button className="next-right"
+          <button
+            className="next-right"
             onClick={this.handelNextDay.bind(this)}
-            >
+          >
             <i className="glyphicon glyphicon-chevron-right" />
           </button>
           <div className="container-fluid">
@@ -309,7 +339,7 @@ class Home extends Component {
                     </h4>
                   </div>
                 </div>
-                <div className="col-md-4">
+                <div className="col-md-3">
                   <div className="page-header">
                     <form>
                       <div className="form-group">
@@ -324,126 +354,208 @@ class Home extends Component {
                   </div>
                 </div>
 
-                {/* <div className="col-sm-3">
+                <div className="col-sm-1">
                   <div className="page-header">
-                    <form>
-                      <div className="form-group">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Tìm kiếm theo tên"
-                        />
-                      </div>
-                    </form>
+                    <button
+                      onClick={this.handelShowViewOption.bind(this)}
+                      className="btn btn-default"
+                    >
+                      <i
+                        className={
+                          this.state.currentShowOption
+                            ? 'glyphicon glyphicon-th-large'
+                            : 'glyphicon glyphicon-th-list'
+                        }
+                      />
+                    </button>
                   </div>
-                </div> */}
+                </div>
               </div>
               <div className="col-md-12 match-padding ">
-                <div className="row">
-                  {listMatch.length > 0
-                    ? listMatch.map(listMatch => (
-                        <div
-                          key={listMatch.timeSlotEntity.id}
-                          className="col-sm-6"
-                        >
-                          <div className="panel panel-default">
-                            <div className="panel-body padding-top-bot-none">
-                              <div className="row">
-                                <div className="col-md-3">
-                                  <h4 className="text-center">
-                                    <strong>
-                                      {listMatch.user.profileId.name}
-                                    </strong>
-                                  </h4>
-                                </div>
-                                <div className="col-md-6">
-                                  <div
-                                    className={`alert ${listMatch.user
-                                      .username === listMatch.opponent.username
-                                      ? 'tourMatch'
-                                      : 'friendlyMatch'} margin-bot-none`}
-                                  >
-                                    <h3 className="text-center text-success">
+                {this.state.currentShowOption ? (
+                  <div className="row">
+                    {listMatch.length > 0
+                      ? listMatch.map(listMatch => (
+                          <div
+                            key={listMatch.timeSlotEntity.id}
+                            className="col-sm-6"
+                          >
+                            <div className="panel panel-default">
+                              <div className="panel-body padding-top-bot-none">
+                                <div className="row">
+                                  <div className="col-md-3">
+                                    <h4 className="text-center">
                                       <strong>
-                                        {moment(
-                                          '10-10-2017 ' +
-                                            listMatch.timeSlotEntity.startTime,
-                                          'DD-MM-YYYY HH:mm',
-                                        ).format('HH:mm')}
-                                      </strong>{' '}
-                                    </h3>
-                                    <p className="text-center">
-                                      <strong>
-                                        {moment(
-                                          '10-10-2017 ' +
-                                            listMatch.timeSlotEntity.endTime,
-                                          'DD-MM-YYYY HH:mm',
-                                        ).hour() *
-                                          60 +
-                                          moment(
-                                            '10-10-2017 ' +
-                                              listMatch.timeSlotEntity.endTime,
-                                            'DD-MM-YYYY HH:mm',
-                                          ).minute() -
-                                          (moment(
+                                        {listMatch.user.profileId.name}
+                                      </strong>
+                                    </h4>
+                                  </div>
+                                  <div className="col-md-6">
+                                    <div
+                                      className={`alert ${
+                                        listMatch.user.username ===
+                                        listMatch.opponent.username
+                                          ? 'tourMatch'
+                                          : 'friendlyMatch'
+                                      } margin-bot-none`}
+                                    >
+                                      <h3 className="text-center text-success">
+                                        <strong>
+                                          {moment(
                                             '10-10-2017 ' +
                                               listMatch.timeSlotEntity
                                                 .startTime,
+                                            'DD-MM-YYYY HH:mm',
+                                          ).format('HH:mm')}
+                                        </strong>{' '}
+                                      </h3>
+                                      <p className="text-center">
+                                        <strong>
+                                          {moment(
+                                            '10-10-2017 ' +
+                                              listMatch.timeSlotEntity.endTime,
                                             'DD-MM-YYYY HH:mm',
                                           ).hour() *
                                             60 +
                                             moment(
                                               '10-10-2017 ' +
                                                 listMatch.timeSlotEntity
+                                                  .endTime,
+                                              'DD-MM-YYYY HH:mm',
+                                            ).minute() -
+                                            (moment(
+                                              '10-10-2017 ' +
+                                                listMatch.timeSlotEntity
                                                   .startTime,
                                               'DD-MM-YYYY HH:mm',
-                                            ).minute())}{' '}
-                                        phút
-                                      </strong>
-                                    </p>
-                                    <p className="text-center">
-                                      <strong>
-                                        {
-                                          listMatch.timeSlotEntity.fieldTypeId
-                                            .name
-                                        }
-                                      </strong>
-                                    </p>
-                                    <p className="text-center">
-                                      <strong>
-                                        {listMatch.timeSlotEntity.fieldId
-                                          ? 'Sân: ' +
-                                            listMatch.timeSlotEntity.fieldId
+                                            ).hour() *
+                                              60 +
+                                              moment(
+                                                '10-10-2017 ' +
+                                                  listMatch.timeSlotEntity
+                                                    .startTime,
+                                                'DD-MM-YYYY HH:mm',
+                                              ).minute())}{' '}
+                                          phút
+                                        </strong>
+                                      </p>
+                                      <p className="text-center">
+                                        <strong>
+                                          {
+                                            listMatch.timeSlotEntity.fieldTypeId
                                               .name
-                                          : 'Chưa xếp sân'}
-                                      </strong>
-                                    </p>
-                                    <p className="text-center">
-                                      <button
-                                        onClick={() =>
-                                          this.handleShowModalField(listMatch)}
-                                        className="btn btn-md btn-primary"
-                                      >
-                                        Chi tiết
-                                      </button>
-                                    </p>
-                                    
+                                          }
+                                        </strong>
+                                      </p>
+                                      <p className="text-center">
+                                        <strong>
+                                          {listMatch.timeSlotEntity.fieldId
+                                            ? 'Sân: ' +
+                                              listMatch.timeSlotEntity.fieldId
+                                                .name
+                                            : 'Chưa xếp sân'}
+                                        </strong>
+                                      </p>
+                                      <p className="text-center">
+                                        <button
+                                          onClick={() =>
+                                            this.handleShowModalField(listMatch)
+                                          }
+                                          className="btn btn-md btn-primary"
+                                        >
+                                          Chi tiết
+                                        </button>
+                                      </p>
+                                    </div>
                                   </div>
-                                </div>
-                                <div className="col-md-3">
-                                  <h4 className="text-center ">
-                                    <strong>
-                                      {listMatch.opponent.profileId.name}
-                                    </strong>
-                                  </h4>
+                                  <div className="col-md-3">
+                                    <h4 className="text-center ">
+                                      <strong>
+                                        {listMatch.opponent.profileId.name}
+                                      </strong>
+                                    </h4>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
+                        ))
+                      : null}
+                  </div>
+                ) : (
+                  <div className="row">
+                    {listField.map((field, index) => (
+                      <div
+                        className="col-sm-10 col-sm-offset-1"
+                        key={index + 1}
+                      >
+                        <div className="panel panel-success">
+                          <div className="panel-heading">
+                            {' '}
+                            <h4 className="text-center loginHeader text-while">
+                              {field.name}
+                            </h4>
+                          </div>
+                          <div className="panel-body">
+                            <div className="col-sm-12">
+                              <table className="table">
+                                <thead>
+                                  <tr>
+                                    <th>Giờ</th>
+                                    <th>Người chơi</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {listMatch
+                                    .filter(
+                                      match =>
+                                        match.timeSlotEntity.fieldId
+                                          ? match.timeSlotEntity.fieldId.id ===
+                                            field.id
+                                          : null,
+                                    )
+                                    .sort(
+                                      (a, b) =>
+                                        moment(
+                                          '10-Jan-2017 ' +
+                                            a.timeSlotEntity.startTime,
+                                          'DD-MM-YYYY HH:mm',
+                                        ) -
+                                        moment(
+                                          '10-Jan-2017 ' +
+                                            b.timeSlotEntity.startTime,
+                                          'DD-MM-YYYY HH:mm',
+                                        ),
+                                    )
+                                    .map((match, index) => (
+                                      <tr key={index + 1}>
+                                        <td>
+                                          {moment(
+                                            `10-10-2017${
+                                              match.timeSlotEntity.startTime
+                                            }`,
+                                            'DD-MM-YYYY HH:mm',
+                                          ).format('HH:mm')}{' '}
+                                          -{' '}
+                                          {moment(
+                                            `10-10-2017${
+                                              match.timeSlotEntity.endTime
+                                            }`,
+                                            'DD-MM-YYYY HH:mm',
+                                          ).format('HH:mm')}
+                                        </td>
+                                        <td>{match.opponent.profileId.name}</td>
+                                      </tr>
+                                    ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
                         </div>
-                      ))
-                    : null}
-                </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <Modal
@@ -525,6 +637,7 @@ function mapStateToProps(state) {
     freeField: state.freeField.freeField,
     notify: state.notify,
     currentDaySelected: state.currentDaySelected.currentDaySelected,
+    listField: state.listField.listField,
   };
 }
 
@@ -535,4 +648,5 @@ export default connect(mapStateToProps, {
   accessDenied,
   setCurrentDaySelected,
   doLogout,
+  getAllField,
 })(Home);
