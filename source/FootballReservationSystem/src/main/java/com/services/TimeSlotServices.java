@@ -541,4 +541,15 @@ public class TimeSlotServices {
             }
         return timeSlotEntityList;
     }
+
+    public List<TimeSlotEntity> findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndOptimal(AccountEntity fieldOwner, FieldTypeEntity fieldType,
+                                                                                                  Date targetDate, boolean reserveStatus, Boolean optimal) {
+        List<TimeSlotEntity> returnTimeSlotEntity;
+        if (optimal == null) {
+            returnTimeSlotEntity = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(fieldOwner, fieldType, targetDate, reserveStatus, true);
+        } else {
+            returnTimeSlotEntity = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusAndOptimalOrderByStartTime(fieldOwner, fieldType, targetDate, reserveStatus, true, optimal);
+        }
+        return returnTimeSlotEntity;
+    }
 }
