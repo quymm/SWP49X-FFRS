@@ -210,10 +210,8 @@ public class MatchServices {
         return returnMatchingRequest;
     }
 
-    public OutputReserveTimeSlotDTO chooseSuitableField(InputMatchingRequestDTO inputMatchingRequestDTO, int matchingRequestId) {
+    public List<OutputReserveTimeSlotDTO> chooseSuitableField(InputMatchingRequestDTO inputMatchingRequestDTO, int matchingRequestId) {
         MatchingRequestEntity opponentMatching = matchingRequestRepository.findByIdAndStatus(matchingRequestId, true);
-        // tìm những sân chung trong sở thích của 2 người chơi
-        List<AccountEntity> favoritesFieldList = favoritesFieldServices.findFavoritesFieldOf2User(inputMatchingRequestDTO.getUserId(), opponentMatching.getUserId().getId());
 
         // tạo dữ liệu đặt sân dựa trên dữ liệu gốc theo matchingRequestId (người confirm đã đồng ý về thời gian của người tạo request)
         InputReservationDTO inputReservationDTO = new InputReservationDTO();
@@ -222,19 +220,8 @@ public class MatchServices {
         inputReservationDTO.setDate(DateTimeUtils.formatDate(opponentMatching.getDate()));
         inputReservationDTO.setFieldTypeId(opponentMatching.getFieldTypeId().getId());
 
-        if (!favoritesFieldList.isEmpty()) {
-            for (AccountEntity favoritesField : favoritesFieldList) {
-                inputReservationDTO.setFieldOwnerId(favoritesField.getId());
-                OutputReserveTimeSlotDTO outputReserveTimeSlotDTO = timeSlotServices.pickTimeSlot(inputReservationDTO);
-                if (outputReserveTimeSlotDTO != null) {
-                    // trả nửa phí tiền sân đối với tour match
-                    outputReserveTimeSlotDTO.setPrice(outputReserveTimeSlotDTO.getPrice() / 2);
-                    return outputReserveTimeSlotDTO;
-                }
-            }
-        }
 
-        // khi những sân chung nằm trong sở thích của 2 người ko đặt được thì tìm những sân trung bình về khoảng cách
+        // tìm những sân trung bình về khoảng cách và nếu là sân ưa thích thì ưu tiên
         // tạo list những sân và khoảng cách đến sân đó sắp xếp theo thứ tự tăng dần
         CordinationPoint cordinationPointUser = new CordinationPoint(NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLongitude()),
                 NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()));
@@ -252,18 +239,40 @@ public class MatchServices {
             }
         }
 
+        // tìm những sân ưa thích của 2 user
+        List<AccountEntity> favoritesFieldList = favoritesFieldServices.findFavoritesFieldOf2User(inputMatchingRequestDTO.getUserId(), opponentMatching.getUserId().getId());
 
+        // list chứa những sân ưa thích
+        List<OutputReserveTimeSlotDTO> outputReserveTimeSlotDTOList = new ArrayList<>();
         for (FieldOwnerAndDistance fieldOwnerAndDistance : fieldOwnerAndDistanceList) {
             inputReservationDTO.setFieldOwnerId(fieldOwnerAndDistance.getFieldOwner().getId());
             OutputReserveTimeSlotDTO outputReserveTimeSlotDTO = timeSlotServices.pickTimeSlot(inputReservationDTO);
             if (outputReserveTimeSlotDTO != null) {
                 // trả nửa phí tiền sân đối với tour match
                 outputReserveTimeSlotDTO.setPrice(outputReserveTimeSlotDTO.getPrice() / 2);
-                return outputReserveTimeSlotDTO;
+                outputReserveTimeSlotDTOList.add(outputReserveTimeSlotDTO);
             }
         }
+
+        // list chứa kết quả trả về, ưu tiên cho sân ưa thích, nếu sân ưa thích ko có thì trả về list các sân gần nhất
+        List<OutputReserveTimeSlotDTO> returnOutputReserveTimeSlotDTO = new ArrayList<>();
+        if (!outputReserveTimeSlotDTOList.isEmpty() && outputReserveTimeSlotDTOList.size() != 1 && !favoritesFieldList.isEmpty()) {
+            for (OutputReserveTimeSlotDTO outputReserveTimeSlotDTO : outputReserveTimeSlotDTOList) {
+                for (AccountEntity fieldOwner : favoritesFieldList) {
+                    if (outputReserveTimeSlotDTO.getFieldOwnerId().getId() == fieldOwner.getId()) {
+                        returnOutputReserveTimeSlotDTO.add(outputReserveTimeSlotDTO);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!returnOutputReserveTimeSlotDTO.isEmpty())
+            returnOutputReserveTimeSlotDTO.addAll(outputReserveTimeSlotDTOList);
+
+
         // nếu vẫn ko có sân phù hợp thì trả về null, hệ thống sẽ báo ko tìm được sân phù hợp
-        return null;
+        return returnOutputReserveTimeSlotDTO;
     }
 
     private List<FieldOwnerAndDistance> getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(CordinationPoint cordinationPointA, int deviationOrUserId, boolean favoritesField) {

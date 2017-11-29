@@ -54,10 +54,15 @@ public class TimeEnableServices {
             if (!DateTimeUtils.returnDayInWeek(targetDate).equals(dateInWeek)) {
                 continue;
             }
-            List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndReserveStatusAndDateAndStatus(fieldOwnerEntity, true, targetDate, true);
+            List<TimeSlotEntity> freeTimeSlotEntityList = timeSlotServices.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndOptimal(fieldOwnerEntity, fieldTypeEntity, targetDate, false, null);
+            List<TimeSlotEntity> timeSlotEntityList = timeSlotServices.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndOptimal(fieldOwnerEntity, fieldTypeEntity, targetDate, true, null);
             if (!timeSlotEntityList.isEmpty()) {
                 numDayFromNow = i;
                 break;
+            } else {
+                // xóa time slot free của ngày hôm đó nếu đã tạo rồi
+                if (!freeTimeSlotEntityList.isEmpty())
+                    timeSlotRepository.delete(freeTimeSlotEntityList);
             }
         }
         // targetdate là ngày cuối cùng time enable cũ còn hoạt động
@@ -83,6 +88,7 @@ public class TimeEnableServices {
             TimeEnableEntity timeEnableEntity = convertFromInputTimeEnableDTOToEntity(inputTimeEnableDTO, newDate);
             newTimeEnableEntityList.add(timeEnableEntity);
         }
+
         return timeEnableRepository.save(newTimeEnableEntityList);
     }
 

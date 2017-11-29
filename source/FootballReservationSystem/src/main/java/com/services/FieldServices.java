@@ -76,7 +76,7 @@ public class FieldServices {
         return fieldRepository.findByIdAndStatus(fieldId, true);
     }
 
-    //trả về ngày sân sẽ bắt đầu được xóa
+    //disable field từ dateFrom đến dateTo
     public boolean disableField(int fieldId, String dateFrom, String dateTo) {
         FieldEntity fieldEntity = findFieldEntityById(fieldId);
         AccountEntity fieldOwner = fieldEntity.getFieldOwnerId();
