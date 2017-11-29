@@ -18,7 +18,8 @@
         android:gravity="center"
         android:text="Vouncher giảm giá 200 ngàn"
         android:textColor="@android:color/black"
-        android:textSize="17dp" />
+        android:textSize="17dp"
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/text_bonus_points"
@@ -26,7 +27,7 @@
         android:layout_height="25dp"
         android:gravity="center"
         android:text="20000 điểm"
-        android:textSize="14dp" />
+        android:textSize="15dp" />
 
     <Button
         android:id="@+id/btExchange"

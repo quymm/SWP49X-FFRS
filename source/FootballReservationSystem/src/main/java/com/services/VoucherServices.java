@@ -17,6 +17,7 @@ public class VoucherServices {
         VoucherEntity voucherEntity = new VoucherEntity();
         voucherEntity.setBonusPointTarget(inputVoucherDTO.getBonusPointTarget());
         voucherEntity.setVoucherValue(inputVoucherDTO.getVoucherValue());
+        voucherEntity.setImageUrl(inputVoucherDTO.getImageUrl());
         voucherEntity.setStatus(true);
         return  voucherRepository.save(voucherEntity);
     }
@@ -25,6 +26,7 @@ public class VoucherServices {
         VoucherEntity voucherEntity = voucherRepository.findByIdAndStatus(voucherId, true);
         voucherEntity.setBonusPointTarget(inputVoucherDTO.getBonusPointTarget());
         voucherEntity.setVoucherValue(inputVoucherDTO.getVoucherValue());
+        voucherEntity.setImageUrl(inputVoucherDTO.getImageUrl());
         return  voucherRepository.save(voucherEntity);
     }
 

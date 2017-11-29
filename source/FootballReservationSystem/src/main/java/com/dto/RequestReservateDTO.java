@@ -3,17 +3,14 @@ package com.dto;
 public class RequestReservateDTO {
     private Integer fieldTypeId;
 
-    private String date;
-
     private String startTime;
 
     private String endTime;
 
     private int duration;
 
-    public RequestReservateDTO(Integer fieldTypeId, String date, String startTime, String endTime, int duration) {
+    public RequestReservateDTO(Integer fieldTypeId, String startTime, String endTime, int duration) {
         this.fieldTypeId = fieldTypeId;
-        this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.duration = duration;
@@ -28,14 +25,6 @@ public class RequestReservateDTO {
 
     public void setFieldTypeId(Integer fieldTypeId) {
         this.fieldTypeId = fieldTypeId;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public String getStartTime() {

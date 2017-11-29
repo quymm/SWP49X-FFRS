@@ -5,7 +5,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,7 +44,9 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by HuanPMSE61860 on 11/4/2017.
@@ -72,6 +76,10 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
             PendingRequest request = requestList.get(position);
             holder.itemView.setTag(R.id.card_view, request);
 
+            String address = request.getAddress();
+            holder.txtAddress.setText(address);
+
+
             String strDate = sdf.format(new Date(Long.parseLong(request.getDate())));
             holder.txtDate.setText(strDate);
 
@@ -81,7 +89,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
             Date endTime = sdf.parse(request.getEndTime());
 
             sdf = new SimpleDateFormat("H:mm");
-            holder.txtTime.setText((position + 1) + ". " + sdf.format(startTime) + " - " + sdf.format(endTime));
+            holder.txtTime.setText(sdf.format(startTime) + " - " + sdf.format(endTime));
 
             int duration = request.getDuration();
             String strDuration = "";
@@ -104,12 +112,13 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
 
     public class PendingRequestViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView txtTime, txtDate, txtDuration;
+        private TextView txtAddress, txtTime, txtDate, txtDuration;
 
         private Button btClose;
 
         public PendingRequestViewHolder(final View itemView) {
             super(itemView);
+            txtAddress = (TextView) itemView.findViewById(R.id.address_short_view);
             txtTime = (TextView) itemView.findViewById(R.id.time_view);
             txtDate = (TextView) itemView.findViewById(R.id.date_view);
             txtDuration = (TextView) itemView.findViewById(R.id.duration_view);
@@ -126,7 +135,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                                }
                                                builder.setTitle("Hủy yêu cầu")
                                                        .setMessage("Bạn có muốn hủy bỏ yêu cầu này không?")
-                                                       .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                                       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                            public void onClick(DialogInterface dialog, int which) {
                                                                // continue with delete
                                                                final PendingRequest request = (PendingRequest) itemView.getTag(R.id.card_view);
@@ -175,11 +184,19 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                                                        }
                                                                    }
 
+                                                                   @Override
+                                                                   public Map<String, String> getHeaders() throws AuthFailureError {
+                                                                       HashMap<String, String> headers = new HashMap<String, String>();
+                                                                       headers.put("Content-Type", "application/json; charset=utf-8");
+
+                                                                       return headers;
+
+                                                                   }
                                                                };
                                                                queue.add(cancelRequest);
                                                            }
                                                        })
-                                                       .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                                       .setNegativeButton("Không", new DialogInterface.OnClickListener() {
                                                            public void onClick(DialogInterface dialog, int which) {
                                                                // do nothing
                                                            }

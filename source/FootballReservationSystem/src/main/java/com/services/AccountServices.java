@@ -9,6 +9,7 @@ import com.entity.RoleEntity;
 import com.repository.AccountRepository;
 import com.repository.DepositHistoryRepository;
 import com.repository.ProfileRepository;
+import com.utils.DateTimeUtils;
 import com.utils.MapUtils;
 import com.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,8 +74,8 @@ public class AccountServices {
         profileEntity.setName(inputFieldOwnerDTO.getName());
         profileEntity.setAddress(inputFieldOwnerDTO.getAddress());
         profileEntity.setAvatarUrl(inputFieldOwnerDTO.getAvatarUrl());
-        profileEntity.setLongitude(inputFieldOwnerDTO.getLongitute());
-        profileEntity.setLatitude(inputFieldOwnerDTO.getLatitude());
+        profileEntity.setLongitude(NumberUtils.parseFromStringToDouble(inputFieldOwnerDTO.getLongitute()));
+        profileEntity.setLatitude(NumberUtils.parseFromStringToDouble(inputFieldOwnerDTO.getLatitude()));
         profileEntity.setPhone(inputFieldOwnerDTO.getPhone());
         accountEntity.setProfileId(profileRepository.save(profileEntity));
 
@@ -119,11 +120,11 @@ public class AccountServices {
 
     public AccountEntity checkLogin(String username, String password) {
         AccountEntity accountEntity = accountRepository.findByUsernameAndPasswordAndStatus(username, password, true);
-        if (accountEntity.getLockStatus()) {
-            throw new IllegalArgumentException(String.format("Account have username: %s is locked!", accountEntity.getUsername()));
-        }
         if (accountEntity == null) {
             throw new EntityNotFoundException(String.format("Not found account have username: %s and password: %s", username, password));
+        }
+        if (accountEntity.getLockStatus()) {
+            throw new IllegalArgumentException(String.format("Account have username: %s is locked!", accountEntity.getUsername()));
         }
         return accountEntity;
     }
@@ -159,8 +160,8 @@ public class AccountServices {
         profileEntity.setAvatarUrl(inputFieldOwnerDTO.getAvatarUrl());
         profileEntity.setBalance(Float.valueOf(0));
         profileEntity.setAccountPayable(Float.valueOf(0));
-        profileEntity.setLatitude(inputFieldOwnerDTO.getLatitude());
-        profileEntity.setLongitude(inputFieldOwnerDTO.getLongitute());
+        profileEntity.setLatitude(NumberUtils.parseFromStringToDouble(inputFieldOwnerDTO.getLatitude()));
+        profileEntity.setLongitude(NumberUtils.parseFromStringToDouble(inputFieldOwnerDTO.getLongitute()));
         profileEntity.setName(inputFieldOwnerDTO.getName());
         profileEntity.setPhone(inputFieldOwnerDTO.getPhone());
         profileEntity.setPercentProfit((float) 0.05);
@@ -196,8 +197,8 @@ public class AccountServices {
 
         if (!fieldOwnerList.isEmpty() && fieldOwnerList.size() > 1) {
             for (AccountEntity fieldOwner : fieldOwnerList) {
-                CordinationPoint cordinationPointB = new CordinationPoint(NumberUtils.parseFromStringToDouble(fieldOwner.getProfileId().getLongitude()),
-                        NumberUtils.parseFromStringToDouble(fieldOwner.getProfileId().getLatitude()));
+                CordinationPoint cordinationPointB = new CordinationPoint(fieldOwner.getProfileId().getLongitude(),
+                        fieldOwner.getProfileId().getLatitude());
                 double distance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
                 FieldOwnerAndDistance fieldOwnerAndDistance = new FieldOwnerAndDistance(fieldOwner, distance);
                 fieldOwnerAndDistanceList.add(fieldOwnerAndDistance);

@@ -8,19 +8,9 @@ package com.entity;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  *
@@ -50,6 +40,16 @@ public class TimeEnableEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "price")
     private float price;
+    @Basic(optional = false)
+    @Column(name = "optimal")
+    private boolean optimal;
+    @Basic(optional = false)
+    @Column(name = "date_from")
+    @Temporal(TemporalType.DATE)
+    private Date dateFrom;
+    @Column(name = "date_to")
+    @Temporal(TemporalType.DATE)
+    private Date dateTo;
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
@@ -122,6 +122,30 @@ public class TimeEnableEntity implements Serializable {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public boolean isOptimal() {
+        return optimal;
+    }
+
+    public void setOptimal(boolean optimal) {
+        this.optimal = optimal;
+    }
+
+    public Date getDateFrom() {
+        return dateFrom;
+    }
+
+    public void setDateFrom(Date dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public Date getDateTo() {
+        return dateTo;
+    }
+
+    public void setDateTo(Date dateTo) {
+        this.dateTo = dateTo;
     }
 
     public boolean getStatus() {

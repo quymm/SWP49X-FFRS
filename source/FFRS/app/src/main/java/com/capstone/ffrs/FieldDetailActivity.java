@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,8 +15,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +48,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,6 +60,8 @@ public class FieldDetailActivity extends AppCompatActivity {
     private String name, address;
     private Date startTime, endTime, date;
     private int id, price, fieldTypeId;
+    private RelativeLayout relativeLayout;
+    private FrameLayout progressBarHolder;
 
     String hostURL;
 
@@ -123,13 +130,16 @@ public class FieldDetailActivity extends AppCompatActivity {
         TextView txtTotalPrice = (TextView) findViewById(R.id.text_total_price);
         boolean tourMatchMode = b.getBoolean("tour_match_mode");
         if (tourMatchMode) {
-            txtTotalPrice.setText((price * 2) + "K đồng");
+            txtTotalPrice.setText((price * 2) + " ngàn đồng");
         } else {
-            txtTotalPrice.setText(price + "K đồng");
+            txtTotalPrice.setText(price + " ngàn đồng");
         }
 
         TextView txtPrice = (TextView) findViewById(R.id.text_price);
-        txtPrice.setText(price + "K đồng");
+        txtPrice.setText(price + " ngàn đồng");
+
+        relativeLayout = (RelativeLayout) findViewById(R.id.relative_layout);
+        progressBarHolder = (FrameLayout) findViewById(R.id.progressBarHolder);
     }
 
     @Override
@@ -154,6 +164,12 @@ public class FieldDetailActivity extends AppCompatActivity {
     }
 
     public void onClickReserve(View view) {
+        relativeLayout.setAlpha(0.5f);
+        progressBarHolder.setVisibility(View.VISIBLE);
+        final Button btPayment = (Button) findViewById(R.id.btPayment);
+        btPayment.setEnabled(false);
+        final Button btCancel = (Button) findViewById(R.id.btCancel);
+        btCancel.setEnabled(false);
         final Bundle b = getIntent().getExtras();
         if (b.containsKey("created_matching_request_id")) {
             int createdMatchingRequestId = b.getInt("created_matching_request_id");
@@ -179,6 +195,7 @@ public class FieldDetailActivity extends AppCompatActivity {
 //                    } else if (error instanceof ParseError) {
 //                        Toast.makeText(FieldDetailActivity.this, "Lỗi parse!", Toast.LENGTH_SHORT).show();
 //                    }
+
                 }
             }) {
                 @Override
@@ -195,6 +212,13 @@ public class FieldDetailActivity extends AppCompatActivity {
                     }
                 }
 
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Content-Type", "application/json; charset=utf-8");
+
+                    return headers;
+                }
             };
             queue.add(cancelRequest);
         }
@@ -288,12 +312,12 @@ public class FieldDetailActivity extends AppCompatActivity {
                                     }
                                     builder.setTitle("Hết sân trống")
                                             .setMessage("Bạn có muốn chọn giờ khác không?")
-                                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     finish();
                                                 }
                                             })
-                                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                            .setNegativeButton("Không", new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     Intent intent = new Intent(FieldDetailActivity.this, SearchActivity.class);
                                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -310,7 +334,7 @@ public class FieldDetailActivity extends AppCompatActivity {
                                     }
                                     builder.setTitle("Hết sân trống")
                                             .setMessage("Bạn có muốn hệ thống chọn sân khác không?")
-                                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     String url = hostURL + getResources().getString(R.string.url_choose_field);
                                                     url = String.format(url, b.getInt("matching_request_id"), 5);
@@ -382,13 +406,15 @@ public class FieldDetailActivity extends AppCompatActivity {
                                                         public Map<String, String> getHeaders() throws AuthFailureError {
                                                             HashMap<String, String> headers = new HashMap<String, String>();
                                                             headers.put("Content-Type", "application/json; charset=utf-8");
+
                                                             return headers;
+
                                                         }
                                                     };
                                                     queue.add(postRequest);
                                                 }
                                             })
-                                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                            .setNegativeButton("Không", new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     Intent intent = new Intent(FieldDetailActivity.this, MatchResultActivity.class);
                                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -396,6 +422,10 @@ public class FieldDetailActivity extends AppCompatActivity {
                                                 }
                                             })
                                             .show();
+                                    btPayment.setEnabled(true);
+                                    btCancel.setEnabled(true);
+                                    relativeLayout.setAlpha(1f);
+                                    progressBarHolder.setVisibility(View.GONE);
                                 }
                             }
                         } catch (JSONException e) {
@@ -434,9 +464,31 @@ public class FieldDetailActivity extends AppCompatActivity {
                             } catch (UnsupportedEncodingException e) {
                                 e.printStackTrace();
                             }
+                        } else if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(FieldDetailActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(FieldDetailActivity.this, "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(FieldDetailActivity.this, "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(FieldDetailActivity.this, "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof ParseError) {
+                            Toast.makeText(FieldDetailActivity.this, "Lỗi parse!", Toast.LENGTH_SHORT).show();
                         }
+                        btPayment.setEnabled(true);
+                        btCancel.setEnabled(true);
+                        relativeLayout.setAlpha(1f);
+                        progressBarHolder.setVisibility(View.GONE);
                     }
-                });
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+            }
+        };
         queue.add(postRequest);
     }
 

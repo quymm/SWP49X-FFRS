@@ -17,14 +17,6 @@ public class StandardPriceEntity {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "date_from")
-    @Temporal(TemporalType.DATE)
-    private Date dateFrom;
-    @Basic(optional = false)
-    @Column(name = "date_to")
-    @Temporal(TemporalType.DATE)
-    private Date dateTo;
-    @Basic(optional = false)
     @Column(name = "rush_hour")
     private boolean rushHour;
     @Basic(optional = false)
@@ -51,9 +43,7 @@ public class StandardPriceEntity {
     @ManyToOne(optional = false)
     private FieldTypeEntity fieldTypeId;
 
-    public StandardPriceEntity(Date dateFrom, Date dateTo, boolean rushHour, Float maxPrice, Float minPrice, Date creationDate, Date modificationDate, AccountEntity staffId) {
-        this.dateFrom = dateFrom;
-        this.dateTo = dateTo;
+    public StandardPriceEntity(boolean rushHour, Float maxPrice, Float minPrice, Date creationDate, Date modificationDate, AccountEntity staffId) {
         this.rushHour = rushHour;
         this.maxPrice = maxPrice;
         this.minPrice = minPrice;
@@ -71,22 +61,6 @@ public class StandardPriceEntity {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Date getDateFrom() {
-        return dateFrom;
-    }
-
-    public void setDateFrom(Date dateFrom) {
-        this.dateFrom = dateFrom;
-    }
-
-    public Date getDateTo() {
-        return dateTo;
-    }
-
-    public void setDateTo(Date dateTo) {
-        this.dateTo = dateTo;
     }
 
     public boolean isRushHour() {

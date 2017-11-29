@@ -43,8 +43,8 @@ public class BlacklistOpponentServices {
 
     public boolean removeBlacklist(int id){
         BlacklistOpponentEntity blacklistOpponentEntity = blacklistOpponentRepository.findByIdAndStatus(id, true);
-        blacklistOpponentEntity.setStatus(false);
-        return !blacklistOpponentRepository.save(blacklistOpponentEntity).getStatus();
+        blacklistOpponentRepository.delete(blacklistOpponentEntity);
+        return true;
     }
 
     public BlacklistOpponentEntity findBlacklistByUserIdAndOpponentId(int userId, int opponentId){

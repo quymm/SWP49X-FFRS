@@ -38,7 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
-                android:text="Phan Minh Huấn"
+                android:text="Team Name"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textSize="24dp" />
 
@@ -46,13 +46,13 @@
                 android:id="@+id/text_balance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Số dư hiện có: 1,000 K đồng" />
+                android:text="Số dư hiện có: 1,000 ngàn đồng" />
 
             <TextView
                 android:id="@+id/text_points"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Điểm thưởng: 10000" />
+                android:text="Điểm thưởng: 10000 điểm" />
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

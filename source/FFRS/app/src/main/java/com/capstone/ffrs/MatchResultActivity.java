@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -238,6 +240,13 @@ public class MatchResultActivity extends AppCompatActivity {
                 }
             }
 
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+            }
         };
         //Adding JsonArrayRequest to Request Queue
         queue.add(newsReq);
@@ -260,8 +269,8 @@ public class MatchResultActivity extends AppCompatActivity {
             } else {
                 builder = new AlertDialog.Builder(this);
             }
-            builder.setTitle("Bạn có muốn để lại yều cầu của bạn không?")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            builder.setTitle("Bạn có chắc chắn không muốn đá với những đối thủ này?")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             Intent intent = new Intent(MatchResultActivity.this, CreateRequestResultActivity.class);
                             intent.putExtra("user_id", b.getInt("user_id"));
@@ -269,7 +278,7 @@ public class MatchResultActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
                     })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    .setNegativeButton("Không", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             RequestQueue queue = NetworkController.getInstance(MatchResultActivity.this).getRequestQueue();
                             String url = HostURLUtils.getInstance(MatchResultActivity.this).getHostURL() + getResources().getString(R.string.url_cancel_matching_request);
@@ -309,6 +318,13 @@ public class MatchResultActivity extends AppCompatActivity {
                                     }
                                 }
 
+                                @Override
+                                public Map<String, String> getHeaders() throws AuthFailureError {
+                                    HashMap<String, String> headers = new HashMap<String, String>();
+                                    headers.put("Content-Type", "application/json; charset=utf-8");
+
+                                    return headers;
+                                }
                             };
                             queue.add(cancelRequest);
                         }

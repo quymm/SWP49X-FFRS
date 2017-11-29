@@ -6,6 +6,17 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.AutocompletePredictionBuffer;
+import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
+import com.google.android.gms.location.places.GeoDataApi;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.PlacesOptions;
+import com.google.android.gms.tasks.Task;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,12 +44,14 @@ public class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements F
 
     Context mContext;
     int mResource;
+    GeoDataClient dataClient;
 
     public PlacesAutoCompleteAdapter(Context context, int resource) {
         super(context, resource);
 
         mContext = context;
         mResource = resource;
+        dataClient = Places.getGeoDataClient(mContext, null);
     }
 
     @Override
@@ -90,7 +103,7 @@ public class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements F
             sb.append("?key=" + API_KEY);
             sb.append("&language=vi");
             sb.append("&region=VN");
-            sb.append("&&types=geocode");
+            sb.append("&types=geocode");
             sb.append("&input=" + URLEncoder.encode(input, "utf8"));
 
             URL url = new URL(sb.toString());
@@ -116,7 +129,7 @@ public class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements F
         }
 
         try {
-            // Log.d(TAG, jsonResults.toString());
+            //Log.d(TAG, jsonResults.toString());
 
             // Create a JSON object hierarchy from the results
             JSONObject jsonObj = new JSONObject(jsonResults.toString());

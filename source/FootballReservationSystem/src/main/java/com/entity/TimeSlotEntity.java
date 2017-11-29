@@ -58,6 +58,9 @@ public class TimeSlotEntity implements Serializable {
     @Column(name = "status")
     private boolean status;
     @Basic(optional = false)
+    @Column(name = "optimal")
+    private boolean optimal;
+    @Basic(optional = false)
     @Column(name = "creation_date")
     @CreationTimestamp
     private Date creationDate;
@@ -82,13 +85,14 @@ public class TimeSlotEntity implements Serializable {
         this.id = id;
     }
 
-    public TimeSlotEntity(AccountEntity fieldOwnerId, FieldTypeEntity fieldTypeId, Date date, Date startTime, Date endTime, float price, boolean reserveStatus, boolean status) {
+    public TimeSlotEntity(AccountEntity fieldOwnerId, FieldTypeEntity fieldTypeId, Date date, Date startTime, Date endTime, float price, boolean reserveStatus, boolean optimal, boolean status) {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.price = price;
         this.reserveStatus = reserveStatus;
         this.status = status;
+        this.optimal = optimal;
         this.fieldOwnerId = fieldOwnerId;
         this.fieldTypeId = fieldTypeId;
     }
@@ -139,6 +143,14 @@ public class TimeSlotEntity implements Serializable {
 
     public void setReserveStatus(boolean reserveStatus) {
         this.reserveStatus = reserveStatus;
+    }
+
+    public boolean isOptimal() {
+        return optimal;
+    }
+
+    public void setOptimal(boolean optimal) {
+        this.optimal = optimal;
     }
 
     public boolean getStatus() {
