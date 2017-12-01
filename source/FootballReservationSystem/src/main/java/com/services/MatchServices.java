@@ -267,7 +267,7 @@ public class MatchServices {
             }
         }
 
-        if (!returnOutputReserveTimeSlotDTO.isEmpty())
+        if (returnOutputReserveTimeSlotDTO.isEmpty())
             returnOutputReserveTimeSlotDTO.addAll(outputReserveTimeSlotDTOList);
 
 
