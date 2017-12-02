@@ -29,9 +29,13 @@ public class FieldEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "name")
     private String name;
-    @Column(name = "expiration_date")
+    @Basic(optional = false)
+    @Column(name = "date_from")
     @Temporal(TemporalType.DATE)
-    private Date expirationDate;
+    private Date dateFrom;
+    @Column(name = "date_to")
+    @Temporal(TemporalType.DATE)
+    private Date dateTo;
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
@@ -79,12 +83,20 @@ public class FieldEntity implements Serializable {
         this.name = name;
     }
 
-    public Date getExpirationDate() {
-        return expirationDate;
+    public Date getDateFrom() {
+        return dateFrom;
     }
 
-    public void setExpirationDate(Date expirationDate) {
-        this.expirationDate = expirationDate;
+    public void setDateFrom(Date dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public Date getDateTo() {
+        return dateTo;
+    }
+
+    public void setDateTo(Date dateTo) {
+        this.dateTo = dateTo;
     }
 
     public boolean getStatus() {

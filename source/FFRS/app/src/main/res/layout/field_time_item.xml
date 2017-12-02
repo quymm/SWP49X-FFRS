@@ -5,6 +5,7 @@
     android:layout_marginBottom="5dp"
     android:background="#63b75b"
     android:orientation="horizontal"
+    android:id="@+id/field_time_layout"
     android:paddingLeft="5dp">
 
     <TextView

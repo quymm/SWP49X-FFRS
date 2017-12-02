@@ -93,128 +93,128 @@ INSERT INTO account (`username`, `password`, `profile_id`, `role_id`, `num_of_re
 INSERT INTO account (`username`, `password`, `profile_id`, `role_id`, `num_of_report`) VALUES('hieu', '123456', '34', '3', 0);
 
 -- tạo mức giá max min hệ thống
-INSERT INTO standard_price (`staff_id`, `field_type_id`, `date_from`, `date_to`, `rush_hour`, `max_price`, `min_price`) VALUES (33, 1, '2017-10-11', '2018-01-01', 1, 300, 150);
-INSERT INTO standard_price (`staff_id`, `field_type_id`, `date_from`, `date_to`, `rush_hour`, `max_price`, `min_price`) VALUES (33, 1, '2017-10-11', '2018-01-01', 0, 200, 80);
+INSERT INTO standard_price (`staff_id`, `field_type_id`, `rush_hour`, `max_price`, `min_price`) VALUES (33, 1, 1, 300, 150);
+INSERT INTO standard_price (`staff_id`, `field_type_id`, `rush_hour`, `max_price`, `min_price`) VALUES (33, 1, 0, 200, 80);
 
 -- tạo sân cho chủ sân
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Sân 1', 11, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Sân 2', 11, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Sân 3', 11, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Sân 1', 11, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Sân 2', 11, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Sân 3', 11, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Sân 4', 11, 2);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Sân 5', 11, 2);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Sân 4', 11, 2, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Sân 5', 11, 2, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Etihad', 12, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Old Tranford', 12, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Wembley', 12, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Anfield', 12, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Etihad', 12, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Old Tranford', 12, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Wembley', 12, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Anfield', 12, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Goodison', 13, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Liberty', 13, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Stamford Bridge', 13, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('White Hart Lane', 13, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Goodison', 13, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Liberty', 13, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Stamford Bridge', 13, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('White Hart Lane', 13, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Sân XX', 14, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Sân YY', 14, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Sân XX', 14, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Sân YY', 14, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('San Siro', 15, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Stadio Olimpico', 15, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('San Siro', 15, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Stadio Olimpico', 15, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Stadio San Paolo', 15, 2);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Stadio San Paolo', 15, 2, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Thống Nhất', 16, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Gò Đậu', 16, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Vinh', 16, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Tam Kỳ', 16, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Hàng Đẫy', 16, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Thống Nhất', 16, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Gò Đậu', 16, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Vinh', 16, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Tam Kỳ', 16, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Hàng Đẫy', 16, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Lạch Tray', 17, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Pleiku', 17, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Lạch Tray', 17, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Pleiku', 17, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Unique', 18, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Unique', 18, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Num 1', 19, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Num 2', 19, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Num 3', 19, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Num 1', 19, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Num 2', 19, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Num 3', 19, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('AAA', 20, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('BBB', 20, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('AAA', 20, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('BBB', 20, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('RonaldoFF', 21, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('MessiFF', 21, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('RonaldoFF', 21, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('MessiFF', 21, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Legend', 21, 2);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Loser', 21, 2);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Victory', 21, 2);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Legend', 21, 2, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Loser', 21, 2, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Victory', 21, 2, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Captain America', 22, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Hulk', 22, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Thor', 22, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Spiderman', 22, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Wonder Woman', 22, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Black Widow', 22, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Black Panther', 22, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Hercules', 22, 2);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Captain America', 22, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Hulk', 22, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Thor', 22, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Spiderman', 22, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Wonder Woman', 22, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Black Widow', 22, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Black Panther', 22, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Hercules', 22, 2, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Iron Man', 22, 2);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Vision', 22, 2);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Super man', 22, 2);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Iron Man', 22, 2, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Vision', 22, 2, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Super man', 22, 2, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Lion', 23, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Tiger', 23, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Dragon', 23, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Lion', 23, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Tiger', 23, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Dragon', 23, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('F100', 24, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('F200', 24, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('F100', 24, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('F200', 24, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Italia', 25, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Spain', 25, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Italia', 25, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Spain', 25, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Number11', 26, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Number22', 26, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Number11', 26, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Number22', 26, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Hà Nội', 27, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Sài Gòn', 27, 1);
-
-
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Angel', 28, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('Demon', 28, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Hà Nội', 27, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Sài Gòn', 27, 1, '2017-01-01');
 
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('007', 29, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('009', 29, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('008', 29, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Angel', 28, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('Demon', 28, 1, '2017-01-01');
 
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('C001', 30, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('C002', 30, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('007', 29, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('009', 29, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('008', 29, 1, '2017-01-01');
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('K001', 31, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('K002', 31, 1);
 
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('9999', 32, 1);
-INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`) values ('8888', 32, 1);
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('C001', 30, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('C002', 30, 1, '2017-01-01');
+
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('K001', 31, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('K002', 31, 1, '2017-01-01');
+
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('9999', 32, 1, '2017-01-01');
+INSERT INTO `capstone_project`.`field`(`name`, `field_owner_id`, `field_type_id`, `date_from`) values ('8888', 32, 1, '2017-01-01');
 
 -- tạo time-enable cho chủ sân giờ thường
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(11, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(12, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 150);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(13, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 130);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(14, 1, 'Thu', '06:00:00', '17:00:00', '2017-01-01', 0, 100);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(15, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(16, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(17, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 130);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(18, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 140);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(19, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 140);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(20, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 140);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(21, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 110);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(22, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 110);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(23, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 110);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(24, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 110);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(25, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(26, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(27, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(28, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(29, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(11, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(12, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 150);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(13, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 130);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(14, 1, 'Thu', '06:00:00', '17:00:00', '2017-01-01', 0, 100);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(15, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(16, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(17, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 130);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(18, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 140);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(19, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 140);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(20, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 140);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(21, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 110);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(22, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 110);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(23, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 110);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(24, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 110);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(25, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(26, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(27, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(28, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(29, 1, 'Wed', '06:00:00', '17:00:00', '2017-01-01', 0, 120);
 /*
 INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(30, 1, 'Fri', '06:00:00', '17:00:00', 0, 120);
 INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `optimal`,`price`) VALUES(31, 1, 'Fri', '06:00:00', '17:00:00', 0, 120);
@@ -222,39 +222,39 @@ INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `star
 */
 
 -- tạo time-enable cho chủ sân giờ cao điểm
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(11, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(11, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(11, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(11, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(12, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(12, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(12, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(12, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(13, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(13, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(13, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(13, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(14, 1, 'Thu', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(14, 1, 'Thu', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(14, 1, 'Thu', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(14, 1, 'Thu', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(15, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(15, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(15, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(15, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(16, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(16, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(16, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(16, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(17, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(17, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(17, 1, 'Wed', '17:00:00', '19:00:00', '2017-01-01', 1, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(17, 1, 'Wed', '19:00:00', '21:00:00', '2017-01-01', 1, 200);
 
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(18, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(19, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(20, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(21, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(22, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(23, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(24, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(25, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(26, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(27, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(28, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
-INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `effective_date`, `optimal`,`price`) VALUES(29, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(18, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(19, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(20, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(21, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(22, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(23, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(24, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(25, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(26, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(27, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(28, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
+INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(29, 1, 'Wed', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
 
 
 /*

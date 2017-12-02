@@ -1,8 +1,10 @@
 package com.capstone.ffrs.fragment;
 
-import android.support.v4.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +19,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.FieldDetailActivity;
-import com.capstone.ffrs.SearchActivity;
 import com.capstone.ffrs.R;
+import com.capstone.ffrs.SearchActivity;
 import com.capstone.ffrs.controller.NetworkController;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,7 +63,7 @@ public class RechargeSucessFragment extends Fragment {
                     Map<String, Object> params = new HashMap<>();
 
                     if (b.getBoolean("tour_match_mode")) {
-                        url = getResources().getString(R.string.local_host) + getResources().getString(R.string.url_choose_field);
+                        url = HostURLUtils.getInstance(getContext()).getHostURL() + getResources().getString(R.string.url_choose_field);
                         url = String.format(url, b.getInt("matching_request_id"), 5);
 
                         queue = NetworkController.getInstance(getContext()).getRequestQueue();
@@ -74,7 +77,7 @@ public class RechargeSucessFragment extends Fragment {
                         params.put("longitude", b.getDouble("longitude"));
                         params.put("duration", b.getInt("duration"));
                     } else {
-                        url = getResources().getString(R.string.local_host) + getResources().getString(R.string.url_reserve_time_slot);
+                        url = HostURLUtils.getInstance(getContext()).getHostURL() + getResources().getString(R.string.url_reserve_time_slot);
                         queue = NetworkController.getInstance(getContext()).getRequestQueue();
 
                         params.put("date", new SimpleDateFormat("dd-MM-yyyy").format(b.getSerializable("date")));
@@ -129,12 +132,15 @@ public class RechargeSucessFragment extends Fragment {
                                     Log.d("Error.Response", error.toString());
                                 }
                             }) {
+
                         @Override
                         public Map<String, String> getHeaders() throws AuthFailureError {
                             HashMap<String, String> headers = new HashMap<String, String>();
                             headers.put("Content-Type", "application/json; charset=utf-8");
+
                             return headers;
                         }
+
                     };
                     queue.add(postRequest);
                 } else {
@@ -142,10 +148,6 @@ public class RechargeSucessFragment extends Fragment {
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     startActivity(intent);
                 }
-//        Bundle b = getActivity().getIntent().getExtras();
-//        TextView code = (TextView) view.findViewById(R.id.text_code);
-//        code.setText("Mã đặt sân: " + b.getInt("reserve_id"));
-
             }
         });
         return view;

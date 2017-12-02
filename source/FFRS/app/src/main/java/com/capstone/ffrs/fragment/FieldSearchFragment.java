@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -16,17 +17,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,8 @@ import com.capstone.ffrs.R;
 import com.capstone.ffrs.adapter.FieldAdapter;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.entity.FieldOwner;
+import com.capstone.ffrs.utils.HostURLUtils;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -88,9 +91,7 @@ public class FieldSearchFragment extends Fragment {
 
             if (getView() != null && currentLocation.getLatitude() != -1 && currentLocation.getLongitude() != -1
                     && !searchMode) {
-                TextView progressText = (TextView) mActivity.findViewById(R.id.text_progress);
-                progressText.setText("Đang tìm sân gần bạn");
-                loadFields(getView());
+                loadFields();
             }
         }
     };
@@ -107,10 +108,10 @@ public class FieldSearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(getContext()).getHostURL();
 
         // Inflate the layout for this fragment
-        final View view = inflater.inflate(R.layout.fragment_field_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_field_search, container, false);
 
         btnClose = (ImageView) view.findViewById(R.id.btSearchClose);
         btnClose.setVisibility(View.GONE);
@@ -122,6 +123,9 @@ public class FieldSearchFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 searchText.setCursorVisible(true);
+                if (!searchText.getText().toString().isEmpty()) {
+                    btnClose.setVisibility(View.VISIBLE);
+                }
             }
         });
         searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -137,11 +141,14 @@ public class FieldSearchFragment extends Fragment {
                     txtNotFound.setVisibility(View.GONE);
                     if (!v.getText().toString().isEmpty()) {
                         searchMode = true;
-                        searchFieldByName(view, v.getText().toString());
+                        swipeRefreshLayout.setRefreshing(true);
+                        searchFieldByName(v.getText().toString());
                     } else {
                         searchMode = false;
-                        loadFields(view);
+                        swipeRefreshLayout.setRefreshing(true);
+                        loadFields();
                     }
+                    btnClose.setVisibility(View.GONE);
                     return true;
                 }
                 return false;
@@ -166,6 +173,7 @@ public class FieldSearchFragment extends Fragment {
                     searchMode = false;
                 } else {
                     btnClose.setVisibility(View.VISIBLE);
+                    searchMode = true;
                 }
             }
         });
@@ -174,14 +182,14 @@ public class FieldSearchFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 searchText.getText().clear();
-                InputMethodManager inputManager = (InputMethodManager)
-                        mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                inputManager.hideSoftInputFromWindow(mActivity.getCurrentFocus().getWindowToken(),
-                        InputMethodManager.HIDE_NOT_ALWAYS);
-
-                searchText.setCursorVisible(false);
-                loadFields(view);
+//                InputMethodManager inputManager = (InputMethodManager)
+//                        mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+//
+//                inputManager.hideSoftInputFromWindow(mActivity.getCurrentFocus().getWindowToken(),
+//                        InputMethodManager.HIDE_NOT_ALWAYS);
+//
+//                searchText.setCursorVisible(false);
+                loadFields();
             }
         });
         txtNotFound = (TextView) view.findViewById(R.id.text_not_found);
@@ -189,17 +197,28 @@ public class FieldSearchFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
                 if (!searchText.getText().toString().isEmpty()) {
                     searchMode = true;
-                    searchFieldByName(view, searchText.getText().toString());
+                    searchFieldByName(searchText.getText().toString());
                 } else {
                     searchMode = false;
-                    loadFields(view);
+                    loadFields();
                 }
             }
         });
+
+        swipeRefreshLayout.setRefreshing(true);
         mActivity = getActivity();
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
+
+        //Initialize RecyclerView
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        adapter = new FieldAdapter(view.getContext(), fieldOwnerList);
+        adapter.setUserId(sharedPreferences.getInt("user_id", -1));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+
         return view;
     }
 
@@ -209,14 +228,6 @@ public class FieldSearchFragment extends Fragment {
 
         LocalBroadcastManager.getInstance(mActivity).registerReceiver(locationReceiver,
                 new IntentFilter("location-message"));
-
-        if (mActivity != null) {
-            LinearLayout progressLayout = (LinearLayout) mActivity.findViewById(R.id.progress_layout);
-            progressLayout.setVisibility(View.VISIBLE);
-            RelativeLayout fieldLayout = (RelativeLayout) mActivity.findViewById(R.id.fields_layout);
-            fieldLayout.setVisibility(View.GONE);
-            loadFields(getView());
-        }
     }
 
     @Override
@@ -225,25 +236,16 @@ public class FieldSearchFragment extends Fragment {
         LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(locationReceiver);
     }
 
-    public void loadFields(View view) {
+    public void loadFields() {
         if (currentLocation == null) {
             return;
         }
 
         if (!fieldOwnerList.isEmpty()) {
             fieldOwnerList.clear();
+            adapter.notifyDataSetChanged();
         }
 
-        if (sharedPreferences == null) {
-            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
-        }
-
-        //Initialize RecyclerView
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        adapter = new FieldAdapter(this.getContext(), fieldOwnerList);
-        adapter.setUserId(sharedPreferences.getInt("user_id", -1));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
         url = hostURL + getResources().getString(R.string.url_get_field);
         url = String.format(url, currentLocation.getLongitude(), currentLocation.getLatitude());
         //Getting Instance of Volley Request Queue
@@ -271,12 +273,6 @@ public class FieldSearchFragment extends Fragment {
                                     //Notify adapter about data changes
                                     adapter.notifyItemChanged(i);
                                 }
-                            }
-                            if (mActivity != null) {
-                                LinearLayout progressLayout = (LinearLayout) mActivity.findViewById(R.id.progress_layout);
-                                progressLayout.setVisibility(View.GONE);
-                                RelativeLayout fieldLayout = (RelativeLayout) mActivity.findViewById(R.id.fields_layout);
-                                fieldLayout.setVisibility(View.VISIBLE);
                             }
                         } else {
                             txtNotFound.setVisibility(View.VISIBLE);
@@ -320,22 +316,24 @@ public class FieldSearchFragment extends Fragment {
                 }
             }
 
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+            }
+
         };
         //Adding JsonArrayRequest to Request Queue
         queue.add(newsReq);
     }
 
-    public void searchFieldByName(View view, String searchValue) {
+    public void searchFieldByName(String searchValue) {
         if (!fieldOwnerList.isEmpty()) {
             fieldOwnerList.clear();
+            adapter.notifyDataSetChanged();
         }
-
-        //Initialize RecyclerView
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        adapter = new FieldAdapter(this.getContext(), fieldOwnerList);
-        adapter.setUserId(sharedPreferences.getInt("user_id", -1));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
 
         url = hostURL + getResources().getString(R.string.url_get_field_by_name);
         try {
@@ -404,6 +402,7 @@ public class FieldSearchFragment extends Fragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();
                 headers.put("Content-Type", "application/json; charset=utf-8");
+
                 return headers;
             }
 

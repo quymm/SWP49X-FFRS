@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -26,9 +27,12 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by HuanPMSE61860 on 10/15/2017.
@@ -40,16 +44,23 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission();
-        } else {
-            getLoginInfoFromSession();
-        }
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    checkLocationPermission();
+                } else {
+                    getLoginInfoFromSession();
+                }
+            }
+        }, 1000);
     }
 
     public void getLoginInfoFromSession() {
-        hostURL = getResources().getString(R.string.local_host);
+        hostURL = HostURLUtils.getInstance(this).getHostURL();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (sharedPreferences.contains("username") && sharedPreferences.contains("password")) {
             requestLogin(sharedPreferences.getString("username", null), sharedPreferences.getString("password", null));
@@ -61,7 +72,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void requestLogin(String username, String password) {
+    public void requestLogin(String username, final String password) {
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = hostURL + getResources().getString(R.string.url_login);
         url = String.format(url, username, password);
@@ -99,7 +110,38 @@ public class MainActivity extends Activity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
+                        if (error.networkResponse != null && (error.networkResponse.statusCode == 404 || error.networkResponse.statusCode == 400)) {
+                            try {
+                                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                                if (sharedPreferences.contains("username") && sharedPreferences.contains("password")) {
+                                    String username = sharedPreferences.getString("username", null);
+                                    String password = sharedPreferences.getString("password", null);
+                                    String strResponse = new String(error.networkResponse.data, "UTF-8");
+                                    JSONObject response = new JSONObject(strResponse);
+                                    if (response.getString("message").equals("Account have username: " + username + " is locked!")) {
+                                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).setTitle("Tài khoản đã bị khóa!").
+                                                setMessage("Tài khoản của bạn đã bị khóa bởi quản trị viên.")
+                                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        clearSharedPreferences();
+                                                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                        startActivity(intent);
+                                                        overridePendingTransition(0, 0);
+                                                    }
+                                                }).create();
+                                        alertDialog.setCancelable(false);
+                                        alertDialog.show();
+                                    } else if (response.getString("message").equals("Not found account have username: " + username + " and password: " + password)) {
+                                        Toast.makeText(MainActivity.this, "Sai tên tài khoản hay mật khẩu", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
                             clearSharedPreferences();
                             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -108,10 +150,6 @@ public class MainActivity extends Activity {
                         } else {
                             if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                                 Toast.makeText(getApplicationContext(), "Không thể kết nối với máy chủ! Vui lòng thử lại sau!", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                overridePendingTransition(0, 0);
                             } else if (error instanceof AuthFailureError) {
                                 Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
                             } else if (error instanceof ServerError) {
@@ -121,6 +159,10 @@ public class MainActivity extends Activity {
                             } else if (error instanceof ParseError) {
                                 Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
                             }
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            overridePendingTransition(0, 0);
                         }
                     }
                 });
@@ -137,10 +179,11 @@ public class MainActivity extends Activity {
                 editor.putString("username", body.getString("username"));
                 editor.putString("password", body.getString("password"));
             }
+            editor.putString("avatarURL", body.getJSONObject("profileId").getString("avatarUrl"));
             editor.putString("teamName", body.getJSONObject("profileId").getString("name"));
             editor.putInt("balance", body.getJSONObject("profileId").getInt("balance"));
             editor.putInt("points", body.getJSONObject("profileId").getInt("bonusPoint"));
-            editor.commit();
+            editor.apply();
         } catch (JSONException e) {
             Log.d("EXCEPTION", e.getMessage());
         }
@@ -226,7 +269,9 @@ public class MainActivity extends Activity {
     public void clearSharedPreferences() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
+        String hostURL = HostURLUtils.getInstance(this).getHostURL();
         editor.clear();
-        editor.commit();
+        editor.putString("host_url", hostURL);
+        editor.apply();
     }
 }

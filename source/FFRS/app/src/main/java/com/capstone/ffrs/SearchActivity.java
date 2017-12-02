@@ -1,39 +1,45 @@
 package com.capstone.ffrs;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.design.widget.TabLayout;
-
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.capstone.ffrs.adapter.SearchPagerAdapter;
 import com.capstone.ffrs.service.FirebaseNotificationServices;
 import com.capstone.ffrs.utils.GPSLocationListener;
+import com.capstone.ffrs.utils.HostURLUtils;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SearchActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    private Boolean exit = false;
 
     //provides gps location updates
     private GPSLocationListener gpsLocationListener;
@@ -44,12 +50,13 @@ public class SearchActivity extends AppCompatActivity
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(SearchActivity.this);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt("balance", b.getInt("balance"));
-            editor.commit();
+            editor.apply();
 
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             View headerLayout = navigationView.getHeaderView(0);
+
             TextView txtBalance = (TextView) headerLayout.findViewById(R.id.text_balance);
-            txtBalance.setText("Tiền còn lại: " + sharedPreferences.getInt("balance", 0) + "K đồng");
+            txtBalance.setText("Tiền còn lại: " + sharedPreferences.getInt("balance", 0) + "ngàn đồng");
         }
     };
 
@@ -61,14 +68,20 @@ public class SearchActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerLayout = navigationView.getHeaderView(0);
 
+        CircleImageView imageView = (CircleImageView) headerLayout.findViewById(R.id.profile_image);
+
+        RequestBuilder<Drawable> drawable = Glide.with(this).load(preferences.getString("avatarURL", "http://localhost:8080"));
+        drawable.error(Glide.with(this).load(getResources().getDrawable(R.drawable.people)));
+        drawable.into(imageView);
+
         TextView txtTeamName = (TextView) headerLayout.findViewById(R.id.text_name);
         txtTeamName.setText(preferences.getString("teamName", ""));
 
         TextView txtPoints = (TextView) headerLayout.findViewById(R.id.text_points);
-        txtPoints.setText("Điểm đổi thưởng: " + preferences.getInt("points", 0));
+        txtPoints.setText("Điểm thưởng: " + preferences.getInt("points", 0) + " điểm");
 
         TextView txtBalance = (TextView) headerLayout.findViewById(R.id.text_balance);
-        txtBalance.setText("Tiền còn lại: " + preferences.getInt("balance", 0) + "K đồng");
+        txtBalance.setText("Số dư hiện có: " + preferences.getInt("balance", 0) + " ngàn đồng");
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         //call to location listener to start location updates when activity gets started
@@ -152,19 +165,24 @@ public class SearchActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (exit) {
-                super.onBackPressed(); // finish activity
+            AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(SearchActivity.this, android.R.style.Theme_Material_Light_Dialog_Alert);
             } else {
-                Toast.makeText(this, "Bấm Back lần nữa để thoát ứng dụng.", 2 * 1000).show();
-                exit = true;
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        exit = false;
-                    }
-                }, 2 * 1000);
-
+                builder = new AlertDialog.Builder(SearchActivity.this);
             }
+            builder.setTitle("Đóng ứng dụng")
+                    .setMessage("Bạn có muốn tắt ứng dụng này không?")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .show();
         }
     }
 
@@ -178,6 +196,9 @@ public class SearchActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_profile) {
             Intent intent = new Intent(this, ProfileActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_member) {
+            Intent intent = new Intent(this, TeamMemberListActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_rewards) {
             Intent intent = new Intent(this, RewardActivity.class);
@@ -194,8 +215,10 @@ public class SearchActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = preferences.edit();
+            String hostURL = HostURLUtils.getInstance(this).getHostURL();
             editor.clear();
-            editor.commit();
+            editor.putString("host_url", hostURL);
+            editor.apply();
 
             Intent intent = new Intent(this, FirebaseNotificationServices.class);
             stopService(intent);
@@ -207,5 +230,10 @@ public class SearchActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return false;
+    }
+
+    public void onClickDummy(View view) {
+        Intent intent = new Intent(this, DummyActivity.class);
+        startActivity(intent);
     }
 }

@@ -10,4 +10,6 @@ public interface TeamMemberRepository extends JpaRepository<TeamMemberEntity, In
     List<TeamMemberEntity> findAllByCaptainIdAndStatus(AccountEntity captainId, boolean status);
 
     TeamMemberEntity findByCaptainIdAndPlayerNameAndStatus(AccountEntity captainId, String playerName, boolean status);
+
+    TeamMemberEntity findByIdAndStatus(int id, boolean status);
 }

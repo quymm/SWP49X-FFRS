@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import com.capstone.ffrs.entity.FieldTime;
-
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
@@ -16,7 +14,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by HuanPMSE61860 on 10/6/2017.

@@ -9,6 +9,7 @@
     tools:context="com.capstone.ffrs.FieldDetailActivity">
 
     <RelativeLayout
+        android:id="@+id/relative_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -22,12 +23,30 @@
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintTop_creator="1">
 
+        <FrameLayout
+            android:id="@+id/progressBarHolder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="1"
+            android:animateLayoutChanges="true"
+            android:background="@color/black_overlay"
+            android:visibility="gone">
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true" />
+        </FrameLayout>
+
         <LinearLayout
             android:id="@+id/command_button_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_margin="5dp"
+
             android:gravity="bottom"
             android:orientation="horizontal"
             android:weightSum="2">

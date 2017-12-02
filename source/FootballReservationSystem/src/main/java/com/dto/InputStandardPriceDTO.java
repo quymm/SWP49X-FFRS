@@ -5,21 +5,15 @@ public class InputStandardPriceDTO {
 
     private Integer fieldTypeId;
 
-    private String dateFrom;
-
-    private String dateTo;
-
     private boolean rushHour;
 
     private float minPrice;
 
     private float maxPrice;
 
-    public InputStandardPriceDTO(Integer staffId, Integer fieldTypeId, String dateFrom, String dateTo, boolean rushHour, float minPrice, float maxPrice) {
+    public InputStandardPriceDTO(Integer staffId, Integer fieldTypeId, boolean rushHour, float minPrice, float maxPrice) {
         this.staffId = staffId;
         this.fieldTypeId = fieldTypeId;
-        this.dateFrom = dateFrom;
-        this.dateTo = dateTo;
         this.rushHour = rushHour;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
@@ -42,22 +36,6 @@ public class InputStandardPriceDTO {
 
     public void setFieldTypeId(Integer fieldTypeId) {
         this.fieldTypeId = fieldTypeId;
-    }
-
-    public String getDateFrom() {
-        return dateFrom;
-    }
-
-    public void setDateFrom(String dateFrom) {
-        this.dateFrom = dateFrom;
-    }
-
-    public String getDateTo() {
-        return dateTo;
-    }
-
-    public void setDateTo(String dateTo) {
-        this.dateTo = dateTo;
     }
 
     public boolean isRushHour() {

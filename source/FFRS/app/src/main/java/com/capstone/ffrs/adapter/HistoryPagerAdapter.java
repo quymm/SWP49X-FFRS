@@ -5,8 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.capstone.ffrs.fragment.FieldSearchFragment;
-import com.capstone.ffrs.fragment.MatchSearchFragment;
 import com.capstone.ffrs.fragment.PaidMatchFragment;
 import com.capstone.ffrs.fragment.PendingRequestFragment;
 

@@ -6,8 +6,7 @@ package com.capstone.ffrs.entity;
 
 public class MatchRequest {
     private int id, ratingScore, userId;
-    private String date, startTime, endTime;
-    private String teamName;
+    private String date, startTime, endTime, teamName, imageURL;
 
     public MatchRequest() {
 
@@ -67,5 +66,13 @@ public class MatchRequest {
 
     public void setTeamName(String teamName) {
         this.teamName = teamName;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 }

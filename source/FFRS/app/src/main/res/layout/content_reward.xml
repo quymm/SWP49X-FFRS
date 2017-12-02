@@ -9,134 +9,63 @@
     tools:context="com.capstone.ffrs.RewardActivity"
     tools:showIn="@layout/activity_reward">
 
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintBottom_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1">
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <GridLayout
-            android:id="@+id/grid_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="7dp"
-            android:columnCount="2">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1">
 
-            <LinearLayout
-                android:layout_width="163dp"
-                android:layout_height="225dp"
-                android:layout_margin="5dp"
-                android:background="@android:color/white"
-                android:orientation="vertical">
+            <TextView
+                android:id="@+id/text_current_bonus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="Điểm thưởng hiện tại: 0 điểm"
+                android:textAlignment="center"
+                android:textColor="@color/primaryText"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:visibility="visible" />
 
-                <ImageView
+            <TextView
+                android:id="@+id/text_not_found"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:layout_gravity="center"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="Hiện tại không có voucher nào khả dụng"
+                android:textAlignment="center"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <GridLayout
+                    android:id="@+id/grid_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:src="@drawable/ic_credit_card" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:gravity="center"
-                    android:text="Vouncher giảm giá 50 ngàn"
-                    android:textColor="@android:color/black"
-                    android:textSize="17dp"></TextView>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="25dp"
-                    android:gravity="center"
-                    android:text="5000 điểm"
-                    android:textSize="14dp"></TextView>
-
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="#009632"
-                    android:text="Đổi quà"
-                    android:textSize="16dp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="163dp"
-                android:layout_height="225dp"
-                android:layout_margin="5dp"
-                android:background="@android:color/white"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:src="@drawable/ic_credit_card" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:gravity="center"
-                    android:text="Vouncher giảm giá 100 ngàn"
-                    android:textColor="@android:color/black"
-                    android:textSize="17dp"></TextView>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="25dp"
-                    android:gravity="center"
-                    android:text="10000 điểm"
-                    android:textSize="14dp"></TextView>
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="#009632"
-                    android:text="Đổi quà"
-                    android:textSize="16dp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="163dp"
-                android:layout_height="225dp"
-                android:layout_margin="5dp"
-                android:background="@android:color/white"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:src="@drawable/ic_credit_card" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:gravity="center"
-                    android:text="Vouncher giảm giá 200 ngàn"
-                    android:textColor="@android:color/black"
-                    android:textSize="17dp"></TextView>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="25dp"
-                    android:gravity="center"
-                    android:text="20000 điểm"
-                    android:textSize="14dp"></TextView>
-
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="#009632"
-                    android:text="Đổi quà"
-                    android:textSize="16dp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white" />
-            </LinearLayout>
-        </GridLayout>
-    </ScrollView>
+                    android:layout_height="wrap_content"
+                    android:layout_margin="7dp"
+                    android:columnCount="2"></GridLayout>
+            </ScrollView>
+        </LinearLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </android.support.constraint.ConstraintLayout>
