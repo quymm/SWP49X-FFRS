@@ -74,14 +74,15 @@ class ManageUser extends Component {
     });
   };
   async handelShowModalUser(evt) {
-    debugger;
+    
     const data = await fetchGetAllReportUser(evt.id);
+    debugger;
     this.setState({ listReportWithTargetUser: data.body });
     this.setState({ showModelUser: true, isSearch: evt });
   }
 
   handelHideModalUser(evt) {
-    evt.preventDefault();
+    // evt.preventDefault();
     this.setState({ showModelUser: false });
   }
   async componentDidMount() {
@@ -213,8 +214,8 @@ class ManageUser extends Component {
                           <tr>
                             <th>#</th>
                             <th>Tên đăng nhập</th>
-                            <th>Tên đội</th>
-                            <th>Quyền</th>
+                        {this.state.userTarget === 'user' ? <th>Tên đội</th> : <th>Tên sân</th>} 
+                            <th>Vai trò</th>
                             <th>Trạng thái</th>
                             <th />
                           </tr>
@@ -319,7 +320,7 @@ class ManageUser extends Component {
         <Modal
           /* {...this.props} */
           show={this.state.showModelUser}
-          onHide={this.hideModal}
+          onHide={this.handelHideModalUser.bind(this)}
           dialogClassName="custom-modal"
           bsSize="large"
         >
@@ -363,7 +364,7 @@ class ManageUser extends Component {
                           </tr>
                           <tr>
                             <td>
-                              <strong>Tên đội</strong>
+                              {this.state.userTarget === 'user' ? <strong>Tên đội</strong> : <strong>Tên sân</strong> }
                             </td>
                             <td>
                               {result

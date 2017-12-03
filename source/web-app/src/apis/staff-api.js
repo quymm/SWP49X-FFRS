@@ -40,7 +40,9 @@ export function fetchGetAllVoucher() {
 export function fetchAddNewVoucher(point, value) {
   return fetch(BASE_URL + ADD_NEW_VOUCHER, {
     method: 'POST',
-    headers: { 'content-type': 'application/json', Authorization: auth.tokenValue },
+    headers: { 'content-type': 'application/json', 
+    // Authorization: auth.tokenValue
+   },
     body: JSON.stringify({
       bonusPointTarget: point,
       voucherValue: value,
