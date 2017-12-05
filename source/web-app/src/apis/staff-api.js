@@ -8,6 +8,7 @@ import {
   GET_ALL_REPORT,
   BLOCK_ACCOUNT,
   GET_STANDARD_PRICE,
+  UPDATE_STANDARD_PRICE,
 } from './base-URL';
 
 //get account user save at localStorage
@@ -69,8 +70,23 @@ export function fetchRequestLockAccount(id, staffId) {
   ).then(res => res.json());
 }
 
-export function fetchGetStandarPrice(fieldTypeId) {
-  return fetch(
-    BASE_URL + GET_STANDARD_PRICE + '?field-type-id=' + fieldTypeId,
-  ).then(res => res.json());
+export function fetchGetStandarPrice(rushHour) {
+  return fetch(BASE_URL + GET_STANDARD_PRICE + '?rushHour=' + rushHour).then(
+    res => res.json(),
+  );
+}
+
+export function fetchUpdateStandardPrice(id, maxPrice, minPrice, staffId) {
+  return fetch(BASE_URL + UPDATE_STANDARD_PRICE, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      maxPrice: maxPrice,
+      minPrice: minPrice,
+      staffId: staffId,
+      standardPriceId: id
+    }),
+  }).then(res => res.json())
 }

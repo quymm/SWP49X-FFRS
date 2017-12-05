@@ -3,23 +3,20 @@ package com.dto;
 public class InputStandardPriceDTO {
     private Integer staffId;
 
-    private Integer fieldTypeId;
-
-    private boolean rushHour;
-
     private float minPrice;
 
     private float maxPrice;
 
-    public InputStandardPriceDTO(Integer staffId, Integer fieldTypeId, boolean rushHour, float minPrice, float maxPrice) {
-        this.staffId = staffId;
-        this.fieldTypeId = fieldTypeId;
-        this.rushHour = rushHour;
-        this.minPrice = minPrice;
-        this.maxPrice = maxPrice;
-    }
+    private Integer standardPriceId;
 
     public InputStandardPriceDTO() {
+    }
+
+    public InputStandardPriceDTO(Integer staffId, float minPrice, float maxPrice, Integer standardPriceId) {
+        this.staffId = staffId;
+        this.minPrice = minPrice;
+        this.maxPrice = maxPrice;
+        this.standardPriceId = standardPriceId;
     }
 
     public Integer getStaffId() {
@@ -28,22 +25,6 @@ public class InputStandardPriceDTO {
 
     public void setStaffId(Integer staffId) {
         this.staffId = staffId;
-    }
-
-    public Integer getFieldTypeId() {
-        return fieldTypeId;
-    }
-
-    public void setFieldTypeId(Integer fieldTypeId) {
-        this.fieldTypeId = fieldTypeId;
-    }
-
-    public boolean isRushHour() {
-        return rushHour;
-    }
-
-    public void setRushHour(boolean rushHour) {
-        this.rushHour = rushHour;
     }
 
     public float getMinPrice() {
@@ -61,4 +42,13 @@ public class InputStandardPriceDTO {
     public void setMaxPrice(float maxPrice) {
         this.maxPrice = maxPrice;
     }
+
+    public Integer getStandardPriceId() {
+        return standardPriceId;
+    }
+
+    public void setStandardPriceId(Integer standardPriceId) {
+        this.standardPriceId = standardPriceId;
+    }
 }
+

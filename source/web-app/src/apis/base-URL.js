@@ -33,3 +33,4 @@ export const BLOCK_ACCOUNT = '/account/request-lock';
 export const ACCEPT_LOCK_ACCOUNT = '/account/lock';
 export const GET_ALL_REQUESTED_LOCK = '/account/lock';
 export const GET_STANDARD_PRICE  = '/standard-price/managed-standard-price';
+export const UPDATE_STANDARD_PRICE = '/standard-price/managed-standard-price';
