@@ -1,5 +1,3 @@
-
-import moment from 'moment';
 const defaultState = {currentDaySelected: false};
 const currentDaySelected = (state = defaultState, action) => {
   switch (action.type) {

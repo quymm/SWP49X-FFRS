@@ -28,23 +28,18 @@ public class StandardPriceServices {
     @Autowired
     Constant constant;
 
-    public StandardPriceEntity createNewStandardPrice(InputStandardPriceDTO inputStandardPriceDTO) {
+    public StandardPriceEntity updateStandardPrice(InputStandardPriceDTO inputStandardPriceDTO) {
         AccountEntity staff = accountServices.findAccountEntityByIdAndRole(inputStandardPriceDTO.getStaffId(), constant.getStaffRole());
-        FieldTypeEntity fieldType = fieldTypeServices.findById(inputStandardPriceDTO.getFieldTypeId());
-
-        StandardPriceEntity standardPriceEntity = new StandardPriceEntity();
+        StandardPriceEntity standardPriceEntity = standardPriceRepository.findById(inputStandardPriceDTO.getStandardPriceId());
         standardPriceEntity.setStaffId(staff);
-        standardPriceEntity.setFieldTypeId(fieldType);
         standardPriceEntity.setMaxPrice(inputStandardPriceDTO.getMaxPrice());
         standardPriceEntity.setMinPrice(inputStandardPriceDTO.getMinPrice());
-        standardPriceEntity.setRushHour(inputStandardPriceDTO.isRushHour());
         standardPriceEntity.setStatus(true);
         return standardPriceRepository.save(standardPriceEntity);
     }
 
-    public List<StandardPriceEntity> getStandardPriceWithFieldType(int fieldTypeId) {
-        FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(fieldTypeId);
-        return standardPriceRepository.findByFieldTypeIdAndStatus(fieldTypeEntity, true);
+    public List<StandardPriceEntity> getStandardPriceWithRushHour(boolean rushHour) {
+        return standardPriceRepository.findByRushHourAndStatus(rushHour, true);
     }
 
     public StandardPriceEntity getStandardPriceWithDateAndFieldTypeAndRushHour(int fieldTypeId, boolean rushHour){

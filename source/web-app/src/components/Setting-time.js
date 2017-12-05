@@ -11,7 +11,7 @@ import {
   doLoginSuccessful,
   accessDenied,
 } from '../redux/guest/guest-action-creators';
-import { Modal } from 'react-bootstrap';
+import { Modal, OverlayTrigger, Popover } from 'react-bootstrap';
 import moment from 'moment';
 class SettingTime extends Component {
   constructor(props) {
@@ -21,10 +21,20 @@ class SettingTime extends Component {
       fieldType: '5 vs 5',
       fieldTypeId: 1,
       daySelected: 'Mon',
-      startDay: moment('10-10-2017 06:00:00', 'YYYY-MM-DD HH:mm'),
-      endDay: moment('10-10-2017 22:00:00', 'YYYY-MM-DD HH:mm'),
+      startDay: moment('10-10-2017 06:00', 'DD-MM-YYYY HH:mm'),
+      endDay: moment('10-10-2017 22:00', 'DD-MM-YYYY HH:mm'),
       price: undefined,
+      peakPrice: undefined,
+      idelPrice: undefined,
       isShowAddTime: false,
+      maximumPricePeak: 500,
+      minimumPricePeak: 200,
+      maximumPriceIdel: 300,
+      minimumPriceIdel: 100,
+      isOptimze: false,
+      optimizeTime: 1.5,
+      optimizeNumOfMatch: 2,
+      endTimeWithOptize: moment('10-10-2017 21:30', 'DD-MM-YYYY HH:mm'),
       buttonGroupDayInWeek: [
         {
           id: 0,
@@ -157,7 +167,7 @@ class SettingTime extends Component {
     return disableTime;
   }
   handelHideModal(evt) {
-    evt.preventDefault();
+    // evt.preventDefault();
     this.setState({ isShowAddTime: false });
   }
   async handelCheckboxDay(day) {
@@ -188,7 +198,6 @@ class SettingTime extends Component {
     } else if (value === '7 vs 7') {
       this.setState({ fieldTypeId: 2 });
     }
-
     await this.setState({ [name]: value });
     console.log(this.state);
   }
@@ -198,52 +207,30 @@ class SettingTime extends Component {
   async handelTimeEndDayInputChange(evt) {
     await this.setState({ endDay: evt });
   }
-  // disableDayClick(timeEnable){
-  //   const monday = timeEnable.filter(day => day.dateInWeek === 'Mon');
-  //   debugger;
-  //   if (monday.length > 0) {
-  //     for (let i = 0; i < monday.length; i++) {
-  //       if (
-  //         startDay.hours() <=
-  //           moment(`10-10-2017 ${monday[i].endTime}`).hours() ||
-  //         startDay.hours() >=
-  //           moment(`10-10-2017 ${monday[i].startTime}`).hours() ||
-  //         endDay.hours() <= moment(`10-10-2017 ${monday[i].endTime}`).hours() ||
-  //         endDay.hours() >= moment(`10-10-2017 ${monday[i].startTime}`).hours()
-  //       ) {
-  //         const timeDisable = this.state.buttonGroupDayInWeek;
-  //         timeDisable[0].disable = true;
-  //         this.setState({ buttonGroupDayInWeek: timeDisable });
-  //       }
-  //     }
-  //   }
-  // }
-  handelShowModal(evt) {
-    evt.preventDefault();
-    const { timeEnable } = this.props.timeEnable;
-    const { daySelected, endDay, startDay } = this.state;
-    console.log(timeEnable);
-    const dayfilter = timeEnable.filter(day => day.dateInWeek === daySelected);
-    if (dayfilter.length > 0) {
-      if (moment(`10-10-2017 ${dayfilter[0].startTime}`, 'MM-DD-YYYY HH:mm').hours() > 6) {
-        this.setState({
-          startDay: moment()
-            .hours(6)
-            .minutes(0),
-          endDay: moment(`10-10-2017 ${dayfilter[0].startTime}`, 'MM-DD-YYYY HH:mm'),
-        });
+  disableDayClick(timeEnable) {
+    debugger;
+    const { buttonGroupDayInWeek } = this.state;
+    const tmpButtonGroupDayInWeek = buttonGroupDayInWeek;
+    for (let i = 0; i < tmpButtonGroupDayInWeek.length; i++) {
+      const filterDay = timeEnable.filter(
+        day =>
+          day.dateInWeek === tmpButtonGroupDayInWeek[i].value &&
+          day.fieldTypeId.id === this.state.fieldTypeId,
+      );
+      if (filterDay.length > 0) {
+        tmpButtonGroupDayInWeek[i].checked = false;
+        tmpButtonGroupDayInWeek[i].disable = true;
       } else {
-        if (moment(`10-10-2017 ${dayfilter[0].endTime}`, 'MM-DD-YYYY HH:mm').hours() < 22) {
-          this.setState({
-            endDay: moment()
-              .hours(22)
-              .minutes(0),
-            startDay: moment(`10-10-2017 ${dayfilter[0].endTime}`, 'MM-DD-YYYY HH:mm'),
-          });
-        }
+        tmpButtonGroupDayInWeek[i].disable = false;
       }
     }
+    this.setState({ buttonGroupDayInWeek: tmpButtonGroupDayInWeek });
+  }
 
+  async handelShowModal(evt) {
+    evt.preventDefault();
+    const { timeEnable } = this.props.timeEnable;
+    await this.disableDayClick(timeEnable);
     this.setState({ isShowAddTime: true });
   }
 
@@ -253,55 +240,153 @@ class SettingTime extends Component {
     const {
       startDay,
       endDay,
-      price,
-      daySelected,
+      peakPrice,
+      idelPrice,
       isShowAddTime,
       fieldTypeId,
     } = this.state;
     const priceRegex = '^\\d+$';
-    if (startDay !== null && endDay !== null && price !== undefined) {
-      if (startDay.hour() < endDay.hours()) {
-        
-      
-      if (price.match(priceRegex)) {
-        const dayAdd = this.state.buttonGroupDayInWeek.filter(
-          data => data.checked === true,
-        );
-        for (let i = 0; i < dayAdd.length; i++) {
-          await fetchUpdateTimeEnableInWeek(
-            id,
-            dayAdd[i].value,
-            startDay.format('HH:mm'),
-            endDay.format('HH:mm'),
-            price,
-            fieldTypeId,
+    if (
+      startDay !== null &&
+      endDay !== null &&
+      peakPrice !== undefined &&
+      idelPrice !== undefined
+    ) {
+      if (startDay.hour() < endDay.hours() && endDay.hours() > 17) {
+        if (peakPrice.match(priceRegex) && idelPrice.match(priceRegex)) {
+          const dayAdd = this.state.buttonGroupDayInWeek.filter(
+            data => data.checked === true,
           );
+          if (dayAdd.length > 0) {
+            for (let i = 0; i < dayAdd.length; i++) {
+              let timeEnable = [
+                {
+                  dayInWeek: dayAdd[i].value,
+                  endTime: '17:00',
+                  fieldOwnerId: id,
+                  fieldTypeId: fieldTypeId,
+                  price: idelPrice,
+                  startTime: startDay.format('HH:mm'),
+                  optimal: false,
+                },
+              ];
+              if (!this.state.isOptimze) {
+                timeEnable.push({dayInWeek: dayAdd[i].value,
+                  endTime: endDay.format('HH:mm'),
+                  fieldOwnerId: id,
+                  fieldTypeId: fieldTypeId,
+                  price: peakPrice,
+                  startTime: '17:00',
+                  optimal: false,})
+              }
+              if (this.state.isOptimze) {
+                let startTimeTmp = '17:00';               
+                for (let j = 1; j <= this.state.optimizeNumOfMatch; j++) {
+                  let endTimeWithPeak = `${Math.floor(17 + this.state.optimizeTime * j)}:${
+                    17 +
+                      this.state.optimizeTime * j -
+                      Math.floor(17 + this.state.optimizeTime * j) >
+                    0
+                      ? '30'
+                      : '00'
+                  }`
+                  timeEnable.push({
+                    fieldOwnerId: id,
+                    dayInWeek: dayAdd[i].value,
+                    startTime: startTimeTmp,
+                    endTime: `${Math.floor(17 + this.state.optimizeTime * j)}:${
+                      17 +
+                        this.state.optimizeTime * j -
+                        Math.floor(17 + this.state.optimizeTime * j) >
+                      0
+                        ? '30'
+                        : '00'
+                    }`,
+                    price: peakPrice,
+                    fieldTypeId: fieldTypeId,
+                    optimal: true,
+                  })
+                  startTimeTmp = `${Math.floor(
+                    17 + this.state.optimizeTime * j,
+                  )}:${
+                    17 +
+                      this.state.optimizeTime * j -
+                      Math.floor(17 + this.state.optimizeTime * j) >
+                    0
+                      ? '30'
+                      : '00'
+                  }`;
+                }
+              }
+              await fetchUpdateTimeEnableInWeek(              
+                timeEnable
+              );
+            }
+            await this.setState({ isShowAddTime: !isShowAddTime });
+            const data = await fetchGetTimeEnableInWeek(id);
+            this.props.getAllTimeEnableInWeek(data.body);
+          } else {
+            this.setState({ message: 'Chưa chọn ngày' });
+          }
+        } else {
+          this.setState({ message: 'Giá không hợp lệ' });
         }
-        await this.setState({ isShowAddTime: !isShowAddTime });
-        const data = await fetchGetTimeEnableInWeek(id);
-        this.props.getAllTimeEnableInWeek(data.body);
-        this.props.history.push('/app/setting-time');
       } else {
-        this.setState({ message: 'Giá không hợp lệ' });
+        this.setState({ message: 'Thời gian không hợp lệ' });
       }
-    } else {
-      this.setState({message: 'Thời gian không hợp lệ'})
-    }
     } else {
       this.setState({ message: 'Vui lòng điền giá tiền', isShowAddTime: true });
     }
   }
 
+  handleOptimizeClick() {
+    const { isOptimze } = this.state;
+    this.setState({ isOptimze: !isOptimze });
+  }
+
+  async handleSelectChange(evt) {
+    const value = evt.target.value;
+    const name = evt.target.name;
+    await this.setState({ [name]: parseFloat(value) });
+    const {
+      optimizeNumOfMatch,
+      optimizeTime,
+      endTimeWithOptize,
+      endDay,
+    } = this.state;
+    if (optimizeNumOfMatch === 5 && optimizeTime === 2) {
+      this.setState({ optimizeNumOfMatch: 1 });
+    }
+    if (
+      optimizeNumOfMatch === 4 &&
+      optimizeTime === 2 &&
+      endDay.hours() !== 23
+    ) {
+      this.setState({ optimizeNumOfMatch: 1 });
+    }
+    if (
+      optimizeNumOfMatch === 3 &&
+      optimizeTime === 2 &&
+      endDay.hours() !== 23
+    ) {
+      this.setState({ optimizeNumOfMatch: 1 });
+    }
+    this.setState({
+      endTimeWithOptize: moment()
+        .hours(17 + optimizeNumOfMatch * optimizeTime)
+        .minutes(
+          optimizeNumOfMatch * optimizeTime -
+            Math.floor(optimizeNumOfMatch * optimizeTime) >
+          0
+            ? 30
+            : 0,
+        ),
+    });
+  }
+
   render() {
     const { timeEnable } = this.props.timeEnable;
-    const {
-      daySelected,
-      fieldType,
-      endDay,
-      startDay,
-      price,
-      isShowUpdate,
-    } = this.state;
+    const { daySelected, fieldType } = this.state;
     const dayAfterFilter =
       timeEnable &&
       timeEnable.filter(
@@ -313,8 +398,18 @@ class SettingTime extends Component {
     if (!dayAfterFilter) {
       return <div className="loader" />;
     }
-    const { buttonGroupDayInWeek, buttonGroupFieldType } = this.state;
-    // console.log(dayAfterFilter);
+    const popoverRightPeak = (
+      <Popover id="popover-positioned-right" title="Giờ thấp điểm">
+        Giờ cao điểm sẽ sau
+        <strong> 17:00</strong> đến giờ đóng cửa
+      </Popover>
+    );
+    const popoverRightIdle = (
+      <Popover id="popover-positioned-right" title="Giờ cao điểm">
+        Giờ thấp điểm sẽ từ lúc mở cửa tới
+        <strong> 17:00</strong>
+      </Popover>
+    );
     return (
       <div className="main-panel">
         <div className="content">
@@ -345,7 +440,6 @@ class SettingTime extends Component {
                         ))}
                       </select>
                     </div>
-
                     <div className="col-sm-6">
                       <select
                         className="form-control"
@@ -375,29 +469,96 @@ class SettingTime extends Component {
                 </div>
               </div>
               <div className="panel-body">
-                <div className="table-responsive">
-                  <table className="table table-striped">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Từ</th>
-                        <th>Đến</th>
-                        <th>Nghìn đồng/giờ</th>
-                        <th />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dayAfterFilter.map((data, index) => (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>{data.startTime}</td>
-                          <td>{data.endTime}</td>
-                          <td>{data.price}</td>
+                {dayAfterFilter.length > 0 ? (
+                  <div className="table-responsive">
+                    <div>
+                      <h5>Giờ thấp điểm</h5>
+                    </div>
+                    <table className="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Từ</th>
+                          <th>Đến</th>
+                          <th>Giá</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {
+                          <tr>
+                            <td>{1}</td>
+                            <td>
+                              {moment(
+                                '10-10-2017 ' + dayAfterFilter[0].startTime,
+                                'DD-MM-YYYY HH:mm',
+                              ).format('HH:mm')}
+                            </td>
+                            <td>
+                              {moment(
+                                '10-10-2017 ' + dayAfterFilter[0].endTime,
+                                'DD-MM-YYYY HH:mm',
+                              ).format('HH:mm')}
+                            </td>
+                            <td>{dayAfterFilter[0].price} nghìn đồng</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                ) : null}
+                {dayAfterFilter.length > 0 ? (
+                  <div className="table-responsive">
+                    <div>
+                      <h5>Giờ cao điểm</h5>
+                    </div>
+                    <table className="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Từ</th>
+                          <th>Đến</th>
+                          <th>Giá</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>{1}</td>
+                          <td>
+                            {moment(
+                              '10-10-2017 ' + dayAfterFilter[1].startTime,
+                              'DD-MM-YYYY HH:mm',
+                            ).format('HH:mm')}
+                          </td>
+                          <td>
+                            {moment(
+                              '10-10-2017 ' +
+                                dayAfterFilter[dayAfterFilter.length - 1]
+                                  .endTime,
+                              'DD-MM-YYYY HH:mm',
+                            ).format('HH:mm')}
+                          </td>
+                          <td>{dayAfterFilter[1].price} nghìn đồng</td>
+                          <td>
+                            {dayAfterFilter.length > 2 ? (
+                              <label className="label label-primary">
+                                Tối ưu giờ cao điểm
+                              </label>
+                            ) : null}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                ) : null}
+                {dayAfterFilter.length > 0 ? (
+                  <div className="col-sm-12">
+                    <div className="col-sm-4 col-sm-offset-4">
+                      <button className="btn btn-danger btn-block">
+                        Xoá ngày này
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
@@ -405,7 +566,7 @@ class SettingTime extends Component {
         <Modal
           /* {...this.props} */
           show={this.state.isShowAddTime}
-          onHide={this.hideModal}
+          onHide={this.handelHideModal.bind(this)}
           dialogClassName="custom-modal"
         >
           <Modal.Header>
@@ -425,10 +586,10 @@ class SettingTime extends Component {
                 {this.state.message ? this.state.message : null}
               </p>
               <div className="form-group">
-                <label htmlFor="inputEmail3" className="col-sm-3 control-label">
-                  Từ
+                <label htmlFor="inputEmail3" className="col-sm-4 control-label">
+                  Giờ mỏ cửa
                 </label>
-                <div className="col-sm-9">
+                <div className="col-sm-8">
                   <div className="row">
                     <div className="col-sm-6">
                       <TimePicker
@@ -442,12 +603,77 @@ class SettingTime extends Component {
                   </div>
                 </div>
               </div>
-
               <div className="form-group">
-                <label htmlFor="inputEmail3" className="col-sm-3 control-label">
-                  Đến
+                <label htmlFor="inputEmail3" className="col-sm-4 control-label">
+                  Giá giờ cao điểm
                 </label>
-                <div className="col-sm-9">
+                <div className="col-sm-8">
+                  <div className="row">
+                    <div className="col-sm-6">
+                      <div className="input-group">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="inputPassword3"
+                          name="peakPrice"
+                          value={this.state.peakPrice}
+                          onChange={this.handleInputChange.bind(this)}
+                        />
+                        <span className="input-group-addon">nghìn đồng</span>
+                      </div>
+                    </div>
+                    <div className="col-sm-6 question-mark-style-div">
+                      <OverlayTrigger
+                        trigger="click"
+                        placement="right"
+                        overlay={popoverRightPeak}
+                      >
+                        <label className="btn btn-sm btn-default">
+                          <i className="glyphicon glyphicon-question-sign question-mark-style-i " />
+                        </label>
+                      </OverlayTrigger>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="form-group">
+                <label htmlFor="inputEmail3" className="col-sm-4 control-label">
+                  Giá giờ thấp điểm
+                </label>
+                <div className="col-sm-8">
+                  <div className="row">
+                    <div className="col-sm-6">
+                      <div className="input-group">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="inputPassword3"
+                          name="idelPrice"
+                          value={this.state.idelPrice}
+                          onChange={this.handleInputChange.bind(this)}
+                        />
+                        <span className="input-group-addon">nghìn đồng</span>
+                      </div>
+                    </div>
+                    <div className="col-sm-6 question-mark-style-div">
+                      <OverlayTrigger
+                        trigger="click"
+                        placement="right"
+                        overlay={popoverRightIdle}
+                      >
+                        <label className="btn btn-sm btn-default">
+                          <i className="glyphicon glyphicon-question-sign question-mark-style-i " />
+                        </label>
+                      </OverlayTrigger>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="form-group">
+                <label htmlFor="inputEmail3" className="col-sm-4 control-label">
+                  Giờ đóng cửa
+                </label>
+                <div className="col-sm-8">
                   <div className="row">
                     <div className="col-sm-6">
                       <TimePicker
@@ -461,28 +687,144 @@ class SettingTime extends Component {
                   </div>
                 </div>
               </div>
-              <div className="form-group">
-                <label htmlFor="inputEmail3" className="col-sm-3 control-label">
-                  Giá
+              <div className="col-sm-offset-4">
+                <label className="checkbox-inline optimize-time">
+                  <input
+                    type="checkbox"
+                    checked={this.state.isOptimze}
+                    onChange={this.handleOptimizeClick.bind(this)}
+                  />
+                  <strong>Tối ưu giờ cao điểm</strong>
                 </label>
-                <div className="col-sm-9">
-                  <div className="row">
-                    <div className="col-sm-6">
-                      <div className="input-group">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="inputPassword3"
-                          name="price"
-                          value={this.state.price}
-                          onChange={this.handleInputChange.bind(this)}
-                        />
-                        <span className="input-group-addon">nghìn đồng</span>
+              </div>
+              {!this.state.isOptimze ? null : (
+                <div>
+                  <div className="form-group">
+                    <label
+                      htmlFor="inputEmail3"
+                      className="col-sm-4 control-label"
+                    >
+                      Thời gian đá bắt buộc
+                    </label>
+                    <div className="col-sm-8">
+                      <div className="row">
+                        <div className="col-sm-6">
+                          <select
+                            value={this.state.optimizeTime}
+                            onChange={this.handleSelectChange.bind(this)}
+                            className="form-control"
+                            id="sel1"
+                            name="optimizeTime"
+                          >
+                            <option value={1}>1 tiếng</option>
+                            <option value={1.5}>1.5 tiếng</option>
+                            <option value={2}>2 tiếng</option>
+                          </select>
+                        </div>
                       </div>
                     </div>
                   </div>
+                  <div className="form-group">
+                    <label
+                      htmlFor="inputEmail3"
+                      className="col-sm-4 control-label"
+                    >
+                      Số trận có thể đá ở 1 sân
+                    </label>
+                    <div className="col-sm-8">
+                      <div className="row">
+                        <div className="col-sm-6">
+                          <select
+                            value={this.state.optimizeNumOfMatch}
+                            onChange={this.handleSelectChange.bind(this)}
+                            className="form-control"
+                            id="sel1"
+                            name="optimizeNumOfMatch"
+                          >
+                            {moment(
+                              `10-10-2017 ${Math.floor(
+                                17 + 2 * this.state.optimizeTime,
+                              )}:${
+                                2 * this.state.optimizeTime -
+                                  Math.floor(2 * this.state.optimizeTime) >
+                                0
+                                  ? 30
+                                  : 0
+                              }`,
+                              'DD-MM-YYYY HH:mm',
+                            ) > this.state.endDay ? null : (
+                              <option value="2">2 trận</option>
+                            )}
+                            {moment(
+                              `${
+                                17 + 3 * this.state.optimizeTime > 23 ? 11 : 10
+                              }-10-2017 ${Math.floor(
+                                17 + 3 * this.state.optimizeTime > 23
+                                  ? 2
+                                  : 17 + 3 * this.state.optimizeTime,
+                              )}:${
+                                3 * this.state.optimizeTime -
+                                  Math.floor(3 * this.state.optimizeTime) >
+                                0
+                                  ? 30
+                                  : 0
+                              }`,
+                              'DD-MM-YYYY HH:mm',
+                            ) > this.state.endDay ? null : (
+                              <option value="3">3 trận</option>
+                            )}
+                            {moment(
+                              `${
+                                17 + 4 * this.state.optimizeTime > 23 ? 11 : 10
+                              }-10-2017 ${Math.floor(
+                                17 + 4 * this.state.optimizeTime > 23
+                                  ? 2
+                                  : 17 + 4 * this.state.optimizeTime,
+                              )}:${
+                                1 * this.state.optimizeTime -
+                                  Math.floor(4 * this.state.optimizeTime) >
+                                0
+                                  ? 30
+                                  : 0
+                              }`,
+                              'DD-MM-YYYY HH:mm',
+                            ) > this.state.endDay ? null : (
+                              <option value="4">4 trận</option>
+                            )}
+                            {moment(
+                              `${
+                                17 + 5 * this.state.optimizeTime > 23 ? 11 : 10
+                              }-10-2017 ${Math.floor(
+                                17 + 5 * this.state.optimizeTime > 23
+                                  ? 2
+                                  : 17 + 5 * this.state.optimizeTime,
+                              )}:${
+                                5 * this.state.optimizeTime -
+                                  Math.floor(5 * this.state.optimizeTime) >
+                                0
+                                  ? 30
+                                  : 0
+                              }`,
+                              'DD-MM-YYYY HH:mm',
+                            ) > this.state.endDay ? null : (
+                              <option value="5">5 trận</option>
+                            )}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* <div className="col-sm-12 text-center">
+                    <h4>
+                      Thời gian đóng cửa lúc{' '}
+                      <strong>
+                        {this.state.endTimeWithOptize.format('HH:mm')}
+                      </strong>
+                    </h4>
+                  </div> */}
                 </div>
-              </div>
+              )}
+
               {this.state.buttonGroupDayInWeek.map(day => (
                 <label className="checkbox-inline" key={day.id}>
                   <input

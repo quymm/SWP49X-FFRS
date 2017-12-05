@@ -1,7 +1,7 @@
 export const GOOGLE_MAP_KEY = "AIzaSyBHg0iReiIw8DpfaSaPxeaDRrJVP0FWs9A";
 export const GOOGLE_MAP_URL = "https://maps.googleapis.com/maps/api/geocode/json?";
 
-// export const BASE_URL = "http://192.168.1.109:8080/swp49x-ffrs";
+// export const BASE_URL = "http://192.168.1.57:8080/swp49x-ffrs";
 export const BASE_URL = "http://localhost:8080/swp49x-ffrs";
 export const LOGIN = "/account/login";
 export const REGISTER = "/account/managed-field-owner";
@@ -29,4 +29,8 @@ export const GET_ALL_REPORT_USER = '/report/report-opponent';
 export const GET_ALL_REPORT_FIELD_OWNER = '/report/report-field';
 export const GET_ALL_VOUCHER = '/voucher/get-all-voucher';
 export const ADD_NEW_VOUCHER = '/voucher/managed-voucher';
-export const BLOCK_ACCOUNT = '/account/lock';
+export const BLOCK_ACCOUNT = '/account/request-lock';
+export const ACCEPT_LOCK_ACCOUNT = '/account/lock';
+export const GET_ALL_REQUESTED_LOCK = '/account/lock';
+export const GET_STANDARD_PRICE  = '/standard-price/managed-standard-price';
+export const UPDATE_STANDARD_PRICE = '/standard-price/managed-standard-price';

@@ -86,7 +86,7 @@ class Header extends Component {
               tourMatch: true,
             };
             if (
-              moment(message.text.playTime, 'MM-DD-YYYY HH:mm') >=
+              moment(message.text.playTime, 'DD-MM-YYYY HH:mm') >=
               this.state.currentDaySelected
             ) {
               this.props.setCurrentDaySelected(true);
@@ -146,7 +146,7 @@ class Header extends Component {
             tourMatch: true,
           };
           if (
-            moment(message.text.playTime, 'MM-DD-YYYY HH:mm') >=
+            moment(message.text.playTime, 'DD-MM-YYYY HH:mm') >=
             this.state.currentDaySelected
           ) {
             this.props.setCurrentDaySelected(true);
@@ -176,6 +176,7 @@ class Header extends Component {
   }
 
   async handelClickDetailMatch(match) {
+    debugger
     const messageabc = this.state.messages;
     const index = messageabc.findIndex(
       messageabc =>
@@ -202,7 +203,7 @@ class Header extends Component {
     }
   }
   handleHideModalField(evt) {
-    evt.preventDefault();
+    // evt.preventDefault();
     this.setState({ isShowUpdateField: false });
   }
   handleUpdateProfile(evt) {
@@ -212,13 +213,13 @@ class Header extends Component {
   render() {
     const myStyle = { marginBottom: 0 };
     const styleNotRead = { backgroundColor: 'lavender' };
-    const { messages, status } = this.state;
+    const { messages } = this.state;
     const { roleId } = this.props.auth.user.data;
     if (roleId === undefined) {
       return <div className="loader" />;
     }
     if (messages.length > 0) {
-      const afterSort = messages.sort(
+      messages.sort(
         (a, b) =>
           moment(a.text.time, 'MM-DD-YYYY HH:mm') -
           moment(b.text.time, 'MM-DD-YYYY HH:mm'),
@@ -335,7 +336,7 @@ class Header extends Component {
         <Modal
           /* {...this.props} */
           show={this.state.isShowUpdateField}
-          onHide={this.hideModal}
+          onHide={this.handleHideModalField.bind(this)}
           dialogClassName="custom-modal"
         >
           <Modal.Header>

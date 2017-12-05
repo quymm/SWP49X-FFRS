@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { doLoginSuccessful } from '../redux/guest/guest-action-creators';
-class ManageFieldOwner extends Component {
+class ManageResToOwner extends Component {
   async componentDidMount() {
     const { id } = this.props.auth.user.data;
     if (id === undefined) {
@@ -17,8 +17,8 @@ class ManageFieldOwner extends Component {
         <div className="content">
           <div className="container-fluid">
             <div className="row">
-              <div className="col-sm-4">
-                <h2 className="page-header">Quản lý chủ sân</h2>
+              <div className="col-sm-8">
+                <h2 className="page-header">Yêu cầu thành chủ sân</h2>
               </div>
               <div className="col-sm-12">
                 <div className="panel panel-default">
@@ -36,4 +36,4 @@ function mapPropsToState(state) {
   return { auth: state.auth };
 }
 
-export default connect(mapPropsToState, {doLoginSuccessful}) (ManageFieldOwner);
+export default connect(mapPropsToState, {doLoginSuccessful}) (ManageResToOwner);
