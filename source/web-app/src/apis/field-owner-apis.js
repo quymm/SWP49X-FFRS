@@ -36,7 +36,7 @@ export function fetchGetMatchByFieldOwnerAndDay(
       fieldTypeId +
       '&date=' +
       day,
-    { headers: { Authorization: auth.tokenValue } },
+    // { headers: { Authorization: auth.tokenValue } },
   ).then(res => res.json());
 }
 
@@ -57,20 +57,20 @@ export function fetchCheckTimeSlotStatus(
       paramduration +
       '&fieldType' +
       paramFieldType,
-    { headers: { Authorization: auth.tokenValue } },
+    // { headers: { Authorization: auth.tokenValue } },
   ).then(res => res.status);
 }
 //Field
 export function fetchGetAllField(fieldOwnerId) {
   return fetch(BASE_URL + GET_ALL_FIELD + '?&field-owner-id=' + fieldOwnerId, {
-    headers: { Authorization: auth.tokenValue },
+    // headers: { Authorization: auth.tokenValue },
   }).then(res => res.json());
 }
 
 export function fetchDeleteField(fieldId) {
   return fetch(BASE_URL + DETELE_FIELD + '?&field-id=' + fieldId, {
     method: 'DELETE',
-    headers: { Authorization: auth.tokenValue },
+    // headers: { Authorization: auth.tokenValue },
   }).then(res => res.json());
 }
 
@@ -79,7 +79,7 @@ export function fetchAddField(paramFieldName, paramFieldType, fieldOwnerId) {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: auth.tokenValue,
+      // Authorization: auth.tokenValue,
     },
     body: JSON.stringify({
       fieldName: paramFieldName,
@@ -91,7 +91,7 @@ export function fetchAddField(paramFieldName, paramFieldType, fieldOwnerId) {
 export function fetchGetTimeEnableInWeek(fieldOwnerId) {
   return fetch(
     BASE_URL + GET_TIME_ENABLE_IN_WEEK + '?field-owner-id=' + fieldOwnerId,
-    { headers: { Authorization: auth.tokenValue } },
+    // { headers: { Authorization: auth.tokenValue } },
   ).then(res => res.json());
 }
 
@@ -103,7 +103,7 @@ export function fetchUpdateTimeEnableInWeek(
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: auth.tokenValue,
+      // Authorization: auth.tokenValue,
     },
     body: JSON.stringify(timeEnable)
     // body: JSON.stringify([
@@ -130,7 +130,7 @@ export function fetchGetFreeTime(fieldownerid, fieldTypeId, argDate) {
       fieldTypeId +
       '&date=' +
       argDate,
-    { headers: { Authorization: auth.tokenValue } },
+    // { headers: { Authorization: auth.tokenValue } },
   ).then(res => res.json());
 }
 
@@ -145,7 +145,7 @@ export function fetchBookMatch(
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: auth.tokenValue,
+      // Authorization: auth.tokenValue,
     },
     body: JSON.stringify({
       date: argDate,
@@ -169,7 +169,7 @@ export function fetchGetFreeFieldByTime(fieldownerid, fieldTypeId, date, time) {
       date +
       '&time=' +
       time,
-    { headers: { Authorization: auth.tokenValue } },
+    // { headers: { Authorization: auth.tokenValue } },
   ).then(res => res.json());
 }
 
@@ -183,7 +183,7 @@ export function fetchSetFieldToMatch(timeSlotId, fieldId) {
       fieldId,
     {
       method: 'PUT',
-      headers: { Authorization: auth.tokenValue },
+      // headers: { Authorization: auth.tokenValue },
     },
   ).then(res => res.json());
 }
@@ -191,19 +191,19 @@ export function fetchSetFieldToMatch(timeSlotId, fieldId) {
 export function fetchGetFriendlyMatch(matchId) {
   return fetch(
     BASE_URL + GET_FRIENDLY_MATCH + '?friendly-match-id=' + matchId,
-    { headers: { Authorization: auth.tokenValue } },
+    // { headers: { Authorization: auth.tokenValue } },
   ).then(res => res.json());
 }
 
 export function fetchGetTourMatch(matchId) {
   return fetch(BASE_URL + GET_TOUR_MATCH + '?tour-match-id=' + matchId, {
-    headers: { Authorization: auth.tokenValue },
+    // headers: { Authorization: auth.tokenValue },
   }).then(res => res.json());
 }
 
 export function fetchGetOvercome(fieldownerid) {
   return fetch(BASE_URL + GET_OVERCONE + '?field-owner-id=' + fieldownerid, {
-    headers: { Authorization: auth.tokenValue },
+    // headers: { Authorization: auth.tokenValue },
   }).then(res => res.json());
 }
 export function fetchUpdateProfile(id, data) {
@@ -211,7 +211,7 @@ export function fetchUpdateProfile(id, data) {
     method: 'PUT',
     headers: {
       'content-type': 'application/json',
-      Authorization: auth.tokenValue,
+      // Authorization: auth.tokenValue,
     },
     body: JSON.stringify({
       address: data.address,
