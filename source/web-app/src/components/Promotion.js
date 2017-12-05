@@ -80,17 +80,6 @@ class Promotion extends Component {
   }
   async handeSubmitPromotion(evt) {
     evt.preventDefault();
-    const {
-      decription,
-      endDate,
-      endTime,
-      fieldStyle,
-      message,
-      promotion,
-      saleOff,
-      startDate,
-      startTime,
-    } = this.state;
     const { id } = this.props.auth.user.data;
     const dataAdd = await fetchAddPromotion(id, this.state);
     const dataPromotion = await fetchGetAllPromotion(id);

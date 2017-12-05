@@ -9,11 +9,14 @@ import {
   doLoginSuccessful,
   doLogout
 } from '../redux/guest/guest-action-creators';
+import { Modal } from 'react-bootstrap';
+import moment from 'moment';
 class Field extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isCreateShowed: true,
+      isShowConfirmDelete: false,
     };
   }
 
@@ -34,7 +37,9 @@ class Field extends Component {
       } else {
         const idLocal = authLocalStorage.id;
         await this.props.doLoginSuccessful(authLocalStorage);
+        debugger
         const data = await fetchGetAllField(idLocal);
+        debugger
         await this.props.getAllField(data.body);
       }
     }
@@ -56,7 +61,14 @@ class Field extends Component {
     const data = await fetchGetAllField(id);
     await this.props.getAllField(data.body);
   }
-
+  handleShowComfirmDeleteField(evt){
+    // evt.preventDefault();
+    this.setState({isShowConfirmDelete: true});
+  }
+  handleHideComfirmDeleteField(evt) { 
+    // evt.preventDefault();
+    this.setState({isShowConfirmDelete: false});
+  }
   render() {
     const { listField } = this.props;
     console.log(listField);
@@ -68,15 +80,17 @@ class Field extends Component {
                 <td>{index + 1}</td>
                 <td>{listField.name}</td>
                 <td>{listField.fieldTypeId.name}</td>
+                <td>{listField.expirationDate? moment(listField.expirationDate, 'YYYY-MM-DD').format('DD/MM/YYYY'): null }</td>
+                {listField.expirationDate? null:
                 <td>
                   <button
                     value={listField.id}
-                    onClick={this.deleteField.bind(this)}
+                    onClick={this.handleShowComfirmDeleteField.bind(this)}
                     className="btn btn-danger"
                   >
                     Xoá
                   </button>
-                </td>
+                </td>}
               </tr>
             );
           })
@@ -102,6 +116,7 @@ class Field extends Component {
                           <th>#</th>
                           <th>Tên sân</th>
                           <th>Loại sân</th>
+                          <th>Hiệu lực đến ngày</th>                         
                           <th />
                         </tr>
                       </thead>
@@ -121,6 +136,33 @@ class Field extends Component {
             </div>
           </div>
         </div>
+        <Modal
+            /* {...this.props} */
+            show={this.state.isShowConfirmDelete}
+            onHide={this.handleHideComfirmDeleteField.bind(this)}
+            dialogClassName="custom-modal"
+          >
+            <Modal.Header>
+              <Modal.Title>Xác nhận xoá sân</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <h4>Bạn có chắc muốn xoá sân này?</h4>
+            </Modal.Body>
+            <Modal.Footer>
+            <button
+                onClick={this.deleteField.bind(this)}
+                className="btn btn-primary"
+              >
+                Xác nhận
+              </button>
+              <button
+                onClick={this.handleHideComfirmDeleteField.bind(this)}
+                className="btn btn-danger"
+              >
+                Huỷ
+              </button>
+            </Modal.Footer>
+          </Modal>
       </div>
     );
   }

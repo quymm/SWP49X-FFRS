@@ -28,6 +28,7 @@ class Login extends Component {
     const { username, password } = this.state;
     if (username !== undefined && password !== undefined) {
       const loginRes = await fetchLogin(username, password);
+      debugger
       if (loginRes.status === 200) {
         const dataLogin = loginRes.body;
         if (dataLogin !== null) {
@@ -38,7 +39,7 @@ class Login extends Component {
           } else if (dataLogin.roleId.roleName === 'staff') {
             this.props.history.push('/app/staff-manage-user');
           } else if (dataLogin.roleId.roleName === 'admin') {
-            this.props.history.push('/app/staff-manage-user');
+            this.props.history.push('/app/admin-manage-account');
           }
         } else {
           this.props.doLoginError('Sai tên đăng nhập hoặc mật khẩu');
@@ -60,7 +61,7 @@ class Login extends Component {
     return (
       <div className="container-fluid backGroundLogin">
         <div className="neon-text">
-          <img
+          <img alt="logo"
             style={styleLogo}
             src={require('../resource/images/ffrs.png')}
           />Hệ Thống Quản Lý Sân Bóng{' '}

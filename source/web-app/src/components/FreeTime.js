@@ -90,8 +90,12 @@ class FreeTime extends Component {
               2,
               this.state.dateSelected.format('DD-MM-YYYY'),
             );
-            await this.props.getAllFreeTime5vs5(data5vs5.body);
-            await this.props.getAllFreeTime7vs7(data7vs7.body);
+            if (data5vs5.status === 200) {
+              await this.props.getAllFreeTime5vs5(data5vs5.body);
+            }
+            if (data7vs7.status === 200) {
+              await this.props.getAllFreeTime7vs7(data7vs7.body);
+            }
           } catch (error) {
             console.log('error: ', error);
           }
@@ -109,8 +113,12 @@ class FreeTime extends Component {
           2,
           this.state.dateSelected.format('DD-MM-YYYY'),
         );
-        await this.props.getAllFreeTime5vs5(data5vs5.body);
-        await this.props.getAllFreeTime7vs7(data7vs7.body);
+        if (data5vs5.status === 200) {
+          await this.props.getAllFreeTime5vs5(data5vs5.body);
+        }
+        if (data7vs7.status === 200) {
+          await this.props.getAllFreeTime7vs7(data7vs7.body);
+        }
       } catch (error) {
         console.log('error: ', error);
       }
@@ -151,8 +159,12 @@ class FreeTime extends Component {
       2,
       this.state.dateSelected.format('DD-MM-YYYY'),
     );
-    await this.props.getAllFreeTime5vs5(data5vs5.body);
-    await this.props.getAllFreeTime7vs7(data7vs7.body);
+    if (data5vs5.status === 200) {
+      await this.props.getAllFreeTime5vs5(data5vs5.body);
+    }
+    if (data7vs7.status === 200) {
+      await this.props.getAllFreeTime7vs7(data7vs7.body);
+    }
   }
 
   async handelEndTimeInputChange(evt) {
@@ -171,9 +183,6 @@ class FreeTime extends Component {
     const {
       endTime,
       startTime,
-      messageBookMatch,
-      timeLowerLimit,
-      timeUpperLimit,
     } = this.state;
     
     if (
@@ -189,22 +198,28 @@ class FreeTime extends Component {
       if (bookMatchRes.status === 201 && bookMatchRes.body !== null) {
         this.setState({ isShowBookMatch: false });
         toast.success('Đặt sân thành công!');
-        const data5vs5 = await fetchGetFreeTime(
-          id,
-          1,
-          this.state.dateSelected.format('DD-MM-YYYY'),
-        );
-        const data7vs7 = await fetchGetFreeTime(
-          id,
-          2,
-          this.state.dateSelected.format('DD-MM-YYYY'),
-        );
-        await this.props.getAllFreeTime5vs5(data5vs5.body);
-        await this.props.getAllFreeTime7vs7(data7vs7.body);
+        
       } else {
         this.setState({ isShowBookMatch: false });
         toast.error('Đặt sân không thành công!');
       }
+      const data5vs5 = await fetchGetFreeTime(
+        id,
+        1,
+        this.state.dateSelected.format('DD-MM-YYYY'),
+      );
+      const data7vs7 = await fetchGetFreeTime(
+        id,
+        2,
+        this.state.dateSelected.format('DD-MM-YYYY'),
+      );
+      if (data5vs5.status === 200) {
+        await this.props.getAllFreeTime5vs5(data5vs5.body);
+      }
+      if (data7vs7.status === 200) {
+        await this.props.getAllFreeTime7vs7(data7vs7.body);
+      }
+      
     } else {
       this.setState({ messageBookMatch: 'Thời gian không hợp lệ' });
     }
@@ -213,9 +228,6 @@ class FreeTime extends Component {
   render() {
     const myStyle = { padding: 20 };
     const { freeTime5vs5, freeTime7vs7 } = this.props;
-    const { dateSelected } = this.state;
-    const hours = this.hoursToPick();
-    // console.log(moment('20-10-2017 '+this.state.timeLowerLimit));
     return (
       <div className="main-panel">
         <div className="content">
@@ -314,7 +326,8 @@ class FreeTime extends Component {
                                 ).format('HH:mm')}
                               </h4>
                             </div>
-                            <div className="col-sm-3">
+                            <div>
+                            <h4>
                               <button
                                 onClick={() =>
                                   this.handelShowModalBookMatch(freeTime)}
@@ -322,7 +335,8 @@ class FreeTime extends Component {
                               >
                                 Đặt sân
                               </button>
-                            </div>
+                            </h4>
+                          </div>
                           </div>
                         ))
                       ) : (

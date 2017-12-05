@@ -4,7 +4,6 @@ import { fetchGetOvercome } from '../apis/field-owner-apis';
 import { doLoginSuccessful, doLogout } from '../redux/guest/guest-action-creators';
 import { Modal, Pagination } from 'react-bootstrap';
 import moment from 'moment';
-import DatePicker from 'react-datepicker';
 class OverCome extends Component {
   constructor(props) {
     super(props);
@@ -40,13 +39,12 @@ class OverCome extends Component {
     }
   }
   async handleDateChange(date) {
-    const { id } = this.props.auth.user.data;
     await this.setState({
       dateSelected: date,
     });
   }
   async handleShowModal(match) {
-    console.log('match: ', match);
+    debugger
     const detail = (await !match.friendlyMatchId)
       ? match.tourMatchId
       : match.friendlyMatchId;

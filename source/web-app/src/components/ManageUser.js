@@ -9,10 +9,9 @@ import Autosuggest from 'react-autosuggest';
 import { Modal, Pagination } from 'react-bootstrap';
 import {
   fetchGetUserOrFieldOwnerSuggestion,
-  fetchGetAllReportFieldOwner,
   fetchGetAllReportUser,
   fetchGetListReport,
-  fetchRequestLockAccount
+  fetchRequestLockAccount,
 } from '../apis/staff-api';
 import moment from 'moment';
 import { toast } from 'react-toastify';
@@ -27,15 +26,16 @@ class ManageUser extends Component {
       suggestions: [],
       showModelUser: false,
       result: undefined,
-      isSearch: false,
+      isSearch: undefined,
       listReported: [],
       userTarget: 'user',
       listReportWithTargetUser: [],
+      pageActive: 1,
     };
     this.handelShowModalUser = this.handelShowModalUser.bind(this);
   }
   async handeSelectUserTarget(evt) {
-    await this.setState({ userTarget: evt.target.value });
+    await this.setState({ userTarget: evt.target.value, pageActive: 1 });
   }
   onChange = async (event, { newValue }) => {
     await this.setState({
@@ -53,7 +53,7 @@ class ManageUser extends Component {
         this.state.userTarget,
       );
       this.setState({
-        suggestions: dataUser.body, isSearch: true
+        suggestions: dataUser.body,
       });
     }
   };
@@ -70,19 +70,19 @@ class ManageUser extends Component {
       await this.setState({ result: undefined });
     }
     this.setState({
-      suggestions: [], isSearch: false
+      suggestions: [],
     });
   };
   async handelShowModalUser(evt) {
-    await this.setState({ userTarget: evt.roleId.roleName });
-    console.log(this.state);
+    
     const data = await fetchGetAllReportUser(evt.id);
+    debugger;
     this.setState({ listReportWithTargetUser: data.body });
-    this.setState({ showModelUser: true, result: evt });
+    this.setState({ showModelUser: true, isSearch: evt });
   }
 
   handelHideModalUser(evt) {
-    evt.preventDefault();
+    // evt.preventDefault();
     this.setState({ showModelUser: false });
   }
   async componentDidMount() {
@@ -98,7 +98,6 @@ class ManageUser extends Component {
           this.props.accessDenied();
           this.props.history.push('/login');
         } else {
-          const idLocal = authLocalStorage.id;
           await this.props.doLoginSuccessful(authLocalStorage);
           const data = await fetchGetListReport();
           this.setState({ listReported: data.body });
@@ -109,20 +108,30 @@ class ManageUser extends Component {
       this.setState({ listReported: data.body });
     }
   }
-  async handelLockAccount(evt){
+  async handelLockAccount(evt) {
     evt.preventDefault();
-    const resLock = await fetchRequestLockAccount(this.state.result.id);
+    const { id } = this.props.auth.user.data;
+
+    const resLock = await fetchRequestLockAccount(
+      this.state.result ? this.state.result.id : this.state.isSearch.id,
+      id,
+    );
     if (resLock.status === 200) {
-      toast.success('Khoá tài khoản thành công!');
+      toast.success('Gửi yêu cầu thành công!');
     } else {
-      toast.error('Khoá tài khoản thất bại')
+      toast.error('Gửi yêu cầu thất bại');
     }
     const data = await fetchGetListReport();
     this.setState({ listReported: data.body, showModelUser: false });
   }
+
+  handleSelectPage(eventKey) {
+    this.setState({ pageActive: eventKey });
+  }
+
   render() {
     const { value, suggestions, result, listReported } = this.state;
-    console.log(this.state.listReportWithTargetUser);
+    
     // Autosuggest will pass through all these props to the input.
     const inputProps = {
       placeholder: 'Tìm kiếm theo tên',
@@ -133,20 +142,39 @@ class ManageUser extends Component {
       width: 200,
       height: 200,
     };
-    console.log(this.state.isSearch);
+   
+    let afterFilterUser = [];
+    let pageSize = 1;
+    if (this.state.userTarget === 'user') {
+      afterFilterUser = listReported.filter(
+        reported => reported.roleId.roleName === 'user',
+      );
+      pageSize = Math.ceil(afterFilterUser.length / 10);
+    } else {
+      afterFilterUser = listReported.filter(
+        reported => reported.roleId.roleName === 'owner',
+      );
+      pageSize = Math.ceil(afterFilterUser.length / 10);
+    }
+
     return (
       <div className="main-panel">
         <div className="content">
           <div className="container-fluid">
             <div className="row">
-              <div className="col-sm-4">
+              <div className="col-sm-6">
                 <h2 className="page-header">Quản lý người dùng</h2>
               </div>
               <div className="col-sm-12">
                 <div className="panel panel-default">
                   <div className="panel panel-body">
                     <div className="col-sm-12">
-                      <div className="col-sm-6 text-center">
+                      <div className="col-sm-2">
+                        <p className="search-user">
+                          <strong>Tìm kiếm</strong>
+                        </p>
+                      </div>
+                      <div className="col-sm-4 text-center">
                         <Autosuggest
                           suggestions={suggestions}
                           onSuggestionsFetchRequested={
@@ -184,9 +212,10 @@ class ManageUser extends Component {
                       <table className="table table-striped">
                         <thead>
                           <tr>
+                            <th>#</th>
                             <th>Tên đăng nhập</th>
-                            <th>Tên đội</th>
-                            <th>Quyền</th>
+                        {this.state.userTarget === 'user' ? <th>Tên đội</th> : <th>Tên sân</th>} 
+                            <th>Vai trò</th>
                             <th>Trạng thái</th>
                             <th />
                           </tr>
@@ -194,6 +223,7 @@ class ManageUser extends Component {
                         <tbody>
                           {this.state.result ? (
                             <tr>
+                              <td>1</td>
                               <td>{this.state.result.username}</td>
                               <td>{this.state.result.profileId.name}</td>
                               <td>
@@ -208,7 +238,7 @@ class ManageUser extends Component {
                                   </span>
                                 ) : (
                                   <span className="label label-danger">
-                                    Bị khoá
+                                    Đã khoá
                                   </span>
                                 )}
                               </td>
@@ -222,50 +252,65 @@ class ManageUser extends Component {
                                 </button>
                               </td>
                             </tr>
-                          ) : listReported.length > 0 ? (
-                            listReported.map((reported, index) => (
-                              <tr key={index}>
-                                <td>{reported.username}</td>
-                                <td>{reported.profileId.name}</td>
-                                <td>
-                                  {reported.roleId.roleName === 'user'
-                                    ? 'Người chơi'
-                                    : 'Chủ sân'}
-                                </td>
-                                <td>
-                                  {!reported.lockStatus ? (
-                                    <span className="label label-success">
-                                      Đang hoạt động
-                                    </span>
-                                  ) : (
-                                    <span className="label label-danger">
-                                      Bị khoá
-                                    </span>
-                                  )}
-                                </td>
-                                <td>
-                                  <button
-                                    className="btn btn-primary"
-                                    onClick={() =>
-                                      this.handelShowModalUser(reported)}
-                                  >
-                                    Chi tiết
-                                  </button>
-                                </td>
-                              </tr>
-                            ))
+                          ) : afterFilterUser.length > 0 ? (
+                            afterFilterUser
+                              .slice(
+                                (this.state.pageActive - 1) * 10,
+                                this.state.pageActive * 10,
+                              )
+                              .map((reported, index) => (
+                                <tr key={index}>
+                                  <td>
+                                    {(this.state.pageActive - 1) * 10 +
+                                      index +
+                                      1}
+                                  </td>
+                                  <td>{reported.username}</td>
+                                  <td>{reported.profileId.name}</td>
+                                  <td>
+                                    {reported.roleId.roleName === 'user'
+                                      ? 'Người chơi'
+                                      : 'Chủ sân'}
+                                  </td>
+                                  <td>
+                                    {reported.requestLock &&
+                                    !reported.lockStatus ? (
+                                      <span className="label label-warning">
+                                        Đang chờ khoá
+                                      </span>
+                                    ) : !reported.lockStatus ? (
+                                      <span className="label label-success">
+                                        Đang hoạt động
+                                      </span>
+                                    ) : (
+                                      <span className="label label-danger">
+                                        Đã khoá
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td>
+                                    <button
+                                      className="btn btn-primary"
+                                      onClick={() =>
+                                        this.handelShowModalUser(reported)}
+                                    >
+                                      Chi tiết
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))
                           ) : null}
                         </tbody>
                       </table>
                     </div>
                     <div className="col-sm-12 text-center">
-              {/* <Pagination
-                bsSize="medium"
-                items={10}
-                activePage={1}
-
-              /> */}
-            </div>
+                      <Pagination
+                        bsSize="medium"
+                        items={result ? 0 : pageSize <= 1 ? 0 : pageSize}
+                        activePage={this.state.pageActive}
+                        onSelect={this.handleSelectPage.bind(this)}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -275,7 +320,7 @@ class ManageUser extends Component {
         <Modal
           /* {...this.props} */
           show={this.state.showModelUser}
-          onHide={this.hideModal}
+          onHide={this.handelHideModalUser.bind(this)}
           dialogClassName="custom-modal"
           bsSize="large"
         >
@@ -286,15 +331,19 @@ class ManageUser extends Component {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {result ? (
+            {result !== undefined || this.state.isSearch !== undefined ? (
               <div>
                 <div className="row">
                   <div className="col-sm-3">
                     <img
                       src={
-                        result.profileId.avatarUrl
+                        result !== undefined
                           ? result.profileId.avatarUrl
-                          : require('../resource/images/user.png')
+                            ? result.profileId.avatarUrl
+                            : require('../resource/images/user.png')
+                          : this.state.isSearch.profileId.avatarUrl
+                            ? this.state.isSearch.profileId.avatarUrl
+                            : require('../resource/images/user.png')
                       }
                       style={imgStyle}
                     />
@@ -307,22 +356,32 @@ class ManageUser extends Component {
                             <td>
                               <strong>Tên đăng nhập</strong>
                             </td>
-                            <td>{result.username}</td>
+                            <td>
+                              {result
+                                ? result.username
+                                : this.state.isSearch.username}
+                            </td>
                           </tr>
                           <tr>
                             <td>
-                              <strong>Tên đội</strong>
+                              {this.state.userTarget === 'user' ? <strong>Tên đội</strong> : <strong>Tên sân</strong> }
                             </td>
-                            <td>{result.profileId.name}</td>
+                            <td>
+                              {result
+                                ? result.profileId.name
+                                : this.state.isSearch.profileId.name}
+                            </td>
                           </tr>
                           <tr>
                             <td>
                               <strong>Ngày tạo</strong>
                             </td>
                             <td>
-                              {moment(result.profileId.creationDate).format(
-                                'DD [tháng] MM, YYYY HH:mm',
-                              )}
+                              {moment(
+                                result
+                                  ? result.profileId.creationDate
+                                  : this.state.isSearch.profileId.creationDate,
+                              ).format('DD [tháng] MM, YYYY HH:mm')}
                             </td>
                           </tr>
                           <tr>
@@ -330,30 +389,43 @@ class ManageUser extends Component {
                               <strong>Tiền </strong>
                             </td>
                             <td>
-                              {(result.profileId.balance * 1000).toLocaleString(
-                                'vi',
-                              ) + ' VND'}
+                              {(result
+                                ? result.profileId.balance
+                                : this.state.isSearch.profileId.balance * 1000
+                              ).toLocaleString('vi') + ' VND'}
                             </td>
                           </tr>
                           <tr>
                             <td>
                               <strong>Số điện thoại </strong>
                             </td>
-                            <td>{result.profileId.phone}</td>
+                            <td>
+                              {result
+                                ? result.profileId.phone
+                                : this.state.isSearch.profileId.phone}
+                            </td>
                           </tr>
                           {this.state.userTarget === 'user' ? (
                             <tr>
                               <td>
                                 <strong>Điểm đội </strong>
                               </td>
-                              <td>{result.profileId.ratingScore}</td>
+                              <td>
+                                {result
+                                  ? result.profileId.ratingScore
+                                  : this.state.isSearch.profileId.ratingScore}
+                              </td>
                             </tr>
                           ) : null}
                           <tr>
                             <td>
                               <strong>Điểm thưởng </strong>
                             </td>
-                            <td>{result.profileId.bonusPoint}</td>
+                            <td>
+                              {result
+                                ? result.profileId.bonusPoint
+                                : this.state.isSearch.profileId.bonusPoint}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -361,9 +433,37 @@ class ManageUser extends Component {
                   </div>
                   <div className="col-sm-4">
                     <p>
-                      <button onClick={this.handelLockAccount.bind(this)} className="btn btn-warning">
-                        <i className="pe-7s-lock" /> Yêu cầu khoá tài khoản
-                      </button>
+                      {result ? (
+                        !result.requestLock ? (
+                          <button
+                            onClick={this.handelLockAccount.bind(this)}
+                            className="btn btn-warning"
+                          >
+                            <i className="pe-7s-lock" /> Yêu cầu khoá tài khoản
+                          </button>
+                        ) : result.lockStatus ? (
+                          <button
+                            onClick={this.handelLockAccount.bind(this)}
+                            className="btn btn-primary"
+                          >
+                            <i className="pe-7s-unlock" /> Yêu cầu mở tài khoản
+                          </button>
+                        ) : null
+                      ) : !this.state.isSearch.requestLock ? (
+                        <button
+                          onClick={this.handelLockAccount.bind(this)}
+                          className="btn btn-warning"
+                        >
+                          <i className="pe-7s-lock" /> Yêu cầu khoá tài khoản
+                        </button>
+                      ) : this.state.isSearch.lockStatus ? (
+                        <button
+                          onClick={this.handelLockAccount.bind(this)}
+                          className="btn btn-primary"
+                        >
+                          <i className="pe-7s-unlock" /> Yêu cầu mở tài khoản
+                        </button>
+                      ) : null}
                     </p>
                   </div>
                 </div>
