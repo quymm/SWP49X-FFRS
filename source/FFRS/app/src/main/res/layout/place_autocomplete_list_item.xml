@@ -7,4 +7,4 @@
     android:scrollHorizontally="true"
     android:text="Test Text"
     android:textColor="@color/primaryText"
-    android:textSize="16dp" />
+    android:textSize="18sp" />

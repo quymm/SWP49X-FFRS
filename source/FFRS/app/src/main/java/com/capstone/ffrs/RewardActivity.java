@@ -42,6 +42,7 @@ public class RewardActivity extends AppCompatActivity {
     private String hostURL;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView txtCurrentBonus, txtNotFound;
+    private int currentPoint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +64,9 @@ public class RewardActivity extends AppCompatActivity {
         swipeRefreshLayout.setRefreshing(true);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RewardActivity.this);
+        currentPoint = preferences.getInt("points", 0);
         txtCurrentBonus = (TextView) findViewById(R.id.text_current_bonus);
-        txtCurrentBonus.setText("Điểm thưởng hiện tại: " + preferences.getInt("point", 0) + " điểm");
+        txtCurrentBonus.setText("Điểm thưởng hiện tại: " + currentPoint + " điểm");
 
         txtNotFound = (TextView) findViewById(R.id.text_not_found);
         loadVouchers();
@@ -105,7 +107,7 @@ public class RewardActivity extends AppCompatActivity {
                                     final JSONObject obj = body.getJSONObject(i);
 
                                     final double voucherValue = obj.getDouble("voucherValue");
-                                    int bonusPointTarget = obj.getInt("bonusPointTarget");
+                                    final int bonusPointTarget = obj.getInt("bonusPointTarget");
 
                                     LayoutInflater inflater = LayoutInflater.from(RewardActivity.this);
                                     View v = inflater.inflate(R.layout.voucher_item, grid, false);
@@ -123,7 +125,18 @@ public class RewardActivity extends AppCompatActivity {
                                     btExchange.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            redeemVoucher(obj, String.format("%.0f", voucherValue) + " nghìn đồng");
+                                            if ((currentPoint * 1.0) < voucherValue) {
+                                                AlertDialog alertDialog = new AlertDialog.Builder(RewardActivity.this).setTitle("Đổi voucher thất bại").
+                                                        setMessage("Bạn không đủ điểm để đổi voucher")
+                                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                            }
+                                                        }).create();
+                                                alertDialog.show();
+                                            } else {
+                                                redeemVoucher(obj, String.format("%.0f", voucherValue), bonusPointTarget);
+                                            }
                                         }
                                     });
                                 } catch (Exception e) {
@@ -160,7 +173,7 @@ public class RewardActivity extends AppCompatActivity {
         queue.add(request);
     }
 
-    private void redeemVoucher(JSONObject obj, final String vouncherText) {
+    private void redeemVoucher(JSONObject obj, final String voucherText, final int bonusPointTarget) {
         try {
             final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RewardActivity.this);
             String url = hostURL + getResources().getString(R.string.url_redeem_voucher);
@@ -180,14 +193,15 @@ public class RewardActivity extends AppCompatActivity {
                             editor.putInt("points", body.getJSONObject("userId").getJSONObject("profileId").getInt("bonusPoint"));
                             editor.apply();
                             AlertDialog alertDialog = new AlertDialog.Builder(RewardActivity.this).setTitle("Đổi voucher thành công").
-                                    setMessage("Bạn đã đổi voucher thành công. Tài khoản đã được cộng " + vouncherText)
+                                    setMessage("Bạn đã đổi voucher thành công. Tài khoản đã được cộng " + Integer.valueOf(voucherText) + " nghìn đồng")
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                         }
                                     }).create();
                             alertDialog.show();
-                            txtCurrentBonus.setText("Điểm thưởng hiện tại: " + preferences.getInt("point", 0) + " điểm");
+                            currentPoint = preferences.getInt("points", 0) - bonusPointTarget;
+                            txtCurrentBonus.setText("Điểm thưởng hiện tại: " + currentPoint + " điểm");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

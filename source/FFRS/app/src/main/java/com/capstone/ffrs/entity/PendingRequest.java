@@ -8,7 +8,8 @@ public class PendingRequest {
     private int matchingRequestId, fieldTypeId;
     private String date, startTime, endTime, address;
     private double latitude, longitude;
-    private int duration;
+    private int duration, distance;
+    private boolean status;
 
     public PendingRequest() {
     }
@@ -61,6 +62,14 @@ public class PendingRequest {
         this.duration = duration;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
     public double getLatitude() {
         return latitude;
     }
@@ -83,5 +92,13 @@ public class PendingRequest {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }
