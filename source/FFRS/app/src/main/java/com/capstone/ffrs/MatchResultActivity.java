@@ -70,22 +70,6 @@ public class MatchResultActivity extends AppCompatActivity {
     private String displayDateFormat = "dd/MM/yyyy";
     private String serverDateFormat = "dd-MM-yyyy";
 
-//    private BroadcastReceiver mRequestReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            boolean flag = intent.getBooleanExtra("isChecked", false);
-//            if (flag) {
-//                Button btSendRequest = (Button) findViewById(R.id.btRequest);
-//                btSendRequest.setEnabled(true);
-//                btSendRequest.setBackgroundColor(Color.parseColor("#009632"));
-//            } else {
-//                Button btSendRequest = (Button) findViewById(R.id.btRequest);
-//                btSendRequest.setEnabled(false);
-//                btSendRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
-//            }
-//        }
-//    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,19 +92,6 @@ public class MatchResultActivity extends AppCompatActivity {
         });
         swipeRefreshLayout.setRefreshing(true);
     }
-
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        LocalBroadcastManager.getInstance(this).registerReceiver(mRequestReceiver,
-//                new IntentFilter("RequestButton-Message"));
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRequestReceiver);
-//    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -330,7 +301,13 @@ public class MatchResultActivity extends AppCompatActivity {
                         }
                     }).show();
         } else {
-            super.onBackPressed();
+            if (!isTaskRoot()) {
+                super.onBackPressed();
+            } else {
+                Intent intent = new Intent(this, SearchActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
         }
     }
 

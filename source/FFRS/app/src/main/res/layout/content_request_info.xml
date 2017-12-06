@@ -182,5 +182,16 @@
             android:text="Hủy"
             android:textColor="@android:color/white"
             android:textSize="18dp" />
+
+        <Button
+            android:id="@+id/btViewList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@color/green"
+            android:onClick="onClickViewList"
+            android:text="Xem danh sách đối thủ\nphù hợp"
+            android:textColor="@android:color/white"
+            android:textSize="18dp" />
     </TableLayout>
 </android.support.constraint.ConstraintLayout>

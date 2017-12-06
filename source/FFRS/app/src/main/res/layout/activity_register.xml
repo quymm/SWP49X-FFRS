@@ -37,7 +37,8 @@
             android:fontFamily="sans-serif"
             android:hint="Mật khẩu"
             android:inputType="textPassword"
-            android:padding="5dp" />
+            android:padding="5dp"
+            android:visibility="gone"/>
 
         <EditText
             android:id="@+id/input_confirm_password"
@@ -50,7 +51,8 @@
             android:fontFamily="sans-serif"
             android:hint="Xác nhận mật khẩu"
             android:inputType="textPassword"
-            android:padding="5dp" />
+            android:padding="5dp"
+            android:visibility="gone"/>
 
         <EditText
             android:id="@+id/input_team_name"
