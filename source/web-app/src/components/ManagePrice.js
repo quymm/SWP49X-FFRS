@@ -30,7 +30,6 @@ class ManagePrice extends Component {
     const { id } = this.props.auth.user.data;
     if (id === undefined) {
       const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
-
       if (authLocalStorage === null) {
         this.props.doLogout();
         this.props.history.push('/login');
@@ -51,6 +50,14 @@ class ManagePrice extends Component {
         }
       }
     } else {
+      const resStandardPriceRush = await fetchGetStandarPrice(true);
+      if ((resStandardPriceRush.status = 200)) {
+        this.setState({ standardRush: resStandardPriceRush.body });
+      }
+      const resStandardWithoutRush = await fetchGetStandarPrice(false);
+      if (resStandardWithoutRush.status === 200) {
+        this.setState({ standardWithoutRush: resStandardWithoutRush.body });
+      }
     }
   }
 

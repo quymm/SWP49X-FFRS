@@ -22,5 +22,5 @@ public interface MatchingRequestRepository extends JpaRepository<MatchingRequest
 
     MatchingRequestEntity findByIdAndStatus(int id, boolean status);
 
-    List<MatchingRequestEntity> findByUserIdAndStatus(AccountEntity userId, boolean status);
+    List<MatchingRequestEntity> findByUserId(AccountEntity userId);
 }

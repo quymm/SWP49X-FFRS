@@ -11,8 +11,10 @@ import {
   doLoginSuccessful,
   accessDenied,
 } from '../redux/guest/guest-action-creators';
+import { fetchGetStandarPrice } from '../apis/staff-api';
 import { Modal, OverlayTrigger, Popover } from 'react-bootstrap';
 import moment from 'moment';
+import { toast } from 'react-toastify';
 class SettingTime extends Component {
   constructor(props) {
     super(props);
@@ -27,10 +29,7 @@ class SettingTime extends Component {
       peakPrice: undefined,
       idelPrice: undefined,
       isShowAddTime: false,
-      maximumPricePeak: 500,
-      minimumPricePeak: 200,
-      maximumPriceIdel: 300,
-      minimumPriceIdel: 100,
+      standardPrice: undefined,
       isOptimze: false,
       optimizeTime: 1.5,
       optimizeNumOfMatch: 2,
@@ -100,6 +99,7 @@ class SettingTime extends Component {
       ],
     };
     this.handelCheckboxDay = this.handelCheckboxDay.bind(this);
+    this.handleSubmitTimeInWeek = this.handleSubmitTimeInWeek.bind(this);
   }
   componentWillMount() {
     const { buttonGroupDayInWeek } = this.state;
@@ -144,6 +144,12 @@ class SettingTime extends Component {
           await this.props.doLoginSuccessful(authLocalStorage);
           const data = await fetchGetTimeEnableInWeek(idLocal);
           this.props.getAllTimeEnableInWeek(data.body);
+          const resStandardPriceRush = await fetchGetStandarPrice(true);
+          const resStandardPriceWithoutRus = await fetchGetStandarPrice(false);
+          const standardPriceConcat = resStandardPriceRush.body.concat(
+            resStandardPriceWithoutRus.body,
+          );
+          this.setState({ standardPrice: standardPriceConcat });
         }
       }
     } else {
@@ -153,6 +159,12 @@ class SettingTime extends Component {
       } else {
         const data = await fetchGetTimeEnableInWeek(id);
         this.props.getAllTimeEnableInWeek(data.body);
+        const resStandardPriceRush = await fetchGetStandarPrice(true);
+        const resStandardPriceWithoutRus = await fetchGetStandarPrice(false);
+        const standardPriceConcat = resStandardPriceRush.body.concat(
+          resStandardPriceWithoutRus.body,
+        );
+        this.setState({ standardPrice: standardPriceConcat });
       }
     }
   }
@@ -199,7 +211,6 @@ class SettingTime extends Component {
       this.setState({ fieldTypeId: 2 });
     }
     await this.setState({ [name]: value });
-    console.log(this.state);
   }
   async handelTimeStartDayInputChange(evt) {
     await this.setState({ startDay: evt });
@@ -218,8 +229,8 @@ class SettingTime extends Component {
           day.fieldTypeId.id === this.state.fieldTypeId,
       );
       if (filterDay.length > 0) {
-        tmpButtonGroupDayInWeek[i].checked = false;
-        tmpButtonGroupDayInWeek[i].disable = true;
+        // tmpButtonGroupDayInWeek[i].checked = false;
+        // tmpButtonGroupDayInWeek[i].disable = true;
       } else {
         tmpButtonGroupDayInWeek[i].disable = false;
       }
@@ -234,8 +245,7 @@ class SettingTime extends Component {
     this.setState({ isShowAddTime: true });
   }
 
-  async handleSubmitTimeInWeek(evt) {
-    evt.preventDefault();
+  async handleSubmitTimeInWeek(standardPriceRush, standardPriceWithoutRush) {
     const { id } = this.props.auth.user.data;
     const {
       startDay,
@@ -258,73 +268,102 @@ class SettingTime extends Component {
             data => data.checked === true,
           );
           if (dayAdd.length > 0) {
-            for (let i = 0; i < dayAdd.length; i++) {
-              let timeEnable = [
-                {
-                  dayInWeek: dayAdd[i].value,
-                  endTime: '17:00',
-                  fieldOwnerId: id,
-                  fieldTypeId: fieldTypeId,
-                  price: idelPrice,
-                  startTime: startDay.format('HH:mm'),
-                  optimal: false,
-                },
-              ];
-              if (!this.state.isOptimze) {
-                timeEnable.push({dayInWeek: dayAdd[i].value,
-                  endTime: endDay.format('HH:mm'),
-                  fieldOwnerId: id,
-                  fieldTypeId: fieldTypeId,
-                  price: peakPrice,
-                  startTime: '17:00',
-                  optimal: false,})
-              }
-              if (this.state.isOptimze) {
-                let startTimeTmp = '17:00';               
-                for (let j = 1; j <= this.state.optimizeNumOfMatch; j++) {
-                  let endTimeWithPeak = `${Math.floor(17 + this.state.optimizeTime * j)}:${
-                    17 +
-                      this.state.optimizeTime * j -
-                      Math.floor(17 + this.state.optimizeTime * j) >
-                    0
-                      ? '30'
-                      : '00'
-                  }`
-                  timeEnable.push({
-                    fieldOwnerId: id,
-                    dayInWeek: dayAdd[i].value,
-                    startTime: startTimeTmp,
-                    endTime: `${Math.floor(17 + this.state.optimizeTime * j)}:${
-                      17 +
-                        this.state.optimizeTime * j -
-                        Math.floor(17 + this.state.optimizeTime * j) >
-                      0
-                        ? '30'
-                        : '00'
-                    }`,
-                    price: peakPrice,
-                    fieldTypeId: fieldTypeId,
-                    optimal: true,
-                  })
-                  startTimeTmp = `${Math.floor(
-                    17 + this.state.optimizeTime * j,
-                  )}:${
-                    17 +
-                      this.state.optimizeTime * j -
-                      Math.floor(17 + this.state.optimizeTime * j) >
-                    0
-                      ? '30'
-                      : '00'
-                  }`;
+            if (
+              idelPrice <= standardPriceWithoutRush[0].maxPrice &&
+              idelPrice >= standardPriceWithoutRush[0].minPrice
+            ) {
+              if (
+                peakPrice <= standardPriceRush[0].maxPrice &&
+                peakPrice.standardPriceRush[0].minPrice
+              ) {
+                for (let i = 0; i < dayAdd.length; i++) {
+                  let timeEnable = [
+                    {
+                      dayInWeek: dayAdd[i].value,
+                      endTime: '17:00',
+                      fieldOwnerId: id,
+                      fieldTypeId: fieldTypeId,
+                      price: idelPrice,
+                      startTime: startDay.format('HH:mm'),
+                      optimal: false,
+                    },
+                  ];
+                  if (!this.state.isOptimze) {
+                    timeEnable.push({
+                      dayInWeek: dayAdd[i].value,
+                      endTime: endDay.format('HH:mm'),
+                      fieldOwnerId: id,
+                      fieldTypeId: fieldTypeId,
+                      price: peakPrice,
+                      startTime: '17:00',
+                      optimal: false,
+                    });
+                  }
+                  if (this.state.isOptimze) {
+                    let startTimeTmp = '17:00';
+                    for (let j = 1; j <= this.state.optimizeNumOfMatch; j++) {
+                      let endTimeWithPeak = `${Math.floor(
+                        17 + this.state.optimizeTime * j,
+                      )}:${
+                        17 +
+                          this.state.optimizeTime * j -
+                          Math.floor(17 + this.state.optimizeTime * j) >
+                        0
+                          ? '30'
+                          : '00'
+                      }`;
+                      timeEnable.push({
+                        fieldOwnerId: id,
+                        dayInWeek: dayAdd[i].value,
+                        startTime: startTimeTmp,
+                        endTime: `${Math.floor(
+                          17 + this.state.optimizeTime * j,
+                        )}:${
+                          17 +
+                            this.state.optimizeTime * j -
+                            Math.floor(17 + this.state.optimizeTime * j) >
+                          0
+                            ? '30'
+                            : '00'
+                        }`,
+                        price: peakPrice,
+                        fieldTypeId: fieldTypeId,
+                        optimal: true,
+                      });
+                      startTimeTmp = `${Math.floor(
+                        17 + this.state.optimizeTime * j,
+                      )}:${
+                        17 +
+                          this.state.optimizeTime * j -
+                          Math.floor(17 + this.state.optimizeTime * j) >
+                        0
+                          ? '30'
+                          : '00'
+                      }`;
+                    }
+                  }
+                  const resUpdateTimeEnable = await fetchUpdateTimeEnableInWeek(
+                    timeEnable,
+                  );
                 }
+                toast.success('Cập nhật thành công');
+                await this.setState({ isShowAddTime: !isShowAddTime });
+                const data = await fetchGetTimeEnableInWeek(id);
+                this.props.getAllTimeEnableInWeek(data.body);
+              } else {
+                this.setState({
+                  message: `Giá giờ cao điểm phải nhỏ hơn ${
+                    standardPriceRush[0].maxPrice
+                  }, lớn hơn ${standardPriceRush[0].minPrice}`,
+                });
               }
-              await fetchUpdateTimeEnableInWeek(              
-                timeEnable
-              );
+            } else {
+              this.setState({
+                message: `Giá giờ thấp điểm phải nhỏ hơn ${
+                  standardPriceWithoutRush[0].maxPrice
+                }, lớn hơn ${standardPriceWithoutRush[0].minPrice}`,
+              });
             }
-            await this.setState({ isShowAddTime: !isShowAddTime });
-            const data = await fetchGetTimeEnableInWeek(id);
-            this.props.getAllTimeEnableInWeek(data.body);
           } else {
             this.setState({ message: 'Chưa chọn ngày' });
           }
@@ -398,18 +437,37 @@ class SettingTime extends Component {
     if (!dayAfterFilter) {
       return <div className="loader" />;
     }
+    if (!this.state.standardPrice) {
+      return <div className="loader" />;
+    }
+    const standardPriceRush = this.state.standardPrice.filter(
+      price =>
+        price.rushHour === true &&
+        price.fieldTypeId.id === this.state.fieldTypeId,
+    );
+    const standardPriceWithoutRush = this.state.standardPrice.filter(
+      price =>
+        price.rushHour === false &&
+        price.fieldTypeId.id === this.state.fieldTypeId,
+    );
     const popoverRightPeak = (
       <Popover id="popover-positioned-right" title="Giờ thấp điểm">
         Giờ cao điểm sẽ sau
-        <strong> 17:00</strong> đến giờ đóng cửa
+        <strong> 17:00</strong> đến giờ đóng cửa. Giá tối đa là{' '}
+        <strong>{standardPriceRush[0].maxPrice}</strong>, tối thiểu là{' '}
+        <strong>{standardPriceRush[0].minPrice}</strong>
       </Popover>
     );
     const popoverRightIdle = (
       <Popover id="popover-positioned-right" title="Giờ cao điểm">
         Giờ thấp điểm sẽ từ lúc mở cửa tới
-        <strong> 17:00</strong>
+        <strong> 17:00</strong>. Giá tối đa là{' '}
+        <strong>{standardPriceWithoutRush[0].maxPrice}</strong>, tối thiểu là{' '}
+        <strong>{standardPriceWithoutRush[0].minPrice}</strong>
       </Popover>
     );
+    console.log(standardPriceRush, standardPriceWithoutRush);
+    // console.log(standardPriceAfter);
     return (
       <div className="main-panel">
         <div className="content">
@@ -462,8 +520,7 @@ class SettingTime extends Component {
                       name="isShowUpdate"
                       onClick={this.handelShowModal.bind(this)}
                     >
-                      <i className="glyphicon glyphicon-plus" /> Thêm mới khung
-                      giờ
+                      <i className="glyphicon glyphicon-plus" /> Cập nhật
                     </button>
                   </div>
                 </div>
@@ -550,7 +607,7 @@ class SettingTime extends Component {
                     </table>
                   </div>
                 ) : null}
-                {dayAfterFilter.length > 0 ? (
+                {/* {dayAfterFilter.length > 0 ? (
                   <div className="col-sm-12">
                     <div className="col-sm-4 col-sm-offset-4">
                       <button className="btn btn-danger btn-block">
@@ -558,7 +615,7 @@ class SettingTime extends Component {
                       </button>
                     </div>
                   </div>
-                ) : null}
+                ) : null} */}
               </div>
             </div>
           </div>
@@ -843,7 +900,12 @@ class SettingTime extends Component {
             <button
               className="btn btn-primary"
               type="submit"
-              onClick={this.handleSubmitTimeInWeek.bind(this)}
+              onClick={() =>
+                this.handleSubmitTimeInWeek(
+                  standardPriceRush,
+                  standardPriceWithoutRush,
+                )
+              }
             >
               Cập nhật
             </button>
