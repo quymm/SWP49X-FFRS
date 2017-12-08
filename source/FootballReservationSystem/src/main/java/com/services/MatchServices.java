@@ -382,7 +382,7 @@ public class MatchServices {
 
     public List<MatchingRequestEntity> findMatchingRequestByUserId(int userId) {
         AccountEntity user = accountServices.findAccountEntityByIdAndRole(userId, constant.getUserRole());
-        List<MatchingRequestEntity> matchingRequestEntityList = matchingRequestRepository.findByUserIdAndStatus(user, true);
+        List<MatchingRequestEntity> matchingRequestEntityList = matchingRequestRepository.findByUserId(user);
         return matchingRequestEntityList;
     }
 
