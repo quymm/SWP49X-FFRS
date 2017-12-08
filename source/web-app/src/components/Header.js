@@ -168,11 +168,12 @@ class Header extends Component {
       }
     }
   }
-  handleLogout(evt) {
+  async handleLogout(evt) {
     evt.preventDefault();
     this.setState({ message: undefined });
     this.props.doLogout();
-    this.props.history.push('/login');
+    await this.props.history.push('/login');
+    window.location.reload();
   }
 
   async handelClickDetailMatch(match) {

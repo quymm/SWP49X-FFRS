@@ -116,6 +116,7 @@ class FreeTime extends Component {
         if (data5vs5.status === 200) {
           await this.props.getAllFreeTime5vs5(data5vs5.body);
         }
+        
         if (data7vs7.status === 200) {
           await this.props.getAllFreeTime7vs7(data7vs7.body);
         }

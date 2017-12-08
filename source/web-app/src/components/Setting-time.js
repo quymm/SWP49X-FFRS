@@ -274,7 +274,7 @@ class SettingTime extends Component {
             ) {
               if (
                 peakPrice <= standardPriceRush[0].maxPrice &&
-                peakPrice.standardPriceRush[0].minPrice
+                peakPrice >= standardPriceRush[0].minPrice
               ) {
                 for (let i = 0; i < dayAdd.length; i++) {
                   let timeEnable = [
