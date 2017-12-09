@@ -256,6 +256,12 @@ INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `star
 INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(28, 1, 'Thu', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
 INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `date_from`, `optimal`,`price`) VALUES(29, 1, 'Thu', '17:00:00', '22:00:00', '2017-01-01', 0, 200);
 
+-- tạo danh sách black list của người chơi
+-- quý ko thích chơi với huấn
+INSERT INTO blacklist_opponent(`user_id`, `opponent_id`) VALUES (1,3);
+-- quý ko thích chơi với hiếu
+INSERT INTO blacklist_opponent(`user_id`, `opponent_id`) VALUES (1,4);
+
 
 /*
 INSERT INTO time_enable(`field_owner_id`, `field_type_id`, `date_in_week`, `start_time`, `end_time`, `price`) VALUES(30, 1, 'Fri', '17:00:00', '22:00:00', 200);
