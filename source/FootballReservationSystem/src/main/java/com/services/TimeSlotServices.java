@@ -79,7 +79,8 @@ public class TimeSlotServices {
             // đếm chủ sân có bao nhiêu sân loại đó
             int numberOfField = fieldServices.countNumberOfFieldByFieldOwnerAndFieldType(fieldOwnerEntity, fieldTypeEntity, date);
             if (numberOfField == 0) {
-                throw new IllegalArgumentException("Field owner has not created any fields!");
+//                throw new IllegalArgumentException("Field owner has not created any fields!");
+                return savedTimeSlotEntityList;
             }
             // get list timeEnable theo chủ sân, loại sân và theo ngày order by theo thời gian từ nhỏ đến lớn
             // list not optimal
