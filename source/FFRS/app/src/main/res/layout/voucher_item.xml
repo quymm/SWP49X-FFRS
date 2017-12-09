@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:gravity="center"
-        android:text="Vouncher giảm giá 200 nghìn"
+        android:text="Vouncher giảm giá 200 ngàn"
         android:textColor="@android:color/black"
         android:textSize="17dp"
         android:textStyle="bold"/>

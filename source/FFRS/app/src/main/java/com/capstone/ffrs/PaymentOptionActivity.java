@@ -94,4 +94,10 @@ public class PaymentOptionActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    public void onClickGoBackToHome(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+    }
 }

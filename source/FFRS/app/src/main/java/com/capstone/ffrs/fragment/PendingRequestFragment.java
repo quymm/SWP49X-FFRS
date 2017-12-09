@@ -37,12 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +104,6 @@ public class PendingRequestFragment extends Fragment {
     public void loadPendingRequests(View view) {
         if (!requestList.isEmpty()) {
             requestList.clear();
-            adapter.notifyDataSetChanged();
         }
 
         if (sharedPreferences == null) {
@@ -140,35 +134,12 @@ public class PendingRequestFragment extends Fragment {
                                     request.setLatitude(obj.getDouble("latitude"));
                                     request.setLongitude(obj.getDouble("longitude"));
                                     request.setDuration(obj.getInt("duration"));
-                                    request.setDistance(obj.getInt("expectedDistance"));
                                     request.setAddress(obj.getString("address"));
-                                    request.setStatus(obj.getBoolean("status"));
                                     requestList.add(request);
                                 } catch (Exception e) {
                                     Log.d("EXCEPTION", e.getMessage());
                                 } finally {
-                                    //Notify adapter about data changes\
-                                    Collections.sort(requestList, new Comparator<PendingRequest>() {
-                                        @Override
-                                        public int compare(PendingRequest o1, PendingRequest o2) {
-                                            try {
-                                                String strFirstTime = getStringDate(o1) + " " + o1.getStartTime();
-                                                String strSecondTime = getStringDate(o2) + " " + o2.getEndTime();
-                                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy H:mm");
-                                                Date startDate = sdf.parse(strFirstTime);
-                                                Date endDate = sdf.parse(strSecondTime);
-                                                return endDate.compareTo(startDate);
-                                            } catch (ParseException e) {
-                                                e.printStackTrace();
-                                            }
-                                            return 0;
-                                        }
-
-                                        public String getStringDate(PendingRequest o) {
-                                            Date date = new Date(Long.valueOf(o.getDate()));
-                                            return new SimpleDateFormat("dd/MM/yyyy").format(date);
-                                        }
-                                    });
+                                    //Notify adapter about data changes
                                     adapter.notifyItemChanged(i);
                                 }
                             }

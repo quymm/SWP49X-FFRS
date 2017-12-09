@@ -40,7 +40,7 @@ public class PaidMatchAdapter extends RecyclerView.Adapter<PaidMatchAdapter.Paid
     public PaidRequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View rootView = inflater.inflate(R.layout.paid_match_item, parent, false);
-        return new PaidRequestViewHolder(rootView);
+        return new PaidMatchAdapter.PaidRequestViewHolder(rootView);
     }
 
     @Override

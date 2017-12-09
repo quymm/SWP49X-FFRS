@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,7 +66,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
     @Override
     public PendingRequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rootView = inflater.inflate(R.layout.pending_request_item, parent, false);
-        return new PendingRequestViewHolder(rootView);
+        return new PendingRequestAdapter.PendingRequestViewHolder(rootView);
     }
 
     @Override
@@ -101,15 +100,6 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                 strDuration += " " + (duration % 60) + " phút";
             }
             holder.txtDuration.setText(strDuration);
-
-            boolean status = request.isStatus();
-            if (!status) {
-                holder.txtStatus.setText("Đã hủy");
-                holder.background.setBackgroundColor(context.getResources().getColor(R.color.red));
-            } else {
-                holder.txtStatus.setText("Đang chờ");
-                holder.background.setBackgroundColor(context.getResources().getColor(R.color.green));
-            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -122,8 +112,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
 
     public class PendingRequestViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView txtAddress, txtTime, txtDate, txtDuration, txtStatus;
-        private RelativeLayout background;
+        private TextView txtAddress, txtTime, txtDate, txtDuration;
 
         private Button btClose;
 
@@ -133,8 +122,6 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
             txtTime = (TextView) itemView.findViewById(R.id.time_view);
             txtDate = (TextView) itemView.findViewById(R.id.date_view);
             txtDuration = (TextView) itemView.findViewById(R.id.duration_view);
-            txtStatus = (TextView) itemView.findViewById(R.id.status_view);
-            background = (RelativeLayout) itemView.findViewById(R.id.content_layout);
             btClose = (Button) itemView.findViewById(R.id.btClose);
 
             btClose.setOnClickListener(new View.OnClickListener() {
@@ -160,13 +147,12 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                                                    @Override
                                                                    public void onResponse(JSONObject response) {
                                                                        Toast.makeText(context, "Bạn đã hủy yêu cầu đá chung", Toast.LENGTH_SHORT).show();
-//                                                                       requestList.remove(request);
-//                                                                       notifyDataSetChanged();
-//                                                                       if (requestList.isEmpty()) {
-//                                                                           TextView txtNotFound = (TextView) ((Activity) context).findViewById(R.id.text_not_found_pending_request);
-//                                                                           txtNotFound.setVisibility(View.VISIBLE);
-//                                                                       }
-                                                                       btClose.setVisibility(View.GONE);
+                                                                       requestList.remove(request);
+                                                                       notifyDataSetChanged();
+                                                                       if (requestList.isEmpty()) {
+                                                                           TextView txtNotFound = (TextView) ((Activity) context).findViewById(R.id.text_not_found_pending_request);
+                                                                           txtNotFound.setVisibility(View.VISIBLE);
+                                                                       }
                                                                    }
                                                                }, new Response.ErrorListener() {
                                                                    @Override
@@ -230,7 +216,6 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                     intent.putExtra("duration", request.getDuration());
                     intent.putExtra("date", request.getDate());
                     intent.putExtra("start_time", request.getStartTime());
-                    intent.putExtra("distance", request.getDistance());
                     intent.putExtra("end_time", request.getEndTime());
                     intent.putExtra("latitude", request.getLatitude());
                     intent.putExtra("longitude", request.getLongitude());

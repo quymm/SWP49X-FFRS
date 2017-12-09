@@ -80,8 +80,8 @@ class Field extends Component {
                 <td>{index + 1}</td>
                 <td>{listField.name}</td>
                 <td>{listField.fieldTypeId.name}</td>
-                <td>{listField.expirationDate? moment(listField.expirationDate, 'YYYY-MM-DD').format('DD/MM/YYYY'): null }</td>
-                {listField.expirationDate? null:
+                {/* <td>{listField.expirationDate? moment(listField.expirationDate, 'YYYY-MM-DD').format('DD/MM/YYYY'): null }</td> */}
+                {/* {listField.expirationDate? null:
                 <td>
                   <button
                     value={listField.id}
@@ -90,7 +90,7 @@ class Field extends Component {
                   >
                     Xoá
                   </button>
-                </td>}
+                </td>} */}
               </tr>
             );
           })
@@ -116,7 +116,7 @@ class Field extends Component {
                           <th>#</th>
                           <th>Tên sân</th>
                           <th>Loại sân</th>
-                          <th>Hiệu lực đến ngày</th>                         
+                          {/* <th>Hiệu lực đến ngày</th>                          */}
                           <th />
                         </tr>
                       </thead>

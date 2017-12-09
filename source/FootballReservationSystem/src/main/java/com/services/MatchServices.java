@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -59,6 +61,9 @@ public class MatchServices {
     StandardPriceServices standardPriceServices;
 
     @Autowired
+    TeamMemberServices teamMemberServices;
+
+    @Autowired
     Constant constant;
 
     public MatchingRequestEntity findMatchingRequestEntityById(int id) {
@@ -90,7 +95,10 @@ public class MatchServices {
 
         InputBillDTO inputBillDTO = new InputBillDTO();
         inputBillDTO.setFriendlyMatchId(savedFriendlyMatchEntity.getId());
-        return billServices.createBill(inputBillDTO);
+        BillEntity billEntity = billServices.createBill(inputBillDTO);
+        List<TeamMemberEntity> teamMemberEntities = teamMemberServices.findTeamMemberListWithCaptainId(userEntity.getId());
+        SmsService.sendMessageToPlayer(teamMemberEntities,friendlyMatchEntity);
+        return billEntity;
     }
 
     public FriendlyMatchEntity findFriendlyMatchByTimeSlot(int timeSlotId) {
@@ -340,6 +348,9 @@ public class MatchServices {
         billOfOpponent.setTourMatchId(savedTourMatchEntity.getId());
         billServices.createBill(billOfOpponent);
 
+        List<TeamMemberEntity> teamMemberEntitiesA = teamMemberServices.findTeamMemberListWithCaptainId(user.getId());
+        List<TeamMemberEntity> teamMemberEntitiesB = teamMemberServices.findTeamMemberListWithCaptainId(opponent.getId());
+        SmsService.sendMessageToPlayer(teamMemberEntitiesA, teamMemberEntitiesB, tourMatchEntity);
         return savedBillOfUser;
     }
 
