@@ -28,8 +28,7 @@ public class CustomTimePickerDialog extends TimePickerDialog {
     private int lastSavedMinute;
     private Date minTime, maxTime;
 
-
-    public CustomTimePickerDialog(Context context, OnTimeSetListener listener,
+    CustomTimePickerDialog(Context context, OnTimeSetListener listener,
                                   int hourOfDay, int minute, boolean is24HourView) {
         super(context, R.style.TimePickerTheme, null, hourOfDay,
                 minute / TIME_PICKER_INTERVAL, is24HourView);
@@ -44,11 +43,11 @@ public class CustomTimePickerDialog extends TimePickerDialog {
         lastSavedMinute = minute / TIME_PICKER_INTERVAL;
     }
 
-    public void setMinTime(Date minTime) {
+    void setMinTime(Date minTime) {
         this.minTime = minTime;
     }
 
-    public void setMaxTime(Date maxTime) {
+    void setMaxTime(Date maxTime) {
         this.maxTime = maxTime;
     }
 
@@ -132,7 +131,7 @@ public class CustomTimePickerDialog extends TimePickerDialog {
         }
     }
 
-    public void validateTimePicker(TimePicker view, int hourOfDay) {
+    private void validateTimePicker(TimePicker view, int hourOfDay) {
         if (minTime != null && hourOfDay <= minTime.getHours()) {
             if (minTime.getMinutes() == 0) {
                 setMinutePicker(false, false);
@@ -158,7 +157,7 @@ public class CustomTimePickerDialog extends TimePickerDialog {
         setMinutePicker(false, false);
     }
 
-    public void setMinutePicker(boolean isMinThirty, boolean isMaxZero) {
+    private void setMinutePicker(boolean isMinThirty, boolean isMaxZero) {
         try {
             Class<?> classForid = Class.forName("com.android.internal.R$id");
 
@@ -205,9 +204,7 @@ public class CustomTimePickerDialog extends TimePickerDialog {
                     "mTimePicker"
             );
             mTimePicker = (TimePicker) field.get(this);
-            final Class<?> delegateClass = Class.forName(
-                    "android.widget.TimePicker$TimePickerDelegate"
-            );
+            final Class<?> delegateClass = Class.forName("android.widget.TimePicker$TimePickerDelegate");
             final Field delegateField = this.findField(
                     TimePicker.class,
                     delegateClass,
@@ -215,9 +212,7 @@ public class CustomTimePickerDialog extends TimePickerDialog {
             );
 
             final Object delegate = delegateField.get(mTimePicker);
-            final Class<?> spinnerDelegateClass = Class.forName(
-                    "android.widget.TimePickerSpinnerDelegate"
-            );
+            final Class<?> spinnerDelegateClass = Class.forName("android.widget.TimePickerSpinnerDelegate");
 
             if (delegate.getClass() != spinnerDelegateClass) {
                 delegateField.set(mTimePicker, null);

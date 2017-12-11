@@ -10,11 +10,8 @@ import com.capstone.ffrs.fragment.MatchSearchFragment;
 
 public class SearchPagerAdapter extends FragmentPagerAdapter {
 
-    private Context mContext;
-
-    public SearchPagerAdapter(Context context, FragmentManager fm) {
+    public SearchPagerAdapter(FragmentManager fm) {
         super(fm);
-        mContext = context;
     }
 
     // This determines the fragment for each tab

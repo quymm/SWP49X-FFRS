@@ -16,9 +16,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.controller.NetworkController;
@@ -34,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -71,7 +77,7 @@ public class RequestTimeActivity extends AppCompatActivity {
         // Button
         DateTimeFormatter dtf = DateTimeFormat.forPattern("H:mm:ss");
         final EditText txtStartTime = (EditText) findViewById(R.id.input_start_time);
-        final EditText txtEndTime = (EditText) findViewById(R.id.input_end_time);
+        final TextView txtEndTime = (TextView) findViewById(R.id.input_end_time);
         LocalTime localStartTime = LocalTime.parse(b.getString("field_start_time"), dtf);
         LocalTime localEndTime = localStartTime.plusMinutes(duration);
         dtf = DateTimeFormat.forPattern("H:mm");
@@ -138,12 +144,12 @@ public class RequestTimeActivity extends AppCompatActivity {
         final Bundle b = getIntent().getExtras();
 
         final EditText txtStartTime = (EditText) findViewById(R.id.input_start_time);
-        final EditText txtEndTime = (EditText) findViewById(R.id.input_end_time);
+        final TextView txtEndTime = (TextView) findViewById(R.id.input_end_time);
 
         final int opponentId = b.getInt("opponent_id");
 
         String url = hostURL + getResources().getString(R.string.url_choose_field);
-        url = String.format(url, b.getInt("matching_request_id"), 5);
+        url = String.format(url, b.getInt("matching_request_id"));
 
         RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
 
@@ -152,7 +158,6 @@ public class RequestTimeActivity extends AppCompatActivity {
         Map<String, Object> params = new HashMap<>();
         params.put("expectedDistance", b.getInt("distance"));
         params.put("address", b.getString("address"));
-        params.put("priorityField", b.getBoolean("priorityField"));
         params.put("duration", b.getInt("duration"));
         params.put("date", strDate);
         params.put("userId", userId);
@@ -161,7 +166,6 @@ public class RequestTimeActivity extends AppCompatActivity {
         params.put("fieldTypeId", b.getInt("field_type_id"));
         params.put("latitude", b.getDouble("latitude"));
         params.put("longitude", b.getDouble("longitude"));
-        params.put("duration", b.getInt("duration"));
         JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -171,8 +175,6 @@ public class RequestTimeActivity extends AppCompatActivity {
                                 JSONArray body = response.getJSONArray("body");
                                 if (body != null && body.length() > 0) {
                                     try {
-                                        final EditText txtStartTime = (EditText) findViewById(R.id.input_start_time);
-                                        final EditText txtEndTime = (EditText) findViewById(R.id.input_end_time);
                                         JSONObject firstItem = body.getJSONObject(0);
                                         ArrayList<FieldOwner> suitableList = new ArrayList<>();
                                         for (int i = 0; i < body.length(); i++) {
@@ -227,7 +229,31 @@ public class RequestTimeActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("Error.Response", error.toString());
+                        if (error.networkResponse != null && (error.networkResponse.statusCode == 400 || error.networkResponse.statusCode == 404)) {
+                            try {
+                                String strResponse = new String(error.networkResponse.data, "UTF-8");
+                                JSONObject response = new JSONObject(strResponse);
+                                if (response.getString("message").equals("Field owner has not created any fields!")) {
+                                    Toast toast = Toast.makeText(RequestTimeActivity.this, "Không tìm thấy sân phù hợp!", Toast.LENGTH_LONG);
+                                    toast.show();
+                                    finish();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        } else if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(getApplicationContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(getApplicationContext(), "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(getApplicationContext(), "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
+                        } else if (error instanceof ParseError) {
+                            Toast.makeText(getApplicationContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }) {
             @Override

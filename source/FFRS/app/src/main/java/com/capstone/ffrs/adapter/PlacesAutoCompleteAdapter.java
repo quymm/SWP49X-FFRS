@@ -38,13 +38,13 @@ public class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements F
     private final String TYPE_AUTOCOMPLETE = "/autocomplete";
     private final String OUT_JSON = "/json";
 
-    private final String API_KEY = "AIzaSyCgrItmX9s3u9O0dI3fe4jDHXtqUB9448A";
+    //private final String API_KEY = "AIzaSyCgrItmX9s3u9O0dI3fe4jDHXtqUB9448A";
+    private final String API_KEY = "AIzaSyAfuWCJ4KjSepx-iyPerA8h--WqRj8lpBk";
+    private ArrayList<String> resultList;
 
-    ArrayList<String> resultList;
-
-    Context mContext;
-    int mResource;
-    GeoDataClient dataClient;
+    private Context mContext;
+    private int mResource;
+    private GeoDataClient dataClient;
 
     public PlacesAutoCompleteAdapter(Context context, int resource) {
         super(context, resource);
@@ -67,7 +67,7 @@ public class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements F
 
     @Override
     public Filter getFilter() {
-        Filter filter = new Filter() {
+        return new Filter() {
             @Override
             protected FilterResults performFiltering(final CharSequence constraint) {
                 final FilterResults filterResults = new FilterResults();
@@ -88,8 +88,6 @@ public class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements F
                 }
             }
         };
-
-        return filter;
     }
 
     public ArrayList<String> autocomplete(String input) {
@@ -99,14 +97,13 @@ public class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements F
         StringBuilder jsonResults = new StringBuilder();
 
         try {
-            StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
-            sb.append("?key=" + API_KEY);
-            sb.append("&language=vi");
-            sb.append("&region=VN");
-            sb.append("&types=geocode");
-            sb.append("&input=" + URLEncoder.encode(input, "utf8"));
+            String sb = PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON + "?key=" + API_KEY +
+                    "&language=vi" +
+                    "&region=VN" +
+                    "&types=geocode" +
+                    "&input=" + URLEncoder.encode(input, "utf8");
 
-            URL url = new URL(sb.toString());
+            URL url = new URL(sb);
             conn = (HttpURLConnection) url.openConnection();
             InputStreamReader in = new InputStreamReader(conn.getInputStream());
 
@@ -118,10 +115,8 @@ public class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements F
             }
         } catch (MalformedURLException e) {
             Log.e("G", "Error processing Places API URL", e);
-            return resultList;
         } catch (IOException e) {
             Log.e("G", "Error connecting to Places API", e);
-            return resultList;
         } finally {
             if (conn != null) {
                 conn.disconnect();

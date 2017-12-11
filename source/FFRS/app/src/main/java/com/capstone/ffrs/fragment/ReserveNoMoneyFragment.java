@@ -28,7 +28,6 @@ import org.json.JSONObject;
 public class ReserveNoMoneyFragment extends Fragment {
 
     private Button btHome, btRecharge;
-    private String hostURL;
 
     public ReserveNoMoneyFragment() {
         // Required empty public constructor
@@ -37,8 +36,6 @@ public class ReserveNoMoneyFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        hostURL = HostURLUtils.getInstance(getContext()).getHostURL();
     }
 
     @Override
@@ -50,22 +47,6 @@ public class ReserveNoMoneyFragment extends Fragment {
         btHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                final Bundle b = getActivity().getIntent().getExtras();
-//                int timeSlotId = b.getInt("time_slot_id");
-//                String url = hostURL + getResources().getString(R.string.url_cancel_reservation);
-//                url = String.format(url, timeSlotId);
-//                RequestQueue queue = NetworkController.getInstance(getActivity()).getRequestQueue();
-//                JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//
-//                    }
-//                }, new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                    }
-//                });
-//                queue.add(request);
                 Intent intent = new Intent(getContext(), SearchActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);

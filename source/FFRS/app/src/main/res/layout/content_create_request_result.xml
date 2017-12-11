@@ -44,10 +44,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:background="#009632"
+            android:background="@color/green"
             android:onClick="onClickHome"
             android:text="Trở về màn hình chính"
             android:textColor="@android:color/white"
-            android:textSize="18dp" />
+            android:textSize="18sp" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

@@ -111,7 +111,7 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_alignParentEnd="true"
-                            android:background="#009632"
+                            android:background="@color/green"
                             android:onClick="onClickShowMap"
                             app:srcCompat="@drawable/ic_location" />
 
@@ -128,7 +128,7 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="center_vertical"
                                 android:text="Tên sân"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp"
                                 android:textStyle="bold" />
 
@@ -137,7 +137,7 @@
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Địa chỉ"
-                                android:textColor="@android:color/black" />
+                                android:textColor="@color/primaryText" />
                         </LinearLayout>
 
                     </RelativeLayout>
@@ -161,7 +161,7 @@
                                 android:layout_weight="1"
                                 android:text="Ngày:"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp" />
 
                             <TextView
@@ -171,7 +171,7 @@
                                 android:layout_weight="1"
                                 android:text="dd/MM/yyyy"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp" />
                         </TableRow>
 
@@ -187,7 +187,7 @@
                                 android:layout_weight="1"
                                 android:text="Từ:"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp" />
 
                             <TextView
@@ -197,7 +197,7 @@
                                 android:layout_weight="1"
                                 android:text="H:mm"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp" />
                         </TableRow>
 
@@ -213,7 +213,7 @@
                                 android:layout_weight="1"
                                 android:text="Đến:"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp" />
 
                             <TextView
@@ -223,7 +223,7 @@
                                 android:layout_weight="1"
                                 android:text="H:mm"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp" />
                         </TableRow>
 
@@ -239,7 +239,7 @@
                                 android:layout_weight="1"
                                 android:text="Loại sân:"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp" />
 
                             <TextView
@@ -249,7 +249,7 @@
                                 android:layout_weight="1"
                                 android:text="5 vs 5"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp" />
                         </TableRow>
 
@@ -265,7 +265,7 @@
                                 android:layout_weight="1"
                                 android:text="Thời gian đá:"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp" />
 
                             <TextView
@@ -275,7 +275,7 @@
                                 android:layout_weight="1"
                                 android:text="x tiếng"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp" />
                         </TableRow>
 
@@ -291,7 +291,7 @@
                                 android:layout_weight="1"
                                 android:text="Tổng giá:"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp" />
 
                             <TextView
@@ -301,7 +301,7 @@
                                 android:layout_weight="1"
                                 android:text="xyz,000 đồng"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp"
                                 android:textStyle="bold" />
                         </TableRow>
@@ -317,7 +317,7 @@
                                 android:layout_weight="1"
                                 android:text="Giá phải trả:"
                                 android:textAlignment="textStart"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/primaryText"
                                 android:textSize="22sp" />
 
                             <TextView

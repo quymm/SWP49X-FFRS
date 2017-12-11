@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -99,7 +100,7 @@ public class FirebaseNotificationServices extends Service {
             matchingRequestValueListener = myRef.child("matchingRequest").child(userId + "").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (firstRequestCreated == false) {
+                    if (!firstRequestCreated) {
                         firstRequestCreated = true;
                     }
                 }
@@ -141,7 +142,7 @@ public class FirebaseNotificationServices extends Service {
             tourMatchValueListener = myRef.child("tourMatch").child(userId + "").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (firstResponseCreated == false) {
+                    if (!firstResponseCreated) {
                         firstResponseCreated = true;
                     }
 
@@ -196,6 +197,7 @@ public class FirebaseNotificationServices extends Service {
     }
 
     private void showNotification(final Context context, String keyword, DataSnapshot snapshot) {
+        Log.d("NOTIFICATION", snapshot.toString());
         final String title = "FFRS";
 
         if (keyword.equalsIgnoreCase("tourMatch")) {
@@ -213,7 +215,6 @@ public class FirebaseNotificationServices extends Service {
                             if (!response.isNull("body")) {
                                 JSONObject body = response.getJSONObject("body");
                                 if (body != null) {
-
                                     String opponentTeamName = body.getJSONObject("userId").getJSONObject("profileId").getString("name");
                                     String content = opponentTeamName + " đã chấp nhận yêu cầu của bạn. Trận đấu đã được sắp xếp.";
 
@@ -316,44 +317,47 @@ public class FirebaseNotificationServices extends Service {
                             if (!response.isNull("body")) {
                                 JSONObject body = response.getJSONObject("body");
                                 if (body != null) {
-                                    String content = "Đã tìm thấy " + numberOfMatches + " đối thủ cho yêu cầu của bạn.";
+                                    if (body.getBoolean("status")) {
+                                        String content = "Đã tìm thấy " + numberOfMatches + " đối thủ cho yêu cầu của bạn.";
 
-                                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                                            .setSmallIcon(R.mipmap.ic_launcher)
-                                            .setContentTitle(title)
-                                            .setDefaults(NotificationCompat.DEFAULT_ALL)
-                                            .setContentText(content)
-                                            .setAutoCancel(true);
+                                        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                                                .setSmallIcon(R.mipmap.ic_launcher)
+                                                .setContentTitle(title)
+                                                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                                                .setContentText(content)
+                                                .setAutoCancel(true);
 
-                                    Intent backIntent = new Intent(context, RequestInfoActivity.class);
-                                    backIntent.putExtra("field_type_id", body.getJSONObject("fieldTypeId").getInt("id"));
-                                    backIntent.putExtra("date", body.getString("date"));
-                                    backIntent.putExtra("start_time", body.getString("startTime"));
-                                    backIntent.putExtra("end_time", body.getString("endTime"));
-                                    backIntent.putExtra("duration", body.getInt("duration"));
-                                    backIntent.putExtra("distance", body.getInt("expectedDistance"));
-                                    backIntent.putExtra("priorityField", body.getBoolean("priorityField"));
-                                    backIntent.putExtra("address", body.getString("address"));
-                                    backIntent.putExtra("latitude", body.getDouble("latitude"));
-                                    backIntent.putExtra("longitude", body.getDouble("longitude"));
-                                    backIntent.putExtra("createMode", false);
-                                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                                    backIntent.putExtra("user_id", preferences.getInt("user_id", -1));
+                                        Intent backIntent = new Intent(context, RequestInfoActivity.class);
+                                        backIntent.putExtra("field_type_id", body.getJSONObject("fieldTypeId").getInt("id"));
+                                        backIntent.putExtra("date", body.getString("date"));
+                                        backIntent.putExtra("start_time", body.getString("startTime"));
+                                        backIntent.putExtra("end_time", body.getString("endTime"));
+                                        backIntent.putExtra("duration", body.getInt("duration"));
+                                        backIntent.putExtra("distance", body.getInt("expectedDistance"));
+                                        backIntent.putExtra("priorityField", body.getBoolean("priorityField"));
+                                        backIntent.putExtra("address", body.getString("address"));
+                                        backIntent.putExtra("latitude", body.getDouble("latitude"));
+                                        backIntent.putExtra("longitude", body.getDouble("longitude"));
+                                        backIntent.putExtra("status", body.getBoolean("status"));
+                                        backIntent.putExtra("createMode", false);
+                                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                        backIntent.putExtra("user_id", preferences.getInt("user_id", -1));
 
-                                    backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    DatabaseReference ref = database.getReference();
-                                    Map<String, Object> childUpdates = new HashMap<>();
-                                    childUpdates.put("/matchingRequest/" + preferences.getInt("user_id", -1) + "/" + matchingRequestId + "/status", 1);
-                                    ref.updateChildren(childUpdates);
+                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                        DatabaseReference ref = database.getReference();
+                                        Map<String, Object> childUpdates = new HashMap<>();
+                                        childUpdates.put("/matchingRequest/" + preferences.getInt("user_id", -1) + "/" + matchingRequestId + "/status", 1);
+                                        ref.updateChildren(childUpdates);
 
-                                    final PendingIntent pendingIntent = PendingIntent.getActivities(context, 900,
-                                            new Intent[]{backIntent}, PendingIntent.FLAG_ONE_SHOT);
+                                        final PendingIntent pendingIntent = PendingIntent.getActivities(context, 900,
+                                                new Intent[]{backIntent}, PendingIntent.FLAG_ONE_SHOT);
 
-                                    mBuilder.setContentIntent(pendingIntent);
-                                    NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                    mNotificationManager.notify(matchingRequestId, mBuilder.build());
+                                        mBuilder.setContentIntent(pendingIntent);
+                                        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                                        mNotificationManager.notify(matchingRequestId, mBuilder.build());
+                                    }
                                 }
                             }
                         } catch (JSONException e) {

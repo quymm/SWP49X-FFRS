@@ -346,6 +346,7 @@ public class MatchSearchFragment extends Fragment {
 
                             if (!addresses.isEmpty()) {
                                 customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                                currentAddress = v.getText().toString();
                             } else {
                                 customPosition = null;
                                 txtAddress.setText("");
@@ -396,6 +397,7 @@ public class MatchSearchFragment extends Fragment {
                         inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
                                 InputMethodManager.HIDE_NOT_ALWAYS);
                         customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                        currentAddress = str;
                     } else {
                         customPosition = null;
                         txtAddress.setText("");
@@ -435,7 +437,6 @@ public class MatchSearchFragment extends Fragment {
                 intent.putExtra("field_end_time", to.getText().toString());
                 intent.putExtra("duration", 60 + durationSpinner.getSelectedItemPosition() * 30);
                 intent.putExtra("distance", 4 + (distanceSpinner.getSelectedItemPosition() * 2));
-                intent.putExtra("priorityField", true);
                 intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
                 if (txtAddress.getText().toString().isEmpty() || customPosition == null) {
                     intent.putExtra("address", txtAddress.getHint().toString());
@@ -659,26 +660,6 @@ public class MatchSearchFragment extends Fragment {
 
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(timepickerReceiver);
     }
-
-//    private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
-//
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-//            if (resultCode == Activity.RESULT_OK) {
-//                Place place = PlaceAutocomplete.getPlace(getContext(), data);
-//                TextView txtAddress = (TextView) getActivity().findViewById(R.id.input_address);
-//                txtAddress.setText(place.getAddress());
-//                customPosition = place.getLatLng();
-//            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-//                Status status = PlaceAutocomplete.getStatus(getContext(), data);
-//                // TODO: Handle the error.
-//                Log.i("GoogleError", status.getStatusMessage());
-//            } else if (resultCode == Activity.RESULT_CANCELED) {
-//                // The user canceled the operation.
-//            }
-//        }
-//    }
 
     public void addFieldSpinner(View view) {
         fieldSpinner = (Spinner) view.findViewById(R.id.spField);

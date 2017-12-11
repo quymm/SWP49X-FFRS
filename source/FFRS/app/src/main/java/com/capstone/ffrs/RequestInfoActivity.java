@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,7 @@ import com.capstone.ffrs.utils.HostURLUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -65,12 +67,11 @@ public class RequestInfoActivity extends AppCompatActivity {
         TextView txtFieldType = (TextView) findViewById(R.id.text_field_type);
         txtFieldType.setText(getResources().getStringArray(R.array.field_types)[b.getInt("field_type_id") - 1]);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+
             Date startTime = sdf.parse(b.getString("start_time"));
             Date endTime = sdf.parse(b.getString("end_time"));
-
-            sdf = new SimpleDateFormat("H:mm");
 
             TextView txtStartTime = (TextView) findViewById(R.id.text_from);
             txtStartTime.setText(sdf.format(startTime));
@@ -87,6 +88,24 @@ public class RequestInfoActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        TextView txtStatus = (TextView) findViewById(R.id.text_status);
+        Button btCancel = (Button) findViewById(R.id.btCancel);
+        Button btViewList = (Button) findViewById(R.id.btViewList);
+
+        boolean status = b.getBoolean("status");
+        if (status) {
+            txtStatus.setText("Đang chờ");
+            txtStatus.setTextColor(getResources().getColor(R.color.green));
+            btCancel.setVisibility(View.VISIBLE);
+            btViewList.setVisibility(View.VISIBLE);
+        } else {
+            txtStatus.setText("Đã hủy");
+            txtStatus.setTextColor(getResources().getColor(R.color.red));
+            btCancel.setVisibility(View.GONE);
+            btViewList.setVisibility(View.GONE);
+        }
+
     }
 
     @Override

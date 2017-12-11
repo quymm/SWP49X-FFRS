@@ -79,8 +79,6 @@ public class MatchResultActivity extends AppCompatActivity {
 
         hostURL = HostURLUtils.getInstance(this).getHostURL();
 
-        loadMatches();
-
         txtNotFound = (TextView) findViewById(R.id.text_not_found);
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
@@ -91,6 +89,12 @@ public class MatchResultActivity extends AppCompatActivity {
             }
         });
         swipeRefreshLayout.setRefreshing(true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadMatches();
     }
 
     @Override
@@ -156,6 +160,8 @@ public class MatchResultActivity extends AppCompatActivity {
                                     match.setStartTime(obj.getString("startTime"));
                                     match.setEndTime(obj.getString("endTime"));
                                     match.setRatingScore(obj.getJSONObject("userId").getJSONObject("profileId").getInt("ratingScore"));
+                                    match.setDuration(obj.getInt("duration"));
+                                    match.setAddress(obj.getString("address"));
                                     // adding movie to movies array
                                     opponentList.add(match);
 
@@ -229,10 +235,6 @@ public class MatchResultActivity extends AppCompatActivity {
         boolean createMode = b.getBoolean("createMode");
 
         if (createMode) {
-//            Intent intent = new Intent(MatchResultActivity.this, CreateRequestResultActivity.class);
-//            intent.putExtra("user_id", b.getInt("user_id"));
-//            intent.putExtra("message", "Hệ thống đã để lại yêu cầu của bạn cho đối thủ phù hợp hơn!");
-//            startActivity(intent);
             final int createdMatchingRequestId = b.getInt("created_matching_request_id");
             AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

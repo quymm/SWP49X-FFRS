@@ -60,7 +60,7 @@
             android:onClick="onClickLogin"
             android:text="Đăng nhập"
             android:textColor="@android:color/white"
-            android:textSize="18dp" />
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/btRegister"
@@ -71,7 +71,7 @@
             android:onClick="onClickRegister"
             android:text="Đăng ký"
             android:textColor="@android:color/white"
-            android:textSize="18dp" />
+            android:textSize="18sp" />
 
     </LinearLayout>
 

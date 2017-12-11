@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -37,6 +38,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.capstone.ffrs.controller.NetworkController;
 import com.capstone.ffrs.utils.HostURLUtils;
 
@@ -52,7 +54,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private String url, hostURL;
+    private String hostURL;
     private CircleImageView imageView;
 
     @Override
@@ -78,7 +80,7 @@ public class ProfileActivity extends AppCompatActivity {
     public void loadAccountInfo() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         final int userId = sharedPreferences.getInt("user_id", -1);
-        url = hostURL + getResources().getString(R.string.url_get_user_by_id);
+        String url = hostURL + getResources().getString(R.string.url_get_user_by_id);
         url = String.format(url, userId);
 
         RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
@@ -109,6 +111,10 @@ public class ProfileActivity extends AppCompatActivity {
 
                             TextView txtAvailableBalance = (TextView) findViewById(R.id.text_available_balance);
                             txtAvailableBalance.setText((body.getJSONObject("profileId").getInt("balance") - body.getJSONObject("profileId").getInt("accountPayable")) + " nghìn đồng");
+
+                            RequestBuilder<Drawable> drawable = Glide.with(ProfileActivity.this).load(body.getJSONObject("profileId").getString("avatarUrl"));
+                            drawable.error(Glide.with(ProfileActivity.this).load(getResources().getDrawable(R.drawable.people)));
+                            drawable.into(imageView);
                         }
                     }
                 } catch (JSONException e) {

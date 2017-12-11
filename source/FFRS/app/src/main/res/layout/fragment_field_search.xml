@@ -20,10 +20,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/gray"
-                android:paddingBottom="3dp"
+                android:paddingBottom="1dp"
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp"
-                android:paddingTop="3dp">
+                android:paddingTop="1dp">
 
                 <EditText
                     android:id="@+id/edit_text"
@@ -38,7 +38,7 @@
                     android:inputType="text"
                     android:paddingLeft="10dp"
                     android:paddingRight="40dp"
-                    android:textSize="16dp" />
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:id="@+id/btSearchClose"
@@ -61,7 +61,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#dbdbdb"
+                    android:background="@color/gray"
                     android:orientation="vertical">
 
                     <TextView
@@ -81,6 +81,7 @@
                         android:id="@+id/recycler_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:scrollbars="vertical"
                         tools:layout_editor_absoluteX="0dp"
                         tools:layout_editor_absoluteY="0dp" />
                 </LinearLayout>

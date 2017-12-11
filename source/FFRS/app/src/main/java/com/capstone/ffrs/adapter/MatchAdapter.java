@@ -17,6 +17,8 @@ import com.capstone.ffrs.R;
 import com.capstone.ffrs.RequestTimeActivity;
 import com.capstone.ffrs.entity.MatchRequest;
 
+import org.w3c.dom.Text;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -68,8 +70,7 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
 
             holder.ratingScore.setText(item.getRatingScore() + "");
 
-            Bundle b = ((Activity) context).getIntent().getExtras();
-            int duration = b.getInt("duration");
+            int duration = item.getDuration();
             String strDuration = "";
             if (duration / 60 > 0) {
                 strDuration += (duration / 60) + " tiếng";
@@ -78,6 +79,8 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
                 strDuration += " " + (duration % 60) + " phút";
             }
             holder.duration.setText(strDuration);
+
+            holder.address.setText(item.getAddress());
 
             RequestBuilder<Drawable> drawable = Glide.with(context).load(item.getImageURL());
             drawable.error(Glide.with(context).load(context.getResources().getDrawable(R.drawable.people)));
@@ -94,7 +97,7 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
 
     public class MatchViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView teamName, time, date, duration, ratingScore;
+        private TextView teamName, time, date, duration, address, ratingScore;
         private CircleImageView imageView;
 
         public MatchViewHolder(final View itemView) {
@@ -103,6 +106,7 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
             time = (TextView) itemView.findViewById(R.id.time_view);
             date = (TextView) itemView.findViewById(R.id.date_view);
             duration = (TextView) itemView.findViewById(R.id.duration_view);
+            address = (TextView) itemView.findViewById(R.id.address_view);
             ratingScore = (TextView) itemView.findViewById(R.id.rating_score);
             imageView = (CircleImageView) itemView.findViewById(R.id.thumbnail);
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -141,9 +145,8 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
                             intent.putExtra("date", request.getDate());
                             intent.putExtra("matching_request_id", request.getId());
                             intent.putExtra("opponent_id", request.getUserId());
-                            intent.putExtra("duration", b.getInt("duration"));
+                            intent.putExtra("duration", request.getDuration());
                             intent.putExtra("distance", b.getInt("distance"));
-                            intent.putExtra("priorityField", b.getBoolean("priorityField"));
                             intent.putExtra("created_matching_request_id", b.getInt("created_matching_request_id"));
                             context.startActivity(intent);
                         } catch (ParseException e) {

@@ -6,7 +6,8 @@
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -173,10 +174,10 @@
                 android:layout_alignParentEnd="true"
                 android:layout_below="@id/table_layout"
                 android:layout_marginBottom="5dp"
-                android:background="#009632"
+                android:background="@color/green"
                 android:text="Tìm đối thủ"
                 android:textColor="@android:color/white"
-                android:textSize="18dp" />
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/btCreateRequest"
@@ -184,10 +185,10 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_below="@id/btFindRequest"
-                android:background="#009632"
+                android:background="@color/green"
                 android:text="Tạo yêu cầu mới"
                 android:textColor="@android:color/white"
-                android:textSize="18dp" />
+                android:textSize="18sp" />
         </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>
 </FrameLayout>

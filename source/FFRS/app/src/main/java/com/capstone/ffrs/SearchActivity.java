@@ -132,7 +132,7 @@ public class SearchActivity extends AppCompatActivity
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         // Create an adapter that knows which fragment should be shown on each page
-        SearchPagerAdapter pagerAdapter = new SearchPagerAdapter(this, getSupportFragmentManager());
+        SearchPagerAdapter pagerAdapter = new SearchPagerAdapter(getSupportFragmentManager());
 
         // Set the adapter onto the view pager
         viewPager.setAdapter(pagerAdapter);

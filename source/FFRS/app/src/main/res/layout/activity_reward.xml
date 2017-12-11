@@ -18,7 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="#009632"
+            android:background="@color/green"
             app:navigationIcon="@drawable/ic_arrow_back_white"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 

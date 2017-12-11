@@ -134,7 +134,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
             txtDate = (TextView) itemView.findViewById(R.id.date_view);
             txtDuration = (TextView) itemView.findViewById(R.id.duration_view);
             txtStatus = (TextView) itemView.findViewById(R.id.status_view);
-            background = (RelativeLayout) itemView.findViewById(R.id.content_layout);
+            background = (RelativeLayout) itemView.findViewById(R.id.overview_layout);
             btClose = (Button) itemView.findViewById(R.id.btClose);
 
             btClose.setOnClickListener(new View.OnClickListener() {
@@ -160,12 +160,6 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                                                    @Override
                                                                    public void onResponse(JSONObject response) {
                                                                        Toast.makeText(context, "Bạn đã hủy yêu cầu đá chung", Toast.LENGTH_SHORT).show();
-//                                                                       requestList.remove(request);
-//                                                                       notifyDataSetChanged();
-//                                                                       if (requestList.isEmpty()) {
-//                                                                           TextView txtNotFound = (TextView) ((Activity) context).findViewById(R.id.text_not_found_pending_request);
-//                                                                           txtNotFound.setVisibility(View.VISIBLE);
-//                                                                       }
                                                                        btClose.setVisibility(View.GONE);
                                                                    }
                                                                }, new Response.ErrorListener() {
@@ -235,6 +229,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                     intent.putExtra("latitude", request.getLatitude());
                     intent.putExtra("longitude", request.getLongitude());
                     intent.putExtra("address", request.getAddress());
+                    intent.putExtra("status", request.isStatus());
                     context.startActivity(intent);
 
                 }

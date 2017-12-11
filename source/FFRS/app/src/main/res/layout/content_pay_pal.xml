@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:indeterminate="true"
-            android:indeterminateTint="#009632"
+            android:indeterminateTint="@color/green"
             android:indeterminateTintMode="src_in" />
 
         <TextView

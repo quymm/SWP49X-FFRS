@@ -28,7 +28,7 @@ public class HistoryActivity extends AppCompatActivity {
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         // Create an adapter that knows which fragment should be shown on each page
-        HistoryPagerAdapter pagerAdapter = new HistoryPagerAdapter(this, getSupportFragmentManager());
+        HistoryPagerAdapter pagerAdapter = new HistoryPagerAdapter(getSupportFragmentManager());
 
         // Set the adapter onto the view pager
         viewPager.setAdapter(pagerAdapter);
