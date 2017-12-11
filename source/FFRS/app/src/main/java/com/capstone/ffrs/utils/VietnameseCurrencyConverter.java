@@ -14,7 +14,7 @@ package com.capstone.ffrs.utils;
 public class VietnameseCurrencyConverter {
 
     // Array of Vietnamese words from 0 to 9
-    static String[] units = {"không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"};
+    private static String[] units = {"không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"};
 
     /**
      * The main function for converting numbers to Vietnamese words.

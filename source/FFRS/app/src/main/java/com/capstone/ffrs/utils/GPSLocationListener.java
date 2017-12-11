@@ -73,7 +73,7 @@ public class GPSLocationListener implements GoogleApiClient.ConnectionCallbacks,
      * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
      * LocationServices API.
      */
-    protected synchronized void buildGoogleApiClient() {
+    private synchronized void buildGoogleApiClient() {
         Log.i(TAG, "Building GoogleApiClient");
         mGoogleApiClient = new GoogleApiClient.Builder(activity)
                 .addConnectionCallbacks(this)
@@ -96,7 +96,7 @@ public class GPSLocationListener implements GoogleApiClient.ConnectionCallbacks,
      * These settings are appropriate for mapping applications that show real-time location
      * updates.
      */
-    protected void createLocationRequest() {
+    private void createLocationRequest() {
         mLocationRequest = new LocationRequest();
 
         // Sets the desired interval for active location updates. This interval is
@@ -121,7 +121,7 @@ public class GPSLocationListener implements GoogleApiClient.ConnectionCallbacks,
     /**
      * Requests location updates from the FusedLocationApi.
      */
-    protected void startLocationUpdates() {
+    private void startLocationUpdates() {
         // The final argument to {@code requestLocationUpdates()} is a LocationListener
         // (http://developer.android.com/reference/com/google/android/gms/location/LocationListener.html).
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -130,7 +130,7 @@ public class GPSLocationListener implements GoogleApiClient.ConnectionCallbacks,
     /**
      * Removes location updates from the FusedLocationApi.
      */
-    protected void stopLocationUpdates() {
+    private void stopLocationUpdates() {
         // It is a good practice to remove location requests when the activity is in a paused or
         // stopped state. Doing so helps battery performance and is especially
         // recommended in applications that request frequent location updates.
@@ -215,21 +215,21 @@ public class GPSLocationListener implements GoogleApiClient.ConnectionCallbacks,
         return mGoogleApiClient;
     }
 
-    public static boolean isWifiConnected(Context context) {
+    private static boolean isWifiConnected(Context context) {
         ConnectivityManager connManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         return ((netInfo != null) && netInfo.isConnected());
     }
 
-    public static boolean isMobileConnected(Context context) {
+    private static boolean isMobileConnected(Context context) {
         ConnectivityManager connManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         return ((netInfo != null) && netInfo.isConnected());
     }
 
-    public static boolean hasGPS(Context context) {
+    private static boolean hasGPS(Context context) {
         PackageManager packageManager = context.getPackageManager();
         boolean hasGPS = packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
         return hasGPS;

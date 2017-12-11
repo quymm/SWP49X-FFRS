@@ -25,7 +25,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:src="@drawable/people"
-                app:civ_border_color="#0FFFFFFF"
+                app:civ_border_color="#dbdbdb"
                 app:civ_border_width="2dp" />
 
         </LinearLayout>

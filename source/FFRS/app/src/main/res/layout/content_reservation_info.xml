@@ -54,7 +54,7 @@
                             android:layout_weight="1"
                             android:text="Đối thủ:"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
 
                         <TextView
@@ -64,7 +64,7 @@
                             android:layout_weight="5"
                             android:text="XYZ"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
                     </TableRow>
 
@@ -80,7 +80,7 @@
                             android:layout_weight="1"
                             android:text="Sân:"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
 
                         <TextView
@@ -90,7 +90,7 @@
                             android:layout_weight="5"
                             android:text="Sân XXX"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
                     </TableRow>
 
@@ -106,7 +106,7 @@
                             android:layout_weight="1"
                             android:text="Ngày:"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
 
                         <TextView
@@ -116,7 +116,7 @@
                             android:layout_weight="5"
                             android:text="dd/MM/yyyy"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
                     </TableRow>
 
@@ -132,7 +132,7 @@
                             android:layout_weight="1"
                             android:text="Từ:"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
 
                         <TextView
@@ -142,7 +142,7 @@
                             android:layout_weight="5"
                             android:text="H:mm"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
                     </TableRow>
 
@@ -158,7 +158,7 @@
                             android:layout_weight="1"
                             android:text="Đến:"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
 
                         <TextView
@@ -168,7 +168,7 @@
                             android:layout_weight="5"
                             android:text="H:mm"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
                     </TableRow>
 
@@ -184,7 +184,7 @@
                             android:layout_weight="1"
                             android:text="Trận đấu:"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
 
                         <TextView
@@ -194,7 +194,7 @@
                             android:layout_weight="5"
                             android:text="Đá riêng"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
                     </TableRow>
 
@@ -210,7 +210,7 @@
                             android:layout_weight="1"
                             android:text="Loại sân:"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
 
                         <TextView
@@ -220,7 +220,7 @@
                             android:layout_weight="5"
                             android:text="5 vs 5"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
                     </TableRow>
 
@@ -236,7 +236,7 @@
                             android:layout_weight="1"
                             android:text="Thời gian đá:"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
 
                         <TextView
@@ -246,7 +246,7 @@
                             android:layout_weight="5"
                             android:text="x tiếng"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
                     </TableRow>
 
@@ -262,7 +262,7 @@
                             android:layout_weight="1"
                             android:text="Trạng thái:"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp" />
 
                         <TextView
@@ -272,7 +272,7 @@
                             android:layout_weight="5"
                             android:text="Đá xong"
                             android:textAlignment="textStart"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/primaryText"
                             android:textSize="22sp"
                             android:textStyle="bold" />
                     </TableRow>
@@ -296,7 +296,7 @@
                     android:onClick="onClickRateField"
                     android:text="Đánh giá sân bóng"
                     android:textColor="@android:color/white"
-                    android:textSize="18dp" />
+                    android:textSize="18sp" />
 
                 <Button
                     android:id="@+id/btRatingOpponent"
@@ -307,7 +307,7 @@
                     android:onClick="onClickRateOpponent"
                     android:text="Đánh giá đối thủ"
                     android:textColor="@android:color/white"
-                    android:textSize="18dp" />
+                    android:textSize="18sp" />
 
                 <Button
                     android:id="@+id/btReport"
@@ -318,7 +318,7 @@
                     android:onClick="onClickReport"
                     android:text="Tố cáo"
                     android:textColor="@android:color/white"
-                    android:textSize="18dp" />
+                    android:textSize="18sp" />
 
                 <Button
                     android:id="@+id/btCancel"
@@ -329,7 +329,7 @@
                     android:onClick="onClickCancel"
                     android:text="Hủy"
                     android:textColor="@android:color/white"
-                    android:textSize="18dp" />
+                    android:textSize="18sp" />
             </LinearLayout>
         </RelativeLayout>
     </ScrollView>

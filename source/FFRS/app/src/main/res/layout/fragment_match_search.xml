@@ -6,7 +6,8 @@
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -20,7 +21,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_marginBottom="5dp"
                 android:ems="10"
                 android:hint="Địa chỉ"
                 android:inputType="text" />
@@ -30,34 +30,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/input_address"
-                android:layout_marginBottom="10dp">
-
-                <!--<TableRow-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent">-->
-
-                <!--<TextView-->
-                <!--android:id="@+id/text_address"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="1"-->
-                <!--android:text="Địa chỉ: * " />-->
-                <!---->
-                <!--<AutoCompleteTextView-->
-                <!--android:id="@+id/input_address"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_alignParentTop="true"-->
-                <!--android:ems="10"-->
-                <!--android:hint="Địa chỉ (Tùy chọn)"-->
-                <!--android:inputType="text" />-->
-
-                <!--</TableRow>-->
+                android:layout_marginBottom="5dp">
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="5dp">
+                    android:layout_height="match_parent">
 
                     <TextView
                         android:id="@+id/text_date"
@@ -123,15 +100,14 @@
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="5dp">
+                    android:layout_height="match_parent">
 
                     <TextView
                         android:id="@+id/text_start_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Bắt đầu:" />
+                        android:text="Thời gian bắt đầu:" />
 
                     <EditText
                         android:id="@+id/input_start_time"
@@ -147,15 +123,14 @@
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="5dp">
+                    android:layout_height="match_parent">
 
                     <TextView
                         android:id="@+id/text_end_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Kết thúc:" />
+                        android:text="Thời gian kết thúc:" />
 
                     <EditText
                         android:id="@+id/input_end_time"
@@ -170,8 +145,7 @@
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="5dp">
+                    android:layout_height="match_parent">
 
                     <TextView
                         android:id="@+id/text_field_type"
@@ -191,18 +165,6 @@
 
                 </TableRow>
 
-                <!--<TableRow-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent">-->
-
-                <!--<TextView-->
-                <!--android:id="@+id/text_option_search"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="1"-->
-                <!--android:text="Tìm kiếm nâng cao" />-->
-
-                <!--</TableRow>-->
             </TableLayout>
 
             <Button
@@ -212,10 +174,10 @@
                 android:layout_alignParentEnd="true"
                 android:layout_below="@id/table_layout"
                 android:layout_marginBottom="5dp"
-                android:background="#009632"
+                android:background="@color/green"
                 android:text="Tìm đối thủ"
                 android:textColor="@android:color/white"
-                android:textSize="18dp" />
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/btCreateRequest"
@@ -223,10 +185,10 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_below="@id/btFindRequest"
-                android:background="#009632"
+                android:background="@color/green"
                 android:text="Tạo yêu cầu mới"
                 android:textColor="@android:color/white"
-                android:textSize="18dp" />
+                android:textSize="18sp" />
         </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>
 </FrameLayout>

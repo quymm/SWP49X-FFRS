@@ -69,7 +69,7 @@
                                 android:layout_height="40dp"
                                 android:layout_alignParentEnd="true"
                                 android:layout_alignParentTop="true"
-                                android:background="#009632"
+                                android:background="@color/green"
                                 android:onClick="onClickShowMap"
                                 app:srcCompat="@drawable/ic_location" />
 
@@ -85,7 +85,7 @@
                                     android:layout_height="wrap_content"
                                     android:gravity="center_vertical"
                                     android:text="Tên sân"
-                                    android:textColor="@android:color/black"
+                                    android:textColor="@color/primaryText"
                                     android:textSize="22sp"
                                     android:textStyle="bold" />
 
@@ -94,7 +94,7 @@
                                     android:layout_width="fill_parent"
                                     android:layout_height="wrap_content"
                                     android:text="Địa chỉ"
-                                    android:textColor="@android:color/black" />
+                                    android:textColor="@color/primaryText" />
                             </LinearLayout>
                         </RelativeLayout>
 
@@ -133,7 +133,7 @@
                             android:id="@+id/date_picker"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="#009632"
+                            android:background="@color/green"
                             android:drawableRight="@drawable/ic_date_range"
                             android:text="dd/MM/yyyy"
                             android:textColor="@android:color/white"
@@ -146,7 +146,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
                             android:indeterminate="true"
-                            android:indeterminateTint="#009632"
+                            android:indeterminateTint="@color/green"
                             android:indeterminateTintMode="src_in" />
 
                         <TextView
@@ -165,6 +165,7 @@
                             android:id="@+id/recycler_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:scrollbars="vertical"
                             tools:layout_editor_absoluteX="8dp"
                             tools:layout_editor_absoluteY="0dp" />
 
@@ -194,7 +195,7 @@
                             android:id="@+id/btReserve"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="#dbdbdb"
+                            android:background="@color/gray"
                             android:enabled="false"
                             android:onClick="onClickShowDetail"
                             android:text="Đặt sân"

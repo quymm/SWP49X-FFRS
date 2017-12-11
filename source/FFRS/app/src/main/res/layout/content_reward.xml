@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#dbdbdb"
+    android:background="@color/gray"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.capstone.ffrs.RewardActivity"
     tools:showIn="@layout/activity_reward">
@@ -31,13 +31,12 @@
                 android:id="@+id/text_current_bonus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:text="Điểm thưởng hiện tại: 0 điểm"
                 android:textAlignment="center"
                 android:textColor="@color/primaryText"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:visibility="visible" />
 
@@ -45,27 +44,28 @@
                 android:id="@+id/text_not_found"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_columnSpan="2"
                 android:layout_gravity="center"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:text="Hiện tại không có voucher nào khả dụng"
                 android:textAlignment="center"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
 
-            <ScrollView
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginBottom="7dp"
+                android:scrollbars="vertical">
 
                 <GridLayout
                     android:id="@+id/grid_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="7dp"
-                    android:columnCount="2"></GridLayout>
-            </ScrollView>
+                    android:columnCount="2" />
+            </android.support.v4.widget.NestedScrollView>
         </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 </android.support.constraint.ConstraintLayout>

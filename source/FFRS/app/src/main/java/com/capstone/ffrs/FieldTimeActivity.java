@@ -105,8 +105,6 @@ public class FieldTimeActivity extends AppCompatActivity {
             from.setText(fromTime);
             to.setText(toTime);
 
-            Toast toast = Toast.makeText(FieldTimeActivity.this, "Khung giờ bạn chọn đã được tự động điền", Toast.LENGTH_LONG);
-            toast.show();
             toggleButton();
         }
     };
@@ -122,7 +120,7 @@ public class FieldTimeActivity extends AppCompatActivity {
         boolean flag = false;
         if (!from.getText().toString().isEmpty()) {
             try {
-                SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+                final SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
                 Date startTime = sdf.parse(from.getText().toString());
 
                 if (endTimeListener == null) {
@@ -137,17 +135,16 @@ public class FieldTimeActivity extends AppCompatActivity {
                     if (isOptimal) {
                         if (fromFrame.compareTo(startTime) <= 0 && toFrame.compareTo(startTime) > 0) {
                             startTime = fromFrame;
-                            from.setText(new SimpleDateFormat("H:mm").format(startTime));
-                            to.setText(new SimpleDateFormat("H:mm").format(toFrame));
+                            from.setText(sdf.format(startTime));
+                            to.setText(sdf.format(toFrame));
                             endTimeListener = null;
-                            Toast.makeText(this, "Khung giờ cố định", Toast.LENGTH_LONG).show();
                         }
                     } else {
                         if (fromFrame.compareTo(startTime) <= 0 && toFrame.compareTo(startTime) > 0) {
                             LocalDateTime time = new LocalDateTime(startTime);
                             time = time.plusMinutes(60);
                             startTime = time.toDate();
-                            endTimeListener.setDate(new SimpleDateFormat("dd/MM/yyyy").parse(date.getText().toString()));
+                            endTimeListener.setDate(new SimpleDateFormat(displayFormat).parse(date.getText().toString()));
                             endTimeListener.setMinTime(new LocalDateTime(startTime).toDate());
                             endTimeListener.setMaxTime(toFrame);
                             flag = true;
@@ -442,6 +439,10 @@ public class FieldTimeActivity extends AppCompatActivity {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(timeReceiver,
                 new IntentFilter("time-picker-message"));
+
+        if (!swipeRefreshLayout.isRefreshing()) {
+            loadFieldTimes();
+        }
     }
 
     @Override
@@ -502,7 +503,7 @@ public class FieldTimeActivity extends AppCompatActivity {
         EditText to = (EditText) findViewById(R.id.text_to);
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
         try {
-            final Date date = new SimpleDateFormat("dd/MM/yyyy").parse(btDate.getText().toString());
+            final Date date = new SimpleDateFormat(displayFormat).parse(btDate.getText().toString());
             final Date fromTime = sdf.parse(from.getText().toString());
             final Date toTime = sdf.parse(to.getText().toString());
 
@@ -511,7 +512,7 @@ public class FieldTimeActivity extends AppCompatActivity {
             String url = hostURL + getResources().getString(R.string.url_reserve_time_slot);
             queue = NetworkController.getInstance(this).getRequestQueue();
             Map<String, Object> params = new HashMap<>();
-            params.put("date", new SimpleDateFormat("dd-MM-yyyy").format(date));
+            params.put("date", new SimpleDateFormat(serverFormat).format(date));
             params.put("endTime", to.getText().toString());
             params.put("fieldOwnerId", id);
             params.put("fieldTypeId", (spinner.getSelectedItemPosition() + 1));
@@ -717,7 +718,20 @@ public class FieldTimeActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                if (error.networkResponse != null && error.networkResponse.statusCode == 400) {
+                    try {
+                        String strResponse = new String(error.networkResponse.data, "UTF-8");
+                        JSONObject response = new JSONObject(strResponse);
+                        if (response.getString("message").equals("Field owner has not created any fields!")) {
+                            txtNotFound.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                } else if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                     Toast.makeText(getApplicationContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
                 } else if (error instanceof AuthFailureError) {
                     Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
@@ -756,12 +770,6 @@ public class FieldTimeActivity extends AppCompatActivity {
         };
         //Adding JsonArrayRequest to Request Queue
         queue.add(newsReq);
-    }
-
-    public void onClickGoBackToHome(View view) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
     }
 
     public void checkFavoriteField() {

@@ -25,15 +25,15 @@ import java.util.List;
 
 public class TeamMemberAdapter extends RecyclerView.Adapter<TeamMemberAdapter.TeamMemberViewHolder> {
 
+    private Context mContext;
     private List<TeamMemberInfo> memberList;
-    private Context context;
     private LayoutInflater inflater;
 
     public TeamMemberAdapter(Context context, List<TeamMemberInfo> memberList) {
 
-        this.context = context;
+        this.mContext = context;
         this.memberList = memberList;
-        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override

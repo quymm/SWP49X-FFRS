@@ -54,18 +54,8 @@ public class SendOrderRequest {
                     if (sendOrderRequestOnResult != null) {
                         sendOrderRequestOnResult.onSendOrderRequestOnResult(true, content);
                     }
-                } catch (NullPointerException e) {
-                    if (sendOrderRequestOnResult != null) {
-                        sendOrderRequestOnResult.onSendOrderRequestOnResult(false, content);
-                    }
                 } catch (Exception e) {
-                    if (sendOrderRequestOnResult != null) {
-                        sendOrderRequestOnResult.onSendOrderRequestOnResult(false, content);
-                    }
-                } catch (OutOfMemoryError e) {
-                    if (sendOrderRequestOnResult != null) {
-                        sendOrderRequestOnResult.onSendOrderRequestOnResult(false, content);
-                    }
+                    sendOrderRequestOnResult.onSendOrderRequestOnResult(false, content);
                 }
             }
 

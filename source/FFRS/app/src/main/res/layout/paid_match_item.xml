@@ -31,7 +31,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_toStartOf="@+id/right_sector"
                 android:text="Reservation Text"
-                android:textColor="@android:color/black"
+                android:textColor="@color/primaryText"
                 android:textSize="24dp"
                 android:textStyle="bold" />
 
@@ -84,11 +84,12 @@
 
         <TextView
             android:id="@+id/status_view"
-            android:layout_width="70dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:text="Dang dien ra"
+            android:padding="2dp"
+            android:text="Đang diễn ra"
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="16sp"

@@ -22,7 +22,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="#009632"
+                android:background="@color/green"
                 app:navigationIcon="@drawable/ic_arrow_back_white"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
@@ -31,8 +31,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_alignParentStart="true"
-                android:background="#009632"
-                app:tabIndicatorColor="@color/red"
+                android:background="@color/green"
+                app:tabIndicatorColor="@color/colorWhite"
                 app:tabIndicatorHeight="3dp"
                 app:tabSelectedTextColor="@android:color/white"
                 app:tabTextColor="@android:color/holo_green_light"

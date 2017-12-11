@@ -32,7 +32,7 @@
                     android:layout_weight="2"
                     android:text="Số dư hiện có: "
                     android:textColor="@color/primaryText"
-                    android:textSize="18dp" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/text_money"
@@ -114,6 +114,7 @@
             android:background="@color/green"
             android:onClick="onClickRecharge"
             android:text="Nạp tiền"
+            android:layout_margin="5dp"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
     </RelativeLayout>

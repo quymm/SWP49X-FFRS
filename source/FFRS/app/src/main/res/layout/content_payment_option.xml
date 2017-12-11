@@ -101,6 +101,6 @@
             android:onClick="onClickChoosePayment"
             android:text="Thanh toán"
             android:textColor="@android:color/white"
-            android:textSize="18dp" />
+            android:textSize="18sp" />
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

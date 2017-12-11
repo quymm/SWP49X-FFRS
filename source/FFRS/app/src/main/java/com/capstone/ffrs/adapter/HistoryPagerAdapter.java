@@ -14,11 +14,8 @@ import com.capstone.ffrs.fragment.PendingRequestFragment;
 
 public class HistoryPagerAdapter extends FragmentPagerAdapter {
 
-    private Context mContext;
-
-    public HistoryPagerAdapter(Context context, FragmentManager fm) {
+    public HistoryPagerAdapter(FragmentManager fm) {
         super(fm);
-        mContext = context;
     }
 
     // This determines the fragment for each tab
@@ -45,7 +42,7 @@ public class HistoryPagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return "Trận đấu đã đặt";
             case 1:
-                return "Yêu cầu đang chờ";
+                return "Yêu cầu đã tạo";
             default:
                 return null;
         }

@@ -11,32 +11,13 @@ import com.android.volley.toolbox.Volley;
 
 public class NetworkController {
 
-
     private RequestQueue mRequestQueue;
-    private ImageLoader mImageLoader;
-    private static Context mCtx;
+    private Context mCtx;
     private static NetworkController mInstance;
 
     private NetworkController(Context context) {
         mCtx = context;
         mRequestQueue = getRequestQueue();
-        // Load Images from Network in Separate Thread
-        mImageLoader = new ImageLoader(mRequestQueue,
-                new ImageLoader.ImageCache() {
-                    //Create ImageCache of max size 15MB
-                    private final LruCache<String, Bitmap>
-                            cache = new LruCache<String, Bitmap>(15);
-
-                    @Override
-                    public Bitmap getBitmap(String url) {
-                        return cache.get(url);
-                    }
-
-                    @Override
-                    public void putBitmap(String url, Bitmap bitmap) {
-                        cache.put(url, bitmap);
-                    }
-                });
     }
 
     public static synchronized NetworkController getInstance(Context context) {
@@ -53,13 +34,5 @@ public class NetworkController {
             mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
         }
         return mRequestQueue;
-    }
-
-    public <T> void addToRequestQueue(Request<T> req) {
-        getRequestQueue().add(req);
-    }
-
-    public ImageLoader getImageLoader() {
-        return mImageLoader;
     }
 }
