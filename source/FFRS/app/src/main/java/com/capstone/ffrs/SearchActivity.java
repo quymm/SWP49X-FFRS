@@ -40,6 +40,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SearchActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private Intent serviceIntent;
 
     //provides gps location updates
     private GPSLocationListener gpsLocationListener;
@@ -56,7 +57,7 @@ public class SearchActivity extends AppCompatActivity
             View headerLayout = navigationView.getHeaderView(0);
 
             TextView txtBalance = (TextView) headerLayout.findViewById(R.id.text_balance);
-            txtBalance.setText("Tiền còn lại: " + sharedPreferences.getInt("balance", 0) + "ngàn đồng");
+            txtBalance.setText("Tiền còn lại: " + sharedPreferences.getInt("balance", 0) + "nghìn đồng");
         }
     };
 
@@ -81,7 +82,7 @@ public class SearchActivity extends AppCompatActivity
         txtPoints.setText("Điểm thưởng: " + preferences.getInt("points", 0) + " điểm");
 
         TextView txtBalance = (TextView) headerLayout.findViewById(R.id.text_balance);
-        txtBalance.setText("Số dư hiện có: " + preferences.getInt("balance", 0) + " ngàn đồng");
+        txtBalance.setText("Số dư hiện có: " + preferences.getInt("balance", 0) + " nghìn đồng");
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         //call to location listener to start location updates when activity gets started
@@ -124,14 +125,14 @@ public class SearchActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Intent intent = new Intent(this, FirebaseNotificationServices.class);
-        startService(intent);
+        serviceIntent = new Intent(this, FirebaseNotificationServices.class);
+        startService(serviceIntent);
 
         // Find the view pager that will allow the user to swipe between fragments
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         // Create an adapter that knows which fragment should be shown on each page
-        SearchPagerAdapter pagerAdapter = new SearchPagerAdapter(this, getSupportFragmentManager());
+        SearchPagerAdapter pagerAdapter = new SearchPagerAdapter(getSupportFragmentManager());
 
         // Set the adapter onto the view pager
         viewPager.setAdapter(pagerAdapter);
@@ -220,10 +221,11 @@ public class SearchActivity extends AppCompatActivity
             editor.putString("host_url", hostURL);
             editor.apply();
 
-            Intent intent = new Intent(this, FirebaseNotificationServices.class);
-            stopService(intent);
+            if (serviceIntent != null) {
+                stopService(serviceIntent);
+            }
 
-            intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }

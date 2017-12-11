@@ -1,5 +1,6 @@
 package vn.demonganluong.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -42,6 +43,7 @@ public class CheckOutActivity extends Activity {
         initView();
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void initView() {
         webData = (WebView) findViewById(R.id.activity_checkout_webView);
         webData.getSettings().setJavaScriptEnabled(true);

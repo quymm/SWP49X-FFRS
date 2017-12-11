@@ -186,7 +186,7 @@ public class PaidMatchFragment extends Fragment {
                                             return 0;
                                         }
 
-                                        public String getStringDate(Object o) {
+                                        private String getStringDate(Object o) {
                                             if (o instanceof PaidFriendlyMatch) {
                                                 Date date = new Date(Long.valueOf(((PaidFriendlyMatch) o).getDate()));
                                                 return new SimpleDateFormat("dd/MM/yyyy").format(date);
@@ -197,7 +197,7 @@ public class PaidMatchFragment extends Fragment {
                                             return "";
                                         }
 
-                                        public String getStringStartTime(Object o) {
+                                        private String getStringStartTime(Object o) {
                                             if (o instanceof PaidFriendlyMatch) {
                                                 return ((PaidFriendlyMatch) o).getStartTime();
                                             } else if (o instanceof PaidTourMatch) {

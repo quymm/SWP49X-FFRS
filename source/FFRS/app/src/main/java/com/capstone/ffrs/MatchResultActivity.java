@@ -70,22 +70,6 @@ public class MatchResultActivity extends AppCompatActivity {
     private String displayDateFormat = "dd/MM/yyyy";
     private String serverDateFormat = "dd-MM-yyyy";
 
-//    private BroadcastReceiver mRequestReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            boolean flag = intent.getBooleanExtra("isChecked", false);
-//            if (flag) {
-//                Button btSendRequest = (Button) findViewById(R.id.btRequest);
-//                btSendRequest.setEnabled(true);
-//                btSendRequest.setBackgroundColor(Color.parseColor("#009632"));
-//            } else {
-//                Button btSendRequest = (Button) findViewById(R.id.btRequest);
-//                btSendRequest.setEnabled(false);
-//                btSendRequest.setBackgroundColor(Color.parseColor("#dbdbdb"));
-//            }
-//        }
-//    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,8 +78,6 @@ public class MatchResultActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         hostURL = HostURLUtils.getInstance(this).getHostURL();
-
-        loadMatches();
 
         txtNotFound = (TextView) findViewById(R.id.text_not_found);
 
@@ -109,18 +91,11 @@ public class MatchResultActivity extends AppCompatActivity {
         swipeRefreshLayout.setRefreshing(true);
     }
 
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        LocalBroadcastManager.getInstance(this).registerReceiver(mRequestReceiver,
-//                new IntentFilter("RequestButton-Message"));
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRequestReceiver);
-//    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadMatches();
+    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -185,6 +160,8 @@ public class MatchResultActivity extends AppCompatActivity {
                                     match.setStartTime(obj.getString("startTime"));
                                     match.setEndTime(obj.getString("endTime"));
                                     match.setRatingScore(obj.getJSONObject("userId").getJSONObject("profileId").getInt("ratingScore"));
+                                    match.setDuration(obj.getInt("duration"));
+                                    match.setAddress(obj.getString("address"));
                                     // adding movie to movies array
                                     opponentList.add(match);
 
@@ -258,10 +235,6 @@ public class MatchResultActivity extends AppCompatActivity {
         boolean createMode = b.getBoolean("createMode");
 
         if (createMode) {
-//            Intent intent = new Intent(MatchResultActivity.this, CreateRequestResultActivity.class);
-//            intent.putExtra("user_id", b.getInt("user_id"));
-//            intent.putExtra("message", "Hệ thống đã để lại yêu cầu của bạn cho đối thủ phù hợp hơn!");
-//            startActivity(intent);
             final int createdMatchingRequestId = b.getInt("created_matching_request_id");
             AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -330,7 +303,13 @@ public class MatchResultActivity extends AppCompatActivity {
                         }
                     }).show();
         } else {
-            super.onBackPressed();
+            if (!isTaskRoot()) {
+                super.onBackPressed();
+            } else {
+                Intent intent = new Intent(this, SearchActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
         }
     }
 

@@ -86,15 +86,16 @@ public class FavoriteFieldActivity extends AppCompatActivity {
     }
 
     private void loadFavoriteField() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (!fieldOwnerList.isEmpty()) {
             fieldOwnerList.clear();
         }
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         final FavoriteFieldAdapter adapter = new FavoriteFieldAdapter(this, fieldOwnerList);
+        adapter.setUserId(preferences.getInt("user_id", -1));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
         url = hostURL + getResources().getString(R.string.url_get_favorite_fields);
         url = String.format(url, preferences.getInt("user_id", -1));
@@ -138,7 +139,7 @@ public class FavoriteFieldActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();

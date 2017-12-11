@@ -22,8 +22,7 @@ import org.json.JSONObject;
 
 public class RechargeFailFragment extends Fragment {
 
-    private Button btHome, btRetry;
-    private String hostURL;
+    private Button btHome;
 
     public RechargeFailFragment() {
         // Required empty public constructor
@@ -32,8 +31,6 @@ public class RechargeFailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        hostURL = HostURLUtils.getInstance(getContext()).getHostURL();
     }
 
     @Override
@@ -41,24 +38,6 @@ public class RechargeFailFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_recharge_fail, container, false);
-//        final Bundle b = getActivity().getIntent().getExtras();
-//        if (b.containsKey("time_slot_id")) {
-//            int timeSlotId = b.getInt("time_slot_id");
-//            String url = hostURL + getResources().getString(R.string.url_cancel_reservation);
-//            url = String.format(url, timeSlotId);
-//            RequestQueue queue = NetworkController.getInstance(getActivity()).getRequestQueue();
-//            JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
-//                @Override
-//                public void onResponse(JSONObject response) {
-//
-//                }
-//            }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//                }
-//            });
-//            queue.add(request);
-//        }
         btHome = (Button) view.findViewById(R.id.btHome);
         btHome.setOnClickListener(new View.OnClickListener() {
             @Override

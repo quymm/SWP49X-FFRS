@@ -72,26 +72,30 @@ public class ReservationInfoActivity extends AppCompatActivity {
             txtMatchMode.setText("Đá chung");
 
             switch (status) {
-                case "Sắp đá":
+                case "Sắp tới":
                     txtStatus.setTextColor(getResources().getColor(R.color.red));
                     btRatingField.setVisibility(View.GONE);
                     btRatingOpponent.setVisibility(View.GONE);
+                    btReport.setVisibility(View.GONE);
                     break;
                 case "Đang diễn ra":
                     txtStatus.setTextColor(getResources().getColor(R.color.yellow));
                     btRatingField.setVisibility(View.GONE);
                     btRatingOpponent.setVisibility(View.GONE);
+                    btReport.setVisibility(View.GONE);
                     btCancel.setVisibility(View.GONE);
                     break;
                 case "Đã xong":
                     txtStatus.setTextColor(getResources().getColor(R.color.green));
                     btRatingField.setVisibility(View.VISIBLE);
                     btRatingOpponent.setVisibility(View.VISIBLE);
+                    btReport.setVisibility(View.VISIBLE);
                     btCancel.setVisibility(View.GONE);
                     break;
                 default:
                     btRatingField.setVisibility(View.GONE);
                     btRatingOpponent.setVisibility(View.GONE);
+                    btReport.setVisibility(View.GONE);
                     break;
             }
 
@@ -121,22 +125,6 @@ public class ReservationInfoActivity extends AppCompatActivity {
             TextView txtEndTime = (TextView) findViewById(R.id.text_to);
             txtEndTime.setText(sdf.format(endTime));
 
-//            String strStartDateTime = strDate + " " + sdf.format(startTime);
-//            String strEndDateTime = strDate + " " + sdf.format(endTime);
-//            sdf = new SimpleDateFormat("dd/MM/yyyy H:mm");
-//            Date startDate = sdf.parse(strStartDateTime);
-//            Date endDate = sdf.parse(strEndDateTime);
-//            Date currentDate = new Date();
-//
-//            if (currentDate.compareTo(startDate) < 0) {
-//                btRating.setVisibility(View.GONE);
-//            } else if (currentDate.compareTo(startDate) >= 0 && currentDate.compareTo(endDate) < 0) {
-//                btRating.setVisibility(View.GONE);
-//                btCancel.setVisibility(View.GONE);
-//            } else if (currentDate.compareTo(endDate) >= 0) {
-//                btRating.setVisibility(View.VISIBLE);
-//                btCancel.setVisibility(View.GONE);
-//            }
             long duration = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
             long hours = (duration / 60);
             long minutes = (duration % 60);

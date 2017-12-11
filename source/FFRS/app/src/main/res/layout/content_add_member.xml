@@ -67,8 +67,9 @@
             android:layout_alignParentBottom="true"
             android:background="#008e21"
             android:onClick="onClickAddMember"
+            android:layout_margin="5dp"
             android:text="Thêm mới"
             android:textColor="@android:color/white"
-            android:textSize="18dp" />
+            android:textSize="18sp" />
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

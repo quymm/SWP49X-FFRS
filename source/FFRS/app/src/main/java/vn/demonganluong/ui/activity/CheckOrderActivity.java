@@ -94,9 +94,8 @@ public class CheckOrderActivity extends BaseActivity implements CheckOrderReques
                 checkOrderBean.getMerchantID() + "|" +
                 checkOrderBean.getTokenCode() + "|" +
                 Constant.MERCHANT_PASSWORD;
-        String checksum = Commons.md5(stringSendOrder);
 
-        return checksum;
+        return  Commons.md5(stringSendOrder);
     }
 
     @Override

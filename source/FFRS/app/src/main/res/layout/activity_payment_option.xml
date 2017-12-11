@@ -15,19 +15,9 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="#009632"
+            android:background="@color/green"
             app:navigationIcon="@drawable/ic_arrow_back_white"
             app:popupTheme="@style/AppTheme.PopupOverlay">
-
-            <ImageView
-                android:id="@+id/toolbar_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_gravity="end"
-                android:layout_marginEnd="10dp"
-                android:adjustViewBounds="true"
-                android:onClick="onClickGoBackToHome"
-                android:src="@drawable/ic_home_white" />
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>

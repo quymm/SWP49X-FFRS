@@ -20,7 +20,6 @@
             android:layout_alignParentTop="true"
             android:layout_marginBottom="10dp">
 
-
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -30,34 +29,39 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Bắt đầu:" />
+                    android:text="Bắt đầu:"
+                    android:textColor="@color/primaryText"
+                    android:textSize="20sp" />
 
                 <EditText
                     android:id="@+id/input_start_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentTop="true"
                     android:layout_weight="1"
                     android:ems="10"
                     android:focusable="false"
                     android:hint="Thời gian bắt đầu"
-                    android:inputType="none" />
+                    android:inputType="none"
+                    android:textColor="@color/primaryText"
+                    android:textSize="20sp" />
 
             </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp">
 
                 <TextView
                     android:id="@+id/text_end_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Kết thúc:" />
+                    android:text="Kết thúc:"
+                    android:textColor="@color/primaryText"
+                    android:textSize="20sp" />
 
-                <EditText
+                <TextView
                     android:id="@+id/input_end_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -65,13 +69,15 @@
                     android:ems="10"
                     android:focusable="false"
                     android:hint="Thời gian kết thúc"
-                    android:inputType="none" />
+                    android:inputType="none"
+                    android:textColor="@color/primaryText"
+                    android:textSize="20sp" />
             </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="5dp">
+                android:layout_marginTop="10dp">
 
                 <TextView
                     android:id="@+id/text_date"
@@ -79,7 +85,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:text="Ngày: " />
+                    android:text="Ngày:"
+                    android:textColor="@color/primaryText"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/date_view"
@@ -87,15 +95,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:text="dd/MM/yyyy"
-                    android:textColor="@android:color/black"
-                    android:textSize="18dp" />
+                    android:hint="dd/MM/yyyy"
+                    android:textColor="@color/primaryText"
+                    android:textSize="20sp" />
             </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="5dp">
+                android:layout_marginTop="10dp">
 
                 <TextView
                     android:id="@+id/text_duration"
@@ -103,7 +111,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:text="Khoảng giờ đá: " />
+                    android:text="Khoảng giờ đá:"
+                    android:textColor="@color/primaryText"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/duration_view"
@@ -111,10 +121,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:text="X tiếng"
-
-                    android:textColor="@android:color/black"
-                    android:textSize="18dp"
+                    android:hint="X tiếng"
+                    android:textColor="@color/primaryText"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
             </TableRow>
 
@@ -125,11 +134,11 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"
-            android:background="#009632"
+            android:background="@color/green"
             android:onClick="onClickChooseField"
             android:text="OK"
             android:textColor="@android:color/white"
-            android:textSize="18dp" />
+            android:textSize="18sp" />
 
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
