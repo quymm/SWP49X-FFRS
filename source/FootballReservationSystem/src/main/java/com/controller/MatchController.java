@@ -2,7 +2,6 @@ package com.controller;
 
 import com.dto.InputMatchingRequestDTO;
 import com.dto.InputReserveTimeSlotDTO;
-import com.dto.OutputReserveTimeSlotDTO;
 import com.dto.Wrapper;
 import com.services.MatchServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ public class MatchController {
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/friendly-match", method = RequestMethod.POST)
     public synchronized ResponseEntity reserveFriendlyMatch(@RequestBody InputReserveTimeSlotDTO inputReserveTimeSlotDTO) {
+
         Wrapper wrapper = new Wrapper(matchServices.reserveFriendlyMatch(inputReserveTimeSlotDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }

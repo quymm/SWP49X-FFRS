@@ -307,6 +307,7 @@ class Home extends Component {
   }
   render() {
     const { listMatch, freeField, currentDaySelected, listField } = this.props;
+    console.log(currentDaySelected);
     if (currentDaySelected) {
       this.handelLoadMatchAgain();
     }
