@@ -90,6 +90,7 @@ public class MatchSearchFragment extends Fragment {
     private LatLng currentPosition = null;
     private LatLng customPosition = null;
     private Button btFindRequest, btCreateRequest;
+    private String currentAddress = "";
 
     public MatchSearchFragment() {
         // Required empty public constructor
@@ -492,64 +493,87 @@ public class MatchSearchFragment extends Fragment {
                                 public void onResponse(JSONObject response) {
                                     try {
                                         if (!response.isNull("body")) {
+//                                            JSONObject body = response.getJSONObject("body");
+//                                            final int matchingRequestId = body.getInt("matchingRequestId");
+//                                            JSONArray list = body.getJSONArray("similarMatchingRequestList");
+//                                            if (list.length() > 0) {
+//                                                AlertDialog.Builder builder;
+//                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                                                    builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_Dialog_Alert);
+//                                                } else {
+//                                                    builder = new AlertDialog.Builder(getContext());
+//                                                }
+//                                                builder.setTitle("Tìm thấy đối thủ")
+//                                                        .setMessage("Chúng tôi đã tìm thấy đối thủ phù hợp với bạn. Bạn có muốn xem danh sách đối thủ không?")
+//                                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                                                            public void onClick(DialogInterface dialog, int which) {
+//                                                                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(v.getContext());
+//                                                                Intent intent = new Intent(v.getContext(), MatchResultActivity.class);
+//                                                                intent.putExtra("field_type_id", (fieldSpinner.getSelectedItemPosition() + 1));
+//                                                                intent.putExtra("field_date", mDate.getText().toString());
+//                                                                intent.putExtra("field_start_time", from.getText().toString());
+//                                                                intent.putExtra("field_end_time", to.getText().toString());
+//                                                                intent.putExtra("duration", 60 + durationSpinner.getSelectedItemPosition() * 30);
+//                                                                intent.putExtra("distance", 4 + (distanceSpinner.getSelectedItemPosition() * 2));
+//                                                                intent.putExtra("priorityField", true);
+//                                                                intent.putExtra("created_matching_request_id", matchingRequestId);
+//                                                                intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
+//                                                                if (txtAddress.getText().toString().isEmpty() || customPosition == null) {
+//                                                                    intent.putExtra("address", txtAddress.getHint().toString());
+//                                                                    intent.putExtra("latitude", currentPosition.latitude);
+//                                                                    intent.putExtra("longitude", currentPosition.longitude);
+//                                                                } else {
+//                                                                    intent.putExtra("address", txtAddress.getText().toString());
+//                                                                    intent.putExtra("latitude", customPosition.latitude);
+//                                                                    intent.putExtra("longitude", customPosition.longitude);
+//                                                                }
+//                                                                intent.putExtra("createMode", true);
+//                                                                startActivity(intent);
+//                                                            }
+//                                                        })
+//                                                        .setNegativeButton("Không, tạo mới yêu cầu", new DialogInterface.OnClickListener() {
+//                                                            public void onClick(DialogInterface dialog, int which) {
+//                                                                Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
+//                                                                intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
+//                                                                intent.putExtra("message", "Bạn đã tạo yêu cầu tìm đối thủ thành công!");
+//                                                                startActivity(intent);
+//                                                            }
+//                                                        }).setCancelable(false).show();
+//                                            } else {
+//                                                Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
+//                                                intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
+//                                                intent.putExtra("message", "Bạn đã tạo yêu cầu tìm đối thủ thành công!");
+//                                                startActivity(intent);
+//                                            }
                                             JSONObject body = response.getJSONObject("body");
-                                            final int matchingRequestId = body.getInt("matchingRequestId");
                                             JSONArray list = body.getJSONArray("similarMatchingRequestList");
                                             if (list.length() > 0) {
-                                                AlertDialog.Builder builder;
-                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                                    builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_Dialog_Alert);
-                                                } else {
-                                                    builder = new AlertDialog.Builder(getContext());
+                                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                DatabaseReference myRef = database.getReference();
+                                                for (int i = 0; i < list.length(); i++) {
+                                                    JSONObject item = list.getJSONObject(i);
+                                                    Map<String, Object> map = new HashMap<>();
+                                                    map.put("status", 0);
+                                                    map.put("numberOfMatches", list.length());
+                                                    myRef.child("matchingRequest").child(item.getJSONObject("userId").getInt("id") + "").child(item.getInt("id") + "").setValue(map);
                                                 }
-                                                builder.setTitle("Tìm thấy đối thủ")
-                                                        .setMessage("Chúng tôi đã tìm thấy đối thủ phù hợp với bạn. Bạn có muốn xem danh sách đối thủ không?")
-                                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(v.getContext());
-                                                                Intent intent = new Intent(v.getContext(), MatchResultActivity.class);
-                                                                intent.putExtra("field_type_id", (fieldSpinner.getSelectedItemPosition() + 1));
-                                                                intent.putExtra("field_date", mDate.getText().toString());
-                                                                intent.putExtra("field_start_time", from.getText().toString());
-                                                                intent.putExtra("field_end_time", to.getText().toString());
-                                                                intent.putExtra("duration", 60 + durationSpinner.getSelectedItemPosition() * 30);
-                                                                intent.putExtra("distance", 4 + (distanceSpinner.getSelectedItemPosition() * 2));
-                                                                intent.putExtra("priorityField", true);
-                                                                intent.putExtra("created_matching_request_id", matchingRequestId);
-                                                                intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
-                                                                if (txtAddress.getText().toString().isEmpty() || customPosition == null) {
-                                                                    intent.putExtra("address", txtAddress.getHint().toString());
-                                                                    intent.putExtra("latitude", currentPosition.latitude);
-                                                                    intent.putExtra("longitude", currentPosition.longitude);
-                                                                } else {
-                                                                    intent.putExtra("address", txtAddress.getText().toString());
-                                                                    intent.putExtra("latitude", customPosition.latitude);
-                                                                    intent.putExtra("longitude", customPosition.longitude);
-                                                                }
-                                                                intent.putExtra("createMode", true);
-                                                                startActivity(intent);
-                                                            }
-                                                        })
-                                                        .setNegativeButton("Không, tạo mới yêu cầu", new DialogInterface.OnClickListener() {
-                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
-                                                                intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
-                                                                intent.putExtra("message", "Bạn đã tạo yêu cầu tìm đối thủ thành công!");
-                                                                startActivity(intent);
-                                                            }
-                                                        }).setCancelable(false).show();
-                                            } else {
-                                                Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
-                                                intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
-                                                intent.putExtra("message", "Bạn đã tạo yêu cầu tìm đối thủ thành công!");
-                                                startActivity(intent);
+                                                Map<String, Object> map = new HashMap<>();
+                                                map.put("status", 0);
+                                                map.put("numberOfMatches", list.length());
+                                                myRef.child("matchingRequest").child(sharedPreferences.getInt("user_id", -1) + "").child(body.getInt("matchingRequestId") + "").setValue(map);
                                             }
+                                            Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
+                                            intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
+                                            intent.putExtra("message", "Bạn đã tạo yêu cầu tìm đối thủ thành công!");
+                                            startActivity(intent);
                                         }
                                     } catch (JSONException e) {
                                         Log.d("EXCEPTION", e.getMessage());
                                     }
                                 }
-                            }, new Response.ErrorListener() {
+                            }, new Response.ErrorListener()
+
+                    {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             if (error.networkResponse != null && (error.networkResponse.statusCode == 404 || error.networkResponse.statusCode == 400)) {
@@ -593,7 +617,7 @@ public class MatchSearchFragment extends Fragment {
                                 Toast.makeText(getContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
                             }
                         }
-                    }) {
+                    }){
                         @Override
                         public Map<String, String> getHeaders() throws AuthFailureError {
                             HashMap<String, String> headers = new HashMap<String, String>();
@@ -610,7 +634,9 @@ public class MatchSearchFragment extends Fragment {
         });
 
         addFieldSpinner(view);
+
         addDurationSpinner(view);
+
         addDistanceSpinner(view);
 
         return view;

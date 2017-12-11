@@ -72,26 +72,30 @@ public class ReservationInfoActivity extends AppCompatActivity {
             txtMatchMode.setText("Đá chung");
 
             switch (status) {
-                case "Sắp đá":
+                case "Sắp tới":
                     txtStatus.setTextColor(getResources().getColor(R.color.red));
                     btRatingField.setVisibility(View.GONE);
                     btRatingOpponent.setVisibility(View.GONE);
+                    btReport.setVisibility(View.GONE);
                     break;
                 case "Đang diễn ra":
                     txtStatus.setTextColor(getResources().getColor(R.color.yellow));
                     btRatingField.setVisibility(View.GONE);
                     btRatingOpponent.setVisibility(View.GONE);
+                    btReport.setVisibility(View.GONE);
                     btCancel.setVisibility(View.GONE);
                     break;
                 case "Đã xong":
                     txtStatus.setTextColor(getResources().getColor(R.color.green));
                     btRatingField.setVisibility(View.VISIBLE);
                     btRatingOpponent.setVisibility(View.VISIBLE);
+                    btReport.setVisibility(View.VISIBLE);
                     btCancel.setVisibility(View.GONE);
                     break;
                 default:
                     btRatingField.setVisibility(View.GONE);
                     btRatingOpponent.setVisibility(View.GONE);
+                    btReport.setVisibility(View.GONE);
                     break;
             }
 

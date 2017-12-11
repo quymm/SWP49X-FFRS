@@ -98,9 +98,6 @@ public class MapsActivity extends AppCompatActivity implements
         Bundle b = getIntent().getExtras();
         id = b.getInt("field_id");
 
-//        String directionApiPath = Helper.getUrl(String.valueOf(currentPosition.latitude), String.valueOf(currentPosition.longitude),
-//                String.valueOf(fieldLocation.latitude), String.valueOf(fieldLocation.longitude));
-
         url = String.format(hostURL + getResources().getString(R.string.url_get_field_by_id), id);
 
         builder = new LatLngBounds.Builder();

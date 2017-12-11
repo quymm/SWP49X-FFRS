@@ -45,7 +45,7 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
     @Override
     public MatchViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rootView = inflater.inflate(R.layout.match_item, parent, false);
-        return new MatchAdapter.MatchViewHolder(rootView);
+        return new MatchViewHolder(rootView);
     }
 
     @Override
@@ -123,12 +123,18 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
 
                             String strStartTime = request.getStartTime();
                             String strEndTime = request.getEndTime();
-
+                            String regex = "\\d{1,2}:\\d{2}";
                             if (sendStartTime.getTime() - requestStartTime.getTime() > 0) {
-                                strStartTime = b.getString("field_start_time") + ":00";
+                                strStartTime = b.getString("field_start_time");
+                                if (strStartTime.matches(regex)) {
+                                    strStartTime += ":00";
+                                }
                             }
                             if (sendEndTime.getTime() - requestEndTime.getTime() < 0) {
-                                strEndTime = b.getString("field_end_time") + ":00";
+                                strEndTime = b.getString("field_end_time");
+                                if (strEndTime.matches(regex)) {
+                                    strEndTime += ":00";
+                                }
                             }
                             Intent intent = new Intent(context, RequestTimeActivity.class);
                             intent.putExtra("field_type_id", b.getInt("field_type_id"));

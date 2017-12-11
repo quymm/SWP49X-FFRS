@@ -1,5 +1,6 @@
 package com.capstone.ffrs;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
@@ -163,5 +164,27 @@ public class RequestInfoActivity extends AppCompatActivity {
             }
         };
         queue.add(cancelRequest);
+    }
+
+    public void onClickViewList(View view) {
+        TextView txtStartTime = (TextView) findViewById(R.id.text_from);
+        TextView txtEndTime = (TextView) findViewById(R.id.text_to);
+
+        Bundle b = getIntent().getExtras();
+        Intent intent = new Intent(this, MatchResultActivity.class);
+        intent.putExtra("field_type_id", b.getInt("field_type_id"));
+        intent.putExtra("field_date", new SimpleDateFormat("dd/MM/yyyy").format(new Date(Long.valueOf(b.getString("date")))));
+        intent.putExtra("field_start_time", txtStartTime.getText().toString());
+        intent.putExtra("field_end_time", txtEndTime.getText().toString());
+        intent.putExtra("duration", b.getInt("duration"));
+        intent.putExtra("distance", b.getInt("distance"));
+        intent.putExtra("priorityField", b.getBoolean("priorityField"));
+        intent.putExtra("address", b.getString("address"));
+        intent.putExtra("latitude", b.getDouble("latitude"));
+        intent.putExtra("longitude", b.getDouble("longitude"));
+        intent.putExtra("createMode", false);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        intent.putExtra("user_id", preferences.getInt("user_id", -1));
+        startActivity(intent);
     }
 }

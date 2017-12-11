@@ -105,8 +105,6 @@ public class FieldTimeActivity extends AppCompatActivity {
             from.setText(fromTime);
             to.setText(toTime);
 
-            Toast toast = Toast.makeText(FieldTimeActivity.this, "Khung giờ bạn chọn đã được tự động điền", Toast.LENGTH_LONG);
-            toast.show();
             toggleButton();
         }
     };
@@ -140,7 +138,6 @@ public class FieldTimeActivity extends AppCompatActivity {
                             from.setText(sdf.format(startTime));
                             to.setText(sdf.format(toFrame));
                             endTimeListener = null;
-                            Toast.makeText(this, "Khung giờ cố định", Toast.LENGTH_LONG).show();
                         }
                     } else {
                         if (fromFrame.compareTo(startTime) <= 0 && toFrame.compareTo(startTime) > 0) {
@@ -721,7 +718,20 @@ public class FieldTimeActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                if (error.networkResponse != null && error.networkResponse.statusCode == 400) {
+                    try {
+                        String strResponse = new String(error.networkResponse.data, "UTF-8");
+                        JSONObject response = new JSONObject(strResponse);
+                        if (response.getString("message").equals("Field owner has not created any fields!")) {
+                            txtNotFound.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                } else if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                     Toast.makeText(getApplicationContext(), "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
                 } else if (error instanceof AuthFailureError) {
                     Toast.makeText(getApplicationContext(), "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
@@ -760,12 +770,6 @@ public class FieldTimeActivity extends AppCompatActivity {
         };
         //Adding JsonArrayRequest to Request Queue
         queue.add(newsReq);
-    }
-
-    public void onClickGoBackToHome(View view) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
     }
 
     public void checkFavoriteField() {

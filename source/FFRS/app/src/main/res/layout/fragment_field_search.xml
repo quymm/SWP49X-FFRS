@@ -8,32 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!--<LinearLayout-->
-        <!--android:id='@+id/progress_layout'-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:gravity="center"-->
-        <!--android:orientation="vertical">-->
-
-        <!--<ProgressBar-->
-        <!--android:id="@+id/progressBar2"-->
-        <!--style="?android:attr/progressBarStyleLarge"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="10dp"-->
-        <!--android:indeterminate="true"-->
-        <!--android:indeterminateTint="#009632"-->
-        <!--android:indeterminateTintMode="src_in" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/text_progress"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Đang lấy vị trí"-->
-        <!--android:textAlignment="center"-->
-        <!--android:textSize="24dp" />-->
-        <!--</LinearLayout>-->
-
         <RelativeLayout
             android:id="@+id/fields_layout"
             android:layout_width="match_parent"
