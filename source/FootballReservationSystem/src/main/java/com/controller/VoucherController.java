@@ -36,4 +36,11 @@ public class VoucherController {
         Wrapper wrapper = new Wrapper(voucherServices.disableVoucher(voucherId), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
+
+    @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/voucher/get-all", method = RequestMethod.GET)
+    public ResponseEntity findAll(){
+        Wrapper wrapper = new Wrapper(voucherServices.findAll(), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
 }

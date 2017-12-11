@@ -8,10 +8,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
+<<<<<<< HEAD
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+=======
+>>>>>>> master
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -168,6 +170,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA = 1;
     private static final int SELECT_FILE = 2;
+    private int PROFILE_PIC_COUNT = 0;
 
     public void onClickChangeAvatar(View view) {
         final CharSequence[] items = {"Chụp máy ảnh", "Chọn từ thư viện máy", "Hủy bỏ"};
@@ -178,10 +181,29 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int item) {
 
                 if (items[item].equals("Chụp máy ảnh")) {
+                    PROFILE_PIC_COUNT = 1;
                     checkCameraPermission();
                 } else if (items[item].equals("Chọn từ thư viện máy")) {
-                    checkStoragePermission();
+                    PROFILE_PIC_COUNT = 2;
+                    Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                    getIntent.setType("image/*");
+
+                    Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    pickIntent.setType("image/*");
+//        pickIntent.putExtra("crop", "true");
+//        pickIntent.putExtra("scale", true);
+//        pickIntent.putExtra("outputX", 256);
+//        pickIntent.putExtra("outputY", 256);
+//        pickIntent.putExtra("aspectX", 1);
+//        pickIntent.putExtra("aspectY", 1);
+//        pickIntent.putExtra("return-data", true);
+
+                    Intent chooserIntent = Intent.createChooser(getIntent, "Chọn ảnh");
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
+
+                    startActivityForResult(chooserIntent, SELECT_FILE);
                 } else if (items[item].equals("Hủy bỏ")) {
+                    PROFILE_PIC_COUNT = 0;
                     dialog.dismiss();
                 }
             }
@@ -195,117 +217,25 @@ public class ProfileActivity extends AppCompatActivity {
         if ((requestCode == SELECT_FILE || requestCode == REQUEST_CAMERA) && resultCode == Activity.RESULT_OK) {
             if (data == null) {
                 //Display an error
-                Log.d("ERROR", "No data");
+                Log.d("ERROR", "No date");
                 return;
             }
-            if (requestCode == REQUEST_CAMERA) {
-                final Bundle extras = data.getExtras();
-                if (extras != null) {
-                    //Get image
-                    Bitmap newProfilePic = extras.getParcelable("data");
-                    Glide.with(this).load(newProfilePic).into(imageView);
-                } else {
-                    Log.d("ERROR", "No data");
-                }
-            }
-
-            if (requestCode == SELECT_FILE) {
-                Uri selectedImageUri = data.getData();
-                String selectedImagePath = getPath(selectedImageUri);
-                Glide.with(this).load(selectedImagePath).into(imageView);
+            final Bundle extras = data.getExtras();
+            if (extras != null) {
+                //Get image
+                Bitmap newProfilePic = extras.getParcelable("data");
+                Glide.with(this).load(newProfilePic).into(imageView);
             }
         }
-    }
-
-    /**
-     * helper to retrieve the path of an image URI
-     */
-    public String getPath(Uri uri) {
-        // just some safety built in
-        if (uri == null) {
-            // TODO perform some logging or show user feedback
-            return null;
-        }
-        // try to retrieve the image from the media store first
-        // this will only work for images selected from gallery
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-        if (cursor != null) {
-            int column_index = cursor
-                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            String path = cursor.getString(column_index);
-            cursor.close();
-            return path;
-        }
-        // this is our fallback here
-        return uri.getPath();
     }
 
     private static final int MY_CAMERA_REQUEST_CODE = 100;
-    private static final int READ_STORAGE_REQUEST_CODE = 101;
-
-    public boolean checkStoragePermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Asking user if explanation is needed
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-                //Prompt the user once explanation has been shown
-
-                AlertDialog alertDialog = new AlertDialog.Builder(this).setTitle("Yêu cầu đọc kho lưu trữ").
-                        setMessage("Ứng dụng cần quyền đọc kho lữu trữ của thiết bị để có thể lấy hình ảnh từ máy. Vui lòng bật quyền để tiếp tục sử dụng ứng dụng.")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //Prompt the user once explanation has been shown
-                                ActivityCompat.requestPermissions(ProfileActivity.this,
-                                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                                        READ_STORAGE_REQUEST_CODE);
-                            }
-                        }).create();
-                alertDialog.setCancelable(false);
-                alertDialog.show();
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                        MY_CAMERA_REQUEST_CODE);
-            }
-            return false;
-        } else {
-            Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            getIntent.setType("image/*");
-
-            Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            pickIntent.setType("image/*");
-//        pickIntent.putExtra("crop", "true");
-//        pickIntent.putExtra("scale", true);
-//        pickIntent.putExtra("outputX", 256);
-//        pickIntent.putExtra("outputY", 256);
-//        pickIntent.putExtra("aspectX", 1);
-//        pickIntent.putExtra("aspectY", 1);
-//        pickIntent.putExtra("return-data", true);
-
-            Intent chooserIntent = Intent.createChooser(getIntent, "Chọn ảnh");
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
-
-            startActivityForResult(chooserIntent, SELECT_FILE);
-            return true;
-        }
-    }
 
     public boolean checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
+
             // Asking user if explanation is needed
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     android.Manifest.permission.CAMERA)) {
@@ -368,41 +298,7 @@ public class ProfileActivity extends AppCompatActivity {
                 }
                 return;
             }
-            case READ_STORAGE_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    // permission was granted. Do the
-                    // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                        getIntent.setType("image/*");
-
-                        Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        pickIntent.setType("image/*");
-//        pickIntent.putExtra("crop", "true");
-//        pickIntent.putExtra("scale", true);
-//        pickIntent.putExtra("outputX", 256);
-//        pickIntent.putExtra("outputY", 256);
-//        pickIntent.putExtra("aspectX", 1);
-//        pickIntent.putExtra("aspectY", 1);
-//        pickIntent.putExtra("return-data", true);
-
-                        Intent chooserIntent = Intent.createChooser(getIntent, "Chọn ảnh");
-                        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
-
-                        startActivityForResult(chooserIntent, SELECT_FILE);
-                    }
-
-                } else {
-                    // Permission denied, Disable the functionality that depends on this permission.
-                    Toast.makeText(this, "Ứng dụng phải có quyền sử dụng đọc kho lữu trữ của bạn để lấy ảnh", Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
             // other 'case' lines to check for other permissions this app might request.
             // You can add here other case statements according to your requirement.
         }

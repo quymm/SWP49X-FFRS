@@ -1,7 +1,6 @@
 package com.repository;
 
 import com.entity.AccountEntity;
-import com.entity.FieldEntity;
 import com.entity.FieldTypeEntity;
 import com.entity.TimeSlotEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +15,7 @@ import java.util.List;
  */
 public interface TimeSlotRepository extends JpaRepository<TimeSlotEntity, Integer> {
     List<TimeSlotEntity> findByFieldOwnerIdAndReserveStatusAndDateAndStatus(AccountEntity accountEntity, boolean reservationStatus,
-                                                                                          Date targetDate, boolean status);
+                                                                            Date targetDate, boolean status);
 
     Integer countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(AccountEntity accountEntity, FieldTypeEntity fieldTypeEntity,
                                                               Date targetDate, boolean status);
@@ -28,10 +27,17 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlotEntity, Intege
 
     TimeSlotEntity findByIdAndStatus(int id, boolean status);
 
-    List<TimeSlotEntity> findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(AccountEntity fieldOwnerEntity,
+    List<TimeSlotEntity> findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusAndOptimalOrderByStartTime(AccountEntity fieldOwnerEntity,
                                                                                                           FieldTypeEntity fieldTypeEntity,
                                                                                                           Date targetDate, boolean reservationStatus,
-                                                                                                          boolean status);
+                                                                                                          boolean status, boolean optimal);
+
+    List<TimeSlotEntity> findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(AccountEntity fieldOwnerEntity,
+                                                                                                                    FieldTypeEntity fieldTypeEntity,
+                                                                                                                    Date targetDate, boolean reservationStatus,
+                                                                                                                    boolean status);
+
+
 
     @Query("SELECT t FROM TimeSlotEntity t WHERE t.date >= :targetDate AND t.status = :status AND t.fieldOwnerId = :fieldOwnerId AND t.fieldTypeId = :fieldTypeId GROUP BY t.date")
     List<TimeSlotEntity> findTimeWhenAddNewField(@Param("targetDate") Date date, @Param("status") boolean status,

@@ -16,7 +16,7 @@ class Register extends Component {
       creditCard: undefined,
       latitude: undefined,
       longitude: undefined,
-      name: undefined,
+      fieldOwnerName: undefined,
       phone: undefined,
       message: undefined,
       messageSuccess: false,
@@ -55,52 +55,51 @@ class Register extends Component {
   }
 
   async handleSubmit(event) {
-    
     event.preventDefault();
-    const {avatarUrl} = this.state;
-    let avatarUrlAfter = avatarUrl.slice(avatarUrl.indexOf('fakepath') + 9, avatarUrl.length);
+    const { avatarUrl } = this.state;
+    let avatarUrlAfter = avatarUrl.slice(
+      avatarUrl.indexOf('fakepath') + 9,
+      avatarUrl.length,
+    );
     console.log(avatarUrlAfter);
     const {
       username,
       password,
       address,
-      creditCard,
       latitude,
       longitude,
-      name,
+      fieldOwnerName,
       phone,
-      message,
+
       confirmPassword,
     } = this.state;
+    debugger
     if (
       username !== undefined &&
       password !== undefined &&
       address !== undefined &&
       confirmPassword !== undefined &&
-      avatarUrl !== ''
+      fieldOwnerName !== undefined
     ) {
       if (password === confirmPassword) {
         // try {
-        
         const registerRes = await fetchRegister(
           username,
           password,
           address,
-          avatarUrlAfter,
+          'avatar',
           '123456',
           latitude,
           longitude,
-          name,
+          fieldOwnerName,
           phone,
         );
         debugger;
-        if (registerRes.status === 200) {
-          this.setState({ messageSuccess: true });
-        } 
-        else if(registerRes.status === 400){
-          this.setState({message: 'Tên đăng nhập đã tồn tại'})
-        }
-        else {
+        if (registerRes.status === 201) {
+          this.setState({ messageSuccess: true, message: '' });
+        } else if (registerRes.status === 400) {
+          this.setState({ message: 'Tên đăng nhập đã tồn tại' });
+        } else {
           this.setState({ message: 'Đăng kí không thành công' });
         }
       } else {
@@ -117,7 +116,7 @@ class Register extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col-md-4 col-md-offset-4">
+          <div className="col-md-6 col-md-offset-3">
             <div className="login-panel panel panel-default">
               <div className="panel-heading">
                 <h3 className="panel-title">Đăng kí</h3>
@@ -125,19 +124,6 @@ class Register extends Component {
               <div className="panel-body">
                 <form onSubmit={this.handleSubmit.bind(this)}>
                   <fieldset>
-                    <p className="text-center text-danger">
-                      <i>{message === null ? null : message}</i>
-                    </p>
-                    {messageSuccess ? (
-                      <p className="text-center text-success">
-                        <i>
-                          Đăng kí thành công. Nhấn vào đây để{' '}
-                          <Link to="/login">
-                            <strong>đăng nhập</strong>
-                          </Link>
-                        </i>
-                      </p>
-                    ) : null}
                     <div className="form-group">
                       <label htmlFor="exampleInputEmail1">Tên đăng nhập</label>
                       <input
@@ -152,10 +138,10 @@ class Register extends Component {
                     <div className="form-group">
                       <label htmlFor="exampleInputEmail1">Tên sân</label>
                       <input
-                        value={this.state.name}
+                        value={this.state.fieldOwnerName}
                         onChange={this.handleInputChange.bind(this)}
                         className="form-control"
-                        name="name"
+                        name="fieldOwnerName"
                         type="text"
                         id="exampleInputPassword1"
                       />
@@ -183,7 +169,7 @@ class Register extends Component {
                         type="text"
                       />
                     </div>
-                    <div className="form-group">
+                    {/* <div className="form-group">
                       <label htmlFor="exampleInputEmail1">Hình ảnh</label>
                       <input
                         value={this.state.avatarUrl}
@@ -191,7 +177,7 @@ class Register extends Component {
                         name="avatarUrl"
                         type="file"
                       />
-                    </div>
+                    </div> */}
                     <div className="form-group">
                       <label htmlFor="exampleInputEmail1">Mật khẩu</label>
                       <input
@@ -214,6 +200,19 @@ class Register extends Component {
                         type="password"
                       />
                     </div>
+                    <p className="text-center text-danger">
+                      <i>{message === null ? null : message}</i>
+                    </p>
+                    {messageSuccess ? (
+                      <p className="text-center text-success">
+                        <i>
+                          Đăng kí thành công. Nhấn vào đây để{' '}
+                          <Link to="/login">
+                            <strong>đăng nhập</strong>
+                          </Link>
+                        </i>
+                      </p>
+                    ) : null}
                     <button
                       type="submit"
                       className="btn btn-lg btn-success btn-block"

@@ -21,6 +21,8 @@ public class RoleServices {
                 newRoleEntity.setRoleName(roleName);
                 newRoleEntity.setStatus(true);
                 return roleRepository.save(newRoleEntity);
+            } else{
+                throw new IllegalArgumentException("There was role in database!");
             }
         }
         return null;
@@ -28,9 +30,6 @@ public class RoleServices {
 
     public RoleEntity findByRoleName(String roleName) {
         RoleEntity roleEntity = roleRepository.findByRoleNameAndStatus(roleName, true);
-        if(roleEntity == null){
-            throw new EntityNotFoundException(String.format("Not found role have role name: %s", roleName));
-        }
         return roleEntity;
     }
 

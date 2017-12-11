@@ -5,6 +5,9 @@
  */
 package com.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -37,10 +40,10 @@ public class MatchingRequestEntity implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @Column(name = "longitude")
-    private String longitude;
+    private Double longitude;
     @Basic(optional = false)
     @Column(name = "latitude")
-    private String latitude;
+    private Double latitude;
     @Basic(optional = false)
     @Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -57,8 +60,28 @@ public class MatchingRequestEntity implements Serializable {
     @Column(name = "duration")
     private Integer duration;
     @Basic(optional = false)
+    @Column(name = "address")
+    private String address;
+    @Basic(optional = false)
+    @Column(name = "expected_price")
+    private float expectedPrice;
+    @Basic(optional = false)
+    @Column(name = "expected_distance")
+    private int expectedDistance;
+    @Basic(optional = false)
+    @Column(name = "priority_field")
+    private boolean priorityField;
+    @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
+    @Basic(optional = false)
+    @Column(name = "creation_date")
+    @CreationTimestamp
+    private Date creationDate;
+    @Basic(optional = false)
+    @Column(name = "modification_date")
+    @UpdateTimestamp
+    private Date modificationDate;
     @JoinColumn(name = "field_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private FieldTypeEntity fieldTypeId;
@@ -73,7 +96,7 @@ public class MatchingRequestEntity implements Serializable {
         this.id = id;
     }
 
-    public MatchingRequestEntity(String longitude, String latitude, Date date, Date startTime, Date endTime, boolean status, FieldTypeEntity fieldTypeId, AccountEntity userId) {
+    public MatchingRequestEntity(double longitude, double latitude, Date date, Date startTime, Date endTime, boolean status, FieldTypeEntity fieldTypeId, AccountEntity userId) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.date = date;
@@ -96,19 +119,19 @@ public class MatchingRequestEntity implements Serializable {
         this.id = id;
     }
 
-    public String getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
-    public String getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
@@ -144,12 +167,60 @@ public class MatchingRequestEntity implements Serializable {
         this.duration = duration;
     }
 
-    public boolean isStatus() {
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public float getExpectedPrice() {
+        return expectedPrice;
+    }
+
+    public void setExpectedPrice(float expectedPrice) {
+        this.expectedPrice = expectedPrice;
+    }
+
+    public int getExpectedDistance() {
+        return expectedDistance;
+    }
+
+    public void setExpectedDistance(int expectedDistance) {
+        this.expectedDistance = expectedDistance;
+    }
+
+    public boolean getPriorityField() {
+        return priorityField;
+    }
+
+    public void setPriorityField(boolean priorityField) {
+        this.priorityField = priorityField;
+    }
+
+    public boolean getStatus() {
         return status;
     }
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(Date modificationDate) {
+        this.modificationDate = modificationDate;
     }
 
     public FieldTypeEntity getFieldTypeId() {

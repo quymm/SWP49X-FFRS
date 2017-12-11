@@ -2,8 +2,6 @@ package com.dto;
 
 public class InputVoucherRecordDTO {
 
-    private boolean status;
-
     private Integer userId;
 
     private Integer voucherId;
@@ -11,18 +9,9 @@ public class InputVoucherRecordDTO {
     public InputVoucherRecordDTO() {
     }
 
-    public InputVoucherRecordDTO(boolean status, Integer userId, Integer voucherId) {
-        this.status = status;
+    public InputVoucherRecordDTO(Integer userId, Integer voucherId) {
         this.userId = userId;
         this.voucherId = voucherId;
-    }
-
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
     }
 
     public Integer getUserId() {

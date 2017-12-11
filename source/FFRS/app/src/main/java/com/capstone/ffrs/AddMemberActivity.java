@@ -118,7 +118,7 @@ public class AddMemberActivity extends AppCompatActivity {
     }
 
     private boolean validateInput() {
-        boolean flag = true;
+        boolean flag = false;
         if (txtName.getText().toString().isEmpty()) {
             flag = false;
             txtName.setError("Nhập tên thành viên");
@@ -151,15 +151,14 @@ public class AddMemberActivity extends AppCompatActivity {
             params.put("captainId", userId);
             params.put("playerName", txtName.getText().toString());
             params.put("phone", txtPhone.getText().toString());
-            params.put("address", txtAddress.getText().toString());
-            params.put("latitude", location.latitude);
-            params.put("longitude", location.longitude);
+//            params.put("address", txtAddress.getText().toString());
+//            params.put("latitude", location.latitude);
+//            params.put("longitude", location.longitude);
             //Volley's inbuilt class to make Json array request
             JsonObjectRequest newsReq = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     if (!response.isNull("body")) {
-                        Toast.makeText(AddMemberActivity.this, "Đã thêm thành viên này vào danh sách", Toast.LENGTH_LONG).show();
                         finish();
                     }
                 }

@@ -1,16 +1,13 @@
 package com.controller;
 
-import com.dto.InputMatchingRequestDTO;
 import com.dto.InputReservationDTO;
+import com.dto.InputReserveTimeSlotDTO;
 import com.dto.Wrapper;
-import com.services.MatchServices;
 import com.services.TimeSlotServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.awt.image.WritableRaster;
 
 /**
  * @author MinhQuy
@@ -29,9 +26,16 @@ public class TimeSlotController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/match/pick-time-slot", method = RequestMethod.POST)
+    public ResponseEntity pickTimeSlot(@RequestBody InputReservationDTO inputReservationDTO) {
+        Wrapper wrapper = new Wrapper(timeSlotServices.pickTimeSlot(inputReservationDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+        return new ResponseEntity(wrapper, HttpStatus.CREATED);
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/reserve-time-slot", method = RequestMethod.POST)
-    public synchronized ResponseEntity reserveTimeSlot(@RequestBody InputReservationDTO inputReservationDTO) {
-        Wrapper wrapper = new Wrapper(timeSlotServices.reserveTimeSlot(inputReservationDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+    public synchronized ResponseEntity reserveTimeSlot(@RequestBody InputReserveTimeSlotDTO inputReserveTimeSlotDTO){
+        Wrapper wrapper = new Wrapper(timeSlotServices.reserveTimeSlot(inputReserveTimeSlotDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 

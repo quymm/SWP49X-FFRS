@@ -39,5 +39,10 @@ public class Demo {
 //        System.out.println(bDouble);
 //        System.out.println(format.format(dateTime));
 //        System.out.println(timeFormat.format(dateTime));
+        double a = 3.6;
+        System.out.println((int) Math.rint(3.3));
+
+        System.out.println("30-11-2017");
+        System.out.println(DateTimeUtils.getDateAfter("30-11-2017", 3));
     }
 }

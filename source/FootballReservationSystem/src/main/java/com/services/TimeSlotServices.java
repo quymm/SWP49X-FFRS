@@ -1,18 +1,17 @@
 package com.services;
 
 import com.config.Constant;
-import com.dto.InputReservationDTO;
-import com.dto.MatchReturnDTO;
-import com.dto.TimeSlotDTO;
+import com.dto.*;
 import com.entity.*;
 import com.repository.TimeSlotRepository;
 import com.utils.DateTimeUtils;
-import org.hibernate.validator.internal.xml.FieldType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by MinhQuy on 9/29/2017.
@@ -42,7 +41,7 @@ public class TimeSlotServices {
 
     public List<MatchReturnDTO> findUpcomingReservationByDate(String dateString, int fieldOwnerId) {
         Date targetDate = DateTimeUtils.convertFromStringToDate(dateString);
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndReserveStatusAndDateAndStatus(fieldOwner, true, targetDate, true);
         List<MatchReturnDTO> matchReturnDTOList = new ArrayList<>();
 
@@ -72,39 +71,73 @@ public class TimeSlotServices {
         // kiem tra ngay do la thu may trong tuan
         String dayInWeek = DateTimeUtils.returnDayInWeek(date);
 
+        List<TimeSlotEntity> insertTimeSlotEntityList = new ArrayList<>();
         List<TimeSlotEntity> savedTimeSlotEntityList = new ArrayList<>();
 
         // kiểm tra nếu được tạo rồi thì ko tạo nữa
         if (timeSlotRepository.countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(fieldOwnerEntity, fieldTypeEntity, date, true) == 0) {
             // đếm chủ sân có bao nhiêu sân loại đó
-            int numberOfField = fieldServices.countNumberOfFieldByFieldOwnerAndFieldType(fieldOwnerEntity, fieldTypeEntity);
+            int numberOfField = fieldServices.countNumberOfFieldByFieldOwnerAndFieldType(fieldOwnerEntity, fieldTypeEntity, date);
+            if (numberOfField == 0) {
+//                throw new IllegalArgumentException("Field owner has not created any fields!");
+                return savedTimeSlotEntityList;
+            }
             // get list timeEnable theo chủ sân, loại sân và theo ngày order by theo thời gian từ nhỏ đến lớn
-            List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDate(fieldOwnerEntity, fieldTypeEntity, dayInWeek);
+            // list not optimal
+            List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwnerEntity, fieldTypeEntity, dayInWeek, date, false);
+            // list optimal
+            List<TimeEnableEntity> timeEnableEntityOptimalList = timeEnableServices.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwnerEntity, fieldTypeEntity, dayInWeek, date, true);
             if (timeEnableEntityList.size() != 0) {
-                TimeSlotEntity timeSlotEntity = new TimeSlotEntity();
-                timeSlotEntity.setDate(date);
-                timeSlotEntity.setFieldOwnerId(fieldOwnerEntity);
-                timeSlotEntity.setFieldTypeId(fieldTypeEntity);
-                // Lấy startTime của timeEnable nhỏ nhất
-                timeSlotEntity.setStartTime(timeEnableEntityList.get(0).getStartTime());
-                // Lấy endTime của timeEnable lớn nhất
-                timeSlotEntity.setEndTime(timeEnableEntityList.get(timeEnableEntityList.size() - 1).getEndTime());
-                timeSlotEntity.setReserveStatus(false);
-                timeSlotEntity.setStatus(true);
-                // chủ sân có bao nhiêu sân thì tạo ra bấy nhiêu timeSlot
-                for (int i = 0; i < numberOfField; i++) {
-                    if (i == 0) {
-                        savedTimeSlotEntityList.add(timeSlotRepository.save(timeSlotEntity));
-                    } else {
-                        TimeSlotEntity moreTimeSlotEntity = new TimeSlotEntity();
-                        moreTimeSlotEntity.setDate(date);
-                        moreTimeSlotEntity.setFieldOwnerId(fieldOwnerEntity);
-                        moreTimeSlotEntity.setFieldTypeId(fieldTypeEntity);
-                        moreTimeSlotEntity.setStartTime(timeSlotEntity.getStartTime());
-                        moreTimeSlotEntity.setEndTime(timeSlotEntity.getEndTime());
-                        moreTimeSlotEntity.setReserveStatus(false);
-                        moreTimeSlotEntity.setStatus(true);
-                        savedTimeSlotEntityList.add(timeSlotRepository.save(moreTimeSlotEntity));
+
+                if (timeEnableEntityOptimalList.size() == 0) {
+                    TimeSlotEntity timeSlotEntity = new TimeSlotEntity();
+                    timeSlotEntity.setDate(date);
+                    timeSlotEntity.setFieldOwnerId(fieldOwnerEntity);
+                    timeSlotEntity.setFieldTypeId(fieldTypeEntity);
+                    timeSlotEntity.setStartTime(timeEnableEntityList.get(0).getStartTime());
+                    timeSlotEntity.setEndTime(timeEnableEntityList.get(timeEnableEntityList.size() - 1).getEndTime());
+                    timeSlotEntity.setReserveStatus(false);
+                    timeSlotEntity.setOptimal(false);
+                    timeSlotEntity.setStatus(true);
+                    insertTimeSlotEntityList.add(timeSlotEntity);
+                } else {
+                    timeEnableEntityList.addAll(timeEnableEntityOptimalList);
+                    for (TimeEnableEntity timeEnableEntity : timeEnableEntityList) {
+                        TimeSlotEntity timeSlotEntity = new TimeSlotEntity();
+                        timeSlotEntity.setDate(date);
+                        timeSlotEntity.setFieldOwnerId(fieldOwnerEntity);
+                        timeSlotEntity.setFieldTypeId(fieldTypeEntity);
+                        timeSlotEntity.setStartTime(timeEnableEntity.getStartTime());
+                        timeSlotEntity.setEndTime(timeEnableEntity.getEndTime());
+                        timeSlotEntity.setReserveStatus(false);
+                        timeSlotEntity.setOptimal(timeEnableEntity.isOptimal());
+                        timeSlotEntity.setStatus(true);
+                        insertTimeSlotEntityList.add(timeSlotEntity);
+                    }
+                }
+            }
+            if (insertTimeSlotEntityList.size() != 0) {
+                for (TimeSlotEntity timeSlotEntity : insertTimeSlotEntityList) {
+                    // chủ sân có bao nhiêu sân thì tạo ra bấy nhiêu timeSlot giống nhau trong list insertTimeSlot
+                    TimeSlotEntity savedTimeSlot = null;
+                    for (int i = 0; i < numberOfField; i++) {
+                        if (i == 0) {
+                            savedTimeSlot = timeSlotRepository.save(timeSlotEntity);
+                        } else {
+                            TimeSlotEntity newTimeSlotEntity = new TimeSlotEntity();
+                            newTimeSlotEntity.setDate(timeSlotEntity.getDate());
+                            newTimeSlotEntity.setFieldTypeId(timeSlotEntity.getFieldTypeId());
+                            newTimeSlotEntity.setFieldOwnerId(timeSlotEntity.getFieldOwnerId());
+                            newTimeSlotEntity.setStartTime(timeSlotEntity.getStartTime());
+                            newTimeSlotEntity.setEndTime(timeSlotEntity.getEndTime());
+                            newTimeSlotEntity.setReserveStatus(timeSlotEntity.getReserveStatus());
+                            newTimeSlotEntity.setOptimal(timeSlotEntity.isOptimal());
+                            newTimeSlotEntity.setStatus(true);
+                            timeSlotRepository.save(newTimeSlotEntity);
+                        }
+                    }
+                    if (savedTimeSlot != null) {
+                        savedTimeSlotEntityList.add(savedTimeSlot);
                     }
                 }
             }
@@ -112,36 +145,33 @@ public class TimeSlotServices {
         return savedTimeSlotEntityList;
     }
 
-    public TimeSlotEntity reserveTimeSlot(InputReservationDTO inputReservationDTO) {
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(inputReservationDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
-        FieldTypeEntity fieldType = fieldTypeServices.findById(inputReservationDTO.getFieldTypeId());
-        Date targetDate = DateTimeUtils.convertFromStringToDate(inputReservationDTO.getDate());
-        if (timeSlotRepository.countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(fieldOwner, fieldType, targetDate, true) == 0) {
-            createTimeSlotForDate(targetDate, fieldOwner, fieldType);
-        }
-        Date startTime = DateTimeUtils.convertFromStringToTime(inputReservationDTO.getStartTime());
+    public TimeSlotEntity reserveTimeSlot(InputReserveTimeSlotDTO inputReserveTimeSlotDTO) {
+        // nếu sân chưa có timeslot về thời gian rảnh thì tạo ra
+        findFreeTimeByFieldOwnerTypeAndDate(inputReserveTimeSlotDTO.getFieldOwnerId(), inputReserveTimeSlotDTO.getFieldTypeId(), inputReserveTimeSlotDTO.getDate());
 
-        Date endTime = DateTimeUtils.convertFromStringToTime(inputReservationDTO.getEndTime());
-
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(inputReserveTimeSlotDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
+        FieldTypeEntity fieldType = fieldTypeServices.findById(inputReserveTimeSlotDTO.getFieldTypeId());
+        Date targetDate = DateTimeUtils.convertFromStringToDate(inputReserveTimeSlotDTO.getDate());
+        Date startTime = DateTimeUtils.convertFromStringToTime(inputReserveTimeSlotDTO.getStartTime());
+        Date endTime = DateTimeUtils.convertFromStringToTime(inputReserveTimeSlotDTO.getEndTime());
         int duration = (int) ((endTime.getTime() - startTime.getTime()) / 60000);
         // get tất cả thời gian rảnh theo chủ sân, loại sân và ngày
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(fieldOwner, fieldType, targetDate, false, true);
         for (TimeSlotEntity timeSlotEntity : timeSlotEntityList) {
             boolean checkStart = timeSlotEntity.getStartTime().before(startTime) || timeSlotEntity.getStartTime().equals(startTime);
             boolean checkEnd = timeSlotEntity.getEndTime().after(endTime) || timeSlotEntity.getEndTime().equals(endTime);
+            float price = calculatePriceForTimeSlot(startTime, duration, targetDate, fieldOwner, fieldType);
             if (checkStart && checkEnd) {
-                float price = calculatePriceForTimeSlot(startTime, duration, targetDate, fieldOwner, fieldType);
                 if (timeSlotEntity.getStartTime().before(startTime) && timeSlotEntity.getEndTime().after(endTime)) {
                     // khoảng thời gian trước giờ đặt
                     TimeSlotEntity timeSlotEntity1 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
-                            timeSlotEntity.getStartTime(), startTime, Float.valueOf(0), false, true);
+                            timeSlotEntity.getStartTime(), startTime, Float.valueOf(0), false, timeSlotEntity.isOptimal(), true);
                     // khoảng thời gian đặt
                     TimeSlotEntity timeSlotEntity2 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
-                            startTime, endTime, price, true, true);
+                            startTime, endTime, price, true, timeSlotEntity.isOptimal(), true);
                     // khoảng thời gian sau giờ đặt
                     TimeSlotEntity timeSlotEntity3 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
-                            endTime, timeSlotEntity.getEndTime(), Float.valueOf(0), false, true);
-
+                            endTime, timeSlotEntity.getEndTime(), Float.valueOf(0), false, timeSlotEntity.isOptimal(), true);
                     timeSlotRepository.delete(timeSlotEntity);
                     timeSlotRepository.save(timeSlotEntity1);
                     timeSlotRepository.save(timeSlotEntity3);
@@ -151,10 +181,10 @@ public class TimeSlotServices {
                 } else if (timeSlotEntity.getStartTime().before(startTime) && timeSlotEntity.getEndTime().equals(endTime)) {
                     // khoảng thời gian trước giờ đặt
                     TimeSlotEntity timeSlotEntity1 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
-                            timeSlotEntity.getStartTime(), startTime, Float.valueOf(0), false, true);
+                            timeSlotEntity.getStartTime(), startTime, Float.valueOf(0), false, timeSlotEntity.isOptimal(), true);
                     // khoảng thời gian đặt
                     TimeSlotEntity timeSlotEntity2 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
-                            startTime, endTime, price, true, true);
+                            startTime, endTime, price, true, timeSlotEntity.isOptimal(), true);
                     timeSlotRepository.delete(timeSlotEntity);
                     timeSlotRepository.save(timeSlotEntity1);
                     TimeSlotEntity savedTimeSlotEntity = timeSlotRepository.save(timeSlotEntity2);
@@ -163,10 +193,10 @@ public class TimeSlotServices {
                 } else if (timeSlotEntity.getStartTime().equals(startTime) && timeSlotEntity.getEndTime().after(endTime)) {
                     // khoảng thời gian đặt
                     TimeSlotEntity timeSlotEntity1 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
-                            startTime, endTime, price, true, true);
+                            startTime, endTime, price, true, timeSlotEntity.isOptimal(), true);
                     // khoảng thời gian sau giờ đặt
                     TimeSlotEntity timeSlotEntity2 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
-                            endTime, timeSlotEntity.getEndTime(), Float.valueOf(0), false, true);
+                            endTime, timeSlotEntity.getEndTime(), Float.valueOf(0), false, timeSlotEntity.isOptimal(), true);
                     timeSlotRepository.delete(timeSlotEntity);
                     timeSlotRepository.save(timeSlotEntity2);
                     TimeSlotEntity savedTimeSlotEntity = timeSlotRepository.save(timeSlotEntity1);
@@ -183,10 +213,43 @@ public class TimeSlotServices {
         return null;
     }
 
+    public OutputReserveTimeSlotDTO pickTimeSlot(InputReservationDTO inputReservationDTO) {
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(inputReservationDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
+        FieldTypeEntity fieldType = fieldTypeServices.findById(inputReservationDTO.getFieldTypeId());
+        Date targetDate = DateTimeUtils.convertFromStringToDate(inputReservationDTO.getDate());
+        if (timeSlotRepository.countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(fieldOwner, fieldType, targetDate, true) == 0) {
+            createTimeSlotForDate(targetDate, fieldOwner, fieldType);
+        }
+        Date startTime = DateTimeUtils.convertFromStringToTime(inputReservationDTO.getStartTime());
+
+        Date endTime = DateTimeUtils.convertFromStringToTime(inputReservationDTO.getEndTime());
+
+        int duration = (int) ((endTime.getTime() - startTime.getTime()) / 60000);
+        // get tất cả thời gian rảnh theo chủ sân, loại sân và ngày
+        List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(fieldOwner, fieldType, targetDate, false, true);
+        for (TimeSlotEntity timeSlotEntity : timeSlotEntityList) {
+            boolean checkStart = timeSlotEntity.getStartTime().before(startTime) || timeSlotEntity.getStartTime().equals(startTime);
+            boolean checkEnd = timeSlotEntity.getEndTime().after(endTime) || timeSlotEntity.getEndTime().equals(endTime);
+            if (checkStart && checkEnd) {
+                if (timeSlotEntity.isOptimal()) {
+                    if (!timeSlotEntity.getStartTime().equals(startTime) || !timeSlotEntity.getEndTime().equals(endTime)) {
+                        return null;
+                    }
+                }
+                float price = calculatePriceForTimeSlot(startTime, duration, targetDate, fieldOwner, fieldType);
+                OutputReserveTimeSlotDTO reserveTimeSlot = new OutputReserveTimeSlotDTO(fieldOwner, fieldType, DateTimeUtils.formatDate(targetDate),
+                        DateTimeUtils.formatTime(startTime), DateTimeUtils.formatTime(endTime), price);
+                return reserveTimeSlot;
+            }
+        }
+        return null;
+    }
+
     public List<TimeSlotEntity> findFreeTimeByFieldOwnerTypeAndDate(int fieldOwnerId, int fieldTypeId, String dateString) {
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         FieldTypeEntity fieldType = fieldTypeServices.findById(fieldTypeId);
         Date targetDate = DateTimeUtils.convertFromStringToDate(dateString);
+
 
         // kiểm tra trong database đã đổ time-slot rảnh cho ngày mới chưa
         if (timeSlotRepository.countByFieldOwnerIdAndFieldTypeIdAndDateAndStatus(fieldOwner, fieldType, targetDate, true) == 0) {
@@ -194,13 +257,13 @@ public class TimeSlotServices {
             List<TimeSlotEntity> timeSlotEntityList = createTimeSlotForDate(targetDate, fieldOwner, fieldType);
             List<TimeSlotEntity> returnTimeSlotEntityList = new ArrayList<>();
             if (!timeSlotEntityList.isEmpty()) {
-                returnTimeSlotEntityList.add(timeSlotEntityList.get(0));
+                returnTimeSlotEntityList.addAll(timeSlotEntityList);
             }
             return returnTimeSlotEntityList;
         } else {
             // lấy list thời gian rảnh theo chủ sân, loại sân, ngày và sắp xếp theo thứ tự tăng dần của startTime
-            List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(fieldOwner,
-                    fieldType, targetDate, false, true);
+            List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusAndOptimalOrderByStartTime(fieldOwner,
+                    fieldType, targetDate, false, true, false);
             List<TimeSlotEntity> savedTimeSlotEntityList = new ArrayList<>();
             while (timeSlotEntityList.size() != 0) {
                 TimeSlotEntity savedTimeSlotEntity = timeSlotEntityList.get(0);
@@ -210,7 +273,7 @@ public class TimeSlotServices {
                     break;
                 }
                 // chạy for từ timeslot thứ 2, nếu có găp timeslot nào startTime bằng nhưng endTime sau endTime của timeslot hiện tại
-                // thì lấy timeslot đó
+                // thì lấy timeslot đó, và timeSlot đó phải là timeSlot ko được optimal
                 for (int i = 1; i < timeSlotEntityList.size(); i++) {
                     if (timeSlotEntityList.get(i).getStartTime().equals(savedTimeSlotEntity.getStartTime())
                             && timeSlotEntityList.get(i).getEndTime().after(savedTimeSlotEntity.getEndTime())) {
@@ -231,6 +294,32 @@ public class TimeSlotServices {
                         timeSlotEntityList.remove(timeSlotEntity);
                     }
                 }
+            }
+
+            List<TimeSlotEntity> savedTimeSlotOptimalEntityList = new ArrayList<>();
+            List<TimeSlotEntity> timeSlotEntityOptimalList = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusAndOptimalOrderByStartTime(fieldOwner,
+                    fieldType, targetDate, false, true, true);
+            if (!timeSlotEntityOptimalList.isEmpty()) {
+                if (timeSlotEntityOptimalList.size() == 1) {
+                    savedTimeSlotOptimalEntityList.add(timeSlotEntityOptimalList.get(0));
+                } else {
+                    savedTimeSlotOptimalEntityList.add(timeSlotEntityOptimalList.get(0));
+                    for (int i = 1; i < timeSlotEntityOptimalList.size(); i++) {
+                        boolean checkDuplicate = false;
+                        for (TimeSlotEntity timeSlotEntity : savedTimeSlotOptimalEntityList) {
+                            if (timeSlotEntity.getStartTime().equals(timeSlotEntityOptimalList.get(i).getStartTime())
+                                    && timeSlotEntity.getEndTime().equals(timeSlotEntityOptimalList.get(i).getEndTime())) {
+                                checkDuplicate = true;
+                            }
+                        }
+                        if (!checkDuplicate) {
+                            savedTimeSlotOptimalEntityList.add(timeSlotEntityOptimalList.get(i));
+                        }
+                    }
+                }
+            }
+            if (!savedTimeSlotOptimalEntityList.isEmpty()) {
+                savedTimeSlotEntityList.addAll(savedTimeSlotOptimalEntityList);
             }
             return savedTimeSlotEntityList;
         }
@@ -253,7 +342,7 @@ public class TimeSlotServices {
 
         String dateInWeek = DateTimeUtils.returnDayInWeek(targetDate);
 
-        List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDate(fieldOwner, fieldType, dateInWeek);
+        List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwner, fieldType, dateInWeek, targetDate, null);
         Float priceReturn = Float.valueOf(0);
         for (TimeSlotDTO timeSlotDTO : timeSlotDTOList) {
             for (TimeEnableEntity timeEnableEntity : timeEnableEntityList) {
@@ -269,7 +358,7 @@ public class TimeSlotServices {
     }
 
     public List<FieldEntity> getListFreeFieldAtSpecificTime(String targetDateStr, String targetTimeStr, int fieldOwnerId, int fieldTypeId) {
-        AccountEntity fieldOwner = accountServices.findAccountEntityById(fieldOwnerId, constant.getFieldOwnerRole());
+        AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         FieldTypeEntity fieldType = fieldTypeServices.findById(fieldTypeId);
         Date targetDate = DateTimeUtils.convertFromStringToDate(targetDateStr);
         Date targetTime = DateTimeUtils.convertFromStringToTime(targetTimeStr);
@@ -328,7 +417,7 @@ public class TimeSlotServices {
     }
 
     public boolean mergeTimeSlotInList(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity, Date date) {
-        List<TimeSlotEntity> listTimeSlotEntity = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(fieldOwner, fieldTypeEntity, date, false, true);
+        List<TimeSlotEntity> listTimeSlotEntity = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusAndOptimalOrderByStartTime(fieldOwner, fieldTypeEntity, date, false, true, false);
 
         int[] timeSlotArray = new int[48];
 
@@ -385,6 +474,7 @@ public class TimeSlotServices {
                 newTimeSlotEntity.setFieldTypeId(firstTimeSlotEntity.getFieldTypeId());
                 newTimeSlotEntity.setReserveStatus(false);
                 newTimeSlotEntity.setStatus(true);
+                newTimeSlotEntity.setOptimal(false);
                 newTimeSlotEntity.setPrice(0);
                 newTimeSlotEntity.setStartTime(startTime);
                 newTimeSlotEntity.setEndTime(endtTime);
@@ -409,28 +499,58 @@ public class TimeSlotServices {
         return true;
     }
 
-    public List<TimeSlotEntity> addTimeSlotWhenCreateNewField(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity){
+    public List<TimeSlotEntity> addTimeSlotWhenCreateNewField(AccountEntity fieldOwner, FieldTypeEntity fieldTypeEntity) {
         Date targetDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
+        // tìm những ngày đã đổ time slot rồi thì đổ thêm vào những ngày đó
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findTimeWhenAddNewField(targetDate, true, fieldOwner, fieldTypeEntity);
         List<TimeSlotEntity> savedTimeSlotEntityList = new ArrayList<>();
-        if(!timeSlotEntityList.isEmpty())
+        Date nowDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
+        if (!timeSlotEntityList.isEmpty())
             for (TimeSlotEntity timeSlot : timeSlotEntityList) {
                 String dayInWeek = DateTimeUtils.returnDayInWeek(timeSlot.getDate());
-                List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findTimeEnableByFieldOwnerTypeAndDate(fieldOwner, fieldTypeEntity, dayInWeek);
-                if(!timeEnableEntityList.isEmpty()){
-
+                List<TimeEnableEntity> timeEnableEntityList = timeEnableServices.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwner, fieldTypeEntity, dayInWeek, nowDate, false);
+                List<TimeEnableEntity> timeEnableEntityOptimalList = timeEnableServices.findByFieldOwnerAndTypeAndDateInWeekAndOptimalAndTargetDateOrderByStartTime(fieldOwner, fieldTypeEntity, dayInWeek, nowDate, true);
+                if (!timeEnableEntityList.isEmpty()) {
                     TimeSlotEntity timeSlotEntity = new TimeSlotEntity();
 
                     timeSlotEntity.setFieldOwnerId(fieldOwner);
                     timeSlotEntity.setFieldTypeId(fieldTypeEntity);
                     timeSlotEntity.setDate(timeSlot.getDate());
                     timeSlotEntity.setStartTime(timeEnableEntityList.get(0).getStartTime());
-                    timeSlotEntity.setEndTime(timeEnableEntityList.get(timeEnableEntityList.size() -1).getEndTime());
+                    timeSlotEntity.setEndTime(timeEnableEntityList.get(timeEnableEntityList.size() - 1).getEndTime());
                     timeSlotEntity.setReserveStatus(false);
+                    timeSlotEntity.setOptimal(false);
                     timeSlotEntity.setStatus(true);
                     savedTimeSlotEntityList.add(timeSlotRepository.save(timeSlotEntity));
                 }
+                if (!timeEnableEntityOptimalList.isEmpty()) {
+                    for (TimeEnableEntity timeEnableEntity : timeEnableEntityOptimalList) {
+
+                        TimeSlotEntity timeSlotEntity = new TimeSlotEntity();
+
+                        timeSlotEntity.setFieldOwnerId(fieldOwner);
+                        timeSlotEntity.setFieldTypeId(fieldTypeEntity);
+                        timeSlotEntity.setDate(timeSlot.getDate());
+                        timeSlotEntity.setStartTime(timeEnableEntity.getStartTime());
+                        timeSlotEntity.setEndTime(timeEnableEntity.getEndTime());
+                        timeSlotEntity.setReserveStatus(false);
+                        timeSlotEntity.setOptimal(true);
+                        timeSlotEntity.setStatus(true);
+                        savedTimeSlotEntityList.add(timeSlotRepository.save(timeSlotEntity));
+                    }
+                }
             }
         return timeSlotEntityList;
+    }
+
+    public List<TimeSlotEntity> findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndOptimal(AccountEntity fieldOwner, FieldTypeEntity fieldType,
+                                                                                                  Date targetDate, boolean reserveStatus, Boolean optimal) {
+        List<TimeSlotEntity> returnTimeSlotEntity;
+        if (optimal == null) {
+            returnTimeSlotEntity = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusOrderByStartTime(fieldOwner, fieldType, targetDate, reserveStatus, true);
+        } else {
+            returnTimeSlotEntity = timeSlotRepository.findByFieldOwnerIdAndFieldTypeIdAndDateAndReserveStatusAndStatusAndOptimalOrderByStartTime(fieldOwner, fieldType, targetDate, reserveStatus, true, optimal);
+        }
+        return returnTimeSlotEntity;
     }
 }

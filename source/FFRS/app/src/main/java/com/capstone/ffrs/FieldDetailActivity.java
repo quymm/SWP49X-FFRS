@@ -9,20 +9,17 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +37,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.FieldOwner;
 import com.capstone.ffrs.entity.FieldOwnerFriendlyNotification;
 import com.capstone.ffrs.entity.FieldOwnerTourNotification;
 import com.capstone.ffrs.entity.PendingRequest;
@@ -54,7 +50,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -64,7 +59,7 @@ public class FieldDetailActivity extends AppCompatActivity {
 
     private String name, address;
     private Date startTime, endTime, date;
-    private int id, price, fieldTypeId, currentSpinnerPosition = 0;
+    private int id, price, fieldTypeId;
     private RelativeLayout relativeLayout;
     private FrameLayout progressBarHolder;
 
@@ -101,7 +96,7 @@ public class FieldDetailActivity extends AppCompatActivity {
         price = b.getInt("price");
 
         int hours = Double.valueOf(Math.abs(endTime.getTime() - startTime.getTime()) / 36e5).intValue();
-        final int minutes = Double.valueOf((Math.abs(endTime.getTime() - startTime.getTime()) / (60 * 1000)) % 60).intValue();
+        int minutes = Double.valueOf((Math.abs(endTime.getTime() - startTime.getTime()) / (60 * 1000)) % 60).intValue();
 
         String duration = (hours != 0 ? hours + " tiếng " : "") + (minutes != 0 ? minutes + " phút" : "");
 
@@ -132,73 +127,16 @@ public class FieldDetailActivity extends AppCompatActivity {
         TextView txtFieldType = (TextView) findViewById(R.id.text_field_type);
         txtFieldType.setText(strFieldType);
 
-        final TextView txtTotalPrice = (TextView) findViewById(R.id.text_total_price);
+        TextView txtTotalPrice = (TextView) findViewById(R.id.text_total_price);
         boolean tourMatchMode = b.getBoolean("tour_match_mode");
         if (tourMatchMode) {
-            txtTotalPrice.setText((price * 2) + " nghìn đồng");
-
-            currentSpinnerPosition = 0;
-
-            final ArrayList<FieldOwner> list = b.getParcelableArrayList("field_list");
-
-            final ImageView btList = (ImageView) findViewById(R.id.btList);
-            btList.setVisibility(View.VISIBLE);
-            btList.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(FieldDetailActivity.this);
-
-                    final View view = getLayoutInflater().inflate(R.layout.field_list_spinner, null);
-
-                    final Spinner mSpinner = (Spinner) view
-                            .findViewById(R.id.field_spinner);
-                    ArrayAdapter<FieldOwner> adapter = new ArrayAdapter<FieldOwner>(FieldDetailActivity.this, android.R.layout.simple_spinner_dropdown_item, list);
-                    mSpinner.setAdapter(adapter);
-                    mSpinner.setSelection(currentSpinnerPosition);
-
-                    alertDialogBuilder.setView(view);
-
-                    alertDialogBuilder.setTitle("Chọn sân");
-
-                    alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            currentSpinnerPosition = mSpinner.getSelectedItemPosition();
-
-                            final Spinner mSpinner = (Spinner) view.findViewById(R.id.field_spinner);
-                            FieldOwner fieldOwner = (FieldOwner) mSpinner.getSelectedItem();
-                            name = fieldOwner.getFieldName();
-                            TextView txtName = (TextView) findViewById(R.id.field_name);
-                            txtName.setText(name);
-
-                            address = fieldOwner.getAddress();
-                            TextView txtAddress = (TextView) findViewById(R.id.field_address);
-                            txtAddress.setText(address);
-
-                            id = fieldOwner.getId();
-
-                            price = fieldOwner.getPrice();
-
-                            txtTotalPrice.setText((price * 2) + " nghìn đồng");
-                            TextView txtPrice = (TextView) findViewById(R.id.text_price);
-                            txtPrice.setText(price + " nghìn đồng");
-                        }
-                    });
-
-
-                    final AlertDialog alertDialog = alertDialogBuilder.create();
-
-                    alertDialog.show();
-                    alertDialog.setCanceledOnTouchOutside(false);
-                }
-            });
-
+            txtTotalPrice.setText((price * 2) + " ngàn đồng");
         } else {
-            txtTotalPrice.setText(price + " nghìn đồng");
+            txtTotalPrice.setText(price + " ngàn đồng");
         }
 
         TextView txtPrice = (TextView) findViewById(R.id.text_price);
-        txtPrice.setText(price + " nghìn đồng");
+        txtPrice.setText(price + " ngàn đồng");
 
         relativeLayout = (RelativeLayout) findViewById(R.id.relative_layout);
         progressBarHolder = (FrameLayout) findViewById(R.id.progressBarHolder);
@@ -273,6 +211,7 @@ public class FieldDetailActivity extends AppCompatActivity {
                                 @Override
                                 protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
                                     try {
+<<<<<<< HEAD
                                         String utf8String = new String(response.data, "UTF-8");
                                         return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
                                     } catch (UnsupportedEncodingException e) {
@@ -281,6 +220,57 @@ public class FieldDetailActivity extends AppCompatActivity {
                                     } catch (JSONException e) {
                                         // log error
                                         return Response.error(new ParseError(e));
+=======
+                                        Bundle b = getIntent().getExtras();
+                                        Intent intent = new Intent(FieldDetailActivity.this, ReservationResultActivity.class);
+                                        intent.putExtra("payment_result", "Succeed");
+                                        if (!tourMatchMode) {
+                                            intent.putExtra("reserve_id", body.getJSONObject("friendlyMatchId").getInt("id"));
+
+                                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(FieldDetailActivity.this);
+                                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                                            editor.putInt("balance", body.getJSONObject("userId").getJSONObject("profileId").getInt("balance"));
+                                            editor.apply();
+
+                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                            DatabaseReference ref = database.getReference();
+                                            DatabaseReference friendlyRef = ref.child("fieldOwner").child(b.getInt("field_id") + "")
+                                                    .child("friendlyMatch").child(body.getJSONObject("friendlyMatchId").getInt("id") + "");
+                                            FieldOwnerFriendlyNotification notification = new FieldOwnerFriendlyNotification();
+                                            notification.setIsRead(0);
+                                            notification.setIsShowed(0);
+                                            notification.setPlayTime(new SimpleDateFormat("MM-dd-yyyy").format(date) + " " + new SimpleDateFormat("H:mm").format(startTime));
+                                            notification.setTime(new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(new Date()));
+                                            notification.setUsername(body.getJSONObject("userId").getJSONObject("profileId").getString("name"));
+                                            friendlyRef.setValue(notification);
+                                        } else {
+                                            intent.putExtra("reserve_id", body.getJSONObject("tourMatchId").getInt("id"));
+
+                                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(FieldDetailActivity.this);
+                                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                                            editor.putInt("balance", body.getJSONObject("userId").getJSONObject("profileId").getInt("balance"));
+                                            editor.apply();
+
+                                            if (!b.containsKey("tour_match_id")) {
+                                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                DatabaseReference ref = database.getReference();
+                                                ref.child("tourMatch").child(b.getInt("opponent_id") + "").child(body.getJSONObject("tourMatchId").getInt("id") + "").setValue(0);
+                                                DatabaseReference tourRef = ref.child("fieldOwner").child(b.getInt("field_id") + "")
+                                                        .child("tourMatch").child(body.getJSONObject("tourMatchId").getInt("id") + "");
+                                                FieldOwnerTourNotification notification = new FieldOwnerTourNotification();
+                                                notification.setIsRead(0);
+                                                notification.setIsShowed(0);
+                                                notification.setPlayTime(new SimpleDateFormat("dd-MM-yyyy").format(date) + " " + new SimpleDateFormat("H:mm").format(startTime));
+                                                notification.setTime(new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(new Date()));
+                                                tourRef.setValue(notification);
+                                            }
+                                        }
+                                        intent.putExtra("tour_match_mode", tourMatchMode);
+                                        startActivity(intent);
+                                    } catch (Exception e) {
+//                                        Log.d("EXCEPTION", e.getMessage());\
+                                        e.printStackTrace();
+>>>>>>> master
                                     }
                                 }
 
@@ -583,5 +573,11 @@ public class FieldDetailActivity extends AppCompatActivity {
                     }
                 })
                 .show();
+    }
+
+    public void onClickGoBackToHome(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
     }
 }

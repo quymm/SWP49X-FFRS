@@ -208,6 +208,7 @@
             android:onClick="onClickCancelRequest"
             android:text="Hủy"
             android:textColor="@android:color/white"
+<<<<<<< HEAD
             android:textSize="18sp" />
 
         <Button
@@ -220,5 +221,8 @@
             android:text="Xem danh sách đối thủ phù hợp"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
+=======
+            android:textSize="18dp" />
+>>>>>>> master
     </TableLayout>
 </android.support.constraint.ConstraintLayout>

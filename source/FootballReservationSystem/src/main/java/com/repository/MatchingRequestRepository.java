@@ -15,12 +15,14 @@ import java.util.List;
  */
 public interface MatchingRequestRepository extends JpaRepository<MatchingRequestEntity, Integer> {
     @Query("SELECT m FROM MatchingRequestEntity m WHERE m.fieldTypeId = :fieldType AND m.date = :date" +
-            " AND m.status = :status AND :startTime < m.endTime AND :endTime > m.startTime")
+            " AND m.status = :status AND :startTime < m.endTime AND :endTime > m.startTime AND m.duration <= :duration")
     List<MatchingRequestEntity> findSimilarMatchingRequest(@Param("fieldType") FieldTypeEntity fieldTypeEntity, @Param("status") boolean status,
-                                                           @Param("date") Date date,
+                                                           @Param("date") Date date, @Param("duration") int duration,
                                                            @Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     MatchingRequestEntity findByIdAndStatus(int id, boolean status);
 
     List<MatchingRequestEntity> findByUserIdAndStatus(AccountEntity userId, boolean status);
+
+    List<MatchingRequestEntity> findByUserId(AccountEntity userId);
 }

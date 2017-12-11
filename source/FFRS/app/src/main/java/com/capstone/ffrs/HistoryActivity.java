@@ -11,9 +11,6 @@ import com.capstone.ffrs.adapter.HistoryPagerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class HistoryActivity extends AppCompatActivity {
 
     @Override
@@ -40,9 +37,7 @@ public class HistoryActivity extends AppCompatActivity {
         if (b != null && b.containsKey("notification_tour_match_id")) {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference ref = database.getReference();
-            Map<String, Object> childUpdates = new HashMap<>();
-            childUpdates.put("/tourMatch/" + b.getInt("notification_user_id") + "/" + b.getInt("notification_tour_match_id"), 1);
-            ref.updateChildren(childUpdates);
+            ref.child("tourMatch").child(b.getInt("notification_user_id") + "").child(b.getInt("notification_tour_match_id") + "").setValue(1);
         }
     }
 

@@ -2,105 +2,237 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
   fetchGetMatchByFieldOwnerAndDay,
-  fetchGetFreeTime,
   fetchBookMatch,
+  fetchGetFreeFieldByTime,
+  fetchSetFieldToMatch,
 } from '../apis/field-owner-apis';
+import { fetchGetAllField } from '../apis/field-owner-apis';
+import { getAllField } from '../redux/field-owner/field-owner-action-creator';
 import {
   GetMatchByFieldOwnerAndDay,
-  getAllFreeTime5vs5,
-  getAllFreeTime7vs7,
+  getAllFreeField,
+  setCurrentDaySelected,
 } from '../redux/field-owner/field-owner-action-creator';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Link } from 'react-router-dom';
-import Clock from './Clock';
-import TimePicker from 'rc-time-picker';
-import FreeTime from '../containts/FreeTime';
-import MatchByDate from '../containts/MatchByDate';
+import {
+  doLoginSuccessful,
+  accessDenied,
+  doLogout,
+} from '../redux/guest/guest-action-creators';
+import { Modal } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
       dateSelected: moment(),
-      currentTime: new Date().toLocaleTimeString([], { hour12: false }),
-      currentShowPage: '',
-      openedTab: 2,
       bookMatchStartTime: undefined,
       bookMatchEndTime: 60,
       bookMatchMessage: undefined,
       bookMatchFieldType: 1,
-      buttonGroupTab: [
-        {
-          id: 1,
-          text: 'Các trân đang đá',
-          value: 1,
-        },
-        {
-          id: 2,
-          text: 'Các trân trong ngày',
-          value: 2,
-        },
-        {
-          id: 3,
-          text: 'Thời gian rảnh',
-          value: 3,
-        },
-        {
-          id: 4,
-          text: 'Đặt sân',
-          value: 4,
-        },
-      ],
+      isShowUpdateField: false,
+      fieldSelected: undefined,
+      timeSlotSelected: undefined,
+      filterName: 'ans',
+      messages: {},
+      currentShowOption: true,
     };
-    this.timer = setInterval(() => {
-      this.setState({
-        currentTime: new Date().toLocaleTimeString([], { hour12: false }),
-      });
-    }, 1000);
+    this.handleShowModalField = this.handleShowModalField.bind(this);
   }
-  componentWillUnmount() {
-    clearInterval(this.timer);
+  async handelShowViewOption(evt) {
+    const { id } = this.props.auth.user.data;
+    evt.preventDefault();
+    const match = await fetchGetMatchByFieldOwnerAndDay(
+      id,
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      1,
+    );
+    const afterSort = match.body.sort(
+      (a, b) =>
+        moment('10-Jan-2017 ' + a.timeSlotEntity.startTime) -
+        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime),
+    );
+    await this.props.GetMatchByFieldOwnerAndDay(afterSort);
+    this.props.setCurrentDaySelected(this.state.dateSelected);
+    const { currentShowOption } = this.state;
+    this.setState({ currentShowOption: !currentShowOption });
+  }
+  async handelNextDay(evt) {
+    evt.preventDefault();
+    const { dateSelected } = this.state;
+    this.setState({ dateSelected: dateSelected.add(1, 'days') });
+    const { id } = this.props.auth.user.data;
+    const match = await fetchGetMatchByFieldOwnerAndDay(
+      id,
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      1,
+    );
+    const afterSort = match.body.sort(
+      (a, b) =>
+        moment('10-Jan-2017 ' + a.timeSlotEntity.startTime) -
+        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime),
+    );
+    await this.props.GetMatchByFieldOwnerAndDay(afterSort);
+    this.props.setCurrentDaySelected(this.state.dateSelected);
+  }
+  async handelPreviousDay(evt) {
+    evt.preventDefault();
+    const { dateSelected } = this.state;
+    this.setState({ dateSelected: dateSelected.subtract(1, 'days') });
+    const { id } = this.props.auth.user.data;
+    const match = await fetchGetMatchByFieldOwnerAndDay(
+      id,
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      1,
+    );
+    const afterSort = match.body.sort(
+      (a, b) =>
+        moment(
+          '10-Jan-2017 ' + a.timeSlotEntity.startTime,
+          'DD-MM-YYYY HH:mm',
+        ) -
+        moment('10-Jan-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
+    );
+    await this.props.GetMatchByFieldOwnerAndDay(afterSort);
+  }
+  configTimeDiable() {
+    let disableTime = [];
+    for (let i = 1; i < 30; i++) {
+      disableTime.push(i);
+    }
+    for (let i = 31; i < 60; i++) {
+      disableTime.push(i);
+    }
+    return disableTime;
   }
   async componentDidMount() {
     const { id } = this.props.auth.user.data;
-    console.log('user id: ', id);
-    try {
-      fetchGetMatchByFieldOwnerAndDay(
-        1,
-        this.state.dateSelected.format('DD-MM-YYYY'),
-        1,
-      ).then(data => {
-        this.props.GetMatchByFieldOwnerAndDay(data);
-      });
-      const data5vs5 = await fetchGetFreeTime(
-        1,
-        1,
-        this.state.dateSelected.format('DD-MM-YYYY'),
-      );
-      const data7vs7 = await fetchGetFreeTime(
-        1,
-        2,
-        this.state.dateSelected.format('DD-MM-YYYY'),
-      );
-      await this.props.getAllFreeTime5vs5(data5vs5);
-      await this.props.getAllFreeTime7vs7(data7vs7);
-    } catch (error) {
-      console.log('error: ', error);
+    if (id === undefined) {
+      const authLocalStorage = JSON.parse(localStorage.getItem('auth'));
+      if (authLocalStorage === null) {
+        debugger;
+        this.props.doLogout();
+        this.props.history.push('/login');
+      } else {
+        if (authLocalStorage.roleId.roleName !== 'owner') {
+          this.props.accessDenied();
+          this.props.history.push('/login');
+        } else {
+          const idLocal = authLocalStorage.id;
+          await this.props.doLoginSuccessful(authLocalStorage);
+          try {
+            const match = await fetchGetMatchByFieldOwnerAndDay(
+              idLocal,
+              this.state.dateSelected.format('DD-MM-YYYY'),
+              1,
+            );
+            const afterSort = match.body.sort(
+              (a, b) =>
+                moment(
+                  '10-Jan-2017 ' + a.timeSlotEntity.startTime,
+                  'DD-MM-YYYY HH:mm',
+                ) -
+                moment(
+                  '10-Jan-2017 ' + b.timeSlotEntity.startTime,
+                  'DD-MM-YYYY HH:mm',
+                ),
+            );
+            await this.props.GetMatchByFieldOwnerAndDay(afterSort);
+            const data = await fetchGetAllField(idLocal);
+            await this.props.getAllField(data.body);
+          } catch (error) {
+            console.log('error: ', error);
+          }
+        }
+      }
+    } else {
+      try {
+        const match = await fetchGetMatchByFieldOwnerAndDay(
+          id,
+          this.state.dateSelected.format('DD-MM-YYYY'),
+          1,
+        );
+        const afterSort = match.body.sort(
+          (a, b) =>
+            moment(
+              '10-10-2017 ' + a.timeSlotEntity.startTime,
+              'DD-MM-YYYY HH:mm',
+            ) -
+            moment(
+              '10-10-2017 ' + b.timeSlotEntity.startTime,
+              'DD-MM-YYYY HH:mm',
+            ),
+        );
+        await this.props.GetMatchByFieldOwnerAndDay(afterSort);
+        const data = await fetchGetAllField(id);
+        await this.props.getAllField(data.body);
+      } catch (error) {
+        console.log('error: ', error);
+      }
     }
-  }
-  async handelEndTimeInputChange(evt) {
-    await this.setState({ bookMatchEndTime: evt.format('HH:mm') });
+    this.props.setCurrentDaySelected(this.state.dateSelected);
   }
 
-  async handelTimeStartDayInputChange(evt) {
-    await this.setState({ bookMatchStartTime: evt.format('HH:mm') });
+  async handelSetFieldSubmit(evt) {
+    evt.preventDefault();
+    const { timeSlotSelected, fieldSelected } = this.state;
+    const { id } = this.props.auth.user.data;
+    const setFieldRes = await fetchSetFieldToMatch(
+      timeSlotSelected,
+      fieldSelected,
+    );
+    if (setFieldRes.status === 200) {
+      this.setState({ isShowUpdateField: false });
+      const match = await fetchGetMatchByFieldOwnerAndDay(
+        id,
+        this.state.dateSelected.format('DD-MM-YYYY'),
+        1,
+      );
+      const afterSort = match.body.sort(
+        (a, b) =>
+          moment(
+            '10-10-2017 ' + a.timeSlotEntity.startTime,
+            'DD-MM-YYYY HH:mm',
+          ) -
+          moment('10-10-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
+      );
+      await this.props.GetMatchByFieldOwnerAndDay(afterSort);
+      toast.success('Cập nhật sân thành công!');
+    }
+  }
+
+  async handleShowModalField(match) {
+    //evt.preventDefault();
+    const { id } = this.props.auth.user.data;
+    console.log(typeof match);
+    const fieldTypeId = parseInt(match.timeSlotEntity.fieldTypeId.id);
+    const time = match.timeSlotEntity.startTime;
+    const freeField = await fetchGetFreeFieldByTime(
+      id,
+      fieldTypeId,
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      time,
+    );
+    await this.props.getAllFreeField(freeField.body);
+    if (freeField.body.length > 0) {
+      this.setState({
+        fieldSelected: freeField.body[0].id,
+        timeSlotSelected: match.timeSlotEntity.id,
+      });
+    }
+    this.setState({ isShowUpdateField: true });
+  }
+  handleHideModalField(evt) {
+    // evt.preventDefault();
+    this.setState({ isShowUpdateField: false });
   }
 
   async handleSubmitBookMatch(evt) {
+    const { id } = this.props.auth.user.data;
     evt.preventDefault();
     const {
-      bookMatchMessagem,
       bookMatchEndTime,
       bookMatchFieldType,
       dateSelected,
@@ -113,17 +245,15 @@ class Home extends Component {
       const bookMatchRes = await fetchBookMatch(
         dateSelected.format('DD-MM-YYYY'),
         bookMatchEndTime,
-        1,        
+        id,
         bookMatchFieldType,
         bookMatchStartTime,
         bookMatchEndTime,
       );
-      if (bookMatchRes.status === 200) {
+      if (bookMatchRes.status === 200 && bookMatchRes.body.length > 0) {
         this.setState({ openedTab: 2 });
-        debugger;
-      }
-      else{
-        this.setState({bookMatchMessage: 'Đặt sân thất bại'})
+      } else {
+        this.setState({ bookMatchMessage: 'Đặt sân thất bại' });
       }
     }
   }
@@ -132,25 +262,20 @@ class Home extends Component {
     await this.setState({
       dateSelected: date,
     });
-    fetchGetMatchByFieldOwnerAndDay(
-      1,
+    const match = await fetchGetMatchByFieldOwnerAndDay(
+      id,
       this.state.dateSelected.format('DD-MM-YYYY'),
       1,
-    ).then(data => {
-      this.props.GetMatchByFieldOwnerAndDay(data);
-    });
-    const data5vs5 = await fetchGetFreeTime(
-      1,
-      1,
-      this.state.dateSelected.format('DD-MM-YYYY'),
     );
-    const data7vs7 = await fetchGetFreeTime(
-      1,
-      2,
-      this.state.dateSelected.format('DD-MM-YYYY'),
+    const afterSort = match.body.sort(
+      (a, b) =>
+        moment(
+          '10-10-2017 ' + a.timeSlotEntity.startTime,
+          'DD-MM-YYYY HH:mm',
+        ) -
+        moment('10-10-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
     );
-    await this.props.getAllFreeTime5vs5(data5vs5);
-    await this.props.getAllFreeTime7vs7(data7vs7);
+    await this.props.GetMatchByFieldOwnerAndDay(afterSort);
   }
 
   async handleInputChange(evt) {
@@ -161,178 +286,343 @@ class Home extends Component {
     await this.setState({ [name]: value });
     console.log(this.state);
   }
-
+  async handelLoadMatchAgain() {
+    const { id } = this.props.auth.user.data;
+    if (id === undefined) {
+      return <div className="loader" />;
+    }
+    const match = await fetchGetMatchByFieldOwnerAndDay(
+      id,
+      this.state.dateSelected.format('DD-MM-YYYY'),
+      1,
+    );
+    const afterSort = match.body.sort(
+      (a, b) =>
+        moment('10-10-2017 ' + a.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm') -
+        moment('10-10-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
+    );
+    await this.props.GetMatchByFieldOwnerAndDay(afterSort);
+    // console.log('======================');
+    this.props.setCurrentDaySelected(false);
+  }
   render() {
-    const myStyle = { padding: 20 };
-    const { listMatch, freeTime5vs5, freeTime7vs7 } = this.props;
-    const { openedTab, buttonGroupTab, bookMatchMessage } = this.state;
-    console.log(this.props);
-    const renerBookMatch = (
-      <form
-        className="form-horizontal"
-        onSubmit={this.handleSubmitBookMatch.bind(this)}
-      >
-        <div>
-          <p>
-            {this.state.bookMatchMessage ? this.state.bookMatchMessage : null}
-          </p>
-          <div className="form-group">
-            <label htmlFor="inputEmail3" className="col-sm-3 control-label">
-              Từ
-            </label>
-            <div className="col-sm-9">
-              <p className="text-center text-danger">{bookMatchMessage? bookMatchMessage : null}</p>
-              <div className="row">
-                <div className="col-sm-6">
-                  <TimePicker
-                    showSecond={false}
-                    onChange={this.handelTimeStartDayInputChange.bind(this)}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="form-group">
-            <label htmlFor="inputEmail3" className="col-sm-3 control-label">
-              Thời gian
-            </label>
-            <div className="col-sm-9">
-              <div className="row">
-                <div className="col-sm-6">
-                  <TimePicker
-                    showSecond={false}
-                    onChange={this.handelEndTimeInputChange.bind(this)}
-                  />
-                  {/* <select
-                    value={this.state.bookMatchDuration}
-                    onChange={this.handleInputChange.bind(this)}
-                    className="form-control"
-                    id="sel1"
-                    type="checkbox"
-                    name="bookMatchDuration"
-                  >
-                    <option value="60">60 phút</option>
-                    <option value="90">90 phút</option>
-                    <option value="120">120 phút</option>
-                    <option value="150">150 phút</option>
-                    <option value="180">180 phút</option>
-                    <option value="210">210 phút</option>
-                    <option value="240">240 phút</option>
-                  </select> */}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="form-group">
-            <label htmlFor="sel1" className="col-sm-3 control-label">
-              Loại sân
-            </label>
-            <div className="col-sm-2">
-              <select
-                value={this.state.bookMatchFieldType}
-                onChange={this.handleInputChange.bind(this)}
-                className="form-control"
-                id="sel1"
-                name="bookMatchFieldType"
-                type="checkbox"
-              >
-                <option value="1">5 vs 5</option>
-                <option value="2">7 vs 7</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div className="form-group">
-          <div className="col-sm-offset-3 col-sm-9">
-            <button
-              className="btn btn-primary"
-              type="submit"
-              name="isShowUpdate"
-            >
-              Đặt sân
-            </button>
-          </div>
-        </div>
-      </form>
-    );
-    const renderFreeTime = (
-      <FreeTime freeTime5vs5={freeTime5vs5} freeTime7vs7={freeTime7vs7} />
-    );
-    const renderMatch = <MatchByDate listMatch={listMatch} />;
+    const { listMatch, freeField, currentDaySelected, listField } = this.props;
+    if (currentDaySelected) {
+      this.handelLoadMatchAgain();
+    }
     return (
-      <div id="page-wrapper">
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-3">
-              <h2 className="page-header">Trang chủ</h2>
-            </div>
-            <div className="col-lg-3">
-              <Clock time={this.state.currentTime} />
-            </div>
-
-            <div className="col-lg-3">
-              <div className="page-header">
-                <form className="navbar-form navbar-left">
-                  <div className="form-group">
-                    <DatePicker
-                      selected={this.state.dateSelected}
-                      onChange={this.handleDateChange.bind(this)}
-                      className="form-control"
-                      todayButton={'Today'}
-                      
-                    />
-                  </div>
-                </form>
-              </div>
-            </div>
-
-            <div className="col-lg-3">
-              <div className="page-header">
-                <form className="navbar-form navbar-left">
-                  <div className="form-group">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search"
-                    />
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-          <div className="col-lg-12">
-            <div className="row" style={myStyle}>
-              {buttonGroupTab.map(tab => (
-                <div className="col-lg-3" key={tab.id}>
-                  <button
-                    className={`${tab.value ==
-                    this.state.openedTab
-                      ? 'btn btn-lg btn-primary btn-block'
-                      : 'btn btn-lg btn-default btn-block'}`}
-                    onClick={this.handleInputChange.bind(this)}
-                    name="openedTab"
-                    value={tab.value}
-                  >
-                    {tab.text}
-                  </button>
-                </div>
-              ))}
-            </div>
-            {/* <div className="btn-group btn-group-justified">
-              <a className="btn btn-primary"><button>Các trận đang đá</button></a>
-              <a className="btn btn-primary active">Các trận trong ngày</a>
-              <a className="btn btn-primary">Thời gian rảnh</a>
-              <a className="btn btn-primary">Đặt sân</a>
-            </div> */}
-          </div>
-          <div className="col-lg-12">
+      <div className="main-panel">
+        <div className="content">
+          <button
+            className="next-left"
+            onClick={this.handelPreviousDay.bind(this)}
+          >
+            {' '}
+            <i className="glyphicon glyphicon-chevron-left" />
+          </button>
+          <button
+            className="next-right"
+            onClick={this.handelNextDay.bind(this)}
+          >
+            <i className="glyphicon glyphicon-chevron-right" />
+          </button>
+          <div className="container-fluid">
             <div className="row">
-              {openedTab === 1
-                ? 'tab cac tran dang da'
-                : openedTab === 2
-                  ? renderMatch
-                  : openedTab === 3 ? renderFreeTime : renerBookMatch}
-              {}
+              <div className="row">
+                <div className="col-md-4">
+                  <h2 className="page-header">Trận trong ngày</h2>
+                </div>
+                <div className="col-sm-4">
+                  <div className="page-header">
+                    <h4>
+                      {this.state.dateSelected.format('dddd, Do MMMM YYYY')}
+                    </h4>
+                  </div>
+                </div>
+                <div className="col-md-3">
+                  <div className="page-header">
+                    <form>
+                      <div className="form-group">
+                        <DatePicker
+                          selected={this.state.dateSelected}
+                          onChange={this.handleDateChange.bind(this)}
+                          className="form-control"
+                          todayButton={'Hôm nay'}
+                        />
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                <div className="col-sm-1">
+                  <div className="page-header">
+                    <button
+                      onClick={this.handelShowViewOption.bind(this)}
+                      className="btn btn-default"
+                    >
+                      <i
+                        className={
+                          this.state.currentShowOption
+                            ? 'glyphicon glyphicon-th-large'
+                            : 'glyphicon glyphicon-th-list'
+                        }
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-12 match-padding ">
+                {this.state.currentShowOption ? (
+                  <div className="row">
+                    {listMatch.length > 0
+                      ? listMatch.map(listMatch => (
+                          <div
+                            key={listMatch.timeSlotEntity.id}
+                            className="col-sm-6"
+                          >
+                            <div className="panel panel-default">
+                              <div className="panel-body padding-top-bot-none">
+                                <div className="row">
+                                  <div className="col-md-3">
+                                    <h4 className="text-center">
+                                      <strong>
+                                        {listMatch.user.profileId.name}
+                                      </strong>
+                                    </h4>
+                                  </div>
+                                  <div className="col-md-6">
+                                    <div
+                                      className={`alert ${
+                                        listMatch.user.username ===
+                                        listMatch.opponent.username
+                                          ? 'tourMatch'
+                                          : 'friendlyMatch'
+                                      } margin-bot-none`}
+                                    >
+                                      <h3 className="text-center text-success">
+                                        <strong>
+                                          {moment(
+                                            '10-10-2017 ' +
+                                              listMatch.timeSlotEntity
+                                                .startTime,
+                                            'DD-MM-YYYY HH:mm',
+                                          ).format('HH:mm')}
+                                        </strong>{' '}
+                                      </h3>
+                                      <p className="text-center">
+                                        <strong>
+                                          {moment(
+                                            '10-10-2017 ' +
+                                              listMatch.timeSlotEntity.endTime,
+                                            'DD-MM-YYYY HH:mm',
+                                          ).hour() *
+                                            60 +
+                                            moment(
+                                              '10-10-2017 ' +
+                                                listMatch.timeSlotEntity
+                                                  .endTime,
+                                              'DD-MM-YYYY HH:mm',
+                                            ).minute() -
+                                            (moment(
+                                              '10-10-2017 ' +
+                                                listMatch.timeSlotEntity
+                                                  .startTime,
+                                              'DD-MM-YYYY HH:mm',
+                                            ).hour() *
+                                              60 +
+                                              moment(
+                                                '10-10-2017 ' +
+                                                  listMatch.timeSlotEntity
+                                                    .startTime,
+                                                'DD-MM-YYYY HH:mm',
+                                              ).minute())}{' '}
+                                          phút
+                                        </strong>
+                                      </p>
+                                      <p className="text-center">
+                                        <strong>
+                                          {
+                                            listMatch.timeSlotEntity.fieldTypeId
+                                              .name
+                                          }
+                                        </strong>
+                                      </p>
+                                      <p className="text-center">
+                                        <strong>
+                                          {listMatch.timeSlotEntity.fieldId
+                                            ? 'Sân: ' +
+                                              listMatch.timeSlotEntity.fieldId
+                                                .name
+                                            : 'Chưa xếp sân'}
+                                        </strong>
+                                      </p>
+                                      <p className="text-center">
+                                        <button
+                                          onClick={() =>
+                                            this.handleShowModalField(listMatch)
+                                          }
+                                          className="btn btn-md btn-primary"
+                                        >
+                                          Chi tiết
+                                        </button>
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="col-md-3">
+                                    <h4 className="text-center ">
+                                      <strong>
+                                        {listMatch.opponent.profileId.name}
+                                      </strong>
+                                    </h4>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      : null}
+                  </div>
+                ) : (
+                  <div className="row">
+                    {listField.map((field, index) => (
+                      <div
+                        className="col-sm-10 col-sm-offset-1"
+                        key={index + 1}
+                      >
+                        <div className="panel panel-success">
+                          <div className="panel-heading">
+                            {' '}
+                            <h4 className="text-center loginHeader text-while">
+                              {field.name}
+                            </h4>
+                          </div>
+                          <div className="panel-body">
+                            <div className="col-sm-12">
+                              <table className="table">
+                                <thead>
+                                  <tr>
+                                    <th>Giờ</th>
+                                    <th>Người chơi</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {listMatch
+                                    .filter(
+                                      match =>
+                                        match.timeSlotEntity.fieldId
+                                          ? match.timeSlotEntity.fieldId.id ===
+                                            field.id
+                                          : null,
+                                    )
+                                    .sort(
+                                      (a, b) =>
+                                        moment(
+                                          '10-Jan-2017 ' +
+                                            a.timeSlotEntity.startTime,
+                                          'DD-MM-YYYY HH:mm',
+                                        ) -
+                                        moment(
+                                          '10-Jan-2017 ' +
+                                            b.timeSlotEntity.startTime,
+                                          'DD-MM-YYYY HH:mm',
+                                        ),
+                                    )
+                                    .map((match, index) => (
+                                      <tr key={index + 1}>
+                                        <td>
+                                          {moment(
+                                            `10-10-2017${
+                                              match.timeSlotEntity.startTime
+                                            }`,
+                                            'DD-MM-YYYY HH:mm',
+                                          ).format('HH:mm')}{' '}
+                                          -{' '}
+                                          {moment(
+                                            `10-10-2017${
+                                              match.timeSlotEntity.endTime
+                                            }`,
+                                            'DD-MM-YYYY HH:mm',
+                                          ).format('HH:mm')}
+                                        </td>
+                                        <td>{match.opponent.profileId.name}</td>
+                                      </tr>
+                                    ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <Modal
+                /* {...this.props} */
+                show={this.state.isShowUpdateField}
+                onHide={this.handleHideModalField.bind(this)}
+                dialogClassName="custom-modal"
+              >
+                <Modal.Header>
+                  <Modal.Title>Thiết lập sân</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  {freeField.length > 0 ? (
+                    <form
+                      className="form-horizontal"
+                      onSubmit={this.handelSetFieldSubmit.bind(this)}
+                    >
+                      <div className="form-group">
+                        <label
+                          htmlFor="inputEmail3"
+                          className="col-md-3 control-label"
+                        >
+                          Tên sân
+                        </label>
+                        <div className="col-md-9">
+                          <div className="row">
+                            <div className="col-md-6">
+                              <select
+                                value={this.state.fieldSelected}
+                                onChange={this.handleInputChange.bind(this)}
+                                className="form-control"
+                                id="sel1"
+                                name="fieldSelected"
+                                type="checkbox"
+                              >
+                                {freeField.map(freeField => (
+                                  <option
+                                    key={freeField.id}
+                                    value={freeField.id}
+                                  >
+                                    {freeField.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="col-md-3">
+                              <button type="submit" className="btn btn-primary">
+                                Cập nhật sân
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  ) : (
+                    <h3>Không có sân trống</h3>
+                  )}
+                </Modal.Body>
+                <Modal.Footer>
+                  <button
+                    onClick={this.handleHideModalField.bind(this)}
+                    className="btn btn-danger"
+                  >
+                    Huỷ
+                  </button>
+                </Modal.Footer>
+              </Modal>
             </div>
           </div>
         </div>
@@ -343,14 +633,20 @@ class Home extends Component {
 function mapStateToProps(state) {
   return {
     listMatch: state.listMatch.listMatch,
-    freeTime5vs5: state.freeTime.freeTime5vs5,
-    freeTime7vs7: state.freeTime.freeTime7vs7,
     auth: state.auth,
+    freeField: state.freeField.freeField,
+    notify: state.notify,
+    currentDaySelected: state.currentDaySelected.currentDaySelected,
+    listField: state.listField.listField,
   };
 }
 
 export default connect(mapStateToProps, {
   GetMatchByFieldOwnerAndDay,
-  getAllFreeTime5vs5,
-  getAllFreeTime7vs7,
+  getAllFreeField,
+  doLoginSuccessful,
+  accessDenied,
+  setCurrentDaySelected,
+  doLogout,
+  getAllField,
 })(Home);

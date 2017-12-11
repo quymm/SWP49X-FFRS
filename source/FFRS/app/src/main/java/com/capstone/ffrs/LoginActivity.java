@@ -48,6 +48,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+    }
+
     public void onClickDummy(View view) {
         Intent intent = new Intent(this, DummyActivity.class);
         startActivity(intent);
@@ -116,7 +122,8 @@ public class LoginActivity extends AppCompatActivity {
                                 String strResponse = new String(error.networkResponse.data, "UTF-8");
                                 JSONObject response = new JSONObject(strResponse);
                                 if (response.getString("message").equals("Account have username: " + txtUsername.getText().toString() + " is locked!")) {
-                                    txtPassword.setText("");
+                                    EditText password = (EditText) findViewById(R.id.text_password);
+                                    password.setText("");
                                     AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this).setTitle("Tài khoản đã bị khóa!").
                                             setMessage("Tài khoản của bạn đã bị khóa bởi quản trị viên.")
                                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {

@@ -28,9 +28,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.HistoryActivity;
 import com.capstone.ffrs.R;
-import com.capstone.ffrs.RequestInfoActivity;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.receiver.FirebaseBroadcastReceiver;
 import com.capstone.ffrs.utils.HostURLUtils;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -57,20 +55,16 @@ public class FirebaseNotificationServices extends Service {
     Context context;
 
     private int userId;
-    private boolean firstRequestCreated, firstResponseCreated;
+    private boolean firstResponseCreated;
     private String hostURL;
-    private ValueEventListener tourMatchValueListener, matchingRequestValueListener;
-    private ChildEventListener tourMatchChildListener, matchingRequestChildListener;
 
     @Override
-
     public void onCreate() {
         super.onCreate();
         context = this;
 
         mDatabase = FirebaseDatabase.getInstance();
         myRef = mDatabase.getReference();
-        firstRequestCreated = false;
         firstResponseCreated = false;
         hostURL = HostURLUtils.getInstance(this).getHostURL();
 
@@ -84,19 +78,9 @@ public class FirebaseNotificationServices extends Service {
     }
 
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        myRef.child("tourMatch").child(userId + "").removeEventListener(tourMatchValueListener);
-        myRef.child("matchingRequest").child(userId + "").removeEventListener(matchingRequestValueListener);
-
-        myRef.child("tourMatch").child(userId + "").removeEventListener(tourMatchChildListener);
-        myRef.child("matchingRequest").child(userId + "").removeEventListener(matchingRequestChildListener);
-    }
-
     private void setupNotificationListener() {
         if (userId != -1) {
+<<<<<<< HEAD
             matchingRequestValueListener = myRef.child("matchingRequest").child(userId + "").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -140,6 +124,9 @@ public class FirebaseNotificationServices extends Service {
                 }
             });
             tourMatchValueListener = myRef.child("tourMatch").child(userId + "").addValueEventListener(new ValueEventListener() {
+=======
+            myRef.child("tourMatch").child(userId + "").addValueEventListener(new ValueEventListener() {
+>>>>>>> master
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (!firstResponseCreated) {
@@ -153,18 +140,17 @@ public class FirebaseNotificationServices extends Service {
 
                 }
             });
-            tourMatchChildListener = myRef.child("tourMatch").child(userId + "").addChildEventListener(new ChildEventListener() {
+            myRef.child("tourMatch").child(userId + "").addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                    if (firstResponseCreated == true) {
-//                        showNotification(context, "tourMatch", dataSnapshot);
-//                    }
-                    showNotification(context, "tourMatch", dataSnapshot);
+                    if (firstResponseCreated == true) {
+                        showNotification(context, "tourMatch", dataSnapshot);
+                    }
                 }
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    showNotification(context, "tourMatch", dataSnapshot);
+
                 }
 
                 @Override
@@ -196,6 +182,11 @@ public class FirebaseNotificationServices extends Service {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     private void showNotification(final Context context, String keyword, DataSnapshot snapshot) {
         Log.d("NOTIFICATION", snapshot.toString());
         final String title = "FFRS";
@@ -216,14 +207,13 @@ public class FirebaseNotificationServices extends Service {
                                 JSONObject body = response.getJSONObject("body");
                                 if (body != null) {
                                     String opponentTeamName = body.getJSONObject("userId").getJSONObject("profileId").getString("name");
-                                    String content = opponentTeamName + " đã chấp nhận yêu cầu của bạn. Trận đấu đã được sắp xếp.";
+                                    String content = opponentTeamName + " đã chấp nhận yêu cầu của bạn.\nTrận đấu đã được sắp xếp.";
 
                                     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                                             .setSmallIcon(R.mipmap.ic_launcher)
                                             .setContentTitle(title)
                                             .setDefaults(NotificationCompat.DEFAULT_ALL)
                                             .setContentText(content)
-                                            .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
                                             .setAutoCancel(true);
 
                                     Intent backIntent = new Intent(context, HistoryActivity.class);
@@ -239,15 +229,8 @@ public class FirebaseNotificationServices extends Service {
 
                                     mBuilder.setContentIntent(pendingIntent);
 
-                                    Intent deleteIntent = new Intent(getApplicationContext(), FirebaseBroadcastReceiver.class);
-                                    deleteIntent.putExtra("notification_tour_match_id", tourMatchId);
-                                    deleteIntent.putExtra("notification_user_id", preferences.getInt("user_id", -1));
-
-                                    PendingIntent deletePendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, deleteIntent, 0);
-                                    mBuilder.setDeleteIntent(deletePendingIntent);
-
                                     NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                    mNotificationManager.notify(tourMatchId, mBuilder.build());
+                                    mNotificationManager.notify(body.getInt("id"), mBuilder.build());
 
                                     Intent intent = new Intent("balance-message");
                                     intent.putExtra("balance", body.getJSONObject("opponentId").getJSONObject("profileId").getInt("balance"));
@@ -301,6 +284,7 @@ public class FirebaseNotificationServices extends Service {
                 };
                 queue.add(newsReq);
             }
+<<<<<<< HEAD
         } else if (keyword.equalsIgnoreCase("matchingRequest")) {
             final int matchingRequestId = Integer.valueOf(snapshot.getKey());
             final long status = (long) snapshot.child("status").getValue();
@@ -407,6 +391,8 @@ public class FirebaseNotificationServices extends Service {
                 };
                 queue.add(newsReq);
             }
+=======
+>>>>>>> master
         }
     }
 }

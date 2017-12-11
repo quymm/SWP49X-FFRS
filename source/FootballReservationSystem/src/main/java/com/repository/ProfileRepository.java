@@ -13,6 +13,9 @@ import java.util.List;
 public interface ProfileRepository extends JpaRepository<ProfileEntity, Integer> {
     ProfileEntity findByIdAndStatus(int id, boolean status);
 
-    @Query("SELECT p FROM ProfileEntity p WHERE p.name LIKE :name AND p.status = :status")
+//    @Query(value = "SELECT p FROM ProfileEntity p WHERE p.name LIKE :name AND p.status = :status")
+//    List<ProfileEntity> searchByName(@Param("name") String name, @Param("status") boolean status);
+
+    @Query(value = "SELECT * FROM profile where name like :name and status = :status limit 10", nativeQuery = true)
     List<ProfileEntity> searchByName(@Param("name") String name, @Param("status") boolean status);
 }

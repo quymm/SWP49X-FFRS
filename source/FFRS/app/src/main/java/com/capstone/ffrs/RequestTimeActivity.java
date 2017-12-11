@@ -27,7 +27,6 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.entity.FieldOwner;
 import com.capstone.ffrs.utils.HostURLUtils;
 import com.capstone.ffrs.utils.TimePickerListener;
 
@@ -35,17 +34,14 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class RequestTimeActivity extends AppCompatActivity {
@@ -172,9 +168,10 @@ public class RequestTimeActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             if (!response.isNull("body")) {
-                                JSONArray body = response.getJSONArray("body");
+                                JSONObject body = response.getJSONObject("body");
                                 if (body != null && body.length() > 0) {
                                     try {
+<<<<<<< HEAD
                                         JSONObject firstItem = body.getJSONObject(0);
                                         ArrayList<FieldOwner> suitableList = new ArrayList<>();
                                         for (int i = 0; i < body.length(); i++) {
@@ -191,18 +188,21 @@ public class RequestTimeActivity extends AppCompatActivity {
                                         }
                                         final Date fromTime = new SimpleDateFormat("H:mm").parse(txtStartTime.getText().toString());
                                         final Date toTime = new SimpleDateFormat("H:mm").parse(txtEndTime.getText().toString());
+=======
+                                        final Date fromTime = new SimpleDateFormat("H:mm").parse(body.getString("startTime"));
+                                        final Date toTime = new SimpleDateFormat("H:mm").parse(body.getString("endTime"));
+>>>>>>> master
                                         Intent intent = new Intent(RequestTimeActivity.this, FieldDetailActivity.class);
-                                        intent.putExtra("field_id", firstItem.getJSONObject("fieldOwnerId").getInt("id"));
-                                        intent.putExtra("field_name", firstItem.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("name"));
-                                        intent.putExtra("field_address", firstItem.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("address"));
-                                        intent.putExtra("field_type_id", firstItem.getJSONObject("fieldTypeId").getInt("id"));
+                                        intent.putExtra("field_id", body.getJSONObject("fieldOwnerId").getInt("id"));
+                                        intent.putExtra("field_name", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("name"));
+                                        intent.putExtra("field_address", body.getJSONObject("fieldOwnerId").getJSONObject("profileId").getString("address"));
+                                        intent.putExtra("field_type_id", body.getJSONObject("fieldTypeId").getInt("id"));
                                         intent.putExtra("date", new Date(Long.parseLong(strDate)));
                                         intent.putExtra("time_from", fromTime);
                                         intent.putExtra("time_to", toTime);
-                                        intent.putExtra("price", firstItem.getInt("price"));
+                                        intent.putExtra("price", body.getInt("price"));
                                         intent.putExtra("user_id", userId);
                                         intent.putExtra("tour_match_mode", true);
-                                        intent.putParcelableArrayListExtra("field_list", suitableList);
                                         intent.putExtra("matching_request_id", b.getInt("matching_request_id"));
                                         intent.putExtra("created_matching_request_id", b.getInt("created_matching_request_id"));
                                         intent.putExtra("opponent_id", opponentId);
@@ -215,7 +215,6 @@ public class RequestTimeActivity extends AppCompatActivity {
                                     toast.show();
                                     finish();
                                 }
-
                             } else {
                                 Toast toast = Toast.makeText(RequestTimeActivity.this, "Không tìm thấy sân phù hợp!", Toast.LENGTH_LONG);
                                 toast.show();

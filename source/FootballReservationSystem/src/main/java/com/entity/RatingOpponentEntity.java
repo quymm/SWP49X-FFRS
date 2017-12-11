@@ -5,16 +5,12 @@
  */
 package com.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.Date;
+import javax.persistence.*;
 
 /**
  *
@@ -31,23 +27,30 @@ public class RatingOpponentEntity implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "win")
-    private boolean win;
+    @Column(name = "result")
+    private Integer result;
     @Basic(optional = false)
-    @Column(name = "rating_score")
-    private int ratingScore;
+    @Column(name = "rating_level")
+    private Integer ratingLevel;
+    @Column(name = "goals_difference")
+    private Integer goalsDifference;
     @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
+    @Basic(optional = false)
+    @Column(name = "creation_date")
+    @CreationTimestamp
+    private Date creationDate;
+    @Basic(optional = false)
+    @Column(name = "modification_date")
+    @UpdateTimestamp
+    private Date modificationDate;
     @JoinColumn(name = "tour_match_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private TourMatchEntity tourMatchId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private AccountEntity userId;
-    @JoinColumn(name = "opponent_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private AccountEntity opponentId;
 
     public RatingOpponentEntity() {
     }
@@ -56,11 +59,12 @@ public class RatingOpponentEntity implements Serializable {
         this.id = id;
     }
 
-    public RatingOpponentEntity(Integer id, boolean win, int ratingScore, boolean status) {
-        this.id = id;
-        this.win = win;
-        this.ratingScore = ratingScore;
-        this.status = status;
+    public RatingOpponentEntity(Integer result, Integer ratingLevel, Integer goalsDifference, TourMatchEntity tourMatchId, AccountEntity userId) {
+        this.result = result;
+        this.ratingLevel = ratingLevel;
+        this.goalsDifference = goalsDifference;
+        this.tourMatchId = tourMatchId;
+        this.userId = userId;
     }
 
     public Integer getId() {
@@ -71,20 +75,28 @@ public class RatingOpponentEntity implements Serializable {
         this.id = id;
     }
 
-    public boolean getWin() {
-        return win;
+    public Integer getResult() {
+        return result;
     }
 
-    public void setWin(boolean win) {
-        this.win = win;
+    public void setResult(Integer result) {
+        this.result = result;
     }
 
-    public int getRatingScore() {
-        return ratingScore;
+    public Integer getRatingLevel() {
+        return ratingLevel;
     }
 
-    public void setRatingScore(int ratingScore) {
-        this.ratingScore = ratingScore;
+    public void setRatingLevel(Integer ratingLevel) {
+        this.ratingLevel = ratingLevel;
+    }
+
+    public Integer getGoalsDifference() {
+        return goalsDifference;
+    }
+
+    public void setGoalsDifference(Integer goalsDifference) {
+        this.goalsDifference = goalsDifference;
     }
 
     public boolean getStatus() {
@@ -93,6 +105,22 @@ public class RatingOpponentEntity implements Serializable {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(Date modificationDate) {
+        this.modificationDate = modificationDate;
     }
 
     public TourMatchEntity getTourMatchId() {
@@ -109,14 +137,6 @@ public class RatingOpponentEntity implements Serializable {
 
     public void setUserId(AccountEntity userId) {
         this.userId = userId;
-    }
-
-    public AccountEntity getOpponentId() {
-        return opponentId;
-    }
-
-    public void setOpponentId(AccountEntity opponentId) {
-        this.opponentId = opponentId;
     }
 
     @Override

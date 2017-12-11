@@ -5,16 +5,12 @@
  */
 package com.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import java.util.Date;
+import javax.persistence.*;
 
 /**
  *
@@ -22,8 +18,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "voucher")
-@NamedQueries({
-    @NamedQuery(name = "VoucherEntity.findAll", query = "SELECT v FROM VoucherEntity v")})
 public class VoucherEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -39,8 +33,19 @@ public class VoucherEntity implements Serializable {
     @Column(name = "bonus_point_target")
     private int bonusPointTarget;
     @Basic(optional = false)
+    @Column(name = "image_url")
+    private String imageUrl;
+    @Basic(optional = false)
     @Column(name = "status")
     private boolean status;
+    @Basic(optional = false)
+    @Column(name = "creation_date")
+    @CreationTimestamp
+    private Date creationDate;
+    @Basic(optional = false)
+    @Column(name = "modification_date")
+    @UpdateTimestamp
+    private Date modificationDate;
 
     public VoucherEntity() {
     }
@@ -80,12 +85,36 @@ public class VoucherEntity implements Serializable {
         this.bonusPointTarget = bonusPointTarget;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public boolean getStatus() {
         return status;
     }
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(Date modificationDate) {
+        this.modificationDate = modificationDate;
     }
 
     @Override

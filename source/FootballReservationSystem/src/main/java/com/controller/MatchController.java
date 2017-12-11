@@ -1,6 +1,8 @@
 package com.controller;
 
 import com.dto.InputMatchingRequestDTO;
+import com.dto.InputReserveTimeSlotDTO;
+import com.dto.OutputReserveTimeSlotDTO;
 import com.dto.Wrapper;
 import com.services.MatchServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,8 @@ public class MatchController {
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/friendly-match", method = RequestMethod.POST)
-    public ResponseEntity reserveFriendlyMatch(@RequestParam("time-slot-id") int timeSlotId, @RequestParam("user-id") int userId, @RequestParam("voucher-id") int voucherId) {
-        Wrapper wrapper = new Wrapper(matchServices.reserveFriendlyMatch(timeSlotId, userId, voucherId), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+    public synchronized ResponseEntity reserveFriendlyMatch(@RequestBody InputReserveTimeSlotDTO inputReserveTimeSlotDTO) {
+        Wrapper wrapper = new Wrapper(matchServices.reserveFriendlyMatch(inputReserveTimeSlotDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
@@ -35,25 +37,30 @@ public class MatchController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/swp49x-ffrs/match/matching-request", method = RequestMethod.DELETE)
+    public ResponseEntity cancelMatchingRequest(@RequestParam("matching-request-id") int matchingRequestId){
+        Wrapper wrapper = new Wrapper(matchServices.cancelMatchingRequest(matchingRequestId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/suggest-opponent", method = RequestMethod.PUT)
-    public ResponseEntity suggestOpponent(@RequestBody InputMatchingRequestDTO matchingRequestDTO, @RequestParam("deviation-distance") int deviationDistance) {
-        Wrapper wrapper = new Wrapper(matchServices.suggestOpponent(matchingRequestDTO, deviationDistance), HttpStatus.OK.value(), HttpStatus.OK.name());
+    public ResponseEntity suggestOpponent(@RequestBody InputMatchingRequestDTO matchingRequestDTO) {
+        Wrapper wrapper = new Wrapper(matchServices.suggestOpponent(matchingRequestDTO), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/choose-field", method = RequestMethod.POST)
-    public synchronized ResponseEntity chooseSuitableField(@RequestBody InputMatchingRequestDTO inputMatchingRequestDTO, @RequestParam("matching-request-id") int matchingRequestId,
-                                              @RequestParam("deviation-distance") int deviationDistance) {
-        Wrapper wrapper = new Wrapper(matchServices.chooseSuitableField(inputMatchingRequestDTO, matchingRequestId, deviationDistance), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+    public ResponseEntity chooseSuitableField(@RequestBody InputMatchingRequestDTO inputMatchingRequestDTO, @RequestParam("matching-request-id") int matchingRequestId) {
+        Wrapper wrapper = new Wrapper(matchServices.chooseSuitableField(inputMatchingRequestDTO, matchingRequestId), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/match/tour-match", method = RequestMethod.POST)
-    public ResponseEntity reserveTourMatch(@RequestParam("time-slot-id") int timeSlotId, @RequestParam("matching-request-id") int matchingRequestId,
-                                           @RequestParam("opponent-id") int opponentId, @RequestParam("voucher-id") int voucherId) {
-        Wrapper wrapper = new Wrapper(matchServices.reserveTourMatch(timeSlotId, matchingRequestId, opponentId, voucherId), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
+    public synchronized ResponseEntity reserveTourMatch(@RequestBody InputReserveTimeSlotDTO inputReserveTimeSlotDTO, @RequestParam("matching-request-id") int matchingRequestId) {
+        Wrapper wrapper = new Wrapper(matchServices.reserveTourMatch(inputReserveTimeSlotDTO, matchingRequestId), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
