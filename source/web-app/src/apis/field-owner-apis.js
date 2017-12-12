@@ -67,11 +67,21 @@ export function fetchGetAllField(fieldOwnerId) {
   }).then(res => res.json());
 }
 
-export function fetchDeleteField(fieldId) {
-  return fetch(BASE_URL + DETELE_FIELD + '?&field-id=' + fieldId, {
-    method: 'DELETE',
-    // headers: { Authorization: auth.tokenValue },
-  }).then(res => res.json());
+export function fetchDeleteField(fieldId, dateFrom, dateTo) {
+  return fetch(
+    BASE_URL +
+      DETELE_FIELD +
+      '?&field-id=' +
+      fieldId +
+      '&date-from=' +
+      dateFrom +
+      '&date-to=' +
+      dateTo,
+    {
+      method: 'DELETE',
+      // headers: { Authorization: auth.tokenValue },
+    },
+  ).then(res => res.json());
 }
 
 export function fetchAddField(paramFieldName, paramFieldType, fieldOwnerId) {
@@ -95,17 +105,15 @@ export function fetchGetTimeEnableInWeek(fieldOwnerId) {
   ).then(res => res.json());
 }
 
-export function fetchUpdateTimeEnableInWeek(
-  timeEnable
-) {
-  debugger
+export function fetchUpdateTimeEnableInWeek(timeEnable) {
+  debugger;
   return fetch(BASE_URL + UPDATE_TIME_ENABLE_IN_WEEK, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
       // Authorization: auth.tokenValue,
     },
-    body: JSON.stringify(timeEnable)
+    body: JSON.stringify(timeEnable),
     // body: JSON.stringify([
     //   {
     //     dayInWeek: paramDayInWeek,
@@ -234,9 +242,10 @@ export function fetchGetAllPromotion(id) {
 export function fetchAddPromotion(id, data) {
   return fetch(BASE_URL + ADD_PROMOTION, {
     method: 'POST',
-    headers: { 'content-type': 'application/json', 
-    // Authorization: auth.tokenValue 
-  },
+    headers: {
+      'content-type': 'application/json',
+      // Authorization: auth.tokenValue
+    },
     body: JSON.stringify({
       dateFrom: data.startDate.format('DD-MM-YYYY'),
       dateTo: data.endDate.format('DD-MM-YYYY'),
