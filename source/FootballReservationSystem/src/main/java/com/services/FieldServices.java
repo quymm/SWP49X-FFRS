@@ -71,7 +71,7 @@ public class FieldServices {
         List<FieldEntity> fieldEntityList = fieldRepository.findByFieldOwnerIdAndStatus(accountEntity, currDay, true);
         List<FieldEntity> returnFieldList = new ArrayList<>();
         for (FieldEntity fieldEntity : fieldEntityList) {
-            if (!fieldEntity.getDateTo().before(currDay)) {
+            if (fieldEntity.getDateTo() == null || !fieldEntity.getDateTo().before(currDay)) {
                 returnFieldList.add(fieldEntity);
             }
         }
