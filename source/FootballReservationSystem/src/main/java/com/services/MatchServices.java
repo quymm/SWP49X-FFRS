@@ -64,6 +64,8 @@ public class MatchServices {
     TeamMemberServices teamMemberServices;
 
     @Autowired
+    SmsService smsService;
+    @Autowired
     Constant constant;
 
     public MatchingRequestEntity findMatchingRequestEntityById(int id) {
@@ -97,7 +99,9 @@ public class MatchServices {
         inputBillDTO.setFriendlyMatchId(savedFriendlyMatchEntity.getId());
         BillEntity billEntity = billServices.createBill(inputBillDTO);
         List<TeamMemberEntity> teamMemberEntities = teamMemberServices.findTeamMemberListWithCaptainId(userEntity.getId());
-        SmsService.sendMessageToPlayer(teamMemberEntities,friendlyMatchEntity);
+
+        smsService.sendMessageToPlayerFriendLy(teamMemberEntities,friendlyMatchEntity);
+
         return billEntity;
     }
 
@@ -350,7 +354,7 @@ public class MatchServices {
 
         List<TeamMemberEntity> teamMemberEntitiesA = teamMemberServices.findTeamMemberListWithCaptainId(user.getId());
         List<TeamMemberEntity> teamMemberEntitiesB = teamMemberServices.findTeamMemberListWithCaptainId(opponent.getId());
-        SmsService.sendMessageToPlayer(teamMemberEntitiesA, teamMemberEntitiesB, tourMatchEntity);
+//        SmsService.sendMessageToPlayer(teamMemberEntitiesA, teamMemberEntitiesB, tourMatchEntity);
         return savedBillOfUser;
     }
 

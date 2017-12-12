@@ -166,7 +166,7 @@ public class TimeSlotServices {
                     // khoảng thời gian trước giờ đặt
                     TimeSlotEntity timeSlotEntity1 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
                             timeSlotEntity.getStartTime(), startTime, Float.valueOf(0), false, timeSlotEntity.isOptimal(), true);
-                    // khoảng thời gian đặt
+                    // khoảng thời gian đặtF
                     TimeSlotEntity timeSlotEntity2 = new TimeSlotEntity(fieldOwner, fieldType, targetDate,
                             startTime, endTime, price, true, timeSlotEntity.isOptimal(), true);
                     // khoảng thời gian sau giờ đặt
