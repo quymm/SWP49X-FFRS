@@ -10,6 +10,7 @@ import com.utils.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class PromotionServices {
     @Autowired
     Constant constant;
 
-    public PromotionEntity createNewPromotion(InputPromotionDTO inputPromotionDTO){
+    public PromotionEntity createNewPromotion(InputPromotionDTO inputPromotionDTO) {
         PromotionEntity promotionEntity = new PromotionEntity();
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(inputPromotionDTO.getFieldTypeId());
         AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(inputPromotionDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
@@ -43,18 +44,18 @@ public class PromotionServices {
         return promotionRepository.save(promotionEntity);
     }
 
-    public List<PromotionEntity> getListPromotionByFieldOwnerAndDate(int fieldOwnerId, String date){
+    public List<PromotionEntity> getListPromotionByFieldOwnerAndDate(int fieldOwnerId, String date) {
         Date targetDate = DateTimeUtils.convertFromStringToDate(date);
         AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         return promotionRepository.getPromotionByFieldOwnerAndTargetDate(fieldOwner, targetDate, true);
     }
 
-    public List<PromotionEntity> getListPromotionByDate(String dateStr){
-        Date targetDate = DateTimeUtils.convertFromStringToDate(dateStr);
+    public List<PromotionEntity> getListPromotionNow() {
+        Date targetDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
         return promotionRepository.getPromotionByDate(targetDate, true);
     }
 
-    public List<PromotionEntity> getListPromotionByFieldOwnerId(int fieldOwnerId){
+    public List<PromotionEntity> getListPromotionByFieldOwnerId(int fieldOwnerId) {
         AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         return promotionRepository.findByFieldOwnerIdAndStatus(fieldOwner, true);
     }
