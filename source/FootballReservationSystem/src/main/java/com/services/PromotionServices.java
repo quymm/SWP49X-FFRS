@@ -32,6 +32,11 @@ public class PromotionServices {
         PromotionEntity promotionEntity = new PromotionEntity();
         FieldTypeEntity fieldTypeEntity = fieldTypeServices.findById(inputPromotionDTO.getFieldTypeId());
         AccountEntity fieldOwner = accountServices.findAccountEntityByIdAndRole(inputPromotionDTO.getFieldOwnerId(), constant.getFieldOwnerRole());
+        Date currDate = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
+        PromotionEntity checkPromotionEntity = promotionRepository.getPromotionByFieldOwnerTypeDateAndStatus(currDate, fieldOwner, fieldTypeEntity, true);
+        if (checkPromotionEntity != null) {
+            throw new IllegalArgumentException("Have promotion!!!");
+        }
         promotionEntity.setFieldTypeId(fieldTypeEntity);
         promotionEntity.setFieldOwnerId(fieldOwner);
         promotionEntity.setDateFrom(DateTimeUtils.convertFromStringToDate(inputPromotionDTO.getDateFrom()));

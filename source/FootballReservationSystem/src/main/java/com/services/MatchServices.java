@@ -100,7 +100,7 @@ public class MatchServices {
         BillEntity billEntity = billServices.createBill(inputBillDTO);
         List<TeamMemberEntity> teamMemberEntities = teamMemberServices.findTeamMemberListWithCaptainId(userEntity.getId());
 
-        smsService.sendMessageToPlayerFriendLy(teamMemberEntities,friendlyMatchEntity);
+        smsService.sendMessageToPlayerFriendLy(teamMemberEntities, friendlyMatchEntity);
 
         return billEntity;
     }
@@ -212,8 +212,8 @@ public class MatchServices {
                 boolean checkBlackList = blacklistOpponentServices.findBlacklistByUserIdAndOpponentId(user.getId(), matchingRequest.getUserId().getId()) == null
                         && blacklistOpponentServices.findBlacklistByUserIdAndOpponentId(matchingRequest.getUserId().getId(), user.getId()) == null ? true : false;
 
-                // khoảng cách là dựa vào người có yêu cầu khoảng cách ngắn hơn
-                int expectedDistance = matchingRequest.getExpectedDistance() < inputMatchingRequestDTO.getExpectedDistance() ? matchingRequest.getExpectedDistance() : inputMatchingRequestDTO.getExpectedDistance();
+                // khoảng cách mong đợi là tổng 2 khoảng cách mong đợi trừ đi 4km
+                int expectedDistance = matchingRequest.getExpectedDistance() + inputMatchingRequestDTO.getExpectedDistance() - 4;
                 if (matchingRequest.getUserId().getId() != inputMatchingRequestDTO.getUserId() && distance <= expectedDistance && checkBlackList && checkRatingScore && checkTime) {
                     returnMatchingRequest.add(matchingRequest);
                 }
@@ -238,14 +238,18 @@ public class MatchServices {
         CordinationPoint cordinationPointUser = new CordinationPoint(NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLongitude()),
                 NumberUtils.parseFromStringToDouble(inputMatchingRequestDTO.getLatitude()));
         CordinationPoint cordinationPointOpponent = new CordinationPoint(opponentMatching.getLongitude(), opponentMatching.getLatitude());
-        List<FieldOwnerAndDistance> fieldOwnerAndDistanceListFromUser = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPointUser, inputMatchingRequestDTO.getExpectedDistance(), false);
-        List<FieldOwnerAndDistance> fieldOwnerAndDistanceListFromOpponent = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPointOpponent, opponentMatching.getExpectedDistance(), false);
+        List<FieldOwnerAndDistance> fieldOwnerAndDistanceListFromUser = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPointUser, inputMatchingRequestDTO.getExpectedDistance());
+        List<FieldOwnerAndDistance> fieldOwnerAndDistanceListFromOpponent = getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(cordinationPointOpponent, opponentMatching.getExpectedDistance());
         List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
 
         // tìm những sân chung trong danh sách
         for (int i = 0; i < fieldOwnerAndDistanceListFromUser.size(); i++) {
             for (int j = 0; j < fieldOwnerAndDistanceListFromOpponent.size(); j++) {
                 if (fieldOwnerAndDistanceListFromUser.get(i).getFieldOwner().getId() == fieldOwnerAndDistanceListFromOpponent.get(j).getFieldOwner().getId()) {
+                    double distance = fieldOwnerAndDistanceListFromUser.get(i).getDistance() + fieldOwnerAndDistanceListFromOpponent.get(j).getDistance();
+                    FieldOwnerAndDistance fieldOwnerAndDistance = new FieldOwnerAndDistance();
+                    fieldOwnerAndDistance.setFieldOwner(fieldOwnerAndDistanceListFromUser.get(i).getFieldOwner());
+                    fieldOwnerAndDistance.setDistance(distance);
                     fieldOwnerAndDistanceList.add(fieldOwnerAndDistanceListFromUser.get(i));
                 }
             }
@@ -256,7 +260,10 @@ public class MatchServices {
 
         // list chứa những sân ưa thích
         List<OutputReserveTimeSlotDTO> outputReserveTimeSlotDTOList = new ArrayList<>();
-        for (FieldOwnerAndDistance fieldOwnerAndDistance : fieldOwnerAndDistanceList) {
+        if(fieldOwnerAndDistanceList.isEmpty()){
+            return null;
+        }
+        for (FieldOwnerAndDistance fieldOwnerAndDistance : arrangeFieldOwnerByDistance(fieldOwnerAndDistanceList)) {
             inputReservationDTO.setFieldOwnerId(fieldOwnerAndDistance.getFieldOwner().getId());
             OutputReserveTimeSlotDTO outputReserveTimeSlotDTO = timeSlotServices.pickTimeSlot(inputReservationDTO);
             if (outputReserveTimeSlotDTO != null) {
@@ -287,30 +294,25 @@ public class MatchServices {
         return returnOutputReserveTimeSlotDTO;
     }
 
-    private List<FieldOwnerAndDistance> getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(CordinationPoint cordinationPointA, int deviationOrUserId, boolean favoritesField) {
+    private List<FieldOwnerAndDistance> getFieldOwnerAndDistanceListWithAddressAndDeviationDistance(CordinationPoint cordinationPointA, int deviationDistance) {
         List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
-        List<AccountEntity> allfieldOwnerList = new ArrayList<>();
-        if (favoritesField) {
-            allfieldOwnerList = favoritesFieldServices.findFavoritesFieldListByUserId(deviationOrUserId);
-        } else {
-            allfieldOwnerList = accountServices.findAccountByRole(constant.getFieldOwnerRole());
-        }
+        List<AccountEntity> allfieldOwnerList = accountServices.getFieldOwnerWithDistance(cordinationPointA.getLatitude() + "", cordinationPointA.getLongitude() + "", deviationDistance);
 
-        for (AccountEntity accountEntity : allfieldOwnerList) {
-            CordinationPoint cordinationPointB = new CordinationPoint(accountEntity.getProfileId().getLongitude(),
-                    accountEntity.getProfileId().getLatitude());
-            double distance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
-            if (deviationOrUserId > 0) {
-                if (distance <= deviationOrUserId) {
+        if (!allfieldOwnerList.isEmpty()) {
+
+            for (AccountEntity accountEntity : allfieldOwnerList) {
+                CordinationPoint cordinationPointB = new CordinationPoint(accountEntity.getProfileId().getLongitude(),
+                        accountEntity.getProfileId().getLatitude());
+                double distance = MapUtils.calculateActualDistanceBetweenTwoPoints(cordinationPointA, cordinationPointB) / 1000;
+                if (distance <= deviationDistance) {
                     FieldOwnerAndDistance fieldOwnerAndDistance = new FieldOwnerAndDistance(accountEntity, distance);
                     fieldOwnerAndDistanceList.add(fieldOwnerAndDistance);
                 }
-            } else {
-                FieldOwnerAndDistance fieldOwnerAndDistance = new FieldOwnerAndDistance(accountEntity, distance);
-                fieldOwnerAndDistanceList.add(fieldOwnerAndDistance);
             }
+            return arrangeFieldOwnerByDistance(fieldOwnerAndDistanceList);
+        } else {
+            return fieldOwnerAndDistanceList;
         }
-        return arrangeFieldOwnerByDistance(fieldOwnerAndDistanceList);
     }
 
     public BillEntity reserveTourMatch(InputReserveTimeSlotDTO inputReserveTimeSlotDTO, int matchingRequestId) {
@@ -412,7 +414,7 @@ public class MatchServices {
         return true;
     }
 
-    public boolean deleteMatchingRequest(int matchingRequestId){
+    public boolean deleteMatchingRequest(int matchingRequestId) {
         MatchingRequestEntity matchingRequestEntity = matchingRequestRepository.findByIdAndStatus(matchingRequestId, true);
         // hoàn tiền đã chiếm trong matching request
         ProfileEntity profileOfUser = matchingRequestEntity.getUserId().getProfileId();
