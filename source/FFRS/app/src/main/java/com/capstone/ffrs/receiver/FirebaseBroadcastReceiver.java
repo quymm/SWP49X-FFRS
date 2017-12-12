@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -18,8 +19,10 @@ import java.util.Map;
 public class FirebaseBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d("FirebaseReceiver", "Received");
         Bundle b = intent.getExtras();
         if (b != null && b.containsKey("notification_tour_match_id")) {
+            Log.d("FirebaseReceiver", "Intent found");
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference ref = database.getReference();
             Map<String, Object> childUpdates = new HashMap<>();
@@ -27,5 +30,4 @@ public class FirebaseBroadcastReceiver extends BroadcastReceiver {
             ref.updateChildren(childUpdates);
         }
     }
-
 }

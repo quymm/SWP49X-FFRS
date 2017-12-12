@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background4"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.capstone.ffrs.PayPalActivity"
     tools:showIn="@layout/activity_pay_pal">
@@ -41,7 +42,8 @@
             android:layout_height="wrap_content"
             android:text="Đang xử lý"
             android:textAlignment="center"
-            android:textSize="24dp" />
+            android:textSize="24sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background4"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.capstone.ffrs.RatingOpponentActivity"
     tools:showIn="@layout/activity_rating_opponent">
@@ -184,7 +185,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:text="Thêm vào danh sách chặn" />
+                android:text="Thêm vào danh sách chặn"
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/btRequest"

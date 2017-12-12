@@ -19,16 +19,15 @@
             android:background="@color/gray"
             android:orientation="vertical">
 
-
             <TextView
                 android:id="@+id/text_not_found"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:paddingTop="10dp"
+                android:padding="10dp"
                 android:text="Chưa có thông tin thành viên nào trong đội"
                 android:textAlignment="center"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
 

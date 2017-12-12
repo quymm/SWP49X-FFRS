@@ -29,7 +29,8 @@
     <string name="url_register_user">/swp49x-ffrs/account/managed-user</string>
 
     //// Field
-    <string name="url_get_field">/swp49x-ffrs/account/top-10-field-owner?longitude=%s&amp;latitude=%s</string>
+    <string name="url_get_nearby_field">/swp49x-ffrs/account/near-field?longitude=%s&amp;latitude=%s</string>
+    <string name="url_get_cheap_field">/swp49x-ffrs/account/near-field?longitude=%s&amp;latitude=%s</string>
     <string name="url_get_field_by_name">/swp49x-ffrs/account/name?name=%s&amp;role=%s</string>
     <string name="url_get_field_by_id">/swp49x-ffrs/account/managed-field-owner?field-owner-id=%s</string>
     <string name="url_choose_field">"/swp49x-ffrs/match/choose-field?matching-request-id=%s</string>
@@ -45,13 +46,13 @@
     <string name="url_reserve_friendly_match">/swp49x-ffrs/match/friendly-match</string>
     <string name="url_reserve_tour_match">/swp49x-ffrs/match/tour-match?matching-request-id=%s</string>
     <string name="url_add_bill">/swp49x-ffrs/bill/managed-bill</string>
-    <string name="url_cancel_friendly_match"></string>
 
     //// Matching request
     <string name="url_get_matching_requests">/swp49x-ffrs/match/suggest-opponent</string>
     <string name="url_get_matching_request_by_id">/swp49x-ffrs/match/matching-request?matching-request-id=%s</string>
     <string name="url_create_matching_request">/swp49x-ffrs/match/matching-request</string>
     <string name="url_cancel_matching_request">/swp49x-ffrs/match/matching-request?matching-request-id=%s</string>
+    <string name="url_remove_matching_request">/swp49x-ffrs/match/matching-request?matching-request-id=%s</string>
 
     //// Match
     <string name="url_get_tour_match_by_id">/swp49x-ffrs/match/tour-match?tour-match-id=%s</string>
@@ -88,6 +89,9 @@
     ////Team member
     <string name="url_get_team_members">/swp49x-ffrs/team-member/managed-team-member?captain-id=%s</string>
     <string name="url_add_team_member_info">/swp49x-ffrs/team-member/managed-team-member</string>
+
+    ////Promotion
+    <string name="url_get_promotions">/swp49x-ffrs/promotion/now</string>
 
     <!-- Ngân Lượng strings -->
     <string name="dialog_close">Đóng</string>

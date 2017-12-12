@@ -90,7 +90,6 @@ public class MatchSearchFragment extends Fragment {
     private LatLng currentPosition = null;
     private LatLng customPosition = null;
     private Button btFindRequest, btCreateRequest;
-    private String currentAddress = "";
 
     public MatchSearchFragment() {
         // Required empty public constructor
@@ -346,7 +345,6 @@ public class MatchSearchFragment extends Fragment {
 
                             if (!addresses.isEmpty()) {
                                 customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-                                currentAddress = v.getText().toString();
                             } else {
                                 customPosition = null;
                                 txtAddress.setText("");
@@ -397,7 +395,6 @@ public class MatchSearchFragment extends Fragment {
                         inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
                                 InputMethodManager.HIDE_NOT_ALWAYS);
                         customPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-                        currentAddress = str;
                     } else {
                         customPosition = null;
                         txtAddress.setText("");
@@ -413,7 +410,6 @@ public class MatchSearchFragment extends Fragment {
 
                                     }
                                 }).setCancelable(false).show();
-//                        Toast.makeText(getActivity(), "", Toast.LENGTH_LONG).show();
                     }
 
                     validate();
@@ -447,7 +443,6 @@ public class MatchSearchFragment extends Fragment {
                     intent.putExtra("latitude", customPosition.latitude);
                     intent.putExtra("longitude", customPosition.longitude);
                 }
-                intent.putExtra("createMode", false);
                 startActivity(intent);
             }
         });
@@ -493,58 +488,6 @@ public class MatchSearchFragment extends Fragment {
                                 public void onResponse(JSONObject response) {
                                     try {
                                         if (!response.isNull("body")) {
-//                                            JSONObject body = response.getJSONObject("body");
-//                                            final int matchingRequestId = body.getInt("matchingRequestId");
-//                                            JSONArray list = body.getJSONArray("similarMatchingRequestList");
-//                                            if (list.length() > 0) {
-//                                                AlertDialog.Builder builder;
-//                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                                                    builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Light_Dialog_Alert);
-//                                                } else {
-//                                                    builder = new AlertDialog.Builder(getContext());
-//                                                }
-//                                                builder.setTitle("Tìm thấy đối thủ")
-//                                                        .setMessage("Chúng tôi đã tìm thấy đối thủ phù hợp với bạn. Bạn có muốn xem danh sách đối thủ không?")
-//                                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                                                            public void onClick(DialogInterface dialog, int which) {
-//                                                                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(v.getContext());
-//                                                                Intent intent = new Intent(v.getContext(), MatchResultActivity.class);
-//                                                                intent.putExtra("field_type_id", (fieldSpinner.getSelectedItemPosition() + 1));
-//                                                                intent.putExtra("field_date", mDate.getText().toString());
-//                                                                intent.putExtra("field_start_time", from.getText().toString());
-//                                                                intent.putExtra("field_end_time", to.getText().toString());
-//                                                                intent.putExtra("duration", 60 + durationSpinner.getSelectedItemPosition() * 30);
-//                                                                intent.putExtra("distance", 4 + (distanceSpinner.getSelectedItemPosition() * 2));
-//                                                                intent.putExtra("priorityField", true);
-//                                                                intent.putExtra("created_matching_request_id", matchingRequestId);
-//                                                                intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
-//                                                                if (txtAddress.getText().toString().isEmpty() || customPosition == null) {
-//                                                                    intent.putExtra("address", txtAddress.getHint().toString());
-//                                                                    intent.putExtra("latitude", currentPosition.latitude);
-//                                                                    intent.putExtra("longitude", currentPosition.longitude);
-//                                                                } else {
-//                                                                    intent.putExtra("address", txtAddress.getText().toString());
-//                                                                    intent.putExtra("latitude", customPosition.latitude);
-//                                                                    intent.putExtra("longitude", customPosition.longitude);
-//                                                                }
-//                                                                intent.putExtra("createMode", true);
-//                                                                startActivity(intent);
-//                                                            }
-//                                                        })
-//                                                        .setNegativeButton("Không, tạo mới yêu cầu", new DialogInterface.OnClickListener() {
-//                                                            public void onClick(DialogInterface dialog, int which) {
-//                                                                Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
-//                                                                intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
-//                                                                intent.putExtra("message", "Bạn đã tạo yêu cầu tìm đối thủ thành công!");
-//                                                                startActivity(intent);
-//                                                            }
-//                                                        }).setCancelable(false).show();
-//                                            } else {
-//                                                Intent intent = new Intent(getActivity(), CreateRequestResultActivity.class);
-//                                                intent.putExtra("user_id", sharedPreferences.getInt("user_id", -1));
-//                                                intent.putExtra("message", "Bạn đã tạo yêu cầu tìm đối thủ thành công!");
-//                                                startActivity(intent);
-//                                            }
                                             JSONObject body = response.getJSONObject("body");
                                             JSONArray list = body.getJSONArray("similarMatchingRequestList");
                                             if (list.length() > 0) {
@@ -617,7 +560,7 @@ public class MatchSearchFragment extends Fragment {
                                 Toast.makeText(getContext(), "Lỗi parse!", Toast.LENGTH_SHORT).show();
                             }
                         }
-                    }){
+                    }) {
                         @Override
                         public Map<String, String> getHeaders() throws AuthFailureError {
                             HashMap<String, String> headers = new HashMap<String, String>();

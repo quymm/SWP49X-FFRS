@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.support.v7.widget.Toolbar;
 
 import com.capstone.ffrs.FieldTimeActivity;
 import com.capstone.ffrs.HistoryActivity;
@@ -34,6 +35,13 @@ public class ReserveSuccessFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_reserve_success, container, false);
+        Toolbar toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
         Bundle b = getActivity().getIntent().getExtras();
         boolean tourMatchMode = b.getBoolean("tour_match_mode");
         LinearLayout layout = (LinearLayout) view.findViewById(R.id.linear_layout);

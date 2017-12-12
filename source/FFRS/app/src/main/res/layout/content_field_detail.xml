@@ -333,6 +333,17 @@
                         </TableRow>
                     </TableLayout>
 
+                    <Button
+                        android:id="@+id/btList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:background="@color/green"
+                        android:text="Chọn sân khác"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
                 </LinearLayout>
 
             </LinearLayout>

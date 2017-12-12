@@ -147,7 +147,7 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
                             intent.putExtra("opponent_id", request.getUserId());
                             intent.putExtra("duration", request.getDuration());
                             intent.putExtra("distance", b.getInt("distance"));
-                            intent.putExtra("created_matching_request_id", b.getInt("created_matching_request_id"));
+                            intent.putExtra("current_matching_request_id", b.getInt("current_matching_request_id"));
                             context.startActivity(intent);
                         } catch (ParseException e) {
                             e.printStackTrace();

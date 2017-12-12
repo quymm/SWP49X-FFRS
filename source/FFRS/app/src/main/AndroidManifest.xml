@@ -22,9 +22,9 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
         android:theme="@style/AppTheme">
         <uses-library android:name="com.google.android.maps" />
 
@@ -117,12 +117,6 @@
         <activity
             android:name=".CreateRequestResultActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".NotificationActivity"
-            android:configChanges="orientation"
-            android:label="@string/title_activity_notification"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -225,11 +219,15 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".TeamMemberListActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_team_member_list"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AddMemberActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_add_member"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

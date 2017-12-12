@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
@@ -141,7 +142,7 @@ public class FieldDetailActivity extends AppCompatActivity {
 
             final ArrayList<FieldOwner> list = b.getParcelableArrayList("field_list");
 
-            final ImageView btList = (ImageView) findViewById(R.id.btList);
+            final Button btList = (Button) findViewById(R.id.btList);
             btList.setVisibility(View.VISIBLE);
             btList.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -184,7 +185,6 @@ public class FieldDetailActivity extends AppCompatActivity {
                             txtPrice.setText(price + " nghìn đồng");
                         }
                     });
-
 
                     final AlertDialog alertDialog = alertDialogBuilder.create();
 
@@ -243,12 +243,12 @@ public class FieldDetailActivity extends AppCompatActivity {
                         final Button btCancel = (Button) findViewById(R.id.btCancel);
                         btCancel.setEnabled(false);
                         final Bundle b = getIntent().getExtras();
-                        if (b.containsKey("created_matching_request_id")) {
-                            int createdMatchingRequestId = b.getInt("created_matching_request_id");
+                        if (b.containsKey("current_matching_request_id")) {
+                            int currentMatchingRequestId = b.getInt("current_matching_request_id");
 
                             RequestQueue queue = NetworkController.getInstance(FieldDetailActivity.this).getRequestQueue();
-                            String url = HostURLUtils.getInstance(FieldDetailActivity.this).getHostURL() + getResources().getString(R.string.url_cancel_matching_request);
-                            url = String.format(url, createdMatchingRequestId);
+                            String url = HostURLUtils.getInstance(FieldDetailActivity.this).getHostURL() + getResources().getString(R.string.url_remove_matching_request);
+                            url = String.format(url, currentMatchingRequestId);
                             JsonObjectRequest cancelRequest = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
@@ -256,18 +256,6 @@ public class FieldDetailActivity extends AppCompatActivity {
                             }, new Response.ErrorListener() {
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
-//                    if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-//                        Toast.makeText(FieldDetailActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
-//                    } else if (error instanceof AuthFailureError) {
-//                        Toast.makeText(FieldDetailActivity.this, "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
-//                    } else if (error instanceof ServerError) {
-//                        Toast.makeText(FieldDetailActivity.this, "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
-//                    } else if (error instanceof NetworkError) {
-//                        Toast.makeText(FieldDetailActivity.this, "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
-//                    } else if (error instanceof ParseError) {
-//                        Toast.makeText(FieldDetailActivity.this, "Lỗi parse!", Toast.LENGTH_SHORT).show();
-//                    }
-
                                 }
                             }) {
                                 @Override
@@ -574,6 +562,10 @@ public class FieldDetailActivity extends AppCompatActivity {
                                 return headers;
                             }
                         };
+                        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                                0,
+                                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                         queue.add(postRequest);
                     }
                 })

@@ -383,13 +383,6 @@ public class ProfileActivity extends AppCompatActivity {
 
                         Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         pickIntent.setType("image/*");
-//        pickIntent.putExtra("crop", "true");
-//        pickIntent.putExtra("scale", true);
-//        pickIntent.putExtra("outputX", 256);
-//        pickIntent.putExtra("outputY", 256);
-//        pickIntent.putExtra("aspectX", 1);
-//        pickIntent.putExtra("aspectY", 1);
-//        pickIntent.putExtra("return-data", true);
 
                         Intent chooserIntent = Intent.createChooser(getIntent, "Chọn ảnh");
                         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
@@ -401,10 +394,7 @@ public class ProfileActivity extends AppCompatActivity {
                     // Permission denied, Disable the functionality that depends on this permission.
                     Toast.makeText(this, "Ứng dụng phải có quyền sử dụng đọc kho lữu trữ của bạn để lấy ảnh", Toast.LENGTH_SHORT).show();
                 }
-                return;
             }
-            // other 'case' lines to check for other permissions this app might request.
-            // You can add here other case statements according to your requirement.
         }
     }
 }

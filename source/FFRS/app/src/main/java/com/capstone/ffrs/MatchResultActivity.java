@@ -231,86 +231,12 @@ public class MatchResultActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        final Bundle b = getIntent().getExtras();
-        boolean createMode = b.getBoolean("createMode");
-
-        if (createMode) {
-            final int createdMatchingRequestId = b.getInt("created_matching_request_id");
-            AlertDialog.Builder builder;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
-            } else {
-                builder = new AlertDialog.Builder(this);
-            }
-            builder.setTitle("Bạn có chắc chắn không muốn đá với những đối thủ này?")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(MatchResultActivity.this, CreateRequestResultActivity.class);
-                            intent.putExtra("user_id", b.getInt("user_id"));
-                            intent.putExtra("message", "Hệ thống đã để lại yêu cầu của bạn cho đối thủ phù hợp hơn!");
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton("Không", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            RequestQueue queue = NetworkController.getInstance(MatchResultActivity.this).getRequestQueue();
-                            String url = HostURLUtils.getInstance(MatchResultActivity.this).getHostURL() + getResources().getString(R.string.url_cancel_matching_request);
-                            url = String.format(url, createdMatchingRequestId);
-                            JsonObjectRequest cancelRequest = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(JSONObject response) {
-                                    finish();
-                                }
-                            }, new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                                        Toast.makeText(MatchResultActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
-                                    } else if (error instanceof AuthFailureError) {
-                                        Toast.makeText(MatchResultActivity.this, "Lỗi xác nhận!", Toast.LENGTH_SHORT).show();
-                                    } else if (error instanceof ServerError) {
-                                        Toast.makeText(MatchResultActivity.this, "Lỗi từ phía máy chủ!", Toast.LENGTH_SHORT).show();
-                                    } else if (error instanceof NetworkError) {
-                                        Toast.makeText(MatchResultActivity.this, "Lỗi kết nối mạng!", Toast.LENGTH_SHORT).show();
-                                    } else if (error instanceof ParseError) {
-                                        Toast.makeText(MatchResultActivity.this, "Lỗi parse!", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }) {
-                                @Override
-                                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                                    try {
-                                        String utf8String = new String(response.data, "UTF-8");
-                                        return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
-                                    } catch (UnsupportedEncodingException e) {
-                                        // log error
-                                        return Response.error(new ParseError(e));
-                                    } catch (JSONException e) {
-                                        // log error
-                                        return Response.error(new ParseError(e));
-                                    }
-                                }
-
-                                @Override
-                                public Map<String, String> getHeaders() throws AuthFailureError {
-                                    HashMap<String, String> headers = new HashMap<String, String>();
-                                    headers.put("Content-Type", "application/json; charset=utf-8");
-
-                                    return headers;
-                                }
-                            };
-                            queue.add(cancelRequest);
-                        }
-                    }).show();
+        if (!isTaskRoot()) {
+            super.onBackPressed();
         } else {
-            if (!isTaskRoot()) {
-                super.onBackPressed();
-            } else {
-                Intent intent = new Intent(this, SearchActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
+            Intent intent = new Intent(this, SearchActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         }
     }
-
 }

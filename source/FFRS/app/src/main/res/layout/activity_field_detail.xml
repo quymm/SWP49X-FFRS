@@ -19,18 +19,7 @@
             android:layout_height="50dp"
             android:background="@color/green"
             app:navigationIcon="@drawable/ic_arrow_back_white"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
-
-            <ImageView
-                android:id="@+id/btList"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="end"
-                android:layout_marginRight="10dp"
-                android:onClick="onClickList"
-                android:src="@drawable/ic_dehaze"
-                android:visibility="gone" />
-        </android.support.v7.widget.Toolbar>
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
 

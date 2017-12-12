@@ -5,25 +5,27 @@
     tools:context=".fragment.FieldSearchFragment">
 
     <RelativeLayout
+        android:id="@+id/fields_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/gray"
+        android:visibility="visible">
 
         <RelativeLayout
-            android:id="@+id/fields_layout"
+            android:id="@+id/search_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/gray"
-            android:visibility="visible">
+            android:paddingBottom="1dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:paddingTop="1dp">
 
             <RelativeLayout
-                android:id="@+id/search_layout"
+                android:id="@+id/search_text_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/gray"
-                android:paddingBottom="1dp"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp"
-                android:paddingTop="1dp">
+                android:layout_toStartOf="@id/btMode">
 
                 <EditText
                     android:id="@+id/edit_text"
@@ -36,8 +38,8 @@
                     android:ems="10"
                     android:hint="Tìm kiếm sân"
                     android:inputType="text"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="40dp"
+                    android:paddingEnd="40dp"
+                    android:paddingStart="10dp"
                     android:textSize="16sp" />
 
                 <ImageView
@@ -48,44 +50,58 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="7dp"
                     android:background="@android:color/white"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_close" />
-
             </RelativeLayout>
 
-            <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/swipe_refresh_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/search_layout">
+            <ImageButton
+                android:id="@+id/btMode"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/green"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_dehaze" />
 
-                <LinearLayout
+        </RelativeLayout>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/search_layout">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_not_found"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+
+                    android:layout_gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:text="Không có sân gần vị trí của bạn"
+                    android:textAlignment="center"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/gray"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/text_not_found"
-                        android:layout_width="match_parent"
-                        android:layout_height="32dp"
-
-                        android:layout_gravity="center"
-                        android:layout_marginTop="16dp"
-                        android:text="Không có sân"
-                        android:textAlignment="center"
-                        android:textSize="20dp"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recycler_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:scrollbars="vertical"
-                        tools:layout_editor_absoluteX="0dp"
-                        tools:layout_editor_absoluteY="0dp" />
-                </LinearLayout>
-            </android.support.v4.widget.SwipeRefreshLayout>
-        </RelativeLayout>
+                    android:scrollbars="vertical"
+                    tools:layout_editor_absoluteX="0dp"
+                    tools:layout_editor_absoluteY="0dp" />
+            </LinearLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
     </RelativeLayout>
 </FrameLayout>

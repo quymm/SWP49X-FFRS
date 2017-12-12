@@ -156,7 +156,7 @@ public class PendingRequestAdapter extends RecyclerView.Adapter<PendingRequestAd
                                                                RequestQueue queue = NetworkController.getInstance(context).getRequestQueue();
                                                                String url = HostURLUtils.getInstance(context).getHostURL() + context.getResources().getString(R.string.url_cancel_matching_request);
                                                                url = String.format(url, request.getMatchingRequestId());
-                                                               JsonObjectRequest cancelRequest = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
+                                                               JsonObjectRequest cancelRequest = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
                                                                    @Override
                                                                    public void onResponse(JSONObject response) {
                                                                        Toast.makeText(context, "Bạn đã hủy yêu cầu đá chung", Toast.LENGTH_SHORT).show();

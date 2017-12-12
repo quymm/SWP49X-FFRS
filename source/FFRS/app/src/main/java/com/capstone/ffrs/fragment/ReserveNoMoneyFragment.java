@@ -7,19 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.support.v7.widget.Toolbar;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.capstone.ffrs.R;
 import com.capstone.ffrs.RechargeActivity;
 import com.capstone.ffrs.SearchActivity;
-import com.capstone.ffrs.controller.NetworkController;
-import com.capstone.ffrs.utils.HostURLUtils;
-
-import org.json.JSONObject;
 
 /**
  * Created by HuanPMSE61860 on 11/7/2017.
@@ -43,6 +35,13 @@ public class ReserveNoMoneyFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_reserve_no_money, container, false);
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
         btHome = (Button) view.findViewById(R.id.btHome);
         btHome.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/money"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.capstone.ffrs.PaymentOptionActivity"
     tools:showIn="@layout/activity_payment_option">
@@ -51,12 +52,13 @@
                     <RadioButton
                         android:id="@+id/rbtCreditCard"
                         android:layout_width="wrap_content"
-                        android:layout_height="50dp" />
+                        android:layout_height="50dp"
+                        android:visibility="gone" />
 
                     <!--<RadioButton-->
-                        <!--android:id="@+id/rbtChargeCard"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="50dp" />-->
+                    <!--android:id="@+id/rbtChargeCard"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="50dp" />-->
                 </RadioGroup>
 
                 <LinearLayout
@@ -85,7 +87,8 @@
                         android:layout_height="50dp"
 
                         android:scaleType="fitXY"
-                        android:src="@drawable/img_credit_cards_icon" />
+                        android:src="@drawable/img_credit_cards_icon"
+                        android:visibility="gone" />
                 </LinearLayout>
             </RelativeLayout>
 

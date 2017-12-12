@@ -119,7 +119,7 @@ public class RequestInfoActivity extends AppCompatActivity {
         RequestQueue queue = NetworkController.getInstance(this).getRequestQueue();
         String url = HostURLUtils.getInstance(this).getHostURL() + getResources().getString(R.string.url_cancel_matching_request);
         url = String.format(url, b.getInt("id"));
-        JsonObjectRequest cancelRequest = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest cancelRequest = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Toast.makeText(RequestInfoActivity.this, "Bạn đã hủy yêu cầu đá chung", Toast.LENGTH_SHORT).show();
@@ -182,7 +182,7 @@ public class RequestInfoActivity extends AppCompatActivity {
         intent.putExtra("address", b.getString("address"));
         intent.putExtra("latitude", b.getDouble("latitude"));
         intent.putExtra("longitude", b.getDouble("longitude"));
-        intent.putExtra("createMode", false);
+        intent.putExtra("current_matching_request_id", b.getInt("id"));
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         intent.putExtra("user_id", preferences.getInt("user_id", -1));
         startActivity(intent);

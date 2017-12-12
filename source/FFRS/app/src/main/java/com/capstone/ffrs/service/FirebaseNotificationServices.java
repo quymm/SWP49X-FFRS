@@ -328,22 +328,21 @@ public class FirebaseNotificationServices extends Service {
                                                 .setAutoCancel(true);
 
                                         Intent backIntent = new Intent(context, RequestInfoActivity.class);
+                                        backIntent.putExtra("id", matchingRequestId);
                                         backIntent.putExtra("field_type_id", body.getJSONObject("fieldTypeId").getInt("id"));
                                         backIntent.putExtra("date", body.getString("date"));
                                         backIntent.putExtra("start_time", body.getString("startTime"));
                                         backIntent.putExtra("end_time", body.getString("endTime"));
                                         backIntent.putExtra("duration", body.getInt("duration"));
                                         backIntent.putExtra("distance", body.getInt("expectedDistance"));
-                                        backIntent.putExtra("priorityField", body.getBoolean("priorityField"));
                                         backIntent.putExtra("address", body.getString("address"));
                                         backIntent.putExtra("latitude", body.getDouble("latitude"));
                                         backIntent.putExtra("longitude", body.getDouble("longitude"));
                                         backIntent.putExtra("status", body.getBoolean("status"));
-                                        backIntent.putExtra("createMode", false);
-                                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                                        backIntent.putExtra("user_id", preferences.getInt("user_id", -1));
 
                                         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
                                         FirebaseDatabase database = FirebaseDatabase.getInstance();
                                         DatabaseReference ref = database.getReference();
