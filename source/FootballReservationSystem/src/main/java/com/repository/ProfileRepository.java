@@ -18,4 +18,7 @@ public interface ProfileRepository extends JpaRepository<ProfileEntity, Integer>
 
     @Query(value = "SELECT * FROM profile where name like :name and status = :status limit 10", nativeQuery = true)
     List<ProfileEntity> searchByName(@Param("name") String name, @Param("status") boolean status);
+
+    @Query(value = "SELECT p FROM ProfileEntity p WHERE p.latitude <= :latUp AND p.latitude >= :latDown AND p.longitude <= :longUp AND p.longitude >= :longDown AND p.status = :status")
+    List<ProfileEntity> getByLocationWithLongLatAndDistance(@Param("latUp") double latUp, @Param("latDown") double latDown, @Param("longUp") double longUp, @Param("longDown") double longDown, @Param("status") boolean status);
 }

@@ -119,9 +119,9 @@ public class AccountController {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/swp49x-ffrs/account/top-10-field-owner", method = RequestMethod.GET)
+    @RequestMapping(value = "/swp49x-ffrs/account/near-field", method = RequestMethod.GET)
     public ResponseEntity get10FieldOwnerNearest(@RequestParam("longitude") String longitude, @RequestParam("latitude") String latitude) {
-        Wrapper wrapper = new Wrapper(accountServices.findMax10FieldOwnerNearByPosition(longitude, latitude), HttpStatus.OK.value(), HttpStatus.OK.name());
+        Wrapper wrapper = new Wrapper(accountServices.getFieldOwnerWithDistance(latitude, longitude, 5), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
