@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface FieldRepository extends JpaRepository<FieldEntity, Integer> {
-    @Query("SELECT f FROM FieldEntity f WHERE f.fieldOwnerId = :fieldOwner AND f.dateFrom <= :targetDate AND f.status = :status")
+    @Query("SELECT f FROM FieldEntity f WHERE f.fieldOwnerId = :fieldOwner AND f.dateFrom <= :targetDate AND f.dateTo >= :targetDate  AND f.status = :status")
     List<FieldEntity> findByFieldOwnerIdAndStatus(@Param("fieldOwner") AccountEntity fieldOwner, @Param("targetDate") Date targetDate, @Param("status") boolean status);
 
     FieldEntity findByIdAndStatus(int id, boolean status);
