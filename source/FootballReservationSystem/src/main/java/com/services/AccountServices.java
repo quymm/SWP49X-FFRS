@@ -233,10 +233,10 @@ public class AccountServices {
                 AccountEntity accountEntity = accountRepository.findByProfileIdAndRoleIdAndStatus(profileEntity, roleEntity, true);
                 if (accountEntity != null) {
                     CordinationPoint cordinationPointB = new CordinationPoint(accountEntity.getProfileId().getLongitude(), accountEntity.getProfileId().getLatitude());
-                    int actualDistance = MapUtils.calculateActualDistanceBetweenTwoPoints(cordinationPointA, cordinationPointB);
+                    double actualDistance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
                     FieldOwnerAndDistance fieldOwnerAndDistance = new FieldOwnerAndDistance();
                     fieldOwnerAndDistance.setFieldOwner(accountEntity);
-                    fieldOwnerAndDistance.setDistance(actualDistance / 1000);
+                    fieldOwnerAndDistance.setDistance(actualDistance);
                     fieldOwnerAndDistanceList.add(fieldOwnerAndDistance);
                 }
 
