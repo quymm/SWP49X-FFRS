@@ -22,4 +22,7 @@ public interface FieldRepository extends JpaRepository<FieldEntity, Integer> {
     @Query("SELECT f FROM FieldEntity f WHERE f.fieldOwnerId = :fieldOwner AND f.fieldTypeId = :fieldType AND f.dateFrom <= :targetDate AND f.status = :status")
     List<FieldEntity> getListFieldWithFieldOwnerTypeAndDate(@Param("fieldOwner") AccountEntity fieldOwner, @Param("fieldType") FieldTypeEntity fieldType, @Param("targetDate") Date targetDate, @Param("status") boolean status);
 
+    @Query("SELECT f FROM FieldEntity f WHERE f.fieldOwnerId = :fieldOwner AND f.status = :status")
+    List<FieldEntity> findByFieldOwnerId(@Param("fieldOwner") AccountEntity fieldOwner, @Param("status") boolean status);
+
 }

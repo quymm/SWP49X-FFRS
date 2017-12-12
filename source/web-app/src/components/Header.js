@@ -177,7 +177,6 @@ class Header extends Component {
   }
 
   async handelClickDetailMatch(match) {
-    debugger
     const messageabc = this.state.messages;
     const index = messageabc.findIndex(
       messageabc =>
@@ -196,11 +195,15 @@ class Header extends Component {
     }
     if (match.tourMatch) {
       const data = await fetchGetTourMatch(match.id);
-      debugger;
-      this.setState({ isShowUpdateField: true, match: data.body });
+      
+      if (data.status === 200) {
+        this.setState({ isShowUpdateField: true, match: data.body });
+      }
     } else {
       const data = await fetchGetFriendlyMatch(match.id);
-      this.setState({ isShowUpdateField: true, match: data.body });
+      if (data.status === 200) {
+        this.setState({ isShowUpdateField: true, match: data.body });
+      }
     }
   }
   handleHideModalField(evt) {

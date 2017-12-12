@@ -7,16 +7,19 @@ import { withRouter } from 'react-router-dom';
 import {
   accessDenied,
   doLoginSuccessful,
-  doLogout
+  doLogout,
 } from '../redux/guest/guest-action-creators';
 import { Modal } from 'react-bootstrap';
 import moment from 'moment';
+import DatePicker from 'react-datepicker';
 class Field extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isCreateShowed: true,
       isShowConfirmDelete: false,
+      disableDateTo: moment().add(7, 'days'),
+      disableDateFrom: moment(),
     };
   }
 
@@ -29,20 +32,18 @@ class Field extends Component {
         this.props.doLogout();
         this.props.history.push('/login');
       } else {
-      if (
-        authLocalStorage.roleId.roleName !== 'owner'
-      ) {
-        await this.props.accessDenied();
-        this.props.history.push('/login');
-      } else {
-        const idLocal = authLocalStorage.id;
-        await this.props.doLoginSuccessful(authLocalStorage);
-        debugger
-        const data = await fetchGetAllField(idLocal);
-        debugger
-        await this.props.getAllField(data.body);
+        if (authLocalStorage.roleId.roleName !== 'owner') {
+          await this.props.accessDenied();
+          this.props.history.push('/login');
+        } else {
+          const idLocal = authLocalStorage.id;
+          await this.props.doLoginSuccessful(authLocalStorage);
+          debugger;
+          const data = await fetchGetAllField(idLocal);
+          debugger;
+          await this.props.getAllField(data.body);
+        }
       }
-    }
     } else {
       if (roleId.roleName !== 'owner') {
         this.props.accessDenied();
@@ -57,17 +58,23 @@ class Field extends Component {
   async deleteField(evt) {
     const fieldId = evt.target.value;
     const { id } = this.props.auth.user.data;
-    await fetchDeleteField(fieldId);
+    await fetchDeleteField(fieldId, this.state.disableDateFrom, this.state.disableDateTo);
     const data = await fetchGetAllField(id);
     await this.props.getAllField(data.body);
   }
-  handleShowComfirmDeleteField(evt){
+  handleShowComfirmDeleteField(evt) {
     // evt.preventDefault();
-    this.setState({isShowConfirmDelete: true});
+    this.setState({ isShowConfirmDelete: true });
   }
-  handleHideComfirmDeleteField(evt) { 
+  handleHideComfirmDeleteField(evt) {
     // evt.preventDefault();
-    this.setState({isShowConfirmDelete: false});
+    this.setState({ isShowConfirmDelete: false });
+  }
+  async handelTimeStartDayInputChange(evt) {
+    await this.setState({ disableDateFrom: evt });
+  }
+  async handelEndTimeInputChange(evt) {
+    await this.setState({ disableDateTo: evt });
   }
   render() {
     const { listField } = this.props;
@@ -80,17 +87,26 @@ class Field extends Component {
                 <td>{index + 1}</td>
                 <td>{listField.name}</td>
                 <td>{listField.fieldTypeId.name}</td>
-                {/* <td>{listField.expirationDate? moment(listField.expirationDate, 'YYYY-MM-DD').format('DD/MM/YYYY'): null }</td> */}
-                {/* {listField.expirationDate? null:
                 <td>
-                  <button
-                    value={listField.id}
-                    onClick={this.handleShowComfirmDeleteField.bind(this)}
-                    className="btn btn-danger"
-                  >
-                    Xoá
-                  </button>
-                </td>} */}
+                  {listField.dateTo ? (
+                    
+                      `Mở lại vào ${moment(listField.dateTo).format('DD/MM/YYYY')}`
+                    
+                  ) : (
+                    <span className="label label-success">Đang hoạt động</span>
+                  )}
+                </td>
+                {listField.dateTo ? null : (
+                  <td>
+                    <button
+                      value={listField.id}
+                      onClick={this.handleShowComfirmDeleteField.bind(this)}
+                      className="btn btn-danger"
+                    >
+                      Ngưng hoạt động
+                    </button>
+                  </td>
+                )}
               </tr>
             );
           })
@@ -116,7 +132,7 @@ class Field extends Component {
                           <th>#</th>
                           <th>Tên sân</th>
                           <th>Loại sân</th>
-                          {/* <th>Hiệu lực đến ngày</th>                          */}
+                          <th>Trang thái</th>
                           <th />
                         </tr>
                       </thead>
@@ -137,32 +153,66 @@ class Field extends Component {
           </div>
         </div>
         <Modal
-            /* {...this.props} */
-            show={this.state.isShowConfirmDelete}
-            onHide={this.handleHideComfirmDeleteField.bind(this)}
-            dialogClassName="custom-modal"
-          >
-            <Modal.Header>
-              <Modal.Title>Xác nhận xoá sân</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <h4>Bạn có chắc muốn xoá sân này?</h4>
-            </Modal.Body>
-            <Modal.Footer>
+          /* {...this.props} */
+          show={this.state.isShowConfirmDelete}
+          onHide={this.handleHideComfirmDeleteField.bind(this)}
+          dialogClassName="custom-modal"
+        >
+          <Modal.Header>
+            <Modal.Title>Xác nhận xoá sân</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <form className="form-horizontal">
+              <p className="text-danger text-center">
+                {this.state.message ? this.state.message : null}
+              </p>
+              <div className="form-group">
+                <label htmlFor="inputEmail3" className="col-sm-3 control-label">
+                  Từ
+                </label>
+                <div className="col-sm-9">
+                  <div className="col-sm-6">
+                    <DatePicker
+                      selected={this.state.disableDateFrom}
+                      onChange={this.handelTimeStartDayInputChange.bind(this)}
+                      className="form-control"
+                      name="endDate"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="form-group">
+                <label htmlFor="inputEmail3" className="col-sm-3 control-label">
+                  Đến
+                </label>
+                <div className="col-sm-9">
+                  <div className="col-sm-6">
+                    <DatePicker
+                      selected={this.state.disableDateTo}
+                      onChange={this.handelEndTimeInputChange.bind(this)}
+                      className="form-control"
+                      name="endDate"
+                    />
+                  </div>
+                </div>
+              </div>
+            </form>
+          </Modal.Body>
+          <Modal.Footer>
             <button
-                onClick={this.deleteField.bind(this)}
-                className="btn btn-primary"
-              >
-                Xác nhận
-              </button>
-              <button
-                onClick={this.handleHideComfirmDeleteField.bind(this)}
-                className="btn btn-danger"
-              >
-                Huỷ
-              </button>
-            </Modal.Footer>
-          </Modal>
+              onClick={this.deleteField.bind(this)}
+              className="btn btn-primary"
+            >
+              Xác nhận
+            </button>
+            <button
+              onClick={this.handleHideComfirmDeleteField.bind(this)}
+              className="btn btn-danger"
+            >
+              Huỷ
+            </button>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }
@@ -176,7 +226,10 @@ function mapStateToProps(state) {
 }
 
 export default withRouter(
-  connect(mapStateToProps, { getAllField, accessDenied, doLoginSuccessful, doLogout })(
-    Field,
-  ),
+  connect(mapStateToProps, {
+    getAllField,
+    accessDenied,
+    doLoginSuccessful,
+    doLogout,
+  })(Field),
 );
