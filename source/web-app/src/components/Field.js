@@ -20,6 +20,8 @@ class Field extends Component {
       isShowConfirmDelete: false,
       disableDateTo: moment().add(7, 'days'),
       disableDateFrom: moment(),
+      fieldIdDelete: undefined,
+      currentDate: moment(),
     };
   }
 
@@ -38,9 +40,9 @@ class Field extends Component {
         } else {
           const idLocal = authLocalStorage.id;
           await this.props.doLoginSuccessful(authLocalStorage);
-          debugger;
+
           const data = await fetchGetAllField(idLocal);
-          debugger;
+
           await this.props.getAllField(data.body);
         }
       }
@@ -56,15 +58,22 @@ class Field extends Component {
   }
 
   async deleteField(evt) {
-    const fieldId = evt.target.value;
+    debugger;
+    const fieldId = this.state.fieldIdDelete;
     const { id } = this.props.auth.user.data;
-    await fetchDeleteField(fieldId, this.state.disableDateFrom, this.state.disableDateTo);
+    await fetchDeleteField(
+      fieldId,
+      this.state.disableDateFrom.format('DD-MM-YYYY'),
+      this.state.disableDateTo.format('DD-MM-YYYY'),
+    );
     const data = await fetchGetAllField(id);
     await this.props.getAllField(data.body);
+    this.setState({ isShowConfirmDelete: false });
   }
   handleShowComfirmDeleteField(evt) {
     // evt.preventDefault();
-    this.setState({ isShowConfirmDelete: true });
+    debugger;
+    this.setState({ isShowConfirmDelete: true, fieldIdDelete: evt.id });
   }
   handleHideComfirmDeleteField(evt) {
     // evt.preventDefault();
@@ -78,38 +87,41 @@ class Field extends Component {
   }
   render() {
     const { listField } = this.props;
-    console.log(listField);
+    console.log(
+      listField.filter(
+        field =>
+          field.dateTo === null ||
+          moment(field.dateTo, 'YYYY-MM-DD') < this.state.currentDate,
+      ),
+    );
     const renderField =
       listField.length > 0
-        ? listField.map((listField, index) => {
-            return (
-              <tr key={listField.id}>
-                <td>{index + 1}</td>
-                <td>{listField.name}</td>
-                <td>{listField.fieldTypeId.name}</td>
-                <td>
-                  {listField.dateTo ? (
-                    
-                      `Mở lại vào ${moment(listField.dateTo).format('DD/MM/YYYY')}`
-                    
-                  ) : (
-                    <span className="label label-success">Đang hoạt động</span>
-                  )}
-                </td>
-                {listField.dateTo ? null : (
+        ? listField
+            .map((listField, index) => {
+              return (
+                <tr key={listField.id}>
+                  <td>{index + 1}</td>
+                  <td>{listField.name}</td>
+                  <td>{listField.fieldTypeId.name}</td>
                   <td>
-                    <button
-                      value={listField.id}
-                      onClick={this.handleShowComfirmDeleteField.bind(this)}
-                      className="btn btn-danger"
-                    >
-                      Ngưng hoạt động
-                    </button>
+                    <span className="label label-success">Đang hoạt động</span>
                   </td>
-                )}
-              </tr>
-            );
-          })
+                  {listField.dateTo ? null : (
+                    <td>
+                      <button
+                        value={listField.id}
+                        onClick={() =>
+                          this.handleShowComfirmDeleteField(listField)
+                        }
+                        className="btn btn-danger"
+                      >
+                        Ngưng hoạt động
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              );
+            })
         : 'Hiện tại chưa có sân';
     const { isCreateShowed } = this.state;
     return (
@@ -159,7 +171,7 @@ class Field extends Component {
           dialogClassName="custom-modal"
         >
           <Modal.Header>
-            <Modal.Title>Xác nhận xoá sân</Modal.Title>
+            <Modal.Title>Ngưng hoạt động sân</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <form className="form-horizontal">
