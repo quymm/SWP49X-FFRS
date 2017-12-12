@@ -354,7 +354,7 @@ public class MatchServices {
 
         List<TeamMemberEntity> teamMemberEntitiesA = teamMemberServices.findTeamMemberListWithCaptainId(user.getId());
         List<TeamMemberEntity> teamMemberEntitiesB = teamMemberServices.findTeamMemberListWithCaptainId(opponent.getId());
-//        SmsService.sendMessageToPlayer(teamMemberEntitiesA, teamMemberEntitiesB, tourMatchEntity);
+        SmsService.sendMessageToPlayer(teamMemberEntitiesA, teamMemberEntitiesB, tourMatchEntity);
         return savedBillOfUser;
     }
 
