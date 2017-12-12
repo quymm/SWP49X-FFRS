@@ -37,9 +37,15 @@ public class MatchController {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/swp49x-ffrs/match/matching-request", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/swp49x-ffrs/match/matching-request", method = RequestMethod.PUT)
     public ResponseEntity cancelMatchingRequest(@RequestParam("matching-request-id") int matchingRequestId){
         Wrapper wrapper = new Wrapper(matchServices.cancelMatchingRequest(matchingRequestId), HttpStatus.OK.value(), HttpStatus.OK.name());
+        return new ResponseEntity(wrapper, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/swp49x-ffrs/match.matching-request", method = RequestMethod.DELETE)
+    public ResponseEntity deleteMatchingRequest(@RequestParam("matching-request-id") int matchingRequestId){
+        Wrapper wrapper = new Wrapper(matchServices.deleteMatchingRequest(matchingRequestId), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 

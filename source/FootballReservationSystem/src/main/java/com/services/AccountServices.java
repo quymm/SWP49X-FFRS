@@ -137,16 +137,16 @@ public class AccountServices {
         return accountRepository.save(accountEntity);
     }
 
-    public AccountEntity unLockAccountById(int id){
+    public AccountEntity unLockAccountById(int id) {
         AccountEntity accountEntity = findAccountEntityById(id);
-        if(accountEntity.getLockStatus()){
+        if (accountEntity.getLockStatus()) {
             accountEntity.setLockStatus(false);
             accountEntity.setRequestLock(false);
         }
         return accountRepository.save(accountEntity);
     }
 
-    public AccountEntity requestLockAccountById(int userId, int staffId){
+    public AccountEntity requestLockAccountById(int userId, int staffId) {
         AccountEntity staffEntity = findAccountEntityByIdAndRole(staffId, constant.getStaffRole());
         AccountEntity userEntity = findAccountEntityByIdAndRole(userId, constant.getUserRole());
         userEntity.setRequestLock(true);
@@ -169,7 +169,7 @@ public class AccountServices {
         return profileEntity;
     }
 
-    public List<AccountEntity> findAllAccountWithLockStatus(boolean lockStatus, boolean requestLock){
+    public List<AccountEntity> findAllAccountWithLockStatus(boolean lockStatus, boolean requestLock) {
         return accountRepository.findAccountEntitiesByLockStatusAndRequestLockAndStatus(lockStatus, requestLock, true);
     }
 
@@ -213,6 +213,42 @@ public class AccountServices {
             return returnFieldOwnerList;
         }
         return fieldOwnerList;
+    }
+
+    public List<AccountEntity> getFieldOwnerWithDistance(String latitudeStr, String longitudeStr, int distance) {
+        double latitude = NumberUtils.parseFromStringToDouble(latitudeStr);
+        double longitude = NumberUtils.parseFromStringToDouble(longitudeStr);
+        CordinationPoint cordinationPointA = new CordinationPoint(longitude, latitude);
+        double latDown = latitude - 0.009 * distance;
+        double latUp = latitude + 0.009 * distance;
+        double longUp = longitude + 0.0091 * distance;
+        double longDown = longitude - 0.0091 * distance;
+        RoleEntity roleEntity = roleServices.findByRoleName(constant.getFieldOwnerRole());
+        List<ProfileEntity> profileEntityList = profileRepository.getByLocationWithLongLatAndDistance(latUp, latDown, longUp, longDown, true);
+
+        List<AccountEntity> returnFieldOwnerList = new ArrayList<>();
+        List<FieldOwnerAndDistance> fieldOwnerAndDistanceList = new ArrayList<>();
+        if (!profileEntityList.isEmpty()) {
+            for (ProfileEntity profileEntity : profileEntityList) {
+                AccountEntity accountEntity = accountRepository.findByProfileIdAndRoleIdAndStatus(profileEntity, roleEntity, true);
+                if (accountEntity != null) {
+                    CordinationPoint cordinationPointB = new CordinationPoint(accountEntity.getProfileId().getLongitude(), accountEntity.getProfileId().getLatitude());
+                    double actualDistance = MapUtils.calculateDistanceBetweenTwoPoint(cordinationPointA, cordinationPointB);
+                    FieldOwnerAndDistance fieldOwnerAndDistance = new FieldOwnerAndDistance();
+                    fieldOwnerAndDistance.setFieldOwner(accountEntity);
+                    fieldOwnerAndDistance.setDistance(actualDistance);
+                    fieldOwnerAndDistanceList.add(fieldOwnerAndDistance);
+                }
+
+            }
+        }
+        if (!fieldOwnerAndDistanceList.isEmpty()) {
+            List<FieldOwnerAndDistance> arrangefieldOwnerAndDistances = matchServices.arrangeFieldOwnerByDistance(fieldOwnerAndDistanceList);
+            for (FieldOwnerAndDistance fieldOwnerAndDistance : arrangefieldOwnerAndDistances) {
+                returnFieldOwnerList.add(fieldOwnerAndDistance.getFieldOwner());
+            }
+        }
+        return returnFieldOwnerList;
     }
 
     public List<AccountEntity> findByNameLikeAndRole(String name, String role) {

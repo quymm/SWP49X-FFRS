@@ -16,11 +16,11 @@ import java.io.IOException;
  * @author MinhQuy
  */
 public class MapUtils {
-    private static final String DIRECTION_KEY = "AIzaSyD0PY8Ok2pfzMNhcf3JS4LxYmBSR_xVm-A";
+    private static final String DISTANCE_KEY = "AIzaSyADq9WGNDmfm4mQR0Z8cdglC9B_AVJeGbc";
 
     private static final String GEOCODING_KEY = "AIzaSyCqjl1MC_1bqUVYuPpdk8tvpNnlJgwijuk";
 
-    private static final String DISTANCE_BASED_MODE_OF_TRANSPORT = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&mode=%s&language=vi&key=%s";
+    private static final String DISTANCE_BASED_LONG_LAT = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=%s&destinations=%s&key=%s";
 
     private static final String GET_LONGITUDE_LATITUDE_FROM_ADDRESS = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s";
 
@@ -31,12 +31,16 @@ public class MapUtils {
 
         String destination = "Tô Ký, Quận 12, Hồ Chí Minh";
 
-        CordinationPoint cordinationPoint = new CordinationPoint(106.6884028, 10.8298734);
-        System.out.println(getAddressFromCordinationPoint(cordinationPoint));
+        CordinationPoint corA = new CordinationPoint(106.654212, 10.837510);
+        CordinationPoint corB = new CordinationPoint(106.689260, 10.826339);
+        System.out.println(calculateActualDistanceBetweenTwoPoints(corA, corB));
     }
 
-    public static int calculateDistanceBetweenTwoPointWithAddress(String origins, String destination, String transportMode) {
-        String url = String.format(DISTANCE_BASED_MODE_OF_TRANSPORT, removeSpace(origins), removeSpace(destination), transportMode, DIRECTION_KEY);
+    public static int calculateActualDistanceBetweenTwoPoints(CordinationPoint corA, CordinationPoint corB) {
+        String origin = corA.getLatitude() + "," + corA.getLongitude();
+        String destination = corB.getLatitude() + "," + corB.getLongitude();
+        String url = String.format(DISTANCE_BASED_LONG_LAT, origin, destination, DISTANCE_KEY);
+        System.out.println(url);
         JSONObject jsonObject = connectGoogleAPI(url);
 
         JSONArray rows = jsonObject.getJSONArray("rows");

@@ -338,7 +338,7 @@ public class MatchServices {
         opponent.getProfileId().setAccountPayable(opponent.getProfileId().getAccountPayable() - matchingRequestEntity.getExpectedPrice());
         profileRepository.save(opponent.getProfileId());
         matchingRequestEntity.setStatus(false);
-        matchingRequestRepository.save(matchingRequestEntity);
+        matchingRequestRepository.delete(matchingRequestEntity);
 
         // create bill of user
         InputBillDTO billOfUser = new InputBillDTO();
@@ -354,7 +354,7 @@ public class MatchServices {
 
         List<TeamMemberEntity> teamMemberEntitiesA = teamMemberServices.findTeamMemberListWithCaptainId(user.getId());
         List<TeamMemberEntity> teamMemberEntitiesB = teamMemberServices.findTeamMemberListWithCaptainId(opponent.getId());
-//        SmsService.sendMessageToPlayer(teamMemberEntitiesA, teamMemberEntitiesB, tourMatchEntity);
+        SmsService.sendMessageToPlayer(teamMemberEntitiesA, teamMemberEntitiesB, tourMatchEntity);
         return savedBillOfUser;
     }
 
@@ -412,5 +412,13 @@ public class MatchServices {
         return true;
     }
 
-
+    public boolean deleteMatchingRequest(int matchingRequestId){
+        MatchingRequestEntity matchingRequestEntity = matchingRequestRepository.findByIdAndStatus(matchingRequestId, true);
+        // hoàn tiền đã chiếm trong matching request
+        ProfileEntity profileOfUser = matchingRequestEntity.getUserId().getProfileId();
+        profileOfUser.setAccountPayable(profileOfUser.getAccountPayable() - matchingRequestEntity.getExpectedPrice());
+        profileRepository.save(profileOfUser);
+        matchingRequestRepository.delete(matchingRequestEntity);
+        return true;
+    }
 }
