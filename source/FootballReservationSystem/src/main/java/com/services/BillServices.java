@@ -65,6 +65,7 @@ public class BillServices {
         accountServices.changeBalance(billEntity.getUserId().getId(), billEntity.getPrice() * (-1), constant.getUserRole());
         accountServices.changeBalance(billEntity.getFieldOwnerId().getId(), billEntity.getPrice(), constant.getFieldOwnerRole());
 
+
         billEntity.setStatus(true);
         return billRepository.save(billEntity);
     }

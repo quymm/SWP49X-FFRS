@@ -24,7 +24,7 @@ public class SmsService {
     public SmsService() {
     }
 
-    public void sendMessageToPlayer(List<TeamMemberEntity> teamA, List<TeamMemberEntity> teamB, TourMatchEntity tourMatchEntity) {
+    public static void sendMessageToPlayer(List<TeamMemberEntity> teamA, List<TeamMemberEntity> teamB, TourMatchEntity tourMatchEntity) {
 
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
         for (int i = 0; i < teamA.size(); i++) {
