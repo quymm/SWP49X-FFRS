@@ -15,28 +15,28 @@ public class PromotionController {
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/promotion/managed-promotion", method = RequestMethod.POST)
-    public ResponseEntity createNewPromotion(@RequestBody InputPromotionDTO inputPromotionDTO){
+    public ResponseEntity createNewPromotion(@RequestBody InputPromotionDTO inputPromotionDTO) {
         Wrapper wrapper = new Wrapper(promotionServices.createNewPromotion(inputPromotionDTO), HttpStatus.CREATED.value(), HttpStatus.CREATED.name());
         return new ResponseEntity(wrapper, HttpStatus.CREATED);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/swp49x-ffrs/promotion/date", method = RequestMethod.GET)
-    public ResponseEntity getPromotionByDate(@RequestParam("target-date") String date){
-        Wrapper wrapper = new Wrapper(promotionServices.getListPromotionByDate(date), HttpStatus.OK.value(), HttpStatus.OK.name());
+    @RequestMapping(value = "/swp49x-ffrs/promotion/now", method = RequestMethod.GET)
+    public ResponseEntity getPromotionByDate() {
+        Wrapper wrapper = new Wrapper(promotionServices.getListPromotionNow(), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/promotion/field-owner", method = RequestMethod.GET)
-    public ResponseEntity getPromotionByFieldOwner(@RequestParam("field-owner-id") int fieldOwnerId){
+    public ResponseEntity getPromotionByFieldOwner(@RequestParam("field-owner-id") int fieldOwnerId) {
         Wrapper wrapper = new Wrapper(promotionServices.getListPromotionByFieldOwnerId(fieldOwnerId), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/swp49x-ffrs/promotion/field-owner-and-date", method = RequestMethod.GET)
-    public ResponseEntity getPromotionByFieldOwnerAndDate(@RequestParam("field-owner-id") int fieldOwnerId, @RequestParam("target-date") String dateStr){
+    public ResponseEntity getPromotionByFieldOwnerAndDate(@RequestParam("field-owner-id") int fieldOwnerId, @RequestParam("target-date") String dateStr) {
         Wrapper wrapper = new Wrapper(promotionServices.getListPromotionByFieldOwnerAndDate(fieldOwnerId, dateStr), HttpStatus.OK.value(), HttpStatus.OK.name());
         return new ResponseEntity(wrapper, HttpStatus.OK);
     }
