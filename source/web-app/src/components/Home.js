@@ -38,6 +38,7 @@ class Home extends Component {
       filterName: 'ans',
       messages: {},
       currentShowOption: true,
+      isValidSetField: undefined,
     };
     this.handleShowModalField = this.handleShowModalField.bind(this);
   }
@@ -196,7 +197,10 @@ class Home extends Component {
             '10-10-2017 ' + a.timeSlotEntity.startTime,
             'DD-MM-YYYY HH:mm',
           ) -
-          moment('10-10-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
+          moment(
+            '10-10-2017 ' + b.timeSlotEntity.startTime,
+            'DD-MM-YYYY HH:mm',
+          ),
       );
       await this.props.GetMatchByFieldOwnerAndDay(afterSort);
       toast.success('Cập nhật sân thành công!');
@@ -206,21 +210,36 @@ class Home extends Component {
   async handleShowModalField(match) {
     //evt.preventDefault();
     const { id } = this.props.auth.user.data;
-    console.log(typeof match);
-    const fieldTypeId = parseInt(match.timeSlotEntity.fieldTypeId.id);
-    const time = match.timeSlotEntity.startTime;
-    const freeField = await fetchGetFreeFieldByTime(
-      id,
-      fieldTypeId,
-      this.state.dateSelected.format('DD-MM-YYYY'),
-      time,
-    );
-    await this.props.getAllFreeField(freeField.body);
-    if (freeField.body.length > 0) {
-      this.setState({
-        fieldSelected: freeField.body[0].id,
-        timeSlotSelected: match.timeSlotEntity.id,
-      });
+    let currentTime = moment();
+    console.log(currentTime, 
+      this.state.dateSelected
+        .hours(match.timeSlotEntity.startTime.slice(0, 2))
+        .minutes(match.timeSlotEntity.startTime.slice(3, 5)));
+    if (
+      currentTime >=
+      this.state.dateSelected
+        .hours(match.timeSlotEntity.startTime.slice(0, 2))
+        .minutes(match.timeSlotEntity.startTime.slice(3, 5))
+    ) {
+      const fieldTypeId = parseInt(match.timeSlotEntity.fieldTypeId.id);
+      const time = match.timeSlotEntity.startTime;
+      const freeField = await fetchGetFreeFieldByTime(
+        id,
+        fieldTypeId,
+        this.state.dateSelected.format('DD-MM-YYYY'),
+        time,
+      );
+      await this.props.getAllFreeField(freeField.body);
+      if (freeField.body.length > 0) {
+        this.setState({
+          fieldSelected: freeField.body[0].id,
+          timeSlotSelected: match.timeSlotEntity.id,
+          isValidSetField: true,
+        });
+      }
+    }
+    else{
+      this.setState({isValidSetField: false});
     }
     this.setState({ isShowUpdateField: true });
   }
@@ -269,10 +288,7 @@ class Home extends Component {
     );
     const afterSort = match.body.sort(
       (a, b) =>
-        moment(
-          '10-10-2017 ' + a.timeSlotEntity.startTime,
-          'DD-MM-YYYY HH:mm',
-        ) -
+        moment('10-10-2017 ' + a.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm') -
         moment('10-10-2017 ' + b.timeSlotEntity.startTime, 'DD-MM-YYYY HH:mm'),
     );
     await this.props.GetMatchByFieldOwnerAndDay(afterSort);
@@ -464,7 +480,7 @@ class Home extends Component {
                                           }
                                           className="btn btn-md btn-primary"
                                         >
-                                          Chi tiết
+                                          Chọn sân
                                         </button>
                                       </p>
                                     </div>
@@ -569,7 +585,8 @@ class Home extends Component {
                   <Modal.Title>Thiết lập sân</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  {freeField.length > 0 ? (
+                { this.state.isValidSetField ? (
+                  freeField.length > 0 ? (
                     <form
                       className="form-horizontal"
                       onSubmit={this.handelSetFieldSubmit.bind(this)}
@@ -613,7 +630,7 @@ class Home extends Component {
                     </form>
                   ) : (
                     <h3>Không có sân trống</h3>
-                  )}
+                  )): <h3>Chưa tới giờ chọn sân</h3>}
                 </Modal.Body>
                 <Modal.Footer>
                   <button

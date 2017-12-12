@@ -87,13 +87,6 @@ class Field extends Component {
   }
   render() {
     const { listField } = this.props;
-    console.log(
-      listField.filter(
-        field =>
-          field.dateTo === null ||
-          moment(field.dateTo, 'YYYY-MM-DD') < this.state.currentDate,
-      ),
-    );
     const renderField =
       listField.length > 0
         ? listField
