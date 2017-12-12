@@ -69,7 +69,13 @@ public class FieldServices {
         Date currDay = DateTimeUtils.convertFromStringToDate(DateTimeUtils.formatDate(new Date()));
         AccountEntity accountEntity = accountServices.findAccountEntityByIdAndRole(fieldOwnerId, constant.getFieldOwnerRole());
         List<FieldEntity> fieldEntityList = fieldRepository.findByFieldOwnerIdAndStatus(accountEntity, currDay, true);
-        return fieldEntityList;
+        List<FieldEntity> returnFieldList = new ArrayList<>();
+        for (FieldEntity fieldEntity : fieldEntityList) {
+            if (fieldEntity.getDateTo() == null || !fieldEntity.getDateTo().before(currDay)) {
+                returnFieldList.add(fieldEntity);
+            }
+        }
+        return returnFieldList;
     }
 
     public FieldEntity findFieldEntityById(int fieldId) {
