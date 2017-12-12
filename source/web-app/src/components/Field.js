@@ -96,9 +96,6 @@ class Field extends Component {
                   <td>{index + 1}</td>
                   <td>{listField.name}</td>
                   <td>{listField.fieldTypeId.name}</td>
-                  <td>
-                    <span className="label label-success">Đang hoạt động</span>
-                  </td>
                   {listField.dateTo ? null : (
                     <td>
                       <button
@@ -137,7 +134,7 @@ class Field extends Component {
                           <th>#</th>
                           <th>Tên sân</th>
                           <th>Loại sân</th>
-                          <th>Trang thái</th>
+                         
                           <th />
                         </tr>
                       </thead>
